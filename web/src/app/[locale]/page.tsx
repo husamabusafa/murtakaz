@@ -277,7 +277,7 @@ export default function LandingPage() {
               body: isArabic ? "قرارات موثّقة وموافقات ومسار تدقيق." : "Auditable decisions, approvals, and accountability.",
               step: "03"
             },
-          ].map((step, idx) => (
+          ].map((step) => (
             <m.div key={step.title} variants={cardVariants} whileHover={shouldReduceMotion ? undefined : { y: -5 }} transition={{ duration: 0.3, ease: "easeOut" }}>
               <div className="group relative h-full rounded-2xl border border-white/10 bg-slate-900/40 p-8 backdrop-blur-sm transition-all hover:bg-slate-900/60">
                 <div className="absolute top-8 right-8 text-4xl font-bold text-white/5 select-none">{step.step}</div>
