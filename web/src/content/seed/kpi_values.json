@@ -1,0 +1,62 @@
+[
+  {
+    "kpiId": "kpi-1-1",
+    "measuredAt": "2024-03-31T00:00:00Z",
+    "value": 2,
+    "note": "Entered 2 new sectors in Q1"
+  },
+  {
+    "kpiId": "kpi-1-1",
+    "measuredAt": "2024-06-30T00:00:00Z",
+    "value": 3,
+    "note": "Entered 1 additional sector in Q2"
+  },
+  {
+    "kpiId": "kpi-1-1",
+    "measuredAt": "2024-09-30T00:00:00Z",
+    "value": 4,
+    "note": "On track for annual target"
+  },
+  {
+    "kpiId": "kpi-2-1",
+    "measuredAt": "2024-03-31T00:00:00Z",
+    "value": 12,
+    "note": "ROI slightly below target"
+  },
+  {
+    "kpiId": "kpi-2-1",
+    "measuredAt": "2024-06-30T00:00:00Z",
+    "value": 14,
+    "note": "Improving ROI"
+  },
+  {
+    "kpiId": "kpi-5-1",
+    "measuredAt": "2024-03-31T00:00:00Z",
+    "value": 85,
+    "note": "Initial governance audit"
+  },
+  {
+    "kpiId": "kpi-5-1",
+    "measuredAt": "2024-06-30T00:00:00Z",
+    "value": 92,
+    "note": "Compliance improved after training"
+  },
+  {
+    "kpiId": "kpi-5-1",
+    "measuredAt": "2024-09-30T00:00:00Z",
+    "value": 98,
+    "note": "Near full compliance"
+  },
+  {
+    "kpiId": "kpi-8-1",
+    "measuredAt": "2023-12-31T00:00:00Z",
+    "value": 60,
+    "note": "Baseline awareness"
+  },
+  {
+    "kpiId": "kpi-8-1",
+    "measuredAt": "2024-06-30T00:00:00Z",
+    "value": 68,
+    "note": "Mid-year survey results"
+  }
+]

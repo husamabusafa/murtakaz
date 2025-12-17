@@ -1,0 +1,282 @@
+[
+  {
+    "id": "proj-1-1",
+    "initiativeId": "init-1",
+    "title": "Analyze Current Investments",
+    "titleAr": "تحليل أداء الاستثمارات الحالية ومصادر الإيرادات",
+    "description": "Analyze performance, identify strengths, weaknesses, and unexploited opportunities.",
+    "descriptionAr": "تحليل الأداء، تحديد نقاط القوة والضعف والفرص غير المستغلة.",
+    "status": "PLANNED",
+    "owner": "Investment"
+  },
+  {
+    "id": "proj-1-2",
+    "initiativeId": "init-1",
+    "title": "Identify High-Growth Sectors",
+    "titleAr": "تحديد القطاعات الجديدة ذات النمو المرتفع",
+    "description": "Identify sectors aligned with group strategy and vision.",
+    "descriptionAr": "تحديد القطاعات المتوافقة مع استراتيجية ورؤية المجموعة.",
+    "status": "PLANNED",
+    "owner": "Investment"
+  },
+  {
+    "id": "proj-1-3",
+    "initiativeId": "init-1",
+    "title": "Set Quantitative Revenue Targets",
+    "titleAr": "تحديد أهداف كمية محددة لزيادة الإيرادات",
+    "description": "Define revenue diversification and target ROI per sector.",
+    "descriptionAr": "تحديد تنويع الإيرادات والعائد المستهدف لكل قطاع.",
+    "status": "PLANNED",
+    "owner": "Investment"
+  },
+  {
+    "id": "proj-1-4",
+    "initiativeId": "init-1",
+    "title": "Establish Risk & Decision Framework",
+    "titleAr": "وضع إطار عمل لتقييم وإدارة المخاطر",
+    "description": "Define decision structures like Investment Committee.",
+    "descriptionAr": "تحديد هياكل اتخاذ القرار مثل لجنة الاستثمار.",
+    "status": "PLANNED",
+    "owner": "Investment"
+  },
+  {
+    "id": "proj-1-5",
+    "initiativeId": "init-1",
+    "title": "Allocate Capital Resources",
+    "titleAr": "تخصيص رأس المال البشري والمالي",
+    "description": "Allocate resources for new projects and expansion.",
+    "descriptionAr": "تخصيص الموارد للمشاريع الجديدة والتوسع.",
+    "status": "PLANNED",
+    "owner": "Finance"
+  },
+  {
+    "id": "proj-2-1",
+    "initiativeId": "init-2",
+    "title": "Activate Investment Standards",
+    "titleAr": "تفعيل إطار المعيار الاستثماري الجديد",
+    "description": "Train departments on applying new standards in decisions.",
+    "descriptionAr": "تدريب الإدارات على تطبيق المعايير الجديدة في القرارات.",
+    "status": "PLANNED",
+    "owner": "Investment"
+  },
+  {
+    "id": "proj-2-2",
+    "initiativeId": "init-2",
+    "title": "Execute Strategic Partnerships",
+    "titleAr": "تنفيذ خطة الشراكات الاستراتيجية",
+    "description": "Attract investors and sign partnership agreements.",
+    "descriptionAr": "جذب المستثمرين وتوقيع اتفاقيات الشراكة.",
+    "status": "PLANNED",
+    "owner": "Investment"
+  },
+  {
+    "id": "proj-2-3",
+    "initiativeId": "init-2",
+    "title": "Launch New Sector Projects",
+    "titleAr": "إطلاق وتنفيذ مشاريع النمو في القطاعات الجديدة",
+    "description": "Start operations in new markets/products.",
+    "descriptionAr": "بدء العمليات في أسواق أو منتجات جديدة.",
+    "status": "PLANNED",
+    "owner": "Investment"
+  },
+  {
+    "id": "proj-2-4",
+    "initiativeId": "init-2",
+    "title": "Implement Exit Strategy",
+    "titleAr": "تطبيق آلية إدارة التخارج الدورية",
+    "description": "Evaluate and exit underperforming investments.",
+    "descriptionAr": "تقييم الاستثمارات ضعيفة الأداء والتخارج منها.",
+    "status": "PLANNED",
+    "owner": "Investment"
+  },
+  {
+    "id": "proj-3-1",
+    "initiativeId": "init-3",
+    "title": "Define Research Methodology",
+    "titleAr": "وضع الإطار المنهجي لأبحاث السوق",
+    "description": "Define research goals and target segments.",
+    "descriptionAr": "تحديد أهداف البحث والشرائح المستهدفة.",
+    "status": "PLANNED",
+    "owner": "Investment"
+  },
+  {
+    "id": "proj-3-2",
+    "initiativeId": "init-3",
+    "title": "Collect & Analyze Market Data",
+    "titleAr": "تنفيذ عملية جمع وتحليل بيانات السوق",
+    "description": "Surveys, interviews, and statistical analysis.",
+    "descriptionAr": "استطلاعات، مقابلات، وتحليل إحصائي.",
+    "status": "PLANNED",
+    "owner": "Investment"
+  },
+  {
+    "id": "proj-3-3",
+    "initiativeId": "init-3",
+    "title": "Establish BI Infrastructure",
+    "titleAr": "تأسيس بنية ذكاء الأعمال",
+    "description": "Build data warehouse and unify data sources.",
+    "descriptionAr": "بناء مستودع البيانات وتوحيد المصادر.",
+    "status": "PLANNED",
+    "owner": "IT"
+  },
+  {
+    "id": "proj-4-1",
+    "initiativeId": "init-4",
+    "title": "Review Current Financial Policies",
+    "titleAr": "مراجعة شاملة للأنظمة والسياسات والإجراءات المالية",
+    "description": "Identify discrepancies between Group and Subsidiaries.",
+    "descriptionAr": "تحديد التباينات بين المجموعة والشركات التابعة.",
+    "status": "PLANNED",
+    "owner": "Finance"
+  },
+  {
+    "id": "proj-4-2",
+    "initiativeId": "init-4",
+    "title": "Design Unified Financial Framework",
+    "titleAr": "تصميم إطار السياسات المالية الموحد",
+    "description": "Create unified policy manual and technical requirements.",
+    "descriptionAr": "إنشاء دليل سياسات موحد ومتطلبات تقنية.",
+    "status": "PLANNED",
+    "owner": "Finance"
+  },
+  {
+    "id": "proj-5-1",
+    "initiativeId": "init-5",
+    "title": "Analyze Capital Structure",
+    "titleAr": "تحليل الوضع المالي الحالي",
+    "description": "Assess leverage, liquidity, and capital distribution.",
+    "descriptionAr": "تقييم الرافعة المالية، السيولة، وتوزيع رأس المال.",
+    "status": "PLANNED",
+    "owner": "Finance"
+  },
+  {
+    "id": "proj-5-2",
+    "initiativeId": "init-5",
+    "title": "Update Cash Management Policies",
+    "titleAr": "تحديث سياسات إدارة النقد والتدفقات المالية",
+    "description": "Ensure efficient resource use and distribution.",
+    "descriptionAr": "ضمان كفاءة استخدام وتوزيع الموارد.",
+    "status": "PLANNED",
+    "owner": "Finance"
+  },
+  {
+    "id": "proj-6-1",
+    "initiativeId": "init-6",
+    "title": "Identify Priority Services for Transfer",
+    "titleAr": "تحديد الخدمات ذات الأولوية للنقل",
+    "description": "Select services to move to subsidiaries.",
+    "descriptionAr": "اختيار الخدمات التي سيتم نقلها للشركات التابعة.",
+    "status": "PLANNED",
+    "owner": "Strategy & Excellence"
+  },
+  {
+    "id": "proj-6-2",
+    "initiativeId": "init-6",
+    "title": "Develop Operating Model",
+    "titleAr": "تحديد نموذج تشغيلي",
+    "description": "Clarify roles between Group and Subsidiaries.",
+    "descriptionAr": "توضيح الأدوار بين المجموعة والشركات التابعة.",
+    "status": "PLANNED",
+    "owner": "Strategy & Excellence"
+  },
+  {
+    "id": "proj-7-1",
+    "initiativeId": "init-7",
+    "title": "Update Risk Register",
+    "titleAr": "تحديث سجل المخاطر الاستراتيجية والتشغيلية",
+    "description": "Update risks across all units.",
+    "descriptionAr": "تحديث المخاطر عبر جميع الوحدات.",
+    "status": "PLANNED",
+    "owner": "Internal Audit & Risk"
+  },
+  {
+    "id": "proj-7-2",
+    "initiativeId": "init-7",
+    "title": "Implement Audit Plans",
+    "titleAr": "تنفيذ خطط المراجعة المعتمدة",
+    "description": "Cover all operational units.",
+    "descriptionAr": "تغطية جميع الوحدات التشغيلية.",
+    "status": "PLANNED",
+    "owner": "Internal Audit & Risk"
+  },
+  {
+    "id": "proj-9-1",
+    "initiativeId": "init-9",
+    "title": "Skills Gap Analysis",
+    "titleAr": "إجراء تحليل فجوات المهارات",
+    "description": "Analyze skills for all levels.",
+    "descriptionAr": "تحليل المهارات لجميع المستويات.",
+    "status": "PLANNED",
+    "owner": "HR"
+  },
+  {
+    "id": "proj-9-2",
+    "initiativeId": "init-9",
+    "title": "Design Learning Strategy",
+    "titleAr": "تصميم إطار استراتيجية تعلم وتطوير موحد",
+    "description": "Define career paths and training programs.",
+    "descriptionAr": "تحديد المسارات المهنية وبرامج التدريب.",
+    "status": "PLANNED",
+    "owner": "HR"
+  },
+  {
+    "id": "proj-10-1",
+    "initiativeId": "init-10",
+    "title": "Create Communication Governance",
+    "titleAr": "إنشاء هيكل حوكمة للتواصل الداخلي",
+    "description": "Define official channels and responsibilities.",
+    "descriptionAr": "تحديد القنوات الرسمية والمسؤوليات.",
+    "status": "PLANNED",
+    "owner": "Marketing & Corp Comm"
+  },
+  {
+    "id": "proj-10-2",
+    "initiativeId": "init-10",
+    "title": "Develop Unified Digital Platform",
+    "titleAr": "تطوير منصة رقمية موحدة للتواصل",
+    "description": "Platform for information exchange.",
+    "descriptionAr": "منصة لتبادل المعلومات.",
+    "status": "PLANNED",
+    "owner": "IT"
+  },
+  {
+    "id": "proj-11-1",
+    "initiativeId": "init-11",
+    "title": "Brand Identity Analysis",
+    "titleAr": "إجراء تحليل شامل للهوية الحالية",
+    "description": "Review current brand and communication channels.",
+    "descriptionAr": "مراجعة العلامة التجارية الحالية وقنوات التواصل.",
+    "status": "PLANNED",
+    "owner": "Marketing & Corp Comm"
+  },
+  {
+    "id": "proj-11-2",
+    "initiativeId": "init-11",
+    "title": "Execute Marketing Campaigns",
+    "titleAr": "تنفيذ حملات تسويقية وإعلامية",
+    "description": "Support major strategic initiatives.",
+    "descriptionAr": "دعم المبادرات الاستراتيجية الكبرى.",
+    "status": "PLANNED",
+    "owner": "Marketing & Corp Comm"
+  },
+  {
+    "id": "proj-12-1",
+    "initiativeId": "init-12",
+    "title": "Digital Maturity Assessment",
+    "titleAr": "إعداد تقييم شامل للنضج الرقمي",
+    "description": "Identify technical gaps and opportunities.",
+    "descriptionAr": "تحديد الفجوات التقنية والفرص.",
+    "status": "PLANNED",
+    "owner": "IT"
+  },
+  {
+    "id": "proj-12-2",
+    "initiativeId": "init-12",
+    "title": "Automate Core Processes",
+    "titleAr": "أتمتة العمليات الأساسية",
+    "description": "Procurement, Finance, HR, Reporting.",
+    "descriptionAr": "المشتريات، المالية، الموارد البشرية، والتقارير.",
+    "status": "PLANNED",
+    "owner": "IT"
+  }
+]

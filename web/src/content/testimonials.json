@@ -1,0 +1,33 @@
+[
+  {
+    "id": "t-1",
+    "author": "Abdullah Al-Hamad",
+    "authorAr": "عبدالله الحمد",
+    "role": "CEO, Future Corp",
+    "roleAr": "الرئيس التنفيذي، شركة المستقبل",
+    "quote": "Murtakaz transformed how we track our strategic initiatives. The visibility is unmatched.",
+    "quoteAr": "لقد غيّر مرتكز كيفية تتبعنا لمبادراتنا الاستراتيجية. الوضوح الذي يوفره لا مثيل له.",
+    "image": "/images/avatar-1.svg"
+  },
+  {
+    "id": "t-2",
+    "author": "Sarah Al-Otaibi",
+    "authorAr": "سارة العتيبي",
+    "role": "Head of Strategy",
+    "roleAr": "رئيسة الاستراتيجية",
+    "quote": "Finally, a tool that connects our daily projects to our long-term vision effortlessly.",
+    "quoteAr": "أخيرًا، أداة تربط مشاريعنا اليومية برؤيتنا طويلة المدى بكل سهولة.",
+    "image": "/images/avatar-2.svg"
+  },
+  {
+    "id": "t-3",
+    "author": "Omar Khalil",
+    "authorAr": "عمر خليل",
+    "role": "Director of PMO",
+    "roleAr": "مدير مكتب إدارة المشاريع",
+    "quote": "The bilingual support and RTL design made adoption seamless for our entire team.",
+    "quoteAr": "الدعم ثنائي اللغة وتصميم الواجهة العربية جعل تبني النظام سلساً لكامل فريقنا.",
+    "image": "/images/avatar-3.svg"
+  }
+]
+

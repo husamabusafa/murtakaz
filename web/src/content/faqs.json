@@ -1,0 +1,38 @@
+[
+  {
+    "id": "faq-1",
+    "question": "What is Murtakaz?",
+    "questionAr": "ما هو مرتكز؟",
+    "answer": "Murtakaz is a strategy execution platform designed to help organizations define goals, track performance via KPIs, and ensure governance compliance.",
+    "answerAr": "مرتكز منصة لتنفيذ الاستراتيجية تساعد الجهات على تحديد الأهداف، وقياس الأداء عبر مؤشرات الأداء الرئيسية، وضمان الالتزام بمتطلبات الحوكمة."
+  },
+  {
+    "id": "faq-2",
+    "question": "Does the system support Arabic?",
+    "questionAr": "هل يدعم النظام اللغة العربية؟",
+    "answer": "Yes, the system is fully bilingual (English & Arabic) and supports RTL layouts natively.",
+    "answerAr": "نعم، النظام ثنائي اللغة بالكامل (الإنجليزية والعربية) ويدعم اتجاه الكتابة من اليمين إلى اليسار بشكل كامل."
+  },
+  {
+    "id": "faq-3",
+    "question": "Can I integrate my existing data?",
+    "questionAr": "هل يمكنني ربط بياناتي الحالية؟",
+    "answer": "Yes, we offer APIs and manual import tools to bring in your existing KPIs and project data.",
+    "answerAr": "نعم، نوفر واجهات برمجية وأدوات استيراد يدوية لجلب بيانات مؤشرات الأداء الرئيسية والمشاريع الحالية."
+  },
+  {
+    "id": "faq-4",
+    "question": "How is data security handled?",
+    "questionAr": "كيف يتم التعامل مع أمن البيانات؟",
+    "answer": "We use enterprise-grade encryption and role-based access control to ensure your strategic data remains secure.",
+    "answerAr": "نستخدم تشفيرًا من الدرجة المؤسسية وآليات تحكم في الوصول حسب الأدوار لضمان بقاء بياناتك الاستراتيجية آمنة."
+  },
+  {
+    "id": "faq-5",
+    "question": "Who is this platform for?",
+    "questionAr": "لمن هذه المنصة؟",
+    "answer": "It serves Executives, PMOs, Strategy Offices, and Department Managers who need visibility into organizational performance.",
+    "answerAr": "تخدم المنصة المديرين التنفيذيين، مكاتب إدارة المشاريع، مكاتب الاستراتيجية، ومديري الإدارات الذين يحتاجون إلى وضوح في الأداء المؤسسي."
+  }
+]
+

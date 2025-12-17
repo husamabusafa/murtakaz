@@ -1,0 +1,134 @@
+[
+  {
+    "id": "init-1",
+    "goalId": "goal-1",
+    "title": "Design Investment Frameworks",
+    "titleAr": "تصميم أطر الاستثمار",
+    "description": "Analyze current performance, identify new sectors, and set ROI targets.",
+    "descriptionAr": "تحليل الأداء الحالي، تحديد قطاعات جديدة، ووضع أهداف للعائد على الاستثمار.",
+    "owner": "Investment",
+    "budget": "80,000 – 120,000 SAR",
+    "duration": "3 months"
+  },
+  {
+    "id": "init-2",
+    "goalId": "goal-2",
+    "title": "Implement Investment Frameworks",
+    "titleAr": "تنفيذ أطر الاستثمار",
+    "description": "Activate new investment standards and execute growth plan.",
+    "descriptionAr": "تفعيل معايير الاستثمار الجديدة وتنفيذ خطة النمو.",
+    "owner": "Investment",
+    "budget": "Continuous",
+    "duration": "Continuous"
+  },
+  {
+    "id": "init-3",
+    "goalId": "goal-2",
+    "title": "Market Research & BI Setup",
+    "titleAr": "إعداد الدراسات وأبحاث السوق وتأسيس ذكاء الأعمال",
+    "description": "Establish market intelligence and BI dashboards for investment decisions.",
+    "descriptionAr": "تأسيس ذكاء السوق ولوحات معلومات لدعم القرارات الاستثمارية.",
+    "owner": "Investment",
+    "budget": "1,000,000 – 1,600,000 SAR",
+    "duration": "12 months"
+  },
+  {
+    "id": "init-4",
+    "goalId": "goal-4",
+    "title": "Enhance Financial Integration & Compliance",
+    "titleAr": "تعزيز التكامل المالي والتقني والامتثال",
+    "description": "Unify financial policies and systems across subsidiaries.",
+    "descriptionAr": "توحيد السياسات والأنظمة المالية عبر الشركات التابعة.",
+    "owner": "Finance",
+    "budget": "150,000 – 450,000 SAR",
+    "duration": "6 – 9 months"
+  },
+  {
+    "id": "init-5",
+    "goalId": "goal-3",
+    "title": "Review Capital Structure & Cash Flow",
+    "titleAr": "مراجعة هيكلة رأس المال والتدفقات المالية",
+    "description": "Optimize capital structure and manage liquidity centrally.",
+    "descriptionAr": "تحسين هيكل رأس المال وإدارة السيولة مركزيًا.",
+    "owner": "Finance",
+    "budget": "150,000 – 400,000 SAR",
+    "duration": "6 – 9 months"
+  },
+  {
+    "id": "init-6",
+    "goalId": "goal-5",
+    "title": "Transfer Group Services to Subsidiaries",
+    "titleAr": "نقل خدمات المجموعة للشركات التابعة",
+    "description": "Identify and transfer shared services to enhance efficiency.",
+    "descriptionAr": "تحديد ونقل الخدمات المشتركة لتعزيز الكفاءة.",
+    "owner": "Strategy & Excellence",
+    "budget": "300,000 – 900,000 SAR",
+    "duration": "12 – 18 months"
+  },
+  {
+    "id": "init-7",
+    "goalId": "goal-5",
+    "title": "Activate Risk & Audit Plans",
+    "titleAr": "تفعيل الخطط المتعلقة بالمخاطر والمراجعة الداخلية",
+    "description": "Update risk registers and implement internal audit plans.",
+    "descriptionAr": "تحديث سجلات المخاطر وتنفيذ خطط التدقيق الداخلي.",
+    "owner": "Internal Audit & Risk",
+    "budget": "200,000 – 600,000 SAR",
+    "duration": "9 – 12 months"
+  },
+  {
+    "id": "init-8",
+    "goalId": "goal-5",
+    "title": "Activate Operating Model",
+    "titleAr": "تفعيل النموذج التشغيلي المعتمد",
+    "description": "Clarify roles and responsibilities between Group and Subsidiaries.",
+    "descriptionAr": "توضيح الأدوار والمسؤوليات بين المجموعة والشركات التابعة.",
+    "owner": "Strategy & Excellence",
+    "budget": "200,000 – 500,000 SAR",
+    "duration": "9 – 12 months"
+  },
+  {
+    "id": "init-9",
+    "goalId": "goal-6",
+    "title": "Develop & Implement Employee L&D",
+    "titleAr": "تطوير وتطبيق برامج التعلم والتطوير للموظفين",
+    "description": "Design unified learning strategy and leadership programs.",
+    "descriptionAr": "تصميم استراتيجية تعلم موحدة وبرامج قيادية.",
+    "owner": "HR",
+    "budget": "800,000 – 1,300,000 SAR",
+    "duration": "12 – 18 months"
+  },
+  {
+    "id": "init-10",
+    "goalId": "goal-5",
+    "title": "Enhance Communication & Integration",
+    "titleAr": "تعزيز التواصل والتكامل بين المجموعة والشركات",
+    "description": "Establish governance for internal communication.",
+    "descriptionAr": "تأسيس حوكمة للتواصل الداخلي.",
+    "owner": "Marketing & Corp Comm",
+    "budget": "150,000 – 400,000 SAR",
+    "duration": "9 – 12 months"
+  },
+  {
+    "id": "init-11",
+    "goalId": "goal-8",
+    "title": "Update Communication & Marketing Strategy",
+    "titleAr": "تحديث وتنفيذ استراتيجية شاملة للتواصل والتسويق",
+    "description": "Execute marketing strategy to boost brand awareness.",
+    "descriptionAr": "تنفيذ استراتيجية تسويق لتعزيز الوعي بالعلامة التجارية.",
+    "owner": "Marketing & Corp Comm",
+    "budget": "250,000 – 700,000 SAR",
+    "duration": "9 – 12 months"
+  },
+  {
+    "id": "init-12",
+    "goalId": "goal-5",
+    "title": "Develop Digital Transformation Strategy",
+    "titleAr": "تطوير وتفعيل استراتيجية التحول الرقمي",
+    "description": "Assess digital maturity and automate core processes.",
+    "descriptionAr": "تقييم النضج الرقمي وأتمتة العمليات الأساسية.",
+    "owner": "IT",
+    "budget": "500,000 – 1,400,000 SAR",
+    "duration": "12 – 18 months"
+  }
+]

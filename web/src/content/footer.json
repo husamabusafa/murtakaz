@@ -1,0 +1,39 @@
+{
+  "company": {
+    "name": "Murtakaz",
+    "nameAr": "مرتكز",
+    "description": "Empowering organizations to execute strategy with precision.",
+    "descriptionAr": "تمكين المؤسسات من تنفيذ الاستراتيجية بدقة."
+  },
+  "links": [
+    {
+      "title": "Product",
+      "titleAr": "المنتج",
+      "items": [
+        { "label": "Features", "labelAr": "الميزات", "href": "#features" },
+        { "label": "Pricing", "labelAr": "الأسعار", "href": "/pricing" },
+        { "label": "FAQ", "labelAr": "الأسئلة الشائعة", "href": "/faq" }
+      ]
+    },
+    {
+      "title": "Company",
+      "titleAr": "الشركة",
+      "items": [
+        { "label": "About Us", "labelAr": "عن مرتكز", "href": "/about" },
+        { "label": "Contact", "labelAr": "تواصل معنا", "href": "/contact" },
+        { "label": "Careers", "labelAr": "الوظائف", "href": "/careers" }
+      ]
+    },
+    {
+      "title": "Legal",
+      "titleAr": "قانوني",
+      "items": [
+        { "label": "Privacy Policy", "labelAr": "سياسة الخصوصية", "href": "/privacy" },
+        { "label": "Terms of Service", "labelAr": "شروط الخدمة", "href": "/terms" }
+      ]
+    }
+  ],
+  "copyright": "© 2024 Murtakaz. All rights reserved.",
+  "copyrightAr": "© 2024 مرتكز. جميع الحقوق محفوظة."
+}
+

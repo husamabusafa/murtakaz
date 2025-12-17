@@ -1,0 +1,132 @@
+[
+  {
+    "id": "kpi-1-1",
+    "goalId": "goal-1",
+    "name": "Number of New Sectors Entered",
+    "nameAr": "عدد القطاعات الجديدة التي تم الدخول فيها",
+    "target": 7,
+    "unit": "Count",
+    "frequency": "Annual",
+    "owner": "Investment"
+  },
+  {
+    "id": "kpi-1-2",
+    "goalId": "goal-1",
+    "name": "CAGR of New Investments",
+    "nameAr": "معدل النمو السنوي المركب للاستثمارات الجديدة",
+    "target": 12,
+    "unit": "Percentage",
+    "frequency": "Annual",
+    "owner": "Investment"
+  },
+  {
+    "id": "kpi-2-1",
+    "goalId": "goal-2",
+    "name": "ROI vs Market Average",
+    "nameAr": "العائد على الاستثمار مقارنة بمتوسط السوق",
+    "target": 15,
+    "unit": "Percentage Above Benchmark",
+    "frequency": "Annual",
+    "owner": "Investment"
+  },
+  {
+    "id": "kpi-2-4",
+    "goalId": "goal-2",
+    "name": "Contribution of New Investments",
+    "nameAr": "نسبة مساهمة الاستثمارات الجديدة",
+    "target": 0,
+    "unit": "Percentage",
+    "frequency": "Quarterly",
+    "owner": "Investment"
+  },
+  {
+    "id": "kpi-3-1",
+    "goalId": "goal-3",
+    "name": "Total Annual Revenue",
+    "nameAr": "إجمالي الإيرادات السنوية",
+    "target": 0,
+    "unit": "Currency (SAR)",
+    "frequency": "Annual",
+    "owner": "Finance"
+  },
+  {
+    "id": "kpi-3-5",
+    "goalId": "goal-3",
+    "name": "Sustainable Revenue Share",
+    "nameAr": "نسبة الإيرادات المستدامة",
+    "target": 0,
+    "unit": "Percentage",
+    "frequency": "Annual",
+    "owner": "Finance"
+  },
+  {
+    "id": "kpi-4-1",
+    "goalId": "goal-4",
+    "name": "System Compliance Rate",
+    "nameAr": "نسبة الالتزام بتطبيق النظام",
+    "target": 100,
+    "unit": "Percentage",
+    "frequency": "Quarterly",
+    "owner": "Finance"
+  },
+  {
+    "id": "kpi-5-1",
+    "goalId": "goal-5",
+    "name": "Governance Compliance Rate",
+    "nameAr": "نسبة الامتثال لمتطلبات الحوكمة",
+    "target": 100,
+    "unit": "Percentage",
+    "frequency": "Quarterly",
+    "owner": "Strategy & Excellence"
+  },
+  {
+    "id": "kpi-6-1",
+    "goalId": "goal-6",
+    "name": "Training Participation Rate",
+    "nameAr": "معدل المشاركة في الدورات التدريبية",
+    "target": 80,
+    "unit": "Percentage",
+    "frequency": "Annual",
+    "owner": "HR"
+  },
+  {
+    "id": "kpi-6-4",
+    "goalId": "goal-6",
+    "name": "Organizational Culture Index",
+    "nameAr": "مؤشر الثقافة التنظيمية",
+    "target": 85,
+    "unit": "Score",
+    "frequency": "Annual",
+    "owner": "HR"
+  },
+  {
+    "id": "kpi-7-1",
+    "goalId": "goal-7",
+    "name": "Increase in Nominal Value",
+    "nameAr": "نسبة الزيادة في القيمة الاسمية",
+    "target": 0,
+    "unit": "Percentage",
+    "frequency": "Annual",
+    "owner": "Marketing"
+  },
+  {
+    "id": "kpi-8-1",
+    "goalId": "goal-8",
+    "name": "Brand Awareness Index",
+    "nameAr": "مؤشر الوعي بالعلامة التجارية",
+    "target": 75,
+    "unit": "Score",
+    "frequency": "Annual",
+    "owner": "Marketing"
+  },
+  {
+    "id": "kpi-8-4",
+    "goalId": "goal-8",
+    "name": "Number of Marketing Campaigns",
+    "nameAr": "عدد الحملات التسويقية المنفذة سنوياً",
+    "target": 4,
+    "unit": "Count",
+    "frequency": "Annual",
+    "owner": "Marketing"
+  }
+]
