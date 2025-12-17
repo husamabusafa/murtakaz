@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { useEffect, useMemo, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { LanguageToggle } from "@/components/language-toggle";
@@ -35,8 +35,9 @@ function withLocale(locale: string, href: string) {
 }
 
 export function AppShell({ children }: { children: React.ReactNode }) {
+  const router = useRouter();
   const pathname = usePathname();
-  const { t, locale } = useLocale();
+  const { t, tr, locale, isArabic } = useLocale();
   const { user, loading } = useAuth();
   const canonicalPath = useMemo(() => stripLocale(pathname ?? "/"), [pathname]);
   const isAuthRoute = canonicalPath.startsWith("/auth/");
@@ -52,6 +53,15 @@ export function AppShell({ children }: { children: React.ReactNode }) {
   const showAppNav = !isAuthRoute && !isMarketingRoute && !loading && Boolean(user);
 
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
+
+  useEffect(() => {
+    if (loading) return;
+    if (user) return;
+    if (isAuthRoute || isMarketingRoute) return;
+
+    const nextParam = encodeURIComponent(pathname ?? withLocale(locale, "/overview"));
+    router.replace(withLocale(locale, `/auth/login?next=${nextParam}`));
+  }, [isAuthRoute, isMarketingRoute, loading, locale, pathname, router, user]);
 
   useEffect(() => {
     const stored = typeof window !== "undefined" ? window.localStorage.getItem("sidebar_collapsed") : null;
@@ -155,28 +165,75 @@ export function AppShell({ children }: { children: React.ReactNode }) {
         <div className="flex min-w-0 flex-1 flex-col">
           <header className="sticky top-0 z-50 border-b border-white/10 bg-slate-950/60 backdrop-blur-xl">
             <div className="mx-auto flex max-w-7xl items-center justify-between px-6 py-3 lg:max-w-none">
-              <Link href={`/${locale}`} className="flex items-center gap-3">
-                <div className="flex h-10 w-10 items-center justify-center rounded-2xl bg-gradient-to-br from-indigo-500 via-emerald-400 to-sky-500 text-white shadow-lg shadow-indigo-500/25">
-                  <span className="text-lg font-semibold">SE</span>
+              {isMarketingRoute ? (
+                <div className="flex items-center gap-6">
+                  <Link href={`/${locale}`} className="flex items-center gap-3">
+                    <div className="flex h-10 w-10 items-center justify-center rounded-2xl bg-gradient-to-br from-indigo-500 via-emerald-400 to-sky-500 text-white shadow-lg shadow-indigo-500/25">
+                      <span className="text-lg font-semibold">M</span>
+                    </div>
+                    <div className={cn("leading-tight", isArabic && "text-right")}>
+                      <p className="text-sm font-semibold text-white">{tr("Murtakaz", "مرتكز")}</p>
+                      <p className="text-xs text-slate-300">{tr("Strategy execution platform", "منصة تنفيذ الاستراتيجية")}</p>
+                    </div>
+                  </Link>
+
+                  <nav
+                    className={cn(
+                      "hidden items-center gap-5 text-sm text-slate-200 lg:flex",
+                      isArabic && "flex-row-reverse",
+                    )}
+                  >
+                    <Link href={`/${locale}#features`} className="hover:text-white">
+                      {tr("Features", "الميزات")}
+                    </Link>
+                    <Link href={`/${locale}/pricing`} className="hover:text-white">
+                      {tr("Pricing", "الأسعار")}
+                    </Link>
+                    <Link href={`/${locale}/faq`} className="hover:text-white">
+                      {tr("FAQ", "الأسئلة الشائعة")}
+                    </Link>
+                    <Link href={`/${locale}/contact`} className="hover:text-white">
+                      {tr("Contact", "تواصل معنا")}
+                    </Link>
+                  </nav>
                 </div>
-                <div className="leading-tight">
-                  <p className="text-xs uppercase tracking-[0.24em] text-slate-300">Strategy Execution</p>
-                  <p className="text-sm font-semibold text-white">Performance Command Center</p>
-                </div>
-              </Link>
+              ) : (
+                <Link href={`/${locale}`} className="flex items-center gap-3">
+                  <div className="flex h-10 w-10 items-center justify-center rounded-2xl bg-gradient-to-br from-indigo-500 via-emerald-400 to-sky-500 text-white shadow-lg shadow-indigo-500/25">
+                    <span className="text-lg font-semibold">SE</span>
+                  </div>
+                  <div className="leading-tight">
+                    <p className="text-xs uppercase tracking-[0.24em] text-slate-300">Strategy Execution</p>
+                    <p className="text-sm font-semibold text-white">Performance Command Center</p>
+                  </div>
+                </Link>
+              )}
 
               <div className="flex items-center gap-3">
                 <LanguageToggle />
-                {isAuthRoute ? null : showAppNav ? null : user ? (
+                {isAuthRoute ? null : showAppNav ? null : loading ? null : user ? (
                   <>
                     <Button asChild variant="secondary" className="bg-white text-slate-900 hover:bg-slate-100">
-                      <Link href={`/${locale}/overview`}>Workspace</Link>
+                      <Link href={`/${locale}/overview`}>{tr("Workspace", "مساحة العمل")}</Link>
                     </Button>
                     <UserMenu />
                   </>
+                ) : isMarketingRoute ? (
+                  <>
+                    <Button
+                      asChild
+                      variant="outline"
+                      className="hidden border-white/15 bg-white/5 text-white hover:bg-white/10 hover:text-white sm:inline-flex"
+                    >
+                      <Link href={`/${locale}/contact`}>{tr("Request demo", "اطلب عرضًا توضيحيًا")}</Link>
+                    </Button>
+                    <Button asChild variant="secondary" className="bg-white text-slate-900 hover:bg-slate-100">
+                      <Link href={withLocale(locale, "/auth/login")}>{tr("Sign in", "تسجيل الدخول")}</Link>
+                    </Button>
+                  </>
                 ) : (
                   <Button asChild variant="secondary" className="bg-white text-slate-900 hover:bg-slate-100">
-                    <Link href={withLocale(locale, "/auth/login")}>Sign in</Link>
+                    <Link href={withLocale(locale, "/auth/login")}>{tr("Sign in", "تسجيل الدخول")}</Link>
                   </Button>
                 )}
                 {showAppNav ? <div className="lg:hidden"><UserMenu /></div> : null}
