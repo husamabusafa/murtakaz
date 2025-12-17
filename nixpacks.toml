@@ -1,0 +1,13 @@
+[phases.setup]
+# Coolify sets `NIXPACKS_NODE_VERSION=22`, this pins the Node toolchain.
+nixPkgs = ["nodejs_22", "npm"]
+
+[phases.install]
+cmds = ["cd web && npm ci"]
+
+[phases.build]
+cmds = ["cd web && npm run build"]
+
+[start]
+cmd = "cd web && npm run start -- -H 0.0.0.0 -p ${PORT:-3000}"
+
