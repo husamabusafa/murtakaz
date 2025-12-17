@@ -1,0 +1,67 @@
+{
+  "hero": {
+    "title": "Turn Strategy into Results",
+    "titleAr": "حوّل الاستراتيجية إلى نتائج",
+    "subtitle": "The unified platform for strategy execution, performance management, and governance.",
+    "subtitleAr": "المنصة الموحدة لتنفيذ الاستراتيجية، إدارة الأداء، والحوكمة.",
+    "cta": "Get Started",
+    "ctaAr": "ابدأ الآن",
+    "image": "/images/hero-dashboard.png"
+  },
+  "features": [
+    {
+      "id": "feat-1",
+      "title": "Strategic Alignment",
+      "titleAr": "الموائمة الاستراتيجية",
+      "description": "Align every project and initiative with your core pillars and goals.",
+      "descriptionAr": "وائم كل مشروع ومبادرة مع الركائز والأهداف الاستراتيجية.",
+      "icon": "target"
+    },
+    {
+      "id": "feat-2",
+      "title": "Real-time KPIs",
+      "titleAr": "مؤشرات أداء رئيسية لحظية",
+      "description": "Monitor performance with automated, role-based dashboards.",
+      "descriptionAr": "راقب الأداء من خلال لوحات معلومات آلية ومخصصة حسب الدور.",
+      "icon": "chart-bar"
+    },
+    {
+      "id": "feat-3",
+      "title": "Governance & Risk",
+      "titleAr": "الحوكمة والمخاطر",
+      "description": "Proactively manage risks and ensure compliance across the organization.",
+      "descriptionAr": "أدر المخاطر بشكل استباقي وتأكد من الامتثال على مستوى الجهة.",
+      "icon": "shield-check"
+    }
+  ],
+  "benefits": {
+    "title": "Why Choose Murtakaz?",
+    "titleAr": "لماذا تختار مرتكز؟",
+    "items": [
+      {
+        "title": "Visibility",
+        "titleAr": "الوضوح",
+        "description": "Eliminate silos with a single source of truth.",
+        "descriptionAr": "تخلّص من العمل في جزر منعزلة عبر مصدر موحّد للبيانات."
+      },
+      {
+        "title": "Accountability",
+        "titleAr": "المساءلة",
+        "description": "Clear ownership for every KPI and initiative.",
+        "descriptionAr": "مسؤوليات واضحة لكل مؤشر أداء رئيسي ومبادرة."
+      },
+      {
+        "title": "Agility",
+        "titleAr": "المرونة",
+        "description": "Adapt quickly to market changes with real-time data.",
+        "descriptionAr": "تكيّف بسرعة مع تغيّرات السوق بفضل البيانات اللحظية."
+      }
+    ]
+  },
+  "cta_section": {
+    "title": "Ready to execute with confidence?",
+    "titleAr": "مستعد للتنفيذ بثقة؟",
+    "button": "Request Demo",
+    "buttonAr": "اطلب عرضًا توضيحيًا"
+  }
+}

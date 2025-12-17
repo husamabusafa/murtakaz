@@ -1,0 +1,65 @@
+[
+  {
+    "id": "user-admin",
+    "email": "admin@murtakaz.com",
+    "name": "System Admin",
+    "role": "ADMIN",
+    "department": "IT"
+  },
+  {
+    "id": "user-ceo",
+    "email": "ceo@musa.com",
+    "name": "Group CEO",
+    "role": "EXECUTIVE",
+    "department": "Executive"
+  },
+  {
+    "id": "user-invest",
+    "email": "head@investment.musa.com",
+    "name": "Head of Investment",
+    "role": "MANAGER",
+    "department": "Investment"
+  },
+  {
+    "id": "user-finance",
+    "email": "head@finance.musa.com",
+    "name": "CFO",
+    "role": "MANAGER",
+    "department": "Finance"
+  },
+  {
+    "id": "user-strategy",
+    "email": "head@strategy.musa.com",
+    "name": "Head of Strategy",
+    "role": "PMO",
+    "department": "Strategy & Excellence"
+  },
+  {
+    "id": "user-audit",
+    "email": "head@audit.musa.com",
+    "name": "Head of Audit",
+    "role": "MANAGER",
+    "department": "Internal Audit & Risk"
+  },
+  {
+    "id": "user-hr",
+    "email": "head@hr.musa.com",
+    "name": "CHRO",
+    "role": "MANAGER",
+    "department": "HR"
+  },
+  {
+    "id": "user-marketing",
+    "email": "head@marketing.musa.com",
+    "name": "CMO",
+    "role": "MANAGER",
+    "department": "Marketing & Corp Comm"
+  },
+  {
+    "id": "user-it",
+    "email": "cio@musa.com",
+    "name": "CIO",
+    "role": "MANAGER",
+    "department": "IT"
+  }
+]

@@ -1,0 +1,68 @@
+[
+  {
+    "id": "risk-1",
+    "initiativeId": "init-1",
+    "title": "Market Volatility",
+    "titleAr": "تقلبات السوق",
+    "description": "Fluctuations in global markets may affect new sector entry.",
+    "descriptionAr": "قد تؤثر التقلبات في الأسواق العالمية على الدخول في قطاعات جديدة.",
+    "severity": "HIGH",
+    "status": "ACTIVE",
+    "owner": "Investment"
+  },
+  {
+    "id": "risk-2",
+    "initiativeId": "init-3",
+    "title": "Data Accuracy",
+    "titleAr": "دقة البيانات",
+    "description": "Incomplete market data may lead to incorrect investment assumptions.",
+    "descriptionAr": "قد تؤدي بيانات السوق غير المكتملة إلى افتراضات استثمارية غير صحيحة.",
+    "severity": "MEDIUM",
+    "status": "ACTIVE",
+    "owner": "Investment"
+  },
+  {
+    "id": "risk-3",
+    "initiativeId": "init-6",
+    "title": "Operational Disruption",
+    "titleAr": "تعطل العمليات",
+    "description": "Transfer of services may cause temporary service interruptions.",
+    "descriptionAr": "قد يتسبب نقل الخدمات في انقطاع مؤقت في الخدمة.",
+    "severity": "MEDIUM",
+    "status": "ACTIVE",
+    "owner": "Strategy & Excellence"
+  },
+  {
+    "id": "risk-4",
+    "initiativeId": "init-9",
+    "title": "Low Adoption of L&D",
+    "titleAr": "ضعف تبني التعلم والتطوير",
+    "description": "Employees may not actively participate in new training programs.",
+    "descriptionAr": "قد لا يشارك الموظفون بفعالية في برامج التدريب الجديدة.",
+    "severity": "LOW",
+    "status": "ACTIVE",
+    "owner": "HR"
+  },
+  {
+    "id": "risk-5",
+    "initiativeId": "init-12",
+    "title": "Legacy System Integration",
+    "titleAr": "تكامل الأنظمة القديمة",
+    "description": "Difficulty integrating new digital platforms with legacy systems.",
+    "descriptionAr": "صعوبة دمج المنصات الرقمية الجديدة مع الأنظمة القديمة.",
+    "severity": "HIGH",
+    "status": "ACTIVE",
+    "owner": "IT"
+  },
+  {
+    "id": "risk-6",
+    "initiativeId": "init-4",
+    "title": "Compliance Resistance",
+    "titleAr": "مقاومة الامتثال",
+    "description": "Subsidiaries may resist new unified financial policies.",
+    "descriptionAr": "قد تقاوم الشركات التابعة السياسات المالية الموحدة الجديدة.",
+    "severity": "MEDIUM",
+    "status": "ACTIVE",
+    "owner": "Finance"
+  }
+]

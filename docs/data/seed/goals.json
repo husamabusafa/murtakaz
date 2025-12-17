@@ -1,0 +1,74 @@
+[
+  {
+    "id": "goal-1",
+    "pillarId": "pillar-4",
+    "title": "Expand Investment Portfolio",
+    "titleAr": "توسيع المحفظة الاستثمارية",
+    "description": "Enter 7 new sectors by 2028.",
+    "descriptionAr": "الدخول في 7 قطاعات جديدة بحلول عام 2028.",
+    "status": "ACTIVE"
+  },
+  {
+    "id": "goal-2",
+    "pillarId": "pillar-4",
+    "title": "Enhance Investment Leadership",
+    "titleAr": "تعزيز الريادة الاستثمارية",
+    "description": "Achieve ROI > 15% above market average by 2028.",
+    "descriptionAr": "تحقيق عائد على الاستثمار يفوق متوسط السوق بنسبة 15% بحلول 2028.",
+    "status": "ACTIVE"
+  },
+  {
+    "id": "goal-3",
+    "pillarId": "pillar-3",
+    "title": "Boost Revenue & Sustainability",
+    "titleAr": "تعزيز الإيرادات والاستدامة",
+    "description": "Increase total annual revenue and sustainable revenue share.",
+    "descriptionAr": "زيادة إجمالي الإيرادات السنوية وحصة الإيرادات المستدامة.",
+    "status": "ACTIVE"
+  },
+  {
+    "id": "goal-4",
+    "pillarId": "pillar-3",
+    "title": "Financial Discipline",
+    "titleAr": "الانضباط المالي",
+    "description": "Compliance with financial systems and unified reporting.",
+    "descriptionAr": "الامتثال للأنظمة المالية والتقارير الموحدة.",
+    "status": "ACTIVE"
+  },
+  {
+    "id": "goal-5",
+    "pillarId": "pillar-1",
+    "title": "Governance Compliance",
+    "titleAr": "الامتثال للحوكمة",
+    "description": "Ensure compliance with governance requirements and successful audits.",
+    "descriptionAr": "ضمان الامتثال لمتطلبات الحوكمة ونجاح عمليات التدقيق.",
+    "status": "ACTIVE"
+  },
+  {
+    "id": "goal-6",
+    "pillarId": "pillar-1",
+    "title": "Organizational Culture & Capability",
+    "titleAr": "الثقافة التنظيمية والقدرات",
+    "description": "High training participation and strong organizational culture.",
+    "descriptionAr": "مشاركة عالية في التدريب وثقافة تنظيمية قوية.",
+    "status": "ACTIVE"
+  },
+  {
+    "id": "goal-7",
+    "pillarId": "pillar-2",
+    "title": "Increase Brand Value",
+    "titleAr": "زيادة قيمة العلامة التجارية",
+    "description": "Increase nominal brand value and brand association.",
+    "descriptionAr": "زيادة القيمة الاسمية للعلامة التجارية والارتباط بها.",
+    "status": "ACTIVE"
+  },
+  {
+    "id": "goal-8",
+    "pillarId": "pillar-2",
+    "title": "Brand Awareness",
+    "titleAr": "الوعي بالعلامة التجارية",
+    "description": "Execute marketing campaigns and boost awareness index.",
+    "descriptionAr": "تنفيذ حملات تسويقية وتعزيز مؤشر الوعي.",
+    "status": "ACTIVE"
+  }
+]
