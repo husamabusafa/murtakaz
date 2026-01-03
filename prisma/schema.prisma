@@ -2,13 +2,20 @@ generator client {
   provider = "prisma-client-js"
 }
 
+generator web_client {
+  provider = "prisma-client-js"
+  output   = "../web/node_modules/.prisma/client"
+}
+
 datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
 }
 
 // Enums
+
 enum Role {
+  SUPER_ADMIN
   ADMIN
   EXECUTIVE
   PMO
@@ -23,334 +30,153 @@ enum Status {
   COMPLETED
 }
 
-enum MilestoneStatus {
-  PLANNED
-  IN_PROGRESS
-  BLOCKED
-  DONE
-}
-
-enum Health {
-  GREEN
-  AMBER
-  RED
-}
-
-enum RiskSeverity {
-  LOW
-  MEDIUM
-  HIGH
-  CRITICAL
-}
-
 enum ApprovalStatus {
   PENDING
   APPROVED
   REJECTED
 }
 
-enum TeamRole {
-  OWNER
-  CONTRIBUTOR
-  REVIEWER
+enum NodeTypeCode {
+  STRATEGY
+  PILLAR
+  OBJECTIVE
+  INITIATIVE
+  PROJECT
+  TASK
+}
+
+enum KpiPeriodType {
+  MONTHLY
+  QUARTERLY
+  YEARLY
+}
+
+enum KpiVariableDataType {
+  NUMBER
+  PERCENTAGE
+}
+
+enum KpiDefinitionStatus {
+  ACTIVE
+  INACTIVE
+}
+
+enum KpiValueStatus {
+  DRAFT
+  SUBMITTED
+  APPROVED
+  LOCKED
 }
 
 // Models
+
 model Organization {
-  id        String   @id @default(uuid())
+  id        String    @id @default(uuid())
   name      String
   domain    String?
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
   deletedAt DateTime?
 
   users          User[]
-  pillars        Pillar[]
-  goals          Goal[]
-  initiatives    Initiative[]
-  projects       Project[]
-  kpis           KPI[]
-  risks          Risk[]
+  nodes          Node[]
+  kpis           KpiDefinition[]
   changeRequests ChangeRequest[]
 }
 
 model User {
-  id         String   @id @default(uuid())
-  orgId      String
-  org        Organization @relation(fields: [orgId], references: [id], onDelete: Cascade)
-  email      String
-  name       String
-  role       Role
-  department String?
-  createdAt  DateTime @default(now())
-  updatedAt  DateTime @updatedAt
-  deletedAt  DateTime?
+  id            String       @id @default(uuid())
+  orgId         String
+  org           Organization @relation(fields: [orgId], references: [id], onDelete: Cascade)
+  email         String
+  emailVerified Boolean      @default(false)
+  name          String
+  role          Role
+  department    String?
+  image         String?
+  password      String?
+  createdAt     DateTime     @default(now())
+  updatedAt     DateTime     @updatedAt
+  deletedAt     DateTime?
 
-  assignments TeamAssignment[]
-  updates     Contribution[]
-  approvals   ChangeApproval[]
-  risksOwned  Risk[]
-  kpiOwned    KPI[]    @relation("KPIOwner")
-  kpiReviewed KPI[]    @relation("KPIReviewer")
+  sessions    Session[]
+  accounts    Account[]
+  preferences UserPreference?
+
+  approvals      ChangeApproval[]
+  changeRequests ChangeRequest[]
 
   @@unique([orgId, email, deletedAt], name: "user_email_org_unique")
   @@index([orgId])
+  @@map("user")
 }
 
-model Pillar {
-  id          String   @id @default(uuid())
-  orgId       String
-  org         Organization @relation(fields: [orgId], references: [id], onDelete: Cascade)
-  title       String
-  description String?
-  ownerId     String
-  owner       User     @relation(fields: [ownerId], references: [id])
-  timeframe   String?
-  status      Status   @default(PLANNED)
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
-  deletedAt   DateTime?
+model Account {
+  id                    String    @id @default(uuid())
+  accountId             String
+  providerId            String
+  userId                String
+  user                  User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  accessToken           String?
+  refreshToken          String?
+  idToken               String?
+  accessTokenExpiresAt  DateTime?
+  refreshTokenExpiresAt DateTime?
+  password              String?
+  createdAt             DateTime  @default(now())
+  updatedAt             DateTime  @updatedAt
 
-  initiatives Initiative[]
-  goals       Goal[]
-
-  @@index([orgId])
-  @@index([ownerId])
+  @@map("account")
 }
 
-model Goal {
-  id          String   @id @default(uuid())
-  orgId       String
-  org         Organization @relation(fields: [orgId], references: [id], onDelete: Cascade)
-  title       String
-  description String?
-  pillarId    String?
-  pillar      Pillar?  @relation(fields: [pillarId], references: [id], onDelete: SetNull)
-  ownerId     String
-  owner       User     @relation(fields: [ownerId], references: [id])
-  timeframe   String?
-  status      Status   @default(PLANNED)
-  health      Health?
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
-  deletedAt   DateTime?
-
-  initiatives Initiative[]
-  kpis        KPI[]
-
-  @@index([orgId])
-  @@index([pillarId])
-  @@index([ownerId])
-}
-
-model Initiative {
-  id             String   @id @default(uuid())
-  orgId          String
-  org            Organization @relation(fields: [orgId], references: [id], onDelete: Cascade)
-  title          String
-  description    String?
-  goalId         String?
-  goal           Goal?    @relation(fields: [goalId], references: [id], onDelete: SetNull)
-  pillarId       String
-  pillar         Pillar   @relation(fields: [pillarId], references: [id], onDelete: Cascade)
-  ownerId        String
-  owner          User     @relation(fields: [ownerId], references: [id])
-  status         Status   @default(PLANNED)
-  health         Health?
-  healthScore    Float?
-  healthUpdatedAt DateTime?
-  startDate      DateTime?
-  endDate        DateTime?
-  createdAt      DateTime @default(now())
-  updatedAt      DateTime @updatedAt
-  deletedAt      DateTime?
-
-  projects Project[]
-  kpis     KPI[]
-  risks    Risk[]
-  updates  Contribution[]
-
-  @@index([orgId])
-  @@index([pillarId])
-  @@index([goalId])
-  @@index([ownerId])
-}
-
-model Project {
+model Session {
   id           String   @id @default(uuid())
-  orgId        String
-  org          Organization @relation(fields: [orgId], references: [id], onDelete: Cascade)
-  title        String
-  description  String?
-  initiativeId String
-  initiative   Initiative @relation(fields: [initiativeId], references: [id], onDelete: Cascade)
-  ownerId      String
-  owner        User     @relation(fields: [ownerId], references: [id])
-  status       Status   @default(PLANNED)
-  health       Health?
-  healthScore  Float?
-  startDate    DateTime?
-  endDate      DateTime?
-  dependencies String[]
-  tags         String[]
+  expiresAt    DateTime
+  token        String   @unique
   createdAt    DateTime @default(now())
   updatedAt    DateTime @updatedAt
-  deletedAt    DateTime?
+  ipAddress    String?
+  userAgent    String?
+  userId       String
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 
-  assignments TeamAssignment[]
-  milestones  Milestone[]
-  kpis        KPI[]
-  updates     Contribution[]
-  risks       Risk[]
-
-  @@index([orgId])
-  @@index([initiativeId])
-  @@index([ownerId])
+  @@map("session")
 }
 
-model Milestone {
-  id        String   @id @default(uuid())
-  projectId String
-  project   Project  @relation(fields: [projectId], references: [id], onDelete: Cascade)
-  title     String
-  dueDate   DateTime?
-  status    MilestoneStatus @default(PLANNED)
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-}
-
-model TeamAssignment {
-  id        String   @id @default(uuid())
-  orgId     String
-  org       Organization @relation(fields: [orgId], references: [id], onDelete: Cascade)
-  projectId String
-  project   Project  @relation(fields: [projectId], references: [id], onDelete: Cascade)
-  userId    String
-  user      User     @relation(fields: [userId], references: [id])
-  role      TeamRole
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-
-  @@unique([projectId, userId, role], name: "assignment_unique_per_role")
-  @@index([orgId])
-}
-
-model KPI {
-  id          String   @id @default(uuid())
-  orgId       String
-  org         Organization @relation(fields: [orgId], references: [id], onDelete: Cascade)
-  name        String
-  description String?
-  formula     String?
-  target      Float
-  unit        String?
-  frequency   String
-  baseline    Float?
-  dataSource  String?
-  ownerId     String
-  owner       User     @relation("KPIOwner", fields: [ownerId], references: [id])
-  reviewerId  String?
-  reviewer    User?    @relation("KPIReviewer", fields: [reviewerId], references: [id])
-  goalId      String?
-  goal        Goal?    @relation(fields: [goalId], references: [id], onDelete: SetNull)
-  initiativeId String?
-  initiative   Initiative? @relation(fields: [initiativeId], references: [id], onDelete: SetNull)
-  projectId    String?
-  project      Project? @relation(fields: [projectId], references: [id], onDelete: SetNull)
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
-  deletedAt   DateTime?
-
-  measurements KPIValue[]
-  changeLog    KPIChange[]
-
-  @@index([orgId])
-  @@index([initiativeId])
-  @@index([projectId])
-  @@index([goalId])
-}
-
-model KPIValue {
+model Verification {
   id         String   @id @default(uuid())
-  kpiId      String
-  kpi        KPI      @relation(fields: [kpiId], references: [id], onDelete: Cascade)
-  measuredAt DateTime
-  value      Float
-  note       String?
-  attachment String?
+  identifier String
+  value      String
+  expiresAt  DateTime
   createdAt  DateTime @default(now())
   updatedAt  DateTime @updatedAt
 
-  @@index([kpiId, measuredAt], name: "kpi_time_idx")
+  @@map("verification")
 }
 
-model KPIChange {
-  id        String   @id @default(uuid())
-  kpiId     String
-  kpi       KPI      @relation(fields: [kpiId], references: [id], onDelete: Cascade)
-  changedBy String
-  user      User     @relation(fields: [changedBy], references: [id])
-  before    Json?
-  after     Json?
-  reason    String?
-  createdAt DateTime @default(now())
-}
-
-model Contribution {
-  id           String   @id @default(uuid())
-  authorId     String
-  author       User     @relation(fields: [authorId], references: [id])
-  projectId    String?
-  project      Project? @relation(fields: [projectId], references: [id], onDelete: Cascade)
-  initiativeId String?
-  initiative   Initiative? @relation(fields: [initiativeId], references: [id], onDelete: Cascade)
-  progressPct  Float?
-  summary      String
-  blockers     String?
-  risks        String?
-  links        String[]
-  createdAt    DateTime @default(now())
-
-  @@index([projectId])
-  @@index([initiativeId])
-}
-
-model Risk {
-  id           String   @id @default(uuid())
-  orgId        String
-  org          Organization @relation(fields: [orgId], references: [id], onDelete: Cascade)
-  title        String
-  description  String?
-  severity     RiskSeverity
-  status       Status   @default(ACTIVE)
-  initiativeId String?
-  initiative   Initiative? @relation(fields: [initiativeId], references: [id], onDelete: SetNull)
-  projectId    String?
-  project      Project? @relation(fields: [projectId], references: [id], onDelete: SetNull)
-  ownerId      String
-  owner        User     @relation(fields: [ownerId], references: [id])
-  escalated    Boolean  @default(false)
-  createdAt    DateTime @default(now())
-  updatedAt    DateTime @updatedAt
-  deletedAt    DateTime?
-
-  @@index([orgId])
-  @@index([initiativeId])
-  @@index([projectId])
+model UserPreference {
+  id            String   @id @default(uuid())
+  userId        String   @unique
+  user          User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  locale        String   @default("en")
+  theme         String   @default("system")
+  notifications Json?
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
 }
 
 model ChangeRequest {
-  id          String   @id @default(uuid())
+  id          String         @id @default(uuid())
   orgId       String
-  org         Organization @relation(fields: [orgId], references: [id], onDelete: Cascade)
+  org         Organization   @relation(fields: [orgId], references: [id], onDelete: Cascade)
   entityType  String
   entityId    String
   payload     Json
   status      ApprovalStatus @default(PENDING)
   requestedBy String
-  requester   User     @relation(fields: [requestedBy], references: [id])
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+  requester   User           @relation(fields: [requestedBy], references: [id])
+  createdAt   DateTime       @default(now())
+  updatedAt   DateTime       @updatedAt
   deletedAt   DateTime?
 
   approvals ChangeApproval[]
@@ -359,15 +185,128 @@ model ChangeRequest {
 }
 
 model ChangeApproval {
-  id              String   @id @default(uuid())
+  id              String         @id @default(uuid())
   changeRequestId String
-  changeRequest   ChangeRequest @relation(fields: [changeRequestId], references: [id], onDelete: Cascade)
+  changeRequest   ChangeRequest  @relation(fields: [changeRequestId], references: [id], onDelete: Cascade)
   approverId      String
-  approver        User     @relation(fields: [approverId], references: [id])
+  approver        User           @relation(fields: [approverId], references: [id])
   status          ApprovalStatus @default(PENDING)
   comment         String?
-  createdAt       DateTime @default(now())
+  createdAt       DateTime       @default(now())
   decidedAt       DateTime?
 
   @@unique([changeRequestId, approverId], name: "approval_once_per_user")
+}
+
+model NodeType {
+  id          String       @id @default(uuid())
+  code        NodeTypeCode @unique
+  displayName String       @map("display_name")
+  levelOrder  Int          @map("level_order")
+  canHaveKpis Boolean      @default(false) @map("can_have_kpis")
+
+  nodes Node[]
+
+  @@map("node_types")
+}
+
+model Node {
+  id         String  @id @default(uuid())
+  companyId  String  @map("company_id")
+  company    Organization @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  nodeTypeId String  @map("node_type_id")
+  nodeType   NodeType @relation(fields: [nodeTypeId], references: [id], onDelete: Restrict)
+  parentId   String? @map("parent_id")
+  parent     Node?   @relation("NodeHierarchy", fields: [parentId], references: [id], onDelete: SetNull)
+  children   Node[]  @relation("NodeHierarchy")
+  name       String
+  description String?
+  ownerUserId String? @map("owner_user_id")
+  ownerUser  User?   @relation(fields: [ownerUserId], references: [id], onDelete: SetNull)
+  status     Status  @default(PLANNED)
+  startDate  DateTime? @map("start_date")
+  endDate    DateTime? @map("end_date")
+  createdAt  DateTime @default(now()) @map("created_at")
+
+  kpis KpiDefinition[]
+
+  @@index([companyId])
+  @@index([nodeTypeId])
+  @@index([parentId])
+  @@index([ownerUserId])
+  @@map("nodes")
+}
+
+model KpiDefinition {
+  id            String              @id @default(uuid())
+  companyId     String              @map("company_id")
+  company       Organization        @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  primaryNodeId String              @map("primary_node_id")
+  primaryNode   Node                @relation(fields: [primaryNodeId], references: [id], onDelete: Cascade)
+  name          String
+  description   String?
+  formula       String?
+  periodType    KpiPeriodType       @map("period_type")
+  targetValue   Float?              @map("target_value")
+  status        KpiDefinitionStatus @default(ACTIVE)
+
+  variables KpiVariable[]
+  values    KpiValuePeriod[]
+
+  @@index([companyId])
+  @@index([primaryNodeId])
+  @@map("kpis")
+}
+
+model KpiVariable {
+  id          String              @id @default(uuid())
+  kpiId       String              @map("kpi_id")
+  kpi         KpiDefinition       @relation(fields: [kpiId], references: [id], onDelete: Cascade)
+  code        String
+  displayName String              @map("display_name")
+  dataType    KpiVariableDataType @map("data_type")
+  isRequired  Boolean             @default(false) @map("is_required")
+
+  values KpiVariableValue[]
+
+  @@unique([kpiId, code])
+  @@index([kpiId])
+  @@map("kpi_variables")
+}
+
+model KpiValuePeriod {
+  id              String        @id @default(uuid())
+  kpiId           String        @map("kpi_id")
+  kpi             KpiDefinition @relation(fields: [kpiId], references: [id], onDelete: Cascade)
+  periodStart     DateTime      @map("period_start")
+  periodEnd       DateTime      @map("period_end")
+  calculatedValue Float?        @map("calculated_value")
+  status          KpiValueStatus @default(DRAFT)
+  enteredBy       String?       @map("entered_by")
+  enteredByUser   User?         @relation("KpiValueEnteredBy", fields: [enteredBy], references: [id], onDelete: SetNull)
+  approvedBy      String?       @map("approved_by")
+  approvedByUser  User?         @relation("KpiValueApprovedBy", fields: [approvedBy], references: [id], onDelete: SetNull)
+  createdAt       DateTime      @default(now()) @map("created_at")
+
+  variableValues KpiVariableValue[]
+
+  @@unique([kpiId, periodStart, periodEnd])
+  @@index([kpiId])
+  @@index([enteredBy])
+  @@index([approvedBy])
+  @@map("kpi_values")
+}
+
+model KpiVariableValue {
+  id            String         @id @default(uuid())
+  kpiValueId    String         @map("kpi_value_id")
+  kpiValue      KpiValuePeriod @relation(fields: [kpiValueId], references: [id], onDelete: Cascade)
+  kpiVariableId String         @map("kpi_variable_id")
+  kpiVariable   KpiVariable    @relation(fields: [kpiVariableId], references: [id], onDelete: Cascade)
+  value         Float
+
+  @@unique([kpiValueId, kpiVariableId])
+  @@index([kpiValueId])
+  @@index([kpiVariableId])
+  @@map("kpi_variable_values")
 }

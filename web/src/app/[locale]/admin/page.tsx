@@ -2,7 +2,6 @@
 
 import { PageHeader } from "@/components/page-header";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Separator } from "@/components/ui/separator";
 import { useLocale } from "@/providers/locale-provider";
 import Link from "next/link";
 
@@ -34,21 +33,11 @@ export default function AdminPage() {
               <p className="text-xs font-semibold uppercase tracking-wide text-slate-200">{tr("Domain", "النطاق")}</p>
               <p className="mt-1 text-white">example.com</p>
             </div>
-            <Separator className="bg-white/10" />
-            <div className="rounded-xl border border-white/10 bg-slate-950/40 px-4 py-3">
-              <p className="text-xs font-semibold uppercase tracking-wide text-slate-200">{tr("SSO (placeholder)", "SSO (عنصر تجريبي)")}</p>
-              <p className="mt-1 text-slate-100">
-                {tr(
-                  "Configure NextAuth provider (Azure AD / Okta / Google) per `web/.env.example`.",
-                  "تهيئة مزود NextAuth (Azure AD / Okta / Google) حسب `web/.env.example`.",
-                )}
-              </p>
-            </div>
             <div className="rounded-xl border border-white/10 bg-slate-950/40 px-4 py-3">
               <p className="text-xs font-semibold uppercase tracking-wide text-slate-200">{tr("User management", "إدارة المستخدمين")}</p>
-              <p className="mt-1 text-slate-100">{tr("Maintain users, roles, and departments for RBAC enforcement.", "إدارة المستخدمين والأدوار والإدارات لتطبيق صلاحيات الوصول.")}</p>
+              <p className="mt-1 text-slate-100">{tr("Manage users within your organization.", "إدارة المستخدمين ضمن المؤسسة.")}</p>
               <Link href={`/${locale}/admin/users`} className="mt-3 inline-flex text-sm font-semibold text-indigo-200 hover:text-indigo-100">
-                {tr("Open users directory", "فتح دليل المستخدمين")}
+                {tr("Open users", "فتح المستخدمين")}
               </Link>
             </div>
           </CardContent>

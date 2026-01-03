@@ -1,7 +1,5 @@
 import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
-import { getDemoUserById } from "@/lib/demo-users";
-import { SESSION_COOKIE_NAME } from "@/lib/session-cookie";
 
 const locales = ["en", "ar"];
 const defaultLocale = "en";
@@ -36,20 +34,12 @@ export function middleware(request: NextRequest) {
     return;
   }
 
-  const userId = request.cookies.get(SESSION_COOKIE_NAME)?.value;
-  const user = getDemoUserById(userId);
+  const sessionToken = request.cookies.get("better-auth.session_token")?.value;
 
-  if (!user) {
+  if (!sessionToken) {
     const url = request.nextUrl.clone();
     url.pathname = `/${locale}/auth/login`;
     url.searchParams.set("next", pathname);
-    return NextResponse.redirect(url);
-  }
-
-  if (canonicalPath.startsWith("/admin") && user.role !== "ADMIN") {
-    const url = request.nextUrl.clone();
-    url.pathname = `/${locale}/overview`;
-    url.search = "";
     return NextResponse.redirect(url);
   }
 

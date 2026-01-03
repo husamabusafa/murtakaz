@@ -10,7 +10,6 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { isAdmin } from "@/lib/demo-users";
 import { useAuth } from "@/providers/auth-provider";
 import { type TranslationKey, useLocale } from "@/providers/locale-provider";
 
@@ -45,6 +44,11 @@ export function UserMenu() {
 
   if (!user) return null;
 
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const userRole = (user as any)?.role as string | undefined;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const userDepartment = (user as any)?.department as string | undefined;
+
   const initials = user.name
     .split(" ")
     .slice(0, 2)
@@ -63,17 +67,22 @@ export function UserMenu() {
         <DropdownMenuLabel className="space-y-1">
           <p className="text-sm font-semibold">{user.name}</p>
           <p className="text-xs font-normal text-slate-300">
-            {roleLabel(user.role, t)}
-            {user.department ? ` • ${departmentLabel(user.department, locale)}` : ""}
+            {roleLabel(userRole ?? "", t)}
+            {userDepartment ? ` • ${departmentLabel(userDepartment, locale)}` : ""}
           </p>
         </DropdownMenuLabel>
         <DropdownMenuSeparator className="bg-white/10" />
         <DropdownMenuItem asChild className="focus:bg-white/10 focus:text-white">
           <Link href={`/${locale}/profile`}>{t("profile")}</Link>
         </DropdownMenuItem>
-        {isAdmin(user) ? (
+        {userRole === "ADMIN" ? (
           <DropdownMenuItem asChild className="focus:bg-white/10 focus:text-white">
-            <Link href={`/${locale}/admin/users`}>{t("users")}</Link>
+            <Link href={`/${locale}/admin`}>{t("admin")}</Link>
+          </DropdownMenuItem>
+        ) : null}
+        {userRole === "SUPER_ADMIN" ? (
+          <DropdownMenuItem asChild className="focus:bg-white/10 focus:text-white">
+            <Link href={`/${locale}/super-admin`}>{t("superAdmin")}</Link>
           </DropdownMenuItem>
         ) : null}
         <DropdownMenuSeparator className="bg-white/10" />

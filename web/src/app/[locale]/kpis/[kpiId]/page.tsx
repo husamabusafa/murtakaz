@@ -275,9 +275,12 @@ export default function KPIDetailPage() {
 
           <TargetChangeCard
             kpi={kpi}
-            requestedBy={user?.department ?? user?.name ?? "User"}
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+            requestedBy={((user as any)?.department as string | undefined) ?? user?.name ?? "User"}
             onRequest={(nextTarget) => {
-              const cr = createKpiTargetChangeRequest({ kpi, requestedBy: user?.department ?? user?.name ?? "User", nextTarget });
+              // eslint-disable-next-line @typescript-eslint/no-explicit-any
+              const requestedBy = ((user as any)?.department as string | undefined) ?? user?.name ?? "User";
+              const cr = createKpiTargetChangeRequest({ kpi, requestedBy, nextTarget });
               update({
                 ...kpi,
                 changeLog: [

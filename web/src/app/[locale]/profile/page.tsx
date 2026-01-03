@@ -5,7 +5,6 @@ import { PageHeader } from "@/components/page-header";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Separator } from "@/components/ui/separator";
-import { isAdmin } from "@/lib/demo-users";
 import { useAuth } from "@/providers/auth-provider";
 import { useLocale } from "@/providers/locale-provider";
 
@@ -32,6 +31,13 @@ export default function ProfilePage() {
     );
   }
 
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const userRole = (user as any)?.role as string | undefined;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const userTitle = (user as any)?.title as string | undefined;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const userDepartment = (user as any)?.department as string | undefined;
+
   const initials = user.name
     .split(" ")
     .slice(0, 2)
@@ -52,22 +58,22 @@ export default function ProfilePage() {
               </Avatar>
               <div className="space-y-0.5">
                 <CardTitle className="text-base">{user.name}</CardTitle>
-                <CardDescription className="text-slate-200">{user.title ?? user.role}</CardDescription>
+                <CardDescription className="text-slate-200">{userTitle ?? userRole}</CardDescription>
               </div>
             </div>
           </CardHeader>
           <CardContent className="space-y-3 text-sm text-slate-100">
             <div className="rounded-xl border border-white/10 bg-slate-950/40 px-4 py-3">
-              <p className="text-xs font-semibold uppercase tracking-wide text-slate-200">Email</p>
-              <p className="mt-1 text-white">{user.email}</p>
+              <p className="text-xs font-semibold uppercase tracking-wide text-slate-200">Title</p>
+              <p className="mt-1 text-white">{userTitle ?? userRole ?? "—"}</p>
             </div>
             <div className="rounded-xl border border-white/10 bg-slate-950/40 px-4 py-3">
               <p className="text-xs font-semibold uppercase tracking-wide text-slate-200">Role</p>
-              <p className="mt-1 text-white">{user.role}</p>
+              <p className="mt-1 text-white">{userRole ?? "—"}</p>
             </div>
             <div className="rounded-xl border border-white/10 bg-slate-950/40 px-4 py-3">
               <p className="text-xs font-semibold uppercase tracking-wide text-slate-200">Department</p>
-              <p className="mt-1 text-white">{user.department ?? "—"}</p>
+              <p className="mt-1 text-white">{userDepartment ?? "—"}</p>
             </div>
           </CardContent>
         </Card>
@@ -85,9 +91,9 @@ export default function ProfilePage() {
               </p>
             </div>
             <Separator className="bg-white/10" />
-            {isAdmin(user) ? (
+            {userRole === "SUPER_ADMIN" ? (
               <Link
-                href={`/${locale}/admin/users`}
+                href={`/${locale}/super-admin/users`}
                 className="inline-flex items-center justify-center rounded-xl bg-white px-4 py-3 text-sm font-semibold text-slate-900 transition hover:bg-slate-100"
               >
                 Manage users

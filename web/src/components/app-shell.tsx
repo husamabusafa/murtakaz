@@ -20,6 +20,7 @@ const navItems = [
   { href: "/dashboards", key: "dashboards", icon: "tabler:layout-dashboard" },
   { href: "/approvals", key: "approvals", icon: "tabler:gavel" },
   { href: "/admin", key: "admin", icon: "tabler:settings" },
+  { href: "/super-admin", key: "superAdmin", icon: "tabler:settings" },
 ] as const;
 
 function stripLocale(pathname: string) {
@@ -39,6 +40,8 @@ export function AppShell({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
   const { t, tr, locale, isArabic } = useLocale();
   const { user, loading } = useAuth();
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const userRole = (user as any)?.role;
   const canonicalPath = useMemo(() => stripLocale(pathname ?? "/"), [pathname]);
   const isAuthRoute = canonicalPath.startsWith("/auth/");
   const isMarketingRoute =
@@ -118,10 +121,16 @@ export function AppShell({ children }: { children: React.ReactNode }) {
 
             <nav className="flex-1 px-3">
               <div className="space-y-1">
-                {navItems.map((item) => {
-                  const isActive = activeKey === item.key;
-                  return (
-                    <Link
+                {navItems
+                  .filter((item) => {
+                    if (item.key === "superAdmin") return userRole === "SUPER_ADMIN";
+                    if (item.key === "admin") return userRole === "ADMIN";
+                    return true;
+                  })
+                  .map((item) => {
+                    const isActive = activeKey === item.key;
+                    return (
+                      <Link
                       key={item.key}
                       href={withLocale(locale, item.href)}
                       className={cn(
@@ -146,7 +155,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
                 {sidebarCollapsed ? null : (
                   <div className="min-w-0">
                     <p className="truncate text-sm font-semibold text-white">{user?.name}</p>
-                    <p className="truncate text-xs text-slate-300">{user?.role}</p>
+                    <p className="truncate text-xs text-slate-300">{userRole}</p>
                   </div>
                 )}
               </div>

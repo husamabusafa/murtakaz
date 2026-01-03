@@ -1,0 +1,15 @@
+{
+  "devDependencies": {
+    "@types/node": "^25.0.3",
+    "prisma": "^6.19.1",
+    "ts-node": "^10.9.2",
+    "typescript": "^5.9.3"
+  },
+  "dependencies": {
+    "@prisma/client": "^6.19.1",
+    "better-auth": "^1.4.10"
+  },
+  "prisma": {
+    "seed": "npx ts-node --compiler-options {\"module\":\"CommonJS\"} prisma/seed-simple.ts"
+  }
+}
