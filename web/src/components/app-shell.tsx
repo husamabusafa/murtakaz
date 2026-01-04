@@ -20,6 +20,8 @@ const navItems = [
   { href: "/dashboards", key: "dashboards", icon: "tabler:layout-dashboard" },
   { href: "/approvals", key: "approvals", icon: "tabler:gavel" },
   { href: "/admin", key: "admin", icon: "tabler:settings" },
+  { href: "/super-admin/organizations", key: "organizations", icon: "tabler:building-community" },
+  { href: "/super-admin/users", key: "users", icon: "tabler:users" },
   { href: "/super-admin", key: "superAdmin", icon: "tabler:settings" },
 ] as const;
 
@@ -123,8 +125,8 @@ export function AppShell({ children }: { children: React.ReactNode }) {
               <div className="space-y-1">
                 {navItems
                   .filter((item) => {
-                    if (item.key === "superAdmin") return userRole === "SUPER_ADMIN";
-                    if (item.key === "admin") return userRole === "ADMIN";
+                    if (item.href.startsWith("/super-admin")) return userRole === "SUPER_ADMIN";
+                    if (item.href.startsWith("/admin")) return userRole === "ADMIN";
                     return true;
                   })
                   .map((item) => {

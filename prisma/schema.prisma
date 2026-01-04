@@ -45,6 +45,13 @@ enum NodeTypeCode {
   TASK
 }
 
+enum NodeAssignmentRole {
+  OWNER
+  CONTRIBUTOR
+  REVIEWER
+  APPROVER
+}
+
 enum KpiPeriodType {
   MONTHLY
   QUARTERLY
@@ -68,6 +75,19 @@ enum KpiValueStatus {
   LOCKED
 }
 
+enum KpiDirection {
+  INCREASE_IS_GOOD
+  DECREASE_IS_GOOD
+}
+
+enum KpiAggregationMethod {
+  LAST_VALUE
+  SUM
+  AVERAGE
+  MIN
+  MAX
+}
+
 // Models
 
 model Organization {
@@ -79,22 +99,68 @@ model Organization {
   deletedAt DateTime?
 
   users          User[]
+  departments    Department[]
   nodes          Node[]
   kpis           KpiDefinition[]
   changeRequests ChangeRequest[]
+
+  @@index([domain])
+}
+
+model Department {
+  id        String       @id @default(uuid())
+  orgId     String       @map("org_id")
+  org       Organization @relation(fields: [orgId], references: [id], onDelete: Cascade)
+
+  name      String
+  code      String?
+  parentId  String?      @map("parent_id")
+  parent    Department?  @relation("DeptTree", fields: [parentId], references: [id], onDelete: SetNull)
+  children  Department[] @relation("DeptTree")
+
+  managerId String? @map("manager_id")
+  manager   User?   @relation("DepartmentManager", fields: [managerId], references: [id], onDelete: SetNull)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  deletedAt DateTime?
+
+  users User[] @relation("DepartmentUsers")
+
+  @@unique([orgId, name, deletedAt], name: "dept_name_org_soft_unique")
+  @@index([orgId])
+  @@index([parentId])
+  @@index([managerId])
+  @@map("departments")
 }
 
 model User {
   id            String       @id @default(uuid())
-  orgId         String
+  orgId         String       @map("org_id")
   org           Organization @relation(fields: [orgId], references: [id], onDelete: Cascade)
+
   email         String
   emailVerified Boolean      @default(false)
   name          String
   role          Role
-  department    String?
+
+  // ✅ Org hierarchy:
+  managerId     String?      @map("manager_id")
+  manager       User?        @relation("UserManager", fields: [managerId], references: [id], onDelete: SetNull)
+  directReports User[]       @relation("UserManager")
+
+  // ✅ Normalized department:
+  departmentId  String?      @map("department_id")
+  department    Department?  @relation("DepartmentUsers", fields: [departmentId], references: [id], onDelete: SetNull)
+
+  managedDepartments Department[] @relation("DepartmentManager")
+
+  title         String?
   image         String?
-  password      String?
+
+  // If you support password auth, store hashedPassword (not plain password):
+  hashedPassword String?     @map("hashed_password")
+
   createdAt     DateTime     @default(now())
   updatedAt     DateTime     @updatedAt
   deletedAt     DateTime?
@@ -106,8 +172,20 @@ model User {
   approvals      ChangeApproval[]
   changeRequests ChangeRequest[]
 
-  @@unique([orgId, email, deletedAt], name: "user_email_org_unique")
+  // Node/KPI relations
+  ownedNodes       Node[]             @relation("NodeOwner")
+  nodeAssignments  NodeAssignment[]
+  kpiValuesEntered KpiValuePeriod[]   @relation("KpiValueEnteredBy")
+  kpiValuesApproved KpiValuePeriod[]  @relation("KpiValueApprovedBy")
+  ownedKpis        KpiDefinition[]    @relation("KpiOwner")
+
+  // ✅ IMPORTANT:
+  // This enforces unique emails per org, but you must handle soft delete
+  // by mutating email or using partial unique index in SQL.
+  @@unique([orgId, email], name: "user_email_org_unique")
   @@index([orgId])
+  @@index([managerId])
+  @@index([departmentId])
   @@map("user")
 }
 
@@ -167,35 +245,43 @@ model UserPreference {
 
 model ChangeRequest {
   id          String         @id @default(uuid())
-  orgId       String
+  orgId       String         @map("org_id")
   org         Organization   @relation(fields: [orgId], references: [id], onDelete: Cascade)
+
   entityType  String
   entityId    String
   payload     Json
   status      ApprovalStatus @default(PENDING)
+
   requestedBy String
-  requester   User           @relation(fields: [requestedBy], references: [id])
+  requester   User           @relation(fields: [requestedBy], references: [id], onDelete: Restrict)
+
   createdAt   DateTime       @default(now())
   updatedAt   DateTime       @updatedAt
+  decidedAt   DateTime?      @map("decided_at")
   deletedAt   DateTime?
 
   approvals ChangeApproval[]
 
   @@index([orgId])
+  @@index([entityType, entityId])
 }
 
 model ChangeApproval {
   id              String         @id @default(uuid())
   changeRequestId String
   changeRequest   ChangeRequest  @relation(fields: [changeRequestId], references: [id], onDelete: Cascade)
+
   approverId      String
-  approver        User           @relation(fields: [approverId], references: [id])
+  approver        User           @relation(fields: [approverId], references: [id], onDelete: Restrict)
+
   status          ApprovalStatus @default(PENDING)
   comment         String?
   createdAt       DateTime       @default(now())
   decidedAt       DateTime?
 
   @@unique([changeRequestId, approverId], name: "approval_once_per_user")
+  @@index([approverId])
 }
 
 model NodeType {
@@ -211,57 +297,131 @@ model NodeType {
 }
 
 model Node {
-  id         String  @id @default(uuid())
-  companyId  String  @map("company_id")
-  company    Organization @relation(fields: [companyId], references: [id], onDelete: Cascade)
-  nodeTypeId String  @map("node_type_id")
-  nodeType   NodeType @relation(fields: [nodeTypeId], references: [id], onDelete: Restrict)
-  parentId   String? @map("parent_id")
-  parent     Node?   @relation("NodeHierarchy", fields: [parentId], references: [id], onDelete: SetNull)
-  children   Node[]  @relation("NodeHierarchy")
-  name       String
+  id          String   @id @default(uuid())
+
+  orgId       String   @map("org_id")
+  org         Organization @relation(fields: [orgId], references: [id], onDelete: Cascade)
+
+  nodeTypeId  String   @map("node_type_id")
+  nodeType    NodeType @relation(fields: [nodeTypeId], references: [id], onDelete: Restrict)
+
+  parentId    String?  @map("parent_id")
+  parent      Node?    @relation("NodeHierarchy", fields: [parentId], references: [id], onDelete: SetNull)
+  children    Node[]   @relation("NodeHierarchy")
+
+  name        String
   description String?
-  ownerUserId String? @map("owner_user_id")
-  ownerUser  User?   @relation(fields: [ownerUserId], references: [id], onDelete: SetNull)
-  status     Status  @default(PLANNED)
-  startDate  DateTime? @map("start_date")
-  endDate    DateTime? @map("end_date")
-  createdAt  DateTime @default(now()) @map("created_at")
+
+  // Keep a single "owner", but also support multi-assignments via NodeAssignment.
+  ownerUserId String?  @map("owner_user_id")
+  ownerUser   User?    @relation("NodeOwner", fields: [ownerUserId], references: [id], onDelete: SetNull)
+
+  status      Status   @default(PLANNED)
+
+  // Execution fields (super useful in practice)
+  progress    Int      @default(0) @map("progress") // 0..100
+  startDate   DateTime? @map("start_date")
+  endDate     DateTime? @map("end_date")
+
+  createdAt   DateTime @default(now()) @map("created_at")
+  updatedAt   DateTime @updatedAt @map("updated_at")
+  deletedAt   DateTime? @map("deleted_at")
+
+  assignments NodeAssignment[]
+  outgoingDeps NodeDependency[] @relation("NodeDependsOn")
+  incomingDeps NodeDependency[] @relation("NodeBlocks")
 
   kpis KpiDefinition[]
 
-  @@index([companyId])
+  @@index([orgId])
   @@index([nodeTypeId])
   @@index([parentId])
   @@index([ownerUserId])
   @@map("nodes")
 }
 
+model NodeAssignment {
+  id        String @id @default(uuid())
+
+  nodeId    String @map("node_id")
+  node      Node   @relation(fields: [nodeId], references: [id], onDelete: Cascade)
+
+  userId    String @map("user_id")
+  user      User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  role      NodeAssignmentRole @default(CONTRIBUTOR)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([nodeId, userId, role], name: "node_user_role_unique")
+  @@index([nodeId])
+  @@index([userId])
+  @@map("node_assignments")
+}
+
+// Dependencies: "A depends on B" => A is blocked by B
+model NodeDependency {
+  id          String @id @default(uuid())
+
+  blockedNodeId String @map("blocked_node_id")
+  blockedNode   Node   @relation("NodeBlocks", fields: [blockedNodeId], references: [id], onDelete: Cascade)
+
+  dependsOnNodeId String @map("depends_on_node_id")
+  dependsOnNode   Node   @relation("NodeDependsOn", fields: [dependsOnNodeId], references: [id], onDelete: Cascade)
+
+  createdAt   DateTime @default(now())
+
+  @@unique([blockedNodeId, dependsOnNodeId], name: "node_dep_unique")
+  @@index([blockedNodeId])
+  @@index([dependsOnNodeId])
+  @@map("node_dependencies")
+}
+
 model KpiDefinition {
   id            String              @id @default(uuid())
-  companyId     String              @map("company_id")
-  company       Organization        @relation(fields: [companyId], references: [id], onDelete: Cascade)
+
+  orgId         String              @map("org_id")
+  org           Organization        @relation(fields: [orgId], references: [id], onDelete: Cascade)
+
   primaryNodeId String              @map("primary_node_id")
   primaryNode   Node                @relation(fields: [primaryNodeId], references: [id], onDelete: Cascade)
+
+  ownerUserId   String?             @map("owner_user_id")
+  ownerUser     User?               @relation("KpiOwner", fields: [ownerUserId], references: [id], onDelete: SetNull)
+
   name          String
   description   String?
   formula       String?
+
+  // ✅ Make KPI meaning explicit:
+  unit          String?             // "%", "USD", "days", "count", etc.
+  direction     KpiDirection        @default(INCREASE_IS_GOOD)
+  aggregation   KpiAggregationMethod @default(LAST_VALUE)
+
   periodType    KpiPeriodType       @map("period_type")
+
+  baselineValue Float?              @map("baseline_value")
   targetValue   Float?              @map("target_value")
+  weight        Float?              // optional weighting for rollups (0..1 or 0..100)
+
   status        KpiDefinitionStatus @default(ACTIVE)
 
   variables KpiVariable[]
   values    KpiValuePeriod[]
 
-  @@index([companyId])
+  @@index([orgId])
   @@index([primaryNodeId])
+  @@index([ownerUserId])
   @@map("kpis")
 }
 
 model KpiVariable {
   id          String              @id @default(uuid())
+
   kpiId       String              @map("kpi_id")
   kpi         KpiDefinition       @relation(fields: [kpiId], references: [id], onDelete: Cascade)
+
   code        String
   displayName String              @map("display_name")
   dataType    KpiVariableDataType @map("data_type")
@@ -275,18 +435,31 @@ model KpiVariable {
 }
 
 model KpiValuePeriod {
-  id              String        @id @default(uuid())
-  kpiId           String        @map("kpi_id")
-  kpi             KpiDefinition @relation(fields: [kpiId], references: [id], onDelete: Cascade)
-  periodStart     DateTime      @map("period_start")
-  periodEnd       DateTime      @map("period_end")
-  calculatedValue Float?        @map("calculated_value")
+  id              String         @id @default(uuid())
+
+  kpiId           String         @map("kpi_id")
+  kpi             KpiDefinition  @relation(fields: [kpiId], references: [id], onDelete: Cascade)
+
+  periodStart     DateTime       @map("period_start")
+  periodEnd       DateTime       @map("period_end")
+
+  calculatedValue Float?         @map("calculated_value")
   status          KpiValueStatus @default(DRAFT)
-  enteredBy       String?       @map("entered_by")
-  enteredByUser   User?         @relation("KpiValueEnteredBy", fields: [enteredBy], references: [id], onDelete: SetNull)
-  approvedBy      String?       @map("approved_by")
-  approvedByUser  User?         @relation("KpiValueApprovedBy", fields: [approvedBy], references: [id], onDelete: SetNull)
-  createdAt       DateTime      @default(now()) @map("created_at")
+
+  note            String?
+
+  enteredBy       String?        @map("entered_by")
+  enteredByUser   User?          @relation("KpiValueEnteredBy", fields: [enteredBy], references: [id], onDelete: SetNull)
+
+  approvedBy      String?        @map("approved_by")
+  approvedByUser  User?          @relation("KpiValueApprovedBy", fields: [approvedBy], references: [id], onDelete: SetNull)
+
+  submittedAt     DateTime?      @map("submitted_at")
+  approvedAt      DateTime?      @map("approved_at")
+  lockedAt        DateTime?      @map("locked_at")
+
+  createdAt       DateTime       @default(now()) @map("created_at")
+  updatedAt       DateTime       @updatedAt @map("updated_at")
 
   variableValues KpiVariableValue[]
 
@@ -299,10 +472,13 @@ model KpiValuePeriod {
 
 model KpiVariableValue {
   id            String         @id @default(uuid())
+
   kpiValueId    String         @map("kpi_value_id")
   kpiValue      KpiValuePeriod @relation(fields: [kpiValueId], references: [id], onDelete: Cascade)
+
   kpiVariableId String         @map("kpi_variable_id")
   kpiVariable   KpiVariable    @relation(fields: [kpiVariableId], references: [id], onDelete: Cascade)
+
   value         Float
 
   @@unique([kpiValueId, kpiVariableId])

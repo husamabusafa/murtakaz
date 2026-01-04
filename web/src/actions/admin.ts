@@ -21,6 +21,9 @@ const createUserSchema = z.object({
   orgId: z.string().uuid(),
 });
 
+const orgIdSchema = z.string().uuid();
+const userIdSchema = z.string().min(1);
+
 // Helper to check if current user is SUPER_ADMIN
 async function requireSuperAdmin() {
   const session = await auth.api.getSession({
@@ -101,4 +104,61 @@ export async function getUsers() {
     },
   });
   return users;
+}
+
+export async function getOrganizationDetails(orgId: string) {
+  await requireSuperAdmin();
+  const parsedOrgId = orgIdSchema.parse(orgId);
+
+  const org = await prisma.organization.findFirst({
+    where: {
+      id: parsedOrgId,
+      deletedAt: null,
+    },
+    include: {
+      _count: {
+        select: { users: true },
+      },
+      users: {
+        where: { deletedAt: null },
+        orderBy: { createdAt: "desc" },
+        select: {
+          id: true,
+          name: true,
+          email: true,
+          role: true,
+          createdAt: true,
+        },
+      },
+    },
+  });
+
+  return org;
+}
+
+export async function getUserDetails(userId: string) {
+  await requireSuperAdmin();
+  const parsedUserId = userIdSchema.parse(userId);
+
+  const user = await prisma.user.findFirst({
+    where: {
+      id: parsedUserId,
+      deletedAt: null,
+    },
+    select: {
+      id: true,
+      name: true,
+      email: true,
+      role: true,
+      createdAt: true,
+      org: {
+        select: {
+          id: true,
+          name: true,
+        },
+      },
+    },
+  });
+
+  return user;
 }

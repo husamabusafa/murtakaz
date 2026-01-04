@@ -15,7 +15,7 @@ import { Plus } from "lucide-react";
 import type { Organization } from "@prisma/client";
 
 export default function OrganizationsPage() {
-  const { tr } = useLocale();
+  const { tr, locale } = useLocale();
   const router = useRouter();
   const [organizations, setOrganizations] = useState<(Organization & { _count?: { users: number } })[]>([]);
   const [loading, setLoading] = useState(true);
@@ -152,7 +152,11 @@ export default function OrganizationsPage() {
                   </TableRow>
                 ) : (
                   organizations.map((org) => (
-                    <TableRow key={org.id} className="border-white/10 hover:bg-white/5">
+                    <TableRow
+                      key={org.id}
+                      className="border-white/10 hover:bg-white/5 cursor-pointer"
+                      onClick={() => router.push(`/${locale}/super-admin/organizations/${org.id}`)}
+                    >
                       <TableCell className="font-medium text-white">{org.name}</TableCell>
                       <TableCell className="text-slate-200">{org.domain || "—"}</TableCell>
                       <TableCell className="text-slate-200">{org._count?.users || 0}</TableCell>

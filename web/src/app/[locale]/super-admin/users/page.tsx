@@ -19,7 +19,7 @@ import type { User, Organization, Role } from "@prisma/client";
 const roles: Role[] = ["SUPER_ADMIN", "ADMIN", "EXECUTIVE", "PMO", "MANAGER", "EMPLOYEE"] as Role[];
 
 export default function UsersManagementPage() {
-  const { tr } = useLocale();
+  const { tr, locale } = useLocale();
   const router = useRouter();
 
   const [users, setUsers] = useState<(User & { org: Organization })[]>([]);
@@ -228,7 +228,11 @@ export default function UsersManagementPage() {
                   </TableRow>
                 ) : (
                   users.map((user) => (
-                    <TableRow key={user.id} className="border-white/10 hover:bg-white/5">
+                    <TableRow
+                      key={user.id}
+                      className="border-white/10 hover:bg-white/5 cursor-pointer"
+                      onClick={() => router.push(`/${locale}/super-admin/users/${user.id}`)}
+                    >
                       <TableCell className="font-medium text-white">
                         <div className="flex flex-col">
                           <span>{user.name}</span>
