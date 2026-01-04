@@ -24,13 +24,13 @@ export function PageHeader({
       <div className={cn("space-y-1", isRtl && "text-right")}>
         <div className={cn("flex items-center gap-3", isRtl && "flex-row-reverse")}>
           {icon ? (
-            <div className="flex h-10 w-10 items-center justify-center rounded-2xl border border-white/10 bg-white/5 text-slate-100">
+            <div className="flex h-10 w-10 items-center justify-center rounded-2xl border border-border bg-card text-foreground">
               {icon}
             </div>
           ) : null}
-          <h1 className="text-2xl font-semibold tracking-tight text-white md:text-3xl">{title}</h1>
+          <h1 className="text-2xl font-semibold tracking-tight text-foreground md:text-3xl">{title}</h1>
         </div>
-        {subtitle ? <p className="max-w-2xl text-sm text-slate-200 md:text-base">{subtitle}</p> : null}
+        {subtitle ? <p className="max-w-2xl text-sm text-muted-foreground md:text-base">{subtitle}</p> : null}
       </div>
       {actions ? <div className={cn("flex items-center gap-2", isRtl && "justify-end")}>{actions}</div> : null}
     </div>

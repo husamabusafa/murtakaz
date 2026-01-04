@@ -46,19 +46,19 @@ export default function OrganizationDetailsPage() {
 
   if (loading) {
     return (
-      <div className="rounded-2xl border border-white/10 bg-white/5 p-8 text-white">
-        <p className="text-sm text-slate-200">{tr("Loading…", "جارٍ التحميل…")}</p>
+      <div className="rounded-2xl border border-border bg-card p-8">
+        <p className="text-sm text-muted-foreground">{tr("Loading…", "جارٍ التحميل…")}</p>
       </div>
     );
   }
 
   if (!org) {
     return (
-      <div className="rounded-2xl border border-white/10 bg-white/5 p-8 text-white">
-        <p className="text-sm text-slate-200">{tr("Organization not found.", "المؤسسة غير موجودة.")}</p>
+      <div className="rounded-2xl border border-border bg-card p-8">
+        <p className="text-sm text-muted-foreground">{tr("Organization not found.", "المؤسسة غير موجودة.")}</p>
         <Link
           href={`/${locale}/super-admin/organizations`}
-          className="mt-3 inline-flex text-sm font-semibold text-indigo-200 hover:text-indigo-100"
+          className="mt-3 inline-flex text-sm font-semibold text-primary hover:opacity-90"
         >
           {tr("Back to organizations", "العودة للمؤسسات")}
         </Link>
@@ -77,7 +77,7 @@ export default function OrganizationDetailsPage() {
         actions={
           <Link
             href={`/${locale}/super-admin/organizations`}
-            className="inline-flex text-sm font-semibold text-indigo-200 hover:text-indigo-100"
+            className="inline-flex text-sm font-semibold text-primary hover:opacity-90"
           >
             {tr("Back", "رجوع")}
           </Link>
@@ -85,49 +85,49 @@ export default function OrganizationDetailsPage() {
       />
 
       <div className="grid gap-6 lg:grid-cols-3">
-        <Card className="border-white/10 bg-white/5 text-white shadow-lg shadow-black/20">
+        <Card className="bg-card/70 backdrop-blur shadow-sm">
           <CardHeader>
             <CardTitle className="text-base">{tr("Overview", "نظرة عامة")}</CardTitle>
-            <CardDescription className="text-slate-200">{tr("Tenant metadata", "بيانات المؤسسة")}</CardDescription>
+            <CardDescription>{tr("Tenant metadata", "بيانات المؤسسة")}</CardDescription>
           </CardHeader>
-          <CardContent className="space-y-3 text-sm text-slate-100">
-            <div className="rounded-xl border border-white/10 bg-slate-950/40 px-4 py-3">
-              <p className="text-xs font-semibold uppercase tracking-wide text-slate-200">{tr("Domain", "النطاق")}</p>
-              <p className="mt-1 text-white">{org.domain || "—"}</p>
+          <CardContent className="space-y-3 text-sm">
+            <div className="rounded-xl border border-border bg-muted/30 px-4 py-3">
+              <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">{tr("Domain", "النطاق")}</p>
+              <p className="mt-1">{org.domain || "—"}</p>
             </div>
-            <div className="rounded-xl border border-white/10 bg-slate-950/40 px-4 py-3">
-              <p className="text-xs font-semibold uppercase tracking-wide text-slate-200">{tr("Users", "المستخدمون")}</p>
-              <p className="mt-1 text-white">{org._count?.users ?? users.length}</p>
+            <div className="rounded-xl border border-border bg-muted/30 px-4 py-3">
+              <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">{tr("Users", "المستخدمون")}</p>
+              <p className="mt-1">{org._count?.users ?? users.length}</p>
             </div>
-            <div className="rounded-xl border border-white/10 bg-slate-950/40 px-4 py-3">
-              <p className="text-xs font-semibold uppercase tracking-wide text-slate-200">{tr("Created", "تاريخ الإنشاء")}</p>
-              <p className="mt-1 text-white">{new Date(org.createdAt).toLocaleDateString()}</p>
+            <div className="rounded-xl border border-border bg-muted/30 px-4 py-3">
+              <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">{tr("Created", "تاريخ الإنشاء")}</p>
+              <p className="mt-1">{new Date(org.createdAt).toLocaleDateString()}</p>
             </div>
           </CardContent>
         </Card>
 
-        <Card className="border-white/10 bg-white/5 text-white shadow-lg shadow-black/20 lg:col-span-2">
+        <Card className="bg-card/70 backdrop-blur shadow-sm lg:col-span-2">
           <CardHeader>
             <CardTitle className="text-base">{tr("Users", "المستخدمون")}</CardTitle>
-            <CardDescription className="text-slate-200">
+            <CardDescription>
               {tr("All users assigned to this organization.", "جميع المستخدمين في هذه المؤسسة.")}
             </CardDescription>
           </CardHeader>
           <CardContent>
-            <div className="overflow-hidden rounded-xl border border-white/10">
+            <div className="overflow-hidden rounded-xl border border-border">
               <Table>
                 <TableHeader>
-                  <TableRow className="border-white/10 hover:bg-white/0">
-                    <TableHead className="text-slate-200">{tr("Name", "الاسم")}</TableHead>
-                    <TableHead className="text-slate-200">{tr("Email", "البريد")}</TableHead>
-                    <TableHead className="text-slate-200">{tr("Role", "الدور")}</TableHead>
-                    <TableHead className="text-right text-slate-200">{tr("Joined", "تاريخ الانضمام")}</TableHead>
+                  <TableRow>
+                    <TableHead>{tr("Name", "الاسم")}</TableHead>
+                    <TableHead>{tr("Email", "البريد")}</TableHead>
+                    <TableHead>{tr("Role", "الدور")}</TableHead>
+                    <TableHead className="text-right">{tr("Joined", "تاريخ الانضمام")}</TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
                   {users.length === 0 ? (
                     <TableRow>
-                      <TableCell colSpan={4} className="text-center text-slate-400 py-8">
+                      <TableCell colSpan={4} className="text-center text-muted-foreground py-8">
                         {tr("No users found.", "لا يوجد مستخدمين.")}
                       </TableCell>
                     </TableRow>
@@ -135,13 +135,13 @@ export default function OrganizationDetailsPage() {
                     users.map((user) => (
                       <TableRow
                         key={user.id}
-                        className="border-white/10 hover:bg-white/5 cursor-pointer"
+                        className="cursor-pointer hover:bg-muted/50"
                         onClick={() => router.push(`/${locale}/super-admin/users/${user.id}`)}
                       >
-                        <TableCell className="font-medium text-white">{user.name}</TableCell>
-                        <TableCell className="text-slate-200">{user.email}</TableCell>
-                        <TableCell className="text-slate-200">{user.role}</TableCell>
-                        <TableCell className="text-right text-slate-400">{new Date(user.createdAt).toLocaleDateString()}</TableCell>
+                        <TableCell className="font-medium">{user.name}</TableCell>
+                        <TableCell className="text-muted-foreground">{user.email}</TableCell>
+                        <TableCell className="text-muted-foreground">{user.role}</TableCell>
+                        <TableCell className="text-right text-muted-foreground">{new Date(user.createdAt).toLocaleDateString()}</TableCell>
                       </TableRow>
                     ))
                   )}

@@ -23,7 +23,7 @@ export function LanguageToggle() {
   return (
     <Button
       variant="ghost"
-      className="text-slate-200 hover:bg-white/5 hover:text-white"
+      className="text-muted-foreground hover:bg-accent hover:text-foreground"
       onClick={() => router.push(switchLocaleInPath(pathname ?? "/", nextLocale))}
     >
       {t("language")}

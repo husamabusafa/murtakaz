@@ -103,6 +103,7 @@ model Organization {
   nodes          Node[]
   kpis           KpiDefinition[]
   changeRequests ChangeRequest[]
+  nodeTypes      OrganizationNodeType[]
 
   @@index([domain])
 }
@@ -292,8 +293,24 @@ model NodeType {
   canHaveKpis Boolean      @default(false) @map("can_have_kpis")
 
   nodes Node[]
+  organizations OrganizationNodeType[]
 
   @@map("node_types")
+}
+
+model OrganizationNodeType {
+  id         String   @id @default(uuid())
+  orgId      String   @map("org_id")
+  nodeTypeId String   @map("node_type_id")
+  createdAt  DateTime @default(now())
+
+  org      Organization @relation(fields: [orgId], references: [id], onDelete: Cascade)
+  nodeType NodeType     @relation(fields: [nodeTypeId], references: [id], onDelete: Restrict)
+
+  @@unique([orgId, nodeTypeId])
+  @@index([orgId])
+  @@index([nodeTypeId])
+  @@map("organization_node_types")
 }
 
 model Node {
