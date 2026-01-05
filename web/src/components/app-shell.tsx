@@ -14,6 +14,15 @@ import { cn } from "@/lib/utils";
 
 const marketingRouteSet = new Set(["/", "/pricing", "/faq", "/about", "/contact", "/careers", "/privacy", "/terms"]);
 
+const nodeTypeIconMap: Record<string, string> = {
+  strategy: "tabler:target-arrow",
+  pillar: "tabler:columns-3",
+  objective: "tabler:flag-3",
+  initiative: "tabler:rocket",
+  project: "tabler:briefcase-2",
+  task: "tabler:checklist",
+};
+
 const navItems = [
   { href: "/overview", key: "home", icon: "tabler:layout-dashboard" },
   { href: "/kpis", key: "kpis", icon: "tabler:chart-line" },
@@ -208,7 +217,10 @@ export function AppShell({ children }: { children: React.ReactNode }) {
   const mobileContentVisible = useDelayedVisibility(mobileNavOpen, 120);
 
   const activeKey = useMemo(() => {
-    if (canonicalPath.startsWith("/nodes/")) return "nodes";
+    if (canonicalPath.startsWith("/nodes/")) {
+      const slug = canonicalPath.split("/").filter(Boolean)[1];
+      return slug ? `nodes-${slug}` : "nodes";
+    }
     if (canonicalPath.startsWith("/departments")) return "departments";
     const matches = navItems.filter((item) => {
       if (item.href === "/overview") return canonicalPath === "/overview";
@@ -239,8 +251,8 @@ export function AppShell({ children }: { children: React.ReactNode }) {
   const regularNavItems = useMemo<NavItem[]>(() => {
     const nodeTypeItems: DynamicNavItem[] = orgNodeTypes.map((nt) => ({
       href: `/nodes/${nt.code.toLowerCase()}`,
-      key: "nodes",
-      icon: "tabler:layers-subtract",
+      key: `nodes-${nt.code.toLowerCase()}`,
+      icon: nodeTypeIconMap[nt.code.toLowerCase()] ?? "tabler:layers-subtract",
       label: nt.displayName,
     }));
 
