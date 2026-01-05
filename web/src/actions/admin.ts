@@ -145,18 +145,9 @@ export async function deleteUser(data: z.infer<typeof deleteUserSchema>) {
   const parsed = deleteUserSchema.parse(data);
 
   try {
-    const now = new Date();
-    const existing = await prisma.user.findFirst({
-      where: { id: parsed.userId },
-      select: { email: true },
-    });
-
     await prisma.user.update({
       where: { id: parsed.userId },
-      data: {
-        deletedAt: now,
-        email: existing?.email ? `${existing.email}__deleted__${now.getTime()}__${parsed.userId}` : undefined,
-      },
+      data: { deletedAt: new Date() },
     });
     return { success: true };
   } catch (error: unknown) {
@@ -246,21 +237,11 @@ export async function deleteOrganization(data: z.infer<typeof deleteOrgSchema>) 
 
   try {
     const now = new Date();
-    const users = await prisma.user.findMany({
-      where: { orgId: parsed.orgId, deletedAt: null },
-      select: { id: true, email: true },
-    });
-
     await prisma.$transaction([
-      ...users.map((u) =>
-        prisma.user.update({
-          where: { id: u.id },
-          data: {
-            deletedAt: now,
-            email: `${u.email}__deleted__${now.getTime()}__${u.id}`,
-          },
-        }),
-      ),
+      prisma.user.updateMany({
+        where: { orgId: parsed.orgId, deletedAt: null },
+        data: { deletedAt: now },
+      }),
       prisma.organization.update({
         where: { id: parsed.orgId },
         data: { deletedAt: now },
