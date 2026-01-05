@@ -12,6 +12,7 @@ import {
   KpiVariableDataType,
   Role,
 } from "@prisma/client";
+import { getMyEffectiveKpiIds } from "@/actions/responsibilities";
 
 const prismaKpiDefinition = (prisma as unknown as { kpiDefinition: unknown }).kpiDefinition as {
   findMany: <T>(args: unknown) => Promise<T[]>;
@@ -127,6 +128,9 @@ function evaluateFormula(input: { formula: string; valuesByCode: Record<string, 
 export async function getOrgKpisGrid() {
   const session = await requireOrgMember();
 
+  const effectiveIds = session.user.role === "ADMIN" ? null : await getMyEffectiveKpiIds();
+  if (effectiveIds && effectiveIds.length === 0) return [];
+
   return prismaKpiDefinition.findMany<{
     id: string;
     name: string;
@@ -139,7 +143,10 @@ export async function getOrgKpisGrid() {
     primaryNode: { id: string; name: string; nodeType: { displayName: string } };
     values: Array<{ calculatedValue: number | null; periodEnd: Date; status: unknown }>;
   }>({
-    where: { orgId: session.user.orgId },
+    where: {
+      orgId: session.user.orgId,
+      ...(effectiveIds ? { id: { in: effectiveIds } } : {}),
+    },
     orderBy: [{ name: "asc" }],
     select: {
       id: true,
@@ -174,6 +181,12 @@ export async function getOrgKpiDetail(input: { kpiId: string }) {
   const session = await requireOrgMember();
   const parsed = z.object({ kpiId: z.string().uuid() }).safeParse(input);
   if (!parsed.success) return null;
+
+  if (session.user.role !== "ADMIN") {
+    const effective = await getMyEffectiveKpiIds();
+    const allowed = new Set(effective);
+    if (!allowed.has(parsed.data.kpiId)) return null;
+  }
 
   const kpi = await prismaKpiDefinition.findFirst<{
     id: string;
@@ -318,6 +331,14 @@ export async function submitOrgKpiValues(data: z.infer<typeof submitKpiValuesSch
   }
 
   const parsed = parsedResult.data;
+
+  if (session.user.role !== "ADMIN") {
+    const effective = await getMyEffectiveKpiIds();
+    const allowed = new Set(effective);
+    if (!allowed.has(parsed.kpiId)) {
+      return { success: false as const, error: "Unauthorized" };
+    }
+  }
 
   const kpi = await prismaKpiDefinition.findFirst<{
     id: string;

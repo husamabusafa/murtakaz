@@ -260,6 +260,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
       { href: "/overview", key: "home", icon: "tabler:layout-dashboard" },
       ...nodeTypeItems,
       { href: "/kpis", key: "kpis", icon: "tabler:chart-line" },
+      ...(userRole && userRole !== "EMPLOYEE" ? ([{ href: "/responsibilities", key: "responsibilities", icon: "tabler:user-check" }] as NavItem[]) : []),
       { href: "/dashboards", key: "dashboards", icon: "tabler:layout-dashboard" },
       { href: "/approvals", key: "approvals", icon: "tabler:gavel" },
       { href: "/organization", key: "organization", icon: "tabler:building" },

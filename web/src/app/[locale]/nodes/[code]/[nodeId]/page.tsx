@@ -11,10 +11,10 @@ import { Icon } from "@/components/icon";
 import { StatusBadge } from "@/components/rag-badge";
 import { useAuth } from "@/providers/auth-provider";
 import { useLocale } from "@/providers/locale-provider";
-import { getOrgAdminNodeDetail } from "@/actions/org-admin";
+import { getOrgNodeDetail } from "@/actions/nodes";
 import type { Status } from "@prisma/client";
 
-type Detail = Awaited<ReturnType<typeof getOrgAdminNodeDetail>>;
+type Detail = Awaited<ReturnType<typeof getOrgNodeDetail>>;
 
 function normalizeCode(code: string) {
   return code.trim().toLowerCase();
@@ -23,10 +23,7 @@ function normalizeCode(code: string) {
 export default function NodeDetailPage() {
   const params = useParams<{ code: string; nodeId: string }>();
   const { tr, locale } = useLocale();
-  const { user, loading: sessionLoading } = useAuth();
-
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const userRole = (user as any)?.role as string | undefined;
+  const { loading: sessionLoading } = useAuth();
 
   const code = typeof params?.code === "string" ? params.code : "";
   const nodeId = typeof params?.nodeId === "string" ? params.nodeId : "";
@@ -37,14 +34,13 @@ export default function NodeDetailPage() {
 
   useEffect(() => {
     if (sessionLoading) return;
-    if (userRole !== "ADMIN") return;
     if (!code || !nodeId) return;
 
     let mounted = true;
     (async () => {
       setLoading(true);
       try {
-        const result = await getOrgAdminNodeDetail({ code, nodeId });
+        const result = await getOrgNodeDetail({ code, nodeId });
         if (!mounted) return;
         setData(result);
       } finally {
@@ -55,7 +51,7 @@ export default function NodeDetailPage() {
     return () => {
       mounted = false;
     };
-  }, [code, nodeId, sessionLoading, userRole]);
+  }, [code, nodeId, sessionLoading]);
 
   const title = data?.node?.name ?? tr("Item", "عنصر");
 
@@ -106,21 +102,6 @@ export default function NodeDetailPage() {
           <CardHeader>
             <CardTitle className="text-base">{tr("Loading", "جارٍ التحميل")}</CardTitle>
             <CardDescription>{tr("Please wait", "يرجى الانتظار")}</CardDescription>
-          </CardHeader>
-          <CardContent />
-        </Card>
-      </div>
-    );
-  }
-
-  if (userRole !== "ADMIN") {
-    return (
-      <div className="space-y-8">
-        <PageHeader title={title} subtitle={tr("Unauthorized", "غير مصرح")} icon={<Icon name={pageIcon} className="h-5 w-5" />} />
-        <Card className="bg-card/70 backdrop-blur shadow-sm">
-          <CardHeader>
-            <CardTitle className="text-base">{tr("Access denied", "تم رفض الوصول")}</CardTitle>
-            <CardDescription>{tr("Only organization admins can access this page.", "هذه الصفحة متاحة لمسؤولي المؤسسة فقط.")}</CardDescription>
           </CardHeader>
           <CardContent />
         </Card>

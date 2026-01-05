@@ -21,15 +21,15 @@ import { useLocale } from "@/providers/locale-provider";
 import {
   createOrgAdminNode,
   deleteOrgAdminNode,
-  getOrgAdminEnabledNodeTypes,
-  getOrgAdminNodesByType,
   getOrgAdminParentOptionsForNodeType,
   updateOrgAdminNode,
 } from "@/actions/org-admin";
+import { getMyOrganizationNodeTypes } from "@/actions/navigation";
+import { getOrgNodesByType } from "@/actions/nodes";
 import type { Status } from "@prisma/client";
 
-type EnabledNodeTypeRow = Awaited<ReturnType<typeof getOrgAdminEnabledNodeTypes>>[number];
-type NodeRow = Awaited<ReturnType<typeof getOrgAdminNodesByType>>[number];
+type EnabledNodeTypeRow = Awaited<ReturnType<typeof getMyOrganizationNodeTypes>>[number];
+type NodeRow = Awaited<ReturnType<typeof getOrgNodesByType>>[number];
 type ParentOptionRow = Awaited<ReturnType<typeof getOrgAdminParentOptionsForNodeType>>[number];
 
 const presetColors = [
@@ -77,6 +77,7 @@ export default function NodeTypePage() {
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const userRole = (user as any)?.role as string | undefined;
+  const isAdmin = userRole === "ADMIN";
 
   const code = typeof params?.code === "string" ? params.code : "";
   const normalizedCode = useMemo(() => normalizeCode(code), [code]);
@@ -150,9 +151,9 @@ export default function NodeTypePage() {
     setLoading(true);
     try {
       const [types, rows, parentOptions] = await Promise.all([
-        getOrgAdminEnabledNodeTypes(),
-        getOrgAdminNodesByType({ code }),
-        getOrgAdminParentOptionsForNodeType({ code }),
+        getMyOrganizationNodeTypes(),
+        getOrgNodesByType({ code }),
+        isAdmin ? getOrgAdminParentOptionsForNodeType({ code }) : Promise.resolve([]),
       ]);
       setEnabledTypes(types);
       setNodes(rows);
@@ -164,14 +165,13 @@ export default function NodeTypePage() {
     } finally {
       setLoading(false);
     }
-  }, [code]);
+  }, [code, isAdmin]);
 
   useEffect(() => {
     if (sessionLoading) return;
-    if (userRole !== "ADMIN") return;
     if (!code) return;
     void loadData();
-  }, [code, loadData, sessionLoading, userRole]);
+  }, [code, loadData, sessionLoading]);
 
   const currentTypeIndex = useMemo(() => {
     if (!enabledTypes.length) return -1;
@@ -187,11 +187,13 @@ export default function NodeTypePage() {
   }, [currentTypeIndex, enabledTypes, requiresParent]);
 
   const effectiveCanCreate = useMemo(() => {
+    if (!isAdmin) return false;
     if (!requiresParent) return true;
     return parents.length > 0;
-  }, [parents.length, requiresParent]);
+  }, [isAdmin, parents.length, requiresParent]);
 
   const createDisabledReason = useMemo(() => {
+    if (!isAdmin) return null;
     if (effectiveCanCreate) return null;
     if (!enabledTypes.length) return tr("No node types enabled for this organization.", "لا توجد أنواع عقد مفعّلة لهذه المؤسسة.");
     if (requiresParent) {
@@ -203,7 +205,7 @@ export default function NodeTypePage() {
         : tr("Nothing to select yet. Create a higher level first.", "لا يوجد شيء للاختيار بعد. أنشئ المستوى الأعلى أولاً.");
     }
     return tr(`Cannot create ${title}.`, `لا يمكن إنشاء ${title}.`);
-  }, [effectiveCanCreate, enabledTypes.length, requiredParentTypeLabel, requiresParent, title, tr]);
+  }, [effectiveCanCreate, enabledTypes.length, isAdmin, requiredParentTypeLabel, requiresParent, title, tr]);
 
   const higherNodeLabel = useMemo(() => {
     return requiredParentTypeLabel ?? tr("Higher level", "المستوى الأعلى");
@@ -343,21 +345,6 @@ export default function NodeTypePage() {
     );
   }
 
-  if (userRole !== "ADMIN") {
-    return (
-      <div className="space-y-8">
-        <PageHeader title={title} subtitle={tr("Unauthorized", "غير مصرح")} icon={<Icon name={pageIcon} className="h-5 w-5" />} />
-        <Card className="bg-card/70 backdrop-blur shadow-sm">
-          <CardHeader>
-            <CardTitle className="text-base">{tr("Access denied", "تم رفض الوصول")}</CardTitle>
-            <CardDescription>{tr("Only organization admins can access this page.", "هذه الصفحة متاحة لمسؤولي المؤسسة فقط.")}</CardDescription>
-          </CardHeader>
-          <CardContent />
-        </Card>
-      </div>
-    );
-  }
-
   return (
     <div className="space-y-8">
       <PageHeader
@@ -375,119 +362,131 @@ export default function NodeTypePage() {
                 {title}
               </CardTitle>
               <CardDescription>
-                {hasLowerType
-                  ? tr(
-                      `Create, edit, delete, and open ${title} items to see ${lowerTypeLabel} and KPIs.`,
-                      `أنشئ وحرّر واحذف وافتح عناصر ${title} لرؤية ${lowerTypeLabel} والمؤشرات.`,
-                    )
-                  : tr(
-                      `Create, edit, delete, and open ${title} items to see KPIs.`,
-                      `أنشئ وحرّر واحذف وافتح عناصر ${title} لرؤية المؤشرات.`,
-                    )}
+                {isAdmin
+                  ? hasLowerType
+                    ? tr(
+                        `Create, edit, delete, and open ${title} items to see ${lowerTypeLabel} and KPIs.`,
+                        `أنشئ وحرّر واحذف وافتح عناصر ${title} لرؤية ${lowerTypeLabel} والمؤشرات.`,
+                      )
+                    : tr(
+                        `Create, edit, delete, and open ${title} items to see KPIs.`,
+                        `أنشئ وحرّر واحذف وافتح عناصر ${title} لرؤية المؤشرات.`,
+                      )
+                  : hasLowerType
+                    ? tr(
+                        `Explore ${title} items to see ${lowerTypeLabel} and KPIs.`,
+                        `استعرض عناصر ${title} لرؤية ${lowerTypeLabel} والمؤشرات.`,
+                      )
+                    : tr(
+                        `Explore ${title} items to see KPIs.`,
+                        `استعرض عناصر ${title} لرؤية المؤشرات.`,
+                      )}
               </CardDescription>
             </div>
-            <Dialog open={createOpen} onOpenChange={setCreateOpen}>
-              <DialogTrigger asChild>
-                <Button disabled={!effectiveCanCreate}>
-                  <Plus className="h-4 w-4" />
-                  <span className="ms-2">{tr("New", "جديد")}</span>
-                </Button>
-              </DialogTrigger>
-              <DialogContent className="sm:max-w-[520px]">
-                <DialogHeader>
-                  <DialogTitle>{tr(`Create ${title}`, `إنشاء ${title}`)}</DialogTitle>
-                  <DialogDescription>{title}</DialogDescription>
-                </DialogHeader>
+            {isAdmin ? (
+              <Dialog open={createOpen} onOpenChange={setCreateOpen}>
+                <DialogTrigger asChild>
+                  <Button disabled={!effectiveCanCreate}>
+                    <Plus className="h-4 w-4" />
+                    <span className="ms-2">{tr("New", "جديد")}</span>
+                  </Button>
+                </DialogTrigger>
+                <DialogContent className="sm:max-w-[520px]">
+                  <DialogHeader>
+                    <DialogTitle>{tr(`Create ${title}`, `إنشاء ${title}`)}</DialogTitle>
+                    <DialogDescription>{title}</DialogDescription>
+                  </DialogHeader>
 
-                {createError ? (
-                  <div className="rounded-md border border-rose-500/30 bg-rose-500/10 p-3 text-sm text-rose-200 whitespace-pre-wrap">{createError}</div>
-                ) : null}
-
-                <div className="grid gap-4">
-                  <div className="grid gap-2">
-                    <Label htmlFor="create-name">{tr("Name", "الاسم")}</Label>
-                    <Input id="create-name" value={createDraft.name} onChange={(e) => setCreateDraft((p) => ({ ...p, name: e.target.value }))} />
-                  </div>
-                  <div className="grid gap-2">
-                    <Label htmlFor="create-description">{tr("Description", "الوصف")}</Label>
-                    <Input
-                      id="create-description"
-                      value={createDraft.description}
-                      onChange={(e) => setCreateDraft((p) => ({ ...p, description: e.target.value }))}
-                    />
-                  </div>
-
-                  {requiresParent ? (
-                    <div className="grid gap-2">
-                      <Label>{higherNodeLabel}</Label>
-                      <Select
-                        value={createDraft.parentId}
-                        onValueChange={(v) => setCreateDraft((p) => ({ ...p, parentId: v }))}
-                        disabled={!createParentOptions.length}
-                      >
-                        <SelectTrigger>
-                          <SelectValue placeholder={tr(`Select ${higherNodeLabel}`, `اختر ${higherNodeLabel}`)} />
-                        </SelectTrigger>
-                        <SelectContent>
-                          {createParentOptions.map((p) => (
-                            <SelectItem key={p.id} value={p.id}>
-                              {p.name}
-                            </SelectItem>
-                          ))}
-                        </SelectContent>
-                      </Select>
-                      {!createParentOptions.length ? (
-                        <p className="text-xs text-muted-foreground">{createDisabledReason}</p>
-                      ) : null}
-                    </div>
+                  {createError ? (
+                    <div className="rounded-md border border-rose-500/30 bg-rose-500/10 p-3 text-sm text-rose-200 whitespace-pre-wrap">{createError}</div>
                   ) : null}
 
-                  <div className="grid gap-2">
-                    <Label>{tr("Color", "اللون")}</Label>
-                    <div className="flex flex-wrap gap-2">
-                      {presetColors.map((c) => (
-                        <button
-                          key={c}
-                          type="button"
-                          onClick={() => setCreateDraft((p) => ({ ...p, color: c }))}
-                          className={
-                            "h-8 w-8 rounded-lg border transition " +
-                            (createDraft.color === c ? "border-foreground ring-2 ring-foreground/30" : "border-border hover:border-foreground/40")
-                          }
-                          style={{ backgroundColor: c }}
-                          aria-label={c}
-                        />
-                      ))}
+                  <div className="grid gap-4">
+                    <div className="grid gap-2">
+                      <Label htmlFor="create-name">{tr("Name", "الاسم")}</Label>
+                      <Input id="create-name" value={createDraft.name} onChange={(e) => setCreateDraft((p) => ({ ...p, name: e.target.value }))} />
                     </div>
-                    <p className="text-xs text-muted-foreground">{tr("Pick a preset color.", "اختر لوناً جاهزاً.")}</p>
+                    <div className="grid gap-2">
+                      <Label htmlFor="create-description">{tr("Description", "الوصف")}</Label>
+                      <Input
+                        id="create-description"
+                        value={createDraft.description}
+                        onChange={(e) => setCreateDraft((p) => ({ ...p, description: e.target.value }))}
+                      />
+                    </div>
+
+                    {requiresParent ? (
+                      <div className="grid gap-2">
+                        <Label>{higherNodeLabel}</Label>
+                        <Select
+                          value={createDraft.parentId}
+                          onValueChange={(v) => setCreateDraft((p) => ({ ...p, parentId: v }))}
+                          disabled={!createParentOptions.length}
+                        >
+                          <SelectTrigger>
+                            <SelectValue placeholder={tr(`Select ${higherNodeLabel}`, `اختر ${higherNodeLabel}`)} />
+                          </SelectTrigger>
+                          <SelectContent>
+                            {createParentOptions.map((p) => (
+                              <SelectItem key={p.id} value={p.id}>
+                                {p.name}
+                              </SelectItem>
+                            ))}
+                          </SelectContent>
+                        </Select>
+                        {!createParentOptions.length ? (
+                          <p className="text-xs text-muted-foreground">{createDisabledReason}</p>
+                        ) : null}
+                      </div>
+                    ) : null}
+
+                    <div className="grid gap-2">
+                      <Label>{tr("Color", "اللون")}</Label>
+                      <div className="flex flex-wrap gap-2">
+                        {presetColors.map((c) => (
+                          <button
+                            key={c}
+                            type="button"
+                            onClick={() => setCreateDraft((p) => ({ ...p, color: c }))}
+                            className={
+                              "h-8 w-8 rounded-lg border transition " +
+                              (createDraft.color === c ? "border-foreground ring-2 ring-foreground/30" : "border-border hover:border-foreground/40")
+                            }
+                            style={{ backgroundColor: c }}
+                            aria-label={c}
+                          />
+                        ))}
+                      </div>
+                      <p className="text-xs text-muted-foreground">{tr("Pick a preset color.", "اختر لوناً جاهزاً.")}</p>
+                    </div>
+
+                    <div className="grid gap-2">
+                      <Label>{tr("Status", "الحالة")}</Label>
+                      <Select value={createDraft.status} onValueChange={(v) => setCreateDraft((p) => ({ ...p, status: v as Status }))}>
+                        <SelectTrigger>
+                          <SelectValue />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="PLANNED">{tr("Planned", "مخطط")}</SelectItem>
+                          <SelectItem value="ACTIVE">{tr("Active", "نشط")}</SelectItem>
+                          <SelectItem value="AT_RISK">{tr("At risk", "معرض للخطر")}</SelectItem>
+                          <SelectItem value="COMPLETED">{tr("Completed", "مكتمل")}</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </div>
                   </div>
 
-                  <div className="grid gap-2">
-                    <Label>{tr("Status", "الحالة")}</Label>
-                    <Select value={createDraft.status} onValueChange={(v) => setCreateDraft((p) => ({ ...p, status: v as Status }))}>
-                      <SelectTrigger>
-                        <SelectValue />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="PLANNED">{tr("Planned", "مخطط")}</SelectItem>
-                        <SelectItem value="ACTIVE">{tr("Active", "نشط")}</SelectItem>
-                        <SelectItem value="AT_RISK">{tr("At risk", "معرض للخطر")}</SelectItem>
-                        <SelectItem value="COMPLETED">{tr("Completed", "مكتمل")}</SelectItem>
-                      </SelectContent>
-                    </Select>
-                  </div>
-                </div>
-
-                <DialogFooter>
-                  <Button variant="outline" onClick={() => setCreateOpen(false)} disabled={submitting}>
-                    {tr("Cancel", "إلغاء")}
-                  </Button>
-                  <Button onClick={handleCreate} disabled={submitting || (requiresParent && createDraft.parentId === "__none__")}>
-                    {tr(`Create ${title}`, `إنشاء ${title}`)}
-                  </Button>
-                </DialogFooter>
-              </DialogContent>
-            </Dialog>
+                  <DialogFooter>
+                    <Button variant="outline" onClick={() => setCreateOpen(false)} disabled={submitting}>
+                      {tr("Cancel", "إلغاء")}
+                    </Button>
+                    <Button onClick={handleCreate} disabled={submitting || (requiresParent && createDraft.parentId === "__none__")}>
+                      {tr(`Create ${title}`, `إنشاء ${title}`)}
+                    </Button>
+                  </DialogFooter>
+                </DialogContent>
+              </Dialog>
+            ) : null}
           </div>
         </CardHeader>
 
@@ -507,14 +506,16 @@ export default function NodeTypePage() {
                         </CardTitle>
                         {n.description ? <CardDescription className="line-clamp-2">{n.description}</CardDescription> : null}
                       </div>
-                      <div className="flex items-center gap-2">
-                        <Button variant="ghost" size="icon" onClick={() => openEdit(n)}>
-                          <Pencil className="h-4 w-4" />
-                        </Button>
-                        <Button variant="ghost" size="icon" onClick={() => openDelete(n)}>
-                          <Trash2 className="h-4 w-4" />
-                        </Button>
-                      </div>
+                      {isAdmin ? (
+                        <div className="flex items-center gap-2">
+                          <Button variant="ghost" size="icon" onClick={() => openEdit(n)}>
+                            <Pencil className="h-4 w-4" />
+                          </Button>
+                          <Button variant="ghost" size="icon" onClick={() => openDelete(n)}>
+                            <Trash2 className="h-4 w-4" />
+                          </Button>
+                        </div>
+                      ) : null}
                     </div>
                     <div className="flex items-center gap-2">
                       <StatusBadge status={n.status as Status} />
@@ -547,7 +548,7 @@ export default function NodeTypePage() {
                     <TableHead>{tr("Status", "الحالة")}</TableHead>
                     {hasLowerType ? <TableHead>{lowerTypeLabel}</TableHead> : null}
                     <TableHead>{tr("KPIs", "المؤشرات")}</TableHead>
-                    <TableHead className="text-right">{tr("Actions", "الإجراءات")}</TableHead>
+                    {isAdmin ? <TableHead className="text-right">{tr("Actions", "الإجراءات")}</TableHead> : null}
                   </TableRow>
                 </TableHeader>
                 <TableBody>
@@ -568,21 +569,23 @@ export default function NodeTypePage() {
                       </TableCell>
                       {hasLowerType ? <TableCell className="text-muted-foreground">{n._count.children}</TableCell> : null}
                       <TableCell className="text-muted-foreground">{n._count.kpis}</TableCell>
-                      <TableCell className="text-right">
-                        <div className="inline-flex items-center gap-2">
-                          <Button variant="ghost" size="icon" onClick={() => openEdit(n)}>
-                            <Pencil className="h-4 w-4" />
-                          </Button>
-                          <Button variant="ghost" size="icon" onClick={() => openDelete(n)}>
-                            <Trash2 className="h-4 w-4" />
-                          </Button>
-                        </div>
-                      </TableCell>
+                      {isAdmin ? (
+                        <TableCell className="text-right">
+                          <div className="inline-flex items-center gap-2">
+                            <Button variant="ghost" size="icon" onClick={() => openEdit(n)}>
+                              <Pencil className="h-4 w-4" />
+                            </Button>
+                            <Button variant="ghost" size="icon" onClick={() => openDelete(n)}>
+                              <Trash2 className="h-4 w-4" />
+                            </Button>
+                          </div>
+                        </TableCell>
+                      ) : null}
                     </TableRow>
                   ))}
                   {nodes.length === 0 ? (
                     <TableRow>
-                      <TableCell colSpan={hasLowerType ? 6 : 5} className="py-8 text-center text-sm text-muted-foreground">
+                      <TableCell colSpan={isAdmin ? (hasLowerType ? 6 : 5) : hasLowerType ? 5 : 4} className="py-8 text-center text-sm text-muted-foreground">
                         {tr(`No ${title} yet.`, `لا توجد ${title} بعد.`)}
                       </TableCell>
                     </TableRow>
@@ -594,10 +597,11 @@ export default function NodeTypePage() {
         </CardContent>
       </Card>
 
-      {createDisabledReason && !isTopLevel ? (
+      {isAdmin && createDisabledReason && !isTopLevel ? (
         <div className="rounded-md border border-border bg-card/50 p-4 text-sm text-muted-foreground">{createDisabledReason}</div>
       ) : null}
 
+      {isAdmin ? (
       <Dialog open={editOpen} onOpenChange={setEditOpen}>
         <DialogContent className="sm:max-w-[520px]">
           <DialogHeader>
@@ -691,6 +695,9 @@ export default function NodeTypePage() {
         </DialogContent>
       </Dialog>
 
+      ) : null}
+
+      {isAdmin ? (
       <Dialog open={deleteOpen} onOpenChange={setDeleteOpen}>
         <DialogContent className="sm:max-w-[520px]">
           <DialogHeader>
@@ -716,6 +723,8 @@ export default function NodeTypePage() {
           </DialogFooter>
         </DialogContent>
       </Dialog>
+
+      ) : null}
     </div>
   );
 }

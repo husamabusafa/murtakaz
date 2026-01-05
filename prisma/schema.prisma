@@ -104,6 +104,8 @@ model Organization {
   kpis           KpiDefinition[]
   changeRequests ChangeRequest[]
   nodeTypes      OrganizationNodeType[]
+  responsibilityNodeAssignments ResponsibilityNodeAssignment[]
+  responsibilityKpiAssignments  ResponsibilityKpiAssignment[]
 
   @@index([domain])
 }
@@ -179,6 +181,11 @@ model User {
   kpiValuesEntered KpiValuePeriod[]   @relation("KpiValueEnteredBy")
   kpiValuesApproved KpiValuePeriod[]  @relation("KpiValueApprovedBy")
   ownedKpis        KpiDefinition[]    @relation("KpiOwner")
+
+  responsibilityAssignmentsGiven    ResponsibilityNodeAssignment[] @relation("ResponsibilityAssignedBy")
+  responsibilityAssignmentsReceived ResponsibilityNodeAssignment[] @relation("ResponsibilityAssignedTo")
+  responsibilityKpiGiven            ResponsibilityKpiAssignment[]  @relation("ResponsibilityKpiAssignedBy")
+  responsibilityKpiReceived         ResponsibilityKpiAssignment[]  @relation("ResponsibilityKpiAssignedTo")
 
   // ✅ IMPORTANT:
   // This enforces unique emails per org, but you must handle soft delete
@@ -351,6 +358,7 @@ model Node {
   incomingDeps NodeDependency[] @relation("NodeBlocks")
 
   kpis KpiDefinition[]
+  responsibilityRootAssignments ResponsibilityNodeAssignment[] @relation("ResponsibilityRootNode")
 
   @@index([orgId])
   @@index([nodeTypeId])
@@ -377,6 +385,61 @@ model NodeAssignment {
   @@index([nodeId])
   @@index([userId])
   @@map("node_assignments")
+}
+
+// Responsibility assignments drive "who is accountable" for execution.
+// Node assignments are stored as ROOT nodes; effective responsibility cascades to all descendants and KPIs.
+model ResponsibilityNodeAssignment {
+  id           String @id @default(uuid())
+
+  orgId        String @map("org_id")
+  org          Organization @relation(fields: [orgId], references: [id], onDelete: Cascade)
+
+  rootNodeId   String @map("root_node_id")
+  rootNode     Node   @relation("ResponsibilityRootNode", fields: [rootNodeId], references: [id], onDelete: Cascade)
+
+  assignedToId String @map("assigned_to_id")
+  assignedTo   User   @relation("ResponsibilityAssignedTo", fields: [assignedToId], references: [id], onDelete: Cascade)
+
+  assignedById String @map("assigned_by_id")
+  assignedBy   User   @relation("ResponsibilityAssignedBy", fields: [assignedById], references: [id], onDelete: Cascade)
+
+  createdAt    DateTime @default(now()) @map("created_at")
+  updatedAt    DateTime @updatedAt @map("updated_at")
+
+  @@unique([assignedToId, rootNodeId], name: "responsibility_node_unique")
+  @@index([orgId])
+  @@index([assignedToId])
+  @@index([assignedById])
+  @@index([rootNodeId])
+  @@map("responsibility_node_assignments")
+}
+
+// Direct KPI responsibility for cases where you don't want to own the whole node.
+model ResponsibilityKpiAssignment {
+  id           String @id @default(uuid())
+
+  orgId        String @map("org_id")
+  org          Organization @relation(fields: [orgId], references: [id], onDelete: Cascade)
+
+  kpiId        String @map("kpi_id")
+  kpi          KpiDefinition @relation("ResponsibilityKpi", fields: [kpiId], references: [id], onDelete: Cascade)
+
+  assignedToId String @map("assigned_to_id")
+  assignedTo   User   @relation("ResponsibilityKpiAssignedTo", fields: [assignedToId], references: [id], onDelete: Cascade)
+
+  assignedById String @map("assigned_by_id")
+  assignedBy   User   @relation("ResponsibilityKpiAssignedBy", fields: [assignedById], references: [id], onDelete: Cascade)
+
+  createdAt    DateTime @default(now()) @map("created_at")
+  updatedAt    DateTime @updatedAt @map("updated_at")
+
+  @@unique([assignedToId, kpiId], name: "responsibility_kpi_unique")
+  @@index([orgId])
+  @@index([assignedToId])
+  @@index([assignedById])
+  @@index([kpiId])
+  @@map("responsibility_kpi_assignments")
 }
 
 // Dependencies: "A depends on B" => A is blocked by B
@@ -428,6 +491,7 @@ model KpiDefinition {
 
   variables KpiVariable[]
   values    KpiValuePeriod[]
+  responsibilityAssignments ResponsibilityKpiAssignment[] @relation("ResponsibilityKpi")
 
   @@index([orgId])
   @@index([primaryNodeId])

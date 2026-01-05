@@ -73,6 +73,7 @@ const dictionary = {
     rolePMO: "PMO",
     roleManager: "Manager",
     roleEmployee: "Employee",
+    responsibilities: "Responsibilities",
   },
   ar: {
     home: "نظرة عامة",
@@ -132,6 +133,7 @@ const dictionary = {
     rolePMO: "PMO",
     roleManager: "مدير",
     roleEmployee: "موظف",
+    responsibilities: "المسؤوليات",
   },
 };
 
