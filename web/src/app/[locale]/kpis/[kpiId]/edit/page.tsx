@@ -3,7 +3,7 @@
 import { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
 import { useParams, useRouter } from "next/navigation";
-import { Plus, Trash2 } from "lucide-react";
+import { Loader2, Plus, Trash2 } from "lucide-react";
 import { PageHeader } from "@/components/page-header";
 import { Icon } from "@/components/icon";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -318,6 +318,7 @@ export default function EditKpiPage() {
             <Button
               type="button"
               className="bg-white/10 text-white hover:bg-white/15"
+              disabled={submitting}
               onClick={() =>
                 setDraft((p) =>
                   p
@@ -505,7 +506,14 @@ export default function EditKpiPage() {
               <Link href={`/${locale}/kpis/${params.kpiId}`}>{tr("Cancel", "إلغاء")}</Link>
             </Button>
             <Button className="bg-white text-slate-900 hover:bg-slate-100" onClick={handleSave} disabled={!canSubmit || submitting}>
-              {tr("Save", "حفظ")}
+              {submitting ? (
+                <span className="inline-flex items-center gap-2">
+                  <Loader2 className="h-4 w-4 animate-spin" />
+                  {tr("Saving…", "جارٍ الحفظ…")}
+                </span>
+              ) : (
+                tr("Save", "حفظ")
+              )}
             </Button>
           </div>
         </CardContent>

@@ -17,6 +17,7 @@ import type { EChartsOption } from "echarts";
 import { useEffect, useMemo, useState } from "react";
 import { KpiGauge } from "@/components/charts/kpi-gauge";
 import { deleteOrgAdminKpi, getOrgKpiDetail, submitOrgKpiValues } from "@/actions/kpis";
+import { Loader2 } from "lucide-react";
 
 export default function KPIDetailPage() {
   const params = useParams<{ kpiId: string }>();
@@ -225,7 +226,14 @@ export default function KPIDetailPage() {
                     <Link href={`/${locale}/kpis/${kpi.id}/edit`}>{tr("Edit", "تعديل")}</Link>
                   </Button>
                   <Button variant="destructive" onClick={() => setDeleteOpen(true)} disabled={submitting}>
-                    {tr("Delete", "حذف")}
+                    {submitting ? (
+                      <span className="inline-flex items-center gap-2">
+                        <Loader2 className="h-4 w-4 animate-spin" />
+                        {tr("Working…", "جارٍ التنفيذ…")}
+                      </span>
+                    ) : (
+                      tr("Delete", "حذف")
+                    )}
                   </Button>
                 </div>
               ) : null}
@@ -332,7 +340,14 @@ export default function KPIDetailPage() {
           </div>
 
           <Button className="bg-white text-slate-900 hover:bg-slate-100" onClick={handleSubmit} disabled={submitting}>
-            {tr("Save", "حفظ")}
+            {submitting ? (
+              <span className="inline-flex items-center gap-2">
+                <Loader2 className="h-4 w-4 animate-spin" />
+                {tr("Saving…", "جارٍ الحفظ…")}
+              </span>
+            ) : (
+              tr("Save", "حفظ")
+            )}
           </Button>
         </CardContent>
       </Card>
@@ -355,7 +370,14 @@ export default function KPIDetailPage() {
               {tr("Cancel", "إلغاء")}
             </Button>
             <Button variant="destructive" onClick={handleDelete} disabled={submitting}>
-              {tr("Delete", "حذف")}
+              {submitting ? (
+                <span className="inline-flex items-center gap-2">
+                  <Loader2 className="h-4 w-4 animate-spin" />
+                  {tr("Deleting…", "جارٍ الحذف…")}
+                </span>
+              ) : (
+                tr("Delete", "حذف")
+              )}
             </Button>
           </DialogFooter>
         </DialogContent>
