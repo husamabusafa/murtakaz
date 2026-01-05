@@ -329,6 +329,8 @@ model Node {
   name        String
   description String?
 
+  color       String   @default("#64748b") @map("color")
+
   // Keep a single "owner", but also support multi-assignments via NodeAssignment.
   ownerUserId String?  @map("owner_user_id")
   ownerUser   User?    @relation("NodeOwner", fields: [ownerUserId], references: [id], onDelete: SetNull)
