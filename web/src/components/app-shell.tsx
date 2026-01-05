@@ -5,8 +5,8 @@ import { usePathname, useRouter } from "next/navigation";
 import { useEffect, useMemo, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { LanguageToggle } from "@/components/language-toggle";
-import { UserMenu } from "@/components/user-menu";
 import { ThemeToggle } from "@/components/theme-toggle";
+import { getMyOrganizationNodeTypes } from "@/actions/navigation";
 import { useAuth } from "@/providers/auth-provider";
 import { type TranslationKey, useLocale } from "@/providers/locale-provider";
 import { Icon } from "@/components/icon";
@@ -16,17 +16,27 @@ const marketingRouteSet = new Set(["/", "/pricing", "/faq", "/about", "/contact"
 
 const navItems = [
   { href: "/overview", key: "home", icon: "tabler:layout-dashboard" },
-  { href: "/strategy", key: "strategy", icon: "tabler:target-arrow" },
-  { href: "/projects", key: "projects", icon: "tabler:timeline" },
   { href: "/kpis", key: "kpis", icon: "tabler:chart-line" },
-  { href: "/risks", key: "risks", icon: "tabler:shield-exclamation" },
   { href: "/dashboards", key: "dashboards", icon: "tabler:layout-dashboard" },
   { href: "/approvals", key: "approvals", icon: "tabler:gavel" },
-  { href: "/admin", key: "admin", icon: "tabler:settings" },
+  { href: "/organization", key: "organization", icon: "tabler:building" },
+  { href: "/users", key: "users", icon: "tabler:users" },
+  { href: "/departments", key: "departments", icon: "tabler:building-bank" },
   { href: "/super-admin", key: "superAdminOverview", icon: "tabler:home" },
   { href: "/super-admin/organizations", key: "organizations", icon: "tabler:building-community" },
   { href: "/super-admin/users", key: "users", icon: "tabler:users" },
 ] as const;
+
+type StaticNavItem = (typeof navItems)[number];
+
+type DynamicNavItem = {
+  href: string;
+  key: string;
+  icon: string;
+  label: string;
+};
+
+type NavItem = StaticNavItem | DynamicNavItem;
 
 function stripLocale(pathname: string) {
   const segments = pathname.split("/").filter(Boolean);
@@ -62,7 +72,7 @@ function NavItemLink({
   sidebarContentVisible,
   t,
 }: {
-  item: (typeof navItems)[number];
+  item: NavItem;
   href: string;
   isActive: boolean;
   isMobile: boolean;
@@ -71,6 +81,8 @@ function NavItemLink({
   sidebarContentVisible: boolean;
   t: (key: TranslationKey) => string;
 }) {
+  const label = "label" in item ? item.label : t(item.key as TranslationKey);
+
   if (isMobile) {
     return (
       <Link
@@ -90,7 +102,7 @@ function NavItemLink({
             mobileContentVisible ? "opacity-100 translate-x-0" : "opacity-0 translate-x-2",
           )}
         >
-          {t(item.key as TranslationKey)}
+          {label}
         </span>
       </Link>
     );
@@ -105,7 +117,7 @@ function NavItemLink({
         isActive ? "bg-accent text-foreground" : "text-muted-foreground hover:bg-accent hover:text-foreground",
       )}
       aria-current={isActive ? "page" : undefined}
-      title={!sidebarExpanded ? t(item.key as TranslationKey) : undefined}
+      title={!sidebarExpanded ? label : undefined}
     >
       <span className="flex h-9 w-9 items-center justify-center rounded-xl border border-border bg-background/50">
         <Icon name={item.icon} className="h-4 w-4" />
@@ -117,7 +129,7 @@ function NavItemLink({
           sidebarContentVisible ? "opacity-100 translate-x-0" : "opacity-0 -translate-x-2",
         )}
       >
-        {t(item.key as TranslationKey)}
+        {label}
       </span>
     </Link>
   );
@@ -145,6 +157,17 @@ export function AppShell({ children }: { children: React.ReactNode }) {
   const { user, loading } = useAuth();
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const userRole = (user as any)?.role;
+  const profileHref = userRole === "SUPER_ADMIN" ? withLocale(locale, "/super-admin/profile") : withLocale(locale, "/profile");
+  const userInitials = useMemo(() => {
+    const name = user?.name?.trim() ?? "";
+    if (!name) return "—";
+    return name
+      .split(/\s+/)
+      .slice(0, 2)
+      .map((part) => part[0])
+      .join("")
+      .toUpperCase();
+  }, [user?.name]);
   const canonicalPath = useMemo(() => stripLocale(pathname ?? "/"), [pathname]);
   const isAuthRoute = canonicalPath.startsWith("/auth/");
   const isMarketingRoute = marketingRouteSet.has(canonicalPath);
@@ -185,6 +208,8 @@ export function AppShell({ children }: { children: React.ReactNode }) {
   const mobileContentVisible = useDelayedVisibility(mobileNavOpen, 120);
 
   const activeKey = useMemo(() => {
+    if (canonicalPath.startsWith("/nodes/")) return "nodes";
+    if (canonicalPath.startsWith("/departments")) return "departments";
     const matches = navItems.filter((item) => {
       if (item.href === "/overview") return canonicalPath === "/overview";
       return canonicalPath.startsWith(item.href);
@@ -194,17 +219,57 @@ export function AppShell({ children }: { children: React.ReactNode }) {
     return matches[0]?.key;
   }, [canonicalPath]);
 
+  const [orgNodeTypes, setOrgNodeTypes] = useState<Array<{ code: string; displayName: string }>>([]);
+
+  useEffect(() => {
+    if (!showAppNav) return;
+    if (!user) return;
+    if (userRole === "SUPER_ADMIN") return;
+
+    void (async () => {
+      try {
+        const types = await getMyOrganizationNodeTypes();
+        setOrgNodeTypes(types.map((n) => ({ code: String(n.code), displayName: n.displayName })));
+      } catch {
+        setOrgNodeTypes([]);
+      }
+    })();
+  }, [showAppNav, user, userRole]);
+
+  const regularNavItems = useMemo<NavItem[]>(() => {
+    const nodeTypeItems: DynamicNavItem[] = orgNodeTypes.map((nt) => ({
+      href: `/nodes/${nt.code.toLowerCase()}`,
+      key: "nodes",
+      icon: "tabler:layers-subtract",
+      label: nt.displayName,
+    }));
+
+    const base: NavItem[] = [
+      { href: "/overview", key: "home", icon: "tabler:layout-dashboard" },
+      ...nodeTypeItems,
+      { href: "/kpis", key: "kpis", icon: "tabler:chart-line" },
+      { href: "/dashboards", key: "dashboards", icon: "tabler:layout-dashboard" },
+      { href: "/approvals", key: "approvals", icon: "tabler:gavel" },
+      { href: "/organization", key: "organization", icon: "tabler:building" },
+    ];
+
+    if (userRole === "ADMIN") {
+      base.push(
+        { href: "/users", key: "users", icon: "tabler:users" },
+        { href: "/departments", key: "departments", icon: "tabler:building-bank" },
+      );
+    }
+
+    return base;
+  }, [orgNodeTypes, userRole]);
+
   const visibleNavItems = useMemo(() => {
     if (userRole === "SUPER_ADMIN") {
       return navItems.filter((item) => item.href.startsWith("/super-admin"));
     }
 
-    return navItems.filter((item) => {
-      if (item.href.startsWith("/super-admin")) return false;
-      if (item.href.startsWith("/admin")) return userRole === "ADMIN";
-      return true;
-    });
-  }, [userRole]);
+    return regularNavItems;
+  }, [regularNavItems, userRole]);
 
   return (
     <div className="relative min-h-screen bg-background text-foreground">
@@ -255,7 +320,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
                     const isActive = activeKey === item.key;
                     return (
                       <NavItemLink
-                        key={item.key}
+                        key={item.href}
                         item={item}
                         href={withLocale(locale, item.href)}
                         isActive={isActive}
@@ -271,13 +336,18 @@ export function AppShell({ children }: { children: React.ReactNode }) {
               </nav>
 
               <div className="mt-auto border-t border-border p-4">
-                <div className="flex items-center gap-3">
-                  <UserMenu />
+                <Link
+                  href={profileHref}
+                  className="flex items-center gap-3 rounded-xl px-2 py-2 transition hover:bg-accent"
+                >
+                  <div className="flex h-9 w-9 items-center justify-center rounded-full border border-border bg-background/50 text-xs font-semibold text-foreground">
+                    {userInitials}
+                  </div>
                   <div className="min-w-0">
                     <p className="truncate text-sm font-semibold text-foreground">{user?.name}</p>
                     <p className="truncate text-xs text-muted-foreground">{userRole}</p>
                   </div>
-                </div>
+                </Link>
                 <div className="mt-3 flex items-center justify-between">
                   <div
                     className={cn(
@@ -288,7 +358,6 @@ export function AppShell({ children }: { children: React.ReactNode }) {
                     <ThemeToggle />
                     <LanguageToggle />
                   </div>
-                 
                 </div>
               </div>
             </div>
@@ -344,7 +413,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
                     const isActive = activeKey === item.key;
                     return (
                       <NavItemLink
-                        key={item.key}
+                        key={item.href}
                         item={item}
                         href={withLocale(locale, item.href)}
                         isActive={isActive}
@@ -360,8 +429,16 @@ export function AppShell({ children }: { children: React.ReactNode }) {
             </nav>
 
             <div className="mt-auto border-t border-border p-4">
-              <div className={cn("flex items-center ", !sidebarExpanded && "justify-center")}>
-                <UserMenu />
+              <Link
+                href={profileHref}
+                className={cn(
+                  "flex items-center rounded-xl transition hover:bg-accent",
+                  sidebarExpanded ? "gap-3 px-2 py-2" : "justify-center p-2",
+                )}
+              >
+                <div className="flex h-9 w-9 items-center justify-center rounded-full border border-border bg-background/50 text-xs font-semibold text-foreground">
+                  {userInitials}
+                </div>
                 <div
                   className={cn(
                     "min-w-0 overflow-hidden transition-all duration-300 motion-reduce:transition-none",
@@ -372,7 +449,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
                   <p className="truncate text-sm font-semibold text-foreground">{user?.name}</p>
                   <p className="truncate text-xs text-muted-foreground">{userRole}</p>
                 </div>
-              </div>
+              </Link>
               <div
                 className={cn(
                   " overflow-hidden transition-all duration-300 motion-reduce:transition-none",
@@ -450,7 +527,6 @@ export function AppShell({ children }: { children: React.ReactNode }) {
                     <Button asChild variant="secondary">
                       <Link href={`/${locale}/overview`}>{tr("Workspace", "مساحة العمل")}</Link>
                     </Button>
-                    <UserMenu />
                   </>
                 ) : isMarketingRoute ? (
                   <>
@@ -470,7 +546,6 @@ export function AppShell({ children }: { children: React.ReactNode }) {
                     <Link href={withLocale(locale, "/auth/login")}>{tr("Sign in", "تسجيل الدخول")}</Link>
                   </Button>
                 )}
-                {showAppNav ? <div className="lg:hidden"><UserMenu /></div> : null}
               </div>
             </div>
           </header>
