@@ -1,5 +1,6 @@
 "use client";
 
+import type React from "react";
 import { cn } from "@/lib/utils";
 import { useLocale } from "@/providers/locale-provider";
 
@@ -10,7 +11,7 @@ export function PageHeader({
   icon,
   className,
 }: {
-  title: string;
+  title: React.ReactNode;
   subtitle?: string;
   actions?: React.ReactNode;
   icon?: React.ReactNode;

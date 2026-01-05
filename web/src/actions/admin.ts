@@ -61,6 +61,28 @@ const createOrgWithUsersSchema = createOrgSchema.extend({
   users: z.array(createOrgUserSchema).min(1),
 });
 
+const updateOrgSchema = z.object({
+  orgId: z.string().uuid(),
+  name: z.string().min(2).optional(),
+  domain: z.string().optional(),
+});
+
+const updateUserSchema = z.object({
+  userId: z.string().min(1),
+  name: z.string().min(2).optional(),
+  email: z.string().email().optional(),
+  role: z.nativeEnum(Role).optional(),
+  orgId: z.string().uuid().optional(),
+});
+
+const deleteOrgSchema = z.object({
+  orgId: z.string().uuid(),
+});
+
+const deleteUserSchema = z.object({
+  userId: z.string().min(1),
+});
+
 export type ActionValidationIssue = {
   path: Array<string | number>;
   message: string;
@@ -76,6 +98,72 @@ async function requireSuperAdmin() {
     throw new Error("Unauthorized: Super Admin access required");
   }
   return session;
+}
+
+export async function updateUser(data: z.infer<typeof updateUserSchema>) {
+  await requireSuperAdmin();
+  const parsed = updateUserSchema.parse(data);
+
+  if (parsed.role === ("SUPER_ADMIN" as unknown as Role)) {
+    return { success: false, error: "Cannot assign SUPER_ADMIN role." };
+  }
+
+  try {
+    const user = await prisma.user.update({
+      where: { id: parsed.userId },
+      data: {
+        ...(typeof parsed.name === "string" ? { name: parsed.name } : {}),
+        ...(typeof parsed.email === "string" ? { email: parsed.email } : {}),
+        ...(typeof parsed.role !== "undefined" ? { role: parsed.role } : {}),
+        ...(typeof parsed.orgId === "string" ? { orgId: parsed.orgId } : {}),
+      },
+      select: {
+        id: true,
+        name: true,
+        email: true,
+        role: true,
+        createdAt: true,
+        org: {
+          select: {
+            id: true,
+            name: true,
+          },
+        },
+      },
+    });
+
+    return { success: true, user };
+  } catch (error: unknown) {
+    console.error("Failed to update user:", error);
+    const errorMessage = error instanceof Error ? error.message : "Failed to update user";
+    return { success: false, error: errorMessage };
+  }
+}
+
+export async function deleteUser(data: z.infer<typeof deleteUserSchema>) {
+  await requireSuperAdmin();
+  const parsed = deleteUserSchema.parse(data);
+
+  try {
+    const now = new Date();
+    const existing = await prisma.user.findFirst({
+      where: { id: parsed.userId },
+      select: { email: true },
+    });
+
+    await prisma.user.update({
+      where: { id: parsed.userId },
+      data: {
+        deletedAt: now,
+        email: existing?.email ? `${existing.email}__deleted__${now.getTime()}__${parsed.userId}` : undefined,
+      },
+    });
+    return { success: true };
+  } catch (error: unknown) {
+    console.error("Failed to delete user:", error);
+    const errorMessage = error instanceof Error ? error.message : "Failed to delete user";
+    return { success: false, error: errorMessage };
+  }
 }
 
 export async function createOrganization(data: z.infer<typeof createOrgSchema>) {
@@ -100,6 +188,7 @@ export async function createOrganization(data: z.infer<typeof createOrgSchema>) 
 export async function getOrganizations() {
   await requireSuperAdmin();
   const orgs = await prisma.organization.findMany({
+    where: { deletedAt: null },
     orderBy: { createdAt: "desc" },
     include: {
       _count: {
@@ -108,6 +197,82 @@ export async function getOrganizations() {
     },
   });
   return orgs;
+}
+
+export async function updateOrganization(data: z.infer<typeof updateOrgSchema>) {
+  await requireSuperAdmin();
+  const parsed = updateOrgSchema.parse(data);
+
+  try {
+    const org = await prisma.organization.update({
+      where: { id: parsed.orgId },
+      data: {
+        ...(typeof parsed.name === "string" ? { name: parsed.name } : {}),
+        ...(typeof parsed.domain === "string" ? { domain: parsed.domain || null } : {}),
+      },
+      select: {
+        id: true,
+        name: true,
+        domain: true,
+        createdAt: true,
+        updatedAt: true,
+        deletedAt: true,
+        _count: { select: { users: true } },
+        users: {
+          where: { deletedAt: null },
+          orderBy: { createdAt: "desc" },
+          select: {
+            id: true,
+            name: true,
+            email: true,
+            role: true,
+            createdAt: true,
+          },
+        },
+      },
+    });
+
+    return { success: true, org };
+  } catch (error: unknown) {
+    console.error("Failed to update organization:", error);
+    const errorMessage = error instanceof Error ? error.message : "Failed to update organization";
+    return { success: false, error: errorMessage };
+  }
+}
+
+export async function deleteOrganization(data: z.infer<typeof deleteOrgSchema>) {
+  await requireSuperAdmin();
+  const parsed = deleteOrgSchema.parse(data);
+
+  try {
+    const now = new Date();
+    const users = await prisma.user.findMany({
+      where: { orgId: parsed.orgId, deletedAt: null },
+      select: { id: true, email: true },
+    });
+
+    await prisma.$transaction([
+      ...users.map((u) =>
+        prisma.user.update({
+          where: { id: u.id },
+          data: {
+            deletedAt: now,
+            email: `${u.email}__deleted__${now.getTime()}__${u.id}`,
+          },
+        }),
+      ),
+      prisma.organization.update({
+        where: { id: parsed.orgId },
+        data: { deletedAt: now },
+      }),
+    ]);
+
+    return { success: true };
+  } catch (error: unknown) {
+    console.error("Failed to delete organization:", error);
+    const errorMessage = error instanceof Error ? error.message : "Failed to delete organization";
+    return { success: false, error: errorMessage };
+  }
 }
 
 export async function getNodeTypes() {
@@ -262,6 +427,7 @@ export async function createUser(data: z.infer<typeof createUserSchema>) {
 export async function getUsers() {
   await requireSuperAdmin();
   const users = await prisma.user.findMany({
+    where: { deletedAt: null },
     orderBy: { createdAt: "desc" },
     include: {
       org: true,

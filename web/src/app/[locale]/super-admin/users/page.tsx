@@ -103,10 +103,10 @@ export default function UsersManagementPage() {
               {tr("New User", "مستخدم جديد")}
             </Button>
           </DialogTrigger>
-          <DialogContent className="border-white/10 bg-slate-900 text-white max-h-[90vh] overflow-y-auto">
+          <DialogContent className="max-h-[90vh] overflow-y-auto border-border bg-card text-foreground">
             <DialogHeader>
               <DialogTitle>{tr("Create User", "إنشاء مستخدم")}</DialogTitle>
-              <DialogDescription className="text-slate-400">
+              <DialogDescription className="text-muted-foreground">
                 {tr("Add a new user to an organization.", "إضافة مستخدم جديد إلى مؤسسة.")}
               </DialogDescription>
             </DialogHeader>
@@ -119,7 +119,7 @@ export default function UsersManagementPage() {
                   onChange={(e) => setNewUser({ ...newUser, name: e.target.value })}
                   placeholder="John Doe"
                   required
-                  className="border-white/10 bg-slate-950/50"
+                  className="bg-card"
                 />
               </div>
 
@@ -132,7 +132,7 @@ export default function UsersManagementPage() {
                   onChange={(e) => setNewUser({ ...newUser, email: e.target.value })}
                   placeholder="user@example.com"
                   required
-                  className="border-white/10 bg-slate-950/50"
+                  className="bg-card"
                 />
               </div>
 
@@ -146,14 +146,14 @@ export default function UsersManagementPage() {
                   placeholder="******"
                   required
                   minLength={6}
-                  className="border-white/10 bg-slate-950/50"
+                  className="bg-card"
                 />
               </div>
 
               <div className="space-y-2">
                 <Label>{tr("Organization", "المؤسسة")}</Label>
                 <Select value={newUser.orgId} onValueChange={(val) => setNewUser({ ...newUser, orgId: val })}>
-                  <SelectTrigger className="border-white/10 bg-slate-950/50">
+                  <SelectTrigger className="bg-card">
                     <SelectValue placeholder={tr("Select Organization", "اختر المؤسسة")} />
                   </SelectTrigger>
                   <SelectContent>
@@ -169,7 +169,7 @@ export default function UsersManagementPage() {
               <div className="space-y-2">
                 <Label>{tr("Role", "الدور")}</Label>
                 <Select value={newUser.role} onValueChange={(val) => setNewUser({ ...newUser, role: val as Role })}>
-                  <SelectTrigger className="border-white/10 bg-slate-950/50">
+                  <SelectTrigger className="bg-card">
                     <SelectValue placeholder={tr("Select Role", "اختر الدور")} />
                   </SelectTrigger>
                   <SelectContent>
@@ -195,34 +195,34 @@ export default function UsersManagementPage() {
         </Dialog>
       </div>
 
-      <Card className="border-white/10 bg-white/5 text-white shadow-lg shadow-black/20">
+      <Card className="bg-card/70 backdrop-blur shadow-sm">
         <CardHeader>
           <CardTitle className="text-base">{tr("User Directory", "دليل المستخدمين")}</CardTitle>
-          <CardDescription className="text-slate-200">
+          <CardDescription>
             {tr("View and manage users across all organizations.", "عرض وإدارة المستخدمين في جميع المؤسسات.")}
           </CardDescription>
         </CardHeader>
         <CardContent>
-          <div className="overflow-hidden rounded-xl border border-white/10">
+          <div className="overflow-hidden rounded-xl border border-border">
             <Table>
               <TableHeader>
-                <TableRow className="border-white/10 hover:bg-white/0">
-                  <TableHead className="text-slate-200">{tr("User", "المستخدم")}</TableHead>
-                  <TableHead className="text-slate-200">{tr("Organization", "المؤسسة")}</TableHead>
-                  <TableHead className="text-slate-200">{tr("Role", "الدور")}</TableHead>
-                  <TableHead className="text-right text-slate-200">{tr("Joined", "تاريخ الانضمام")}</TableHead>
+                <TableRow>
+                  <TableHead>{tr("User", "المستخدم")}</TableHead>
+                  <TableHead>{tr("Organization", "المؤسسة")}</TableHead>
+                  <TableHead>{tr("Role", "الدور")}</TableHead>
+                  <TableHead className="text-right">{tr("Joined", "تاريخ الانضمام")}</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
                 {loading ? (
                   <TableRow>
-                    <TableCell colSpan={4} className="text-center text-slate-400 py-8">
+                    <TableCell colSpan={4} className="py-8 text-center text-muted-foreground">
                       {tr("Loading...", "جارٍ التحميل...")}
                     </TableCell>
                   </TableRow>
                 ) : users.length === 0 ? (
                   <TableRow>
-                    <TableCell colSpan={4} className="text-center text-slate-400 py-8">
+                    <TableCell colSpan={4} className="py-8 text-center text-muted-foreground">
                       {tr("No users found.", "لا يوجد مستخدمين.")}
                     </TableCell>
                   </TableRow>
@@ -230,22 +230,22 @@ export default function UsersManagementPage() {
                   users.map((user) => (
                     <TableRow
                       key={user.id}
-                      className="border-white/10 hover:bg-white/5 cursor-pointer"
+                      className="cursor-pointer hover:bg-muted/50"
                       onClick={() => router.push(`/${locale}/super-admin/users/${user.id}`)}
                     >
-                      <TableCell className="font-medium text-white">
+                      <TableCell className="font-medium">
                         <div className="flex flex-col">
                           <span>{user.name}</span>
-                          <span className="text-xs text-slate-400">{user.email}</span>
+                          <span className="text-xs text-muted-foreground">{user.email}</span>
                         </div>
                       </TableCell>
-                      <TableCell className="text-slate-200">{user.org?.name || "—"}</TableCell>
-                      <TableCell className="text-slate-100">
-                        <Badge variant="outline" className="border-white/20 bg-white/5">
+                      <TableCell className="text-muted-foreground">{user.org?.name || "—"}</TableCell>
+                      <TableCell>
+                        <Badge variant="outline" className="border-border bg-muted/30">
                           {user.role}
                         </Badge>
                       </TableCell>
-                      <TableCell className="text-right text-slate-400">
+                      <TableCell className="text-right text-muted-foreground">
                         {new Date(user.createdAt).toLocaleDateString()}
                       </TableCell>
                     </TableRow>
