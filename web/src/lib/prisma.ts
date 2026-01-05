@@ -4,8 +4,8 @@ const globalForPrisma = global as unknown as { prisma?: PrismaClient; prismaSche
 
 const prismaSchemaSig =
   Prisma.dmmf.datamodel.models
-    .find((m) => m.name === "Node")
-    ?.fields.map((f) => f.name)
+    .map((m) => `${m.name}:${m.fields.map((f) => f.name).join(",")}`)
+    .sort()
     .join("|") ?? "unknown";
 
 export const prisma =

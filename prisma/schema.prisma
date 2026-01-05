@@ -446,6 +446,9 @@ model KpiVariable {
   dataType    KpiVariableDataType @map("data_type")
   isRequired  Boolean             @default(false) @map("is_required")
 
+  isStatic    Boolean             @default(false) @map("is_static")
+  staticValue Float?              @map("static_value")
+
   values KpiVariableValue[]
 
   @@unique([kpiId, code])
