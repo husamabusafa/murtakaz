@@ -26,6 +26,7 @@ type PrismaWithNodeTypes = typeof prisma & {
       data: Array<{ orgId: string; nodeTypeId: string }>;
       skipDuplicates?: boolean;
     }) => Promise<unknown>;
+    deleteMany: (args: { where: { orgId: string } }) => Promise<unknown>;
   };
 };
 
@@ -83,6 +84,11 @@ const deleteUserSchema = z.object({
   userId: z.string().min(1),
 });
 
+const updateOrgNodeTypesSchema = z.object({
+  orgId: z.string().uuid(),
+  nodeTypeIds: z.array(z.string().uuid()).min(1),
+});
+
 export type ActionValidationIssue = {
   path: Array<string | number>;
   message: string;
@@ -98,6 +104,37 @@ async function requireSuperAdmin() {
     throw new Error("Unauthorized: Super Admin access required");
   }
   return session;
+}
+
+export async function updateOrganizationNodeTypes(data: z.infer<typeof updateOrgNodeTypesSchema>) {
+  await requireSuperAdmin();
+
+  if (!prismaWithNodeTypes.organizationNodeType) {
+    return {
+      success: false,
+      error: "Prisma client is outdated. Run `npx prisma generate` and restart the dev server.",
+    };
+  }
+
+  const parsed = updateOrgNodeTypesSchema.parse(data);
+
+  try {
+    await prismaWithNodeTypes.organizationNodeType.deleteMany({ where: { orgId: parsed.orgId } });
+
+    await prismaWithNodeTypes.organizationNodeType.createMany({
+      data: parsed.nodeTypeIds.map((nodeTypeId) => ({
+        orgId: parsed.orgId,
+        nodeTypeId,
+      })),
+      skipDuplicates: true,
+    });
+
+    return { success: true };
+  } catch (error: unknown) {
+    console.error("Failed to update organization node types:", error);
+    const errorMessage = error instanceof Error ? error.message : "Failed to update organization node types";
+    return { success: false, error: errorMessage };
+  }
 }
 
 export async function updateUser(data: z.infer<typeof updateUserSchema>) {
@@ -440,6 +477,22 @@ export async function getOrganizationDetails(orgId: string) {
     include: {
       _count: {
         select: { users: true },
+      },
+      nodeTypes: {
+        orderBy: { nodeType: { levelOrder: "asc" } },
+        select: {
+          id: true,
+          nodeTypeId: true,
+          nodeType: {
+            select: {
+              id: true,
+              code: true,
+              displayName: true,
+              levelOrder: true,
+              canHaveKpis: true,
+            },
+          },
+        },
       },
       users: {
         where: { deletedAt: null },

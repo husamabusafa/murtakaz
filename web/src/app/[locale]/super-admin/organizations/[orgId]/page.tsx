@@ -12,13 +12,15 @@ import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, D
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useLocale } from "@/providers/locale-provider";
-import { createUser, deleteOrganization, getOrganizationDetails, updateOrganization } from "@/actions/admin";
+import { createUser, deleteOrganization, getNodeTypes, getOrganizationDetails, updateOrganization, updateOrganizationNodeTypes } from "@/actions/admin";
 import { Pencil, Plus, Trash2 } from "lucide-react";
 import type { Role } from "@prisma/client";
 
 type OrgDetails = Awaited<ReturnType<typeof getOrganizationDetails>>;
 
 type OrgUserRow = NonNullable<OrgDetails> extends { users: Array<infer U> } ? U : never;
+type OrgNodeTypeRow = NonNullable<OrgDetails> extends { nodeTypes: Array<infer N> } ? N : never;
+type NodeTypeOption = Awaited<ReturnType<typeof getNodeTypes>>[number];
 
 export default function OrganizationDetailsPage() {
   const params = useParams<{ orgId: string }>();
@@ -35,6 +37,11 @@ export default function OrganizationDetailsPage() {
 
   const [deleteOrgOpen, setDeleteOrgOpen] = useState(false);
   const [deletingOrg, setDeletingOrg] = useState(false);
+
+  const [nodeTypesOpen, setNodeTypesOpen] = useState(false);
+  const [savingNodeTypes, setSavingNodeTypes] = useState(false);
+  const [availableNodeTypes, setAvailableNodeTypes] = useState<NodeTypeOption[]>([]);
+  const [selectedNodeTypeIds, setSelectedNodeTypeIds] = useState<string[]>([]);
 
   const [createUserOpen, setCreateUserOpen] = useState(false);
   const [creatingUser, setCreatingUser] = useState(false);
@@ -55,6 +62,11 @@ export default function OrganizationDetailsPage() {
           setOrg(data);
           setNameDraft(data?.name ?? "");
           setDomainDraft(data?.domain ?? "");
+          setSelectedNodeTypeIds(
+            (data?.nodeTypes ?? [])
+              .map((nt) => (nt as OrgNodeTypeRow).nodeTypeId)
+              .filter((id): id is string => typeof id === "string"),
+          );
         }
       } catch (error) {
         console.error("Failed to load organization", error);
@@ -70,7 +82,31 @@ export default function OrganizationDetailsPage() {
     };
   }, [params.orgId]);
 
+  useEffect(() => {
+    let isMounted = true;
+    async function loadNodeTypes() {
+      try {
+        const data = await getNodeTypes();
+        if (isMounted) setAvailableNodeTypes(data);
+      } catch (error) {
+        console.error("Failed to load node types", error);
+      }
+    }
+
+    void loadNodeTypes();
+    return () => {
+      isMounted = false;
+    };
+  }, []);
+
   const users = useMemo(() => (org ? (org.users as OrgUserRow[]) : []), [org]);
+  const enabledNodeTypes = useMemo(() => {
+    if (!org) return [] as Array<{ id: string; displayName: string; code: string }>;
+    return ((org.nodeTypes as OrgNodeTypeRow[]) ?? [])
+      .map((nt) => nt.nodeType)
+      .filter(Boolean)
+      .map((nt) => ({ id: nt.id, displayName: nt.displayName, code: String(nt.code) }));
+  }, [org]);
 
   async function handleDeleteOrg() {
     if (!org) return;
@@ -89,13 +125,32 @@ export default function OrganizationDetailsPage() {
     }
   }
 
+  async function handleSaveNodeTypes() {
+    if (!org) return;
+    setSavingNodeTypes(true);
+    try {
+      const result = await updateOrganizationNodeTypes({ orgId: org.id, nodeTypeIds: selectedNodeTypeIds });
+      if (result.success) {
+        const data = await getOrganizationDetails(params.orgId);
+        setOrg(data);
+        setNodeTypesOpen(false);
+        router.refresh();
+      } else {
+        alert(result.error || tr("Failed to update node types", "فشل تحديث أنواع العقد"));
+      }
+    } finally {
+      setSavingNodeTypes(false);
+    }
+  }
+
   async function handleSaveName() {
     if (!org) return;
     setSavingOrg(true);
     try {
       const result = await updateOrganization({ orgId: org.id, name: nameDraft.trim() });
-      if (result.success && result.org) {
-        setOrg(result.org);
+      if (result.success) {
+        const data = await getOrganizationDetails(params.orgId);
+        setOrg(data);
         setEditNameOpen(false);
         router.refresh();
       } else {
@@ -111,8 +166,9 @@ export default function OrganizationDetailsPage() {
     setSavingOrg(true);
     try {
       const result = await updateOrganization({ orgId: org.id, domain: domainDraft.trim() });
-      if (result.success && result.org) {
-        setOrg(result.org);
+      if (result.success) {
+        const data = await getOrganizationDetails(params.orgId);
+        setOrg(data);
         setEditDomainOpen(false);
         router.refresh();
       } else {
@@ -240,6 +296,31 @@ export default function OrganizationDetailsPage() {
               <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">{tr("Users", "المستخدمون")}</p>
               <p className="mt-1">{org._count?.users ?? users.length}</p>
             </div>
+
+            <div className="rounded-xl border border-border bg-muted/30 px-4 py-3">
+              <div className="flex items-start justify-between gap-3">
+                <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">{tr("Node Types", "أنواع العقد")}</p>
+                <button
+                  type="button"
+                  className="inline-flex h-7 w-7 items-center justify-center rounded-md border border-border bg-card text-muted-foreground hover:text-foreground"
+                  onClick={() => setNodeTypesOpen(true)}
+                  aria-label={tr("Edit node types", "تعديل أنواع العقد")}
+                >
+                  <Pencil className="h-3.5 w-3.5" />
+                </button>
+              </div>
+              {enabledNodeTypes.length === 0 ? (
+                <p className="mt-2 text-xs text-muted-foreground">{tr("No node types selected.", "لم يتم اختيار أنواع عقد.")}</p>
+              ) : (
+                <div className="mt-2 flex flex-wrap gap-2">
+                  {enabledNodeTypes.map((nt) => (
+                    <span key={nt.id} className="inline-flex items-center rounded-md border border-border bg-card px-2 py-1 text-xs">
+                      {nt.displayName}
+                    </span>
+                  ))}
+                </div>
+              )}
+            </div>
             <div className="rounded-xl border border-border bg-muted/30 px-4 py-3">
               <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">{tr("Created", "تاريخ الإنشاء")}</p>
               <p className="mt-1">{new Date(org.createdAt).toLocaleDateString()}</p>
@@ -331,6 +412,59 @@ export default function OrganizationDetailsPage() {
             </Button>
             <Button type="button" onClick={handleSaveName} disabled={savingOrg}>
               {savingOrg ? tr("Saving...", "جارٍ الحفظ...") : tr("Save", "حفظ")}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      <Dialog open={nodeTypesOpen} onOpenChange={setNodeTypesOpen}>
+        <DialogContent className="max-h-[90vh] overflow-y-auto">
+          <DialogHeader>
+            <DialogTitle>{tr("Edit Node Types", "تعديل أنواع العقد")}</DialogTitle>
+            <DialogDescription className="text-muted-foreground">
+              {tr("Choose which node types are enabled for this organization.", "اختر أنواع العقد المفعلة لهذه المؤسسة.")}
+            </DialogDescription>
+          </DialogHeader>
+
+          <div className="flex flex-wrap gap-2">
+            {availableNodeTypes.map((nt) => {
+              const selected = selectedNodeTypeIds.includes(nt.id);
+              return (
+                <button
+                  key={nt.id}
+                  type="button"
+                  onClick={() => {
+                    setSelectedNodeTypeIds((prev) => (selected ? prev.filter((x) => x !== nt.id) : [...prev, nt.id]));
+                  }}
+                  className={
+                    selected
+                      ? "inline-flex items-center rounded-md border border-border bg-primary px-2 py-1 text-xs text-primary-foreground"
+                      : "inline-flex items-center rounded-md border border-border bg-card px-2 py-1 text-xs text-foreground"
+                  }
+                >
+                  {nt.displayName}
+                </button>
+              );
+            })}
+          </div>
+
+          <DialogFooter>
+            <Button
+              type="button"
+              variant="ghost"
+              onClick={() => {
+                setSelectedNodeTypeIds(
+                  (org?.nodeTypes ?? [])
+                    .map((nt) => (nt as OrgNodeTypeRow).nodeTypeId)
+                    .filter((id): id is string => typeof id === "string"),
+                );
+                setNodeTypesOpen(false);
+              }}
+            >
+              {tr("Cancel", "إلغاء")}
+            </Button>
+            <Button type="button" onClick={handleSaveNodeTypes} disabled={savingNodeTypes || selectedNodeTypeIds.length === 0}>
+              {savingNodeTypes ? tr("Saving...", "جارٍ الحفظ...") : tr("Save", "حفظ")}
             </Button>
           </DialogFooter>
         </DialogContent>
