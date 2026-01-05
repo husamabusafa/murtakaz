@@ -14,6 +14,8 @@ import {
 } from "@prisma/client";
 import { getMyEffectiveKpiIds } from "@/actions/responsibilities";
 
+type KpiApprovalLevelCode = "MANAGER" | "PMO" | "EXECUTIVE" | "ADMIN";
+
 const prismaKpiDefinition = (prisma as unknown as { kpiDefinition: unknown }).kpiDefinition as {
   findMany: <T>(args: unknown) => Promise<T[]>;
   findFirst: <T>(args: unknown) => Promise<T | null>;
@@ -24,6 +26,7 @@ const prismaKpiDefinition = (prisma as unknown as { kpiDefinition: unknown }).kp
 
 const prismaKpiValuePeriod = (prisma as unknown as { kpiValuePeriod: unknown }).kpiValuePeriod as {
   findFirst: <T>(args: unknown) => Promise<T | null>;
+  findMany: <T>(args: unknown) => Promise<T[]>;
   upsert: <T>(args: unknown) => Promise<T>;
 };
 
@@ -35,6 +38,10 @@ const prismaKpiVariable = (prisma as unknown as { kpiVariable: unknown }).kpiVar
   deleteMany: (args: unknown) => Promise<unknown>;
   update: <T>(args: unknown) => Promise<T>;
   create: <T>(args: unknown) => Promise<T>;
+};
+
+const prismaOrganization = (prisma as unknown as { organization: unknown }).organization as {
+  findFirst: <T>(args: unknown) => Promise<T | null>;
 };
 
 export type ActionValidationIssue = {
@@ -71,6 +78,40 @@ async function requireOrgAdmin() {
     throw new Error("Unauthorized: Organization admin access required");
   }
   return session;
+}
+
+const ROLE_RANK: Record<string, number> = {
+  EMPLOYEE: 0,
+  MANAGER: 1,
+  PMO: 2,
+  EXECUTIVE: 3,
+  ADMIN: 4,
+  SUPER_ADMIN: 5,
+};
+
+function resolveRoleRank(role: unknown) {
+  if (typeof role !== "string") return 0;
+  return ROLE_RANK[role] ?? 0;
+}
+
+async function getOrgApprovalSettings(orgId: string) {
+  const org = await prismaOrganization.findFirst<{ kpiApprovalLevel: KpiApprovalLevelCode }>({
+    where: { id: orgId, deletedAt: null },
+    select: { kpiApprovalLevel: true },
+  });
+  return { kpiApprovalLevel: org?.kpiApprovalLevel ?? "MANAGER" };
+}
+
+async function getApprovalContext(session: Awaited<ReturnType<typeof requireOrgMember>>) {
+  const settings = await getOrgApprovalSettings(session.user.orgId);
+  const userRoleRank = resolveRoleRank(session.user.role);
+  const requiredRank = resolveRoleRank(settings.kpiApprovalLevel);
+  const canApprove = userRoleRank >= requiredRank;
+  return {
+    approvalLevel: settings.kpiApprovalLevel,
+    canApprove,
+    role: session.user.role as Role,
+  };
 }
 
 function resolvePeriodRange(input: { now: Date; periodType: KpiPeriodType }) {
@@ -217,6 +258,13 @@ export async function getOrgKpiDetail(input: { kpiId: string }) {
       calculatedValue: number | null;
       status: unknown;
       note: string | null;
+      submittedAt?: Date | null;
+      approvedAt?: Date | null;
+      changesRequestedAt?: Date | null;
+      changesRequestedMessage?: string | null;
+      changesRequestedByUser?: { id: string; name: string } | null;
+      submittedByUser?: { id: string; name: string } | null;
+      approvedByUser?: { id: string; name: string } | null;
       variableValues: Array<{ kpiVariableId: string; value: number }>;
     }>;
   }>({
@@ -262,6 +310,13 @@ export async function getOrgKpiDetail(input: { kpiId: string }) {
           calculatedValue: true,
           status: true,
           note: true,
+          submittedAt: true,
+          approvedAt: true,
+          changesRequestedAt: true,
+          changesRequestedMessage: true,
+          changesRequestedByUser: { select: { id: true, name: true } },
+          submittedByUser: { select: { id: true, name: true } },
+          approvedByUser: { select: { id: true, name: true } },
           variableValues: {
             select: {
               kpiVariableId: true,
@@ -283,6 +338,15 @@ export async function getOrgKpiDetail(input: { kpiId: string }) {
     calculatedValue: number | null;
     status: unknown;
     note: string | null;
+    submittedAt?: Date | null;
+    approvedAt?: Date | null;
+    submittedBy?: string | null;
+    approvedBy?: string | null;
+    changesRequestedAt?: Date | null;
+    changesRequestedMessage?: string | null;
+    changesRequestedByUser?: { id: string; name: string } | null;
+    submittedByUser?: { id: string; name: string } | null;
+    approvedByUser?: { id: string; name: string } | null;
     variableValues: Array<{ kpiVariableId: string; value: number }>;
   }>({
     where: {
@@ -295,6 +359,15 @@ export async function getOrgKpiDetail(input: { kpiId: string }) {
       calculatedValue: true,
       status: true,
       note: true,
+      submittedAt: true,
+      approvedAt: true,
+      submittedBy: true,
+      approvedBy: true,
+      changesRequestedAt: true,
+      changesRequestedMessage: true,
+      changesRequestedByUser: { select: { id: true, name: true } },
+      submittedByUser: { select: { id: true, name: true } },
+      approvedByUser: { select: { id: true, name: true } },
       variableValues: {
         select: {
           kpiVariableId: true,
@@ -304,16 +377,21 @@ export async function getOrgKpiDetail(input: { kpiId: string }) {
     },
   });
 
+  const approvalContext = await getApprovalContext(session);
+
   return {
     kpi,
     latest,
     currentRange,
     currentPeriod,
     canAdmin: session.user.role === "ADMIN",
+    canApprove: approvalContext.canApprove,
+    approvalLevel: approvalContext.approvalLevel,
+    role: approvalContext.role,
   };
 }
 
-const submitKpiValuesSchema = z.object({
+const kpiValuesInputSchema = z.object({
   kpiId: z.string().uuid(),
   note: z.string().max(500).optional(),
   manualValue: z.preprocess(
@@ -323,23 +401,13 @@ const submitKpiValuesSchema = z.object({
   values: z.record(z.string().uuid(), z.preprocess((v) => Number(v), z.number().finite())),
 });
 
-export async function submitOrgKpiValues(data: z.infer<typeof submitKpiValuesSchema>) {
-  const session = await requireOrgMember();
-  const parsedResult = submitKpiValuesSchema.safeParse(data);
-  if (!parsedResult.success) {
-    return { success: false as const, error: "Validation failed", issues: zodIssues(parsedResult.error) };
-  }
-
-  const parsed = parsedResult.data;
-
-  if (session.user.role !== "ADMIN") {
-    const effective = await getMyEffectiveKpiIds();
-    const allowed = new Set(effective);
-    if (!allowed.has(parsed.kpiId)) {
-      return { success: false as const, error: "Unauthorized" };
-    }
-  }
-
+async function computeAndValidateKpiValue(input: {
+  orgId: string;
+  kpiId: string;
+  note?: string;
+  manualValue?: number;
+  values: Record<string, number>;
+}) {
   const kpi = await prismaKpiDefinition.findFirst<{
     id: string;
     formula: string | null;
@@ -352,7 +420,7 @@ export async function submitOrgKpiValues(data: z.infer<typeof submitKpiValuesSch
       staticValue: number | null;
     }>;
   }>({
-    where: { id: parsed.kpiId, orgId: session.user.orgId },
+    where: { id: input.kpiId, orgId: input.orgId },
     select: {
       id: true,
       formula: true,
@@ -369,13 +437,12 @@ export async function submitOrgKpiValues(data: z.infer<typeof submitKpiValuesSch
     },
   });
 
-  if (!kpi) return { success: false as const, error: "KPI not found." };
+  if (!kpi) return { ok: false as const, error: "KPI not found." };
 
   const range = resolvePeriodRange({ now: new Date(), periodType: kpi.periodType });
 
-  const valuesByVarId = parsed.values;
+  const valuesByVarId = input.values;
   const issues: ActionValidationIssue[] = [];
-
   const valuesByCode: Record<string, number> = {};
 
   for (const v of kpi.variables) {
@@ -401,74 +468,137 @@ export async function submitOrgKpiValues(data: z.infer<typeof submitKpiValuesSch
   }
 
   if (issues.length) {
-    return { success: false as const, error: "Validation failed", issues };
+    return { ok: false as const, error: "Validation failed", issues };
   }
 
   let calculatedValue: number | null = null;
-
   const hasVariables = kpi.variables.length > 0;
 
   if (kpi.formula && kpi.formula.trim().length > 0) {
     const result = evaluateFormula({ formula: kpi.formula, valuesByCode });
     if (!result.ok) {
-      return { success: false as const, error: result.error };
+      return { ok: false as const, error: result.error };
     }
     calculatedValue = result.value;
   } else if (hasVariables) {
     calculatedValue = Object.values(valuesByCode).reduce((sum, v) => sum + (Number.isFinite(v) ? v : 0), 0);
   } else {
-    if (typeof parsed.manualValue !== "number" || !Number.isFinite(parsed.manualValue)) {
+    if (typeof input.manualValue !== "number" || !Number.isFinite(input.manualValue)) {
       return {
-        success: false as const,
+        ok: false as const,
         error: "Value is required.",
         issues: [{ path: ["manualValue"], message: "Value is required." } satisfies ActionValidationIssue],
       };
     }
-    calculatedValue = parsed.manualValue;
+    calculatedValue = input.manualValue;
   }
 
+  return {
+    ok: true as const,
+    kpi,
+    range,
+    calculatedValue,
+    fillableVariableIds: kpi.variables.filter((v) => !v.isStatic).map((v) => v.id),
+  };
+}
+
+async function loadExistingValuePeriod(input: { kpiId: string; range: { start: Date; end: Date } }) {
+  return prismaKpiValuePeriod.findFirst<{
+    id: string;
+    status: KpiValueStatus;
+    submittedAt: Date | null;
+    submittedBy: string | null;
+    approvedAt: Date | null;
+    approvedBy: string | null;
+  }>({
+    where: {
+      kpiId: input.kpiId,
+      periodStart: input.range.start,
+      periodEnd: input.range.end,
+    },
+    select: {
+      id: true,
+      status: true,
+      submittedAt: true,
+      submittedBy: true,
+      approvedAt: true,
+      approvedBy: true,
+    },
+  });
+}
+
+async function upsertKpiValueWithVariables(input: {
+  kpiId: string;
+  range: { start: Date; end: Date };
+  calculatedValue: number | null;
+  status: KpiValueStatus;
+  note: string | null;
+  enteredBy: string;
+  submittedAt?: Date | null;
+  submittedBy?: string | null;
+  approvedAt?: Date | null;
+  approvedBy?: string | null;
+  changesRequestedMessage?: string | null;
+  changesRequestedAt?: Date | null;
+  changesRequestedBy?: string | null;
+  keepSubmittedMetadata?: boolean;
+  valuesByVarId: Record<string, number>;
+  fillableVariableIds: string[];
+}) {
   const kpiValue = await prismaKpiValuePeriod.upsert<{ id: string }>({
     where: {
       kpiId_periodStart_periodEnd: {
-        kpiId: kpi.id,
-        periodStart: range.start,
-        periodEnd: range.end,
+        kpiId: input.kpiId,
+        periodStart: input.range.start,
+        periodEnd: input.range.end,
       },
     },
     create: {
-      kpiId: kpi.id,
-      periodStart: range.start,
-      periodEnd: range.end,
-      calculatedValue,
-      status: KpiValueStatus.DRAFT,
-      note: parsed.note || null,
-      enteredBy: session.user.id,
+      kpiId: input.kpiId,
+      periodStart: input.range.start,
+      periodEnd: input.range.end,
+      calculatedValue: input.calculatedValue,
+      status: input.status,
+      note: input.note,
+      enteredBy: input.enteredBy,
+      submittedAt: input.submittedAt ?? null,
+      submittedBy: input.submittedBy ?? null,
+      approvedAt: input.approvedAt ?? null,
+      approvedBy: input.approvedBy ?? null,
+      changesRequestedMessage: input.changesRequestedMessage ?? null,
+      changesRequestedAt: input.changesRequestedAt ?? null,
+      changesRequestedBy: input.changesRequestedBy ?? null,
     },
     update: {
-      calculatedValue,
-      note: parsed.note || null,
-      enteredBy: session.user.id,
-      status: KpiValueStatus.DRAFT,
+      calculatedValue: input.calculatedValue,
+      note: input.note,
+      enteredBy: input.enteredBy,
+      status: input.status,
+      ...(typeof input.submittedAt !== "undefined" ? { submittedAt: input.submittedAt } : {}),
+      ...(typeof input.submittedBy !== "undefined" ? { submittedBy: input.submittedBy } : {}),
+      ...(typeof input.approvedAt !== "undefined" ? { approvedAt: input.approvedAt } : {}),
+      ...(typeof input.approvedBy !== "undefined" ? { approvedBy: input.approvedBy } : {}),
+      ...(typeof input.changesRequestedMessage !== "undefined" ? { changesRequestedMessage: input.changesRequestedMessage } : {}),
+      ...(typeof input.changesRequestedAt !== "undefined" ? { changesRequestedAt: input.changesRequestedAt } : {}),
+      ...(typeof input.changesRequestedBy !== "undefined" ? { changesRequestedBy: input.changesRequestedBy } : {}),
     },
     select: { id: true },
   });
 
-  const fillable = kpi.variables.filter((v: { isStatic: boolean }) => !v.isStatic);
-
-  for (const v of fillable) {
-    const value = valuesByVarId[v.id];
+  for (const kpiVariableId of input.fillableVariableIds) {
+    const value = input.valuesByVarId[kpiVariableId];
     if (value === undefined) continue;
 
     await prismaKpiVariableValue.upsert({
       where: {
         kpiValueId_kpiVariableId: {
           kpiValueId: kpiValue.id,
-          kpiVariableId: v.id,
+          kpiVariableId,
         },
       },
       create: {
         kpiValueId: kpiValue.id,
-        kpiVariableId: v.id,
+        kpiVariableId,
         value,
       },
       update: {
@@ -478,7 +608,299 @@ export async function submitOrgKpiValues(data: z.infer<typeof submitKpiValuesSch
     });
   }
 
+  return kpiValue;
+}
+
+export async function saveOrgKpiValuesDraft(data: z.infer<typeof kpiValuesInputSchema>) {
+  const session = await requireOrgMember();
+  const parsedResult = kpiValuesInputSchema.safeParse(data);
+  if (!parsedResult.success) {
+    return { success: false as const, error: "Validation failed", issues: zodIssues(parsedResult.error) };
+  }
+
+  const parsed = parsedResult.data;
+
+  if (session.user.role !== "ADMIN") {
+    const effective = await getMyEffectiveKpiIds();
+    const allowed = new Set(effective);
+    if (!allowed.has(parsed.kpiId)) {
+      return { success: false as const, error: "Unauthorized" };
+    }
+  }
+
+  const approvalContext = await getApprovalContext(session);
+
+  const computed = await computeAndValidateKpiValue({
+    orgId: session.user.orgId,
+    kpiId: parsed.kpiId,
+    note: parsed.note,
+    manualValue: parsed.manualValue,
+    values: parsed.values,
+  });
+  if (!computed.ok) return { success: false as const, error: computed.error, issues: computed.issues };
+
+  const existing = await loadExistingValuePeriod({ kpiId: parsed.kpiId, range: computed.range });
+  const existingStatus = existing?.status ?? null;
+
+  if (!approvalContext.canApprove && (existingStatus === KpiValueStatus.SUBMITTED || existingStatus === KpiValueStatus.APPROVED || existingStatus === KpiValueStatus.LOCKED)) {
+    return { success: false as const, error: "This KPI value is already submitted and cannot be edited." };
+  }
+
+  const nextStatus = existingStatus === KpiValueStatus.SUBMITTED && approvalContext.canApprove ? KpiValueStatus.SUBMITTED : KpiValueStatus.DRAFT;
+  const clearApproval = existingStatus === KpiValueStatus.APPROVED && approvalContext.canApprove;
+
+  await upsertKpiValueWithVariables({
+    kpiId: parsed.kpiId,
+    range: computed.range,
+    calculatedValue: computed.calculatedValue,
+    status: nextStatus,
+    note: parsed.note?.trim() ? parsed.note.trim() : null,
+    enteredBy: session.user.id,
+    ...(clearApproval ? { approvedAt: null, approvedBy: null } : {}),
+    valuesByVarId: parsed.values,
+    fillableVariableIds: computed.fillableVariableIds,
+  });
+
   return { success: true as const };
+}
+
+export async function requestChangesForOrgKpiValues(input: { kpiId: string; message: string }) {
+  const session = await requireOrgMember();
+  const parsed = z
+    .object({
+      kpiId: z.string().uuid(),
+      message: z.string().min(2).max(500),
+    })
+    .safeParse(input);
+  if (!parsed.success) {
+    return { success: false as const, error: "Validation failed", issues: zodIssues(parsed.error) };
+  }
+
+  const approvalContext = await getApprovalContext(session);
+  if (!approvalContext.canApprove) {
+    return { success: false as const, error: "Unauthorized" };
+  }
+
+  const kpi = await prismaKpiDefinition.findFirst<{ id: string; periodType: KpiPeriodType }>({
+    where: { id: parsed.data.kpiId, orgId: session.user.orgId },
+    select: { id: true, periodType: true },
+  });
+
+  if (!kpi) return { success: false as const, error: "KPI not found." };
+
+  const range = resolvePeriodRange({ now: new Date(), periodType: kpi.periodType });
+  const existing = await loadExistingValuePeriod({ kpiId: kpi.id, range });
+
+  if (!existing) {
+    return { success: false as const, error: "No submitted value found for the current period." };
+  }
+
+  if (existing.status !== KpiValueStatus.SUBMITTED) {
+    return { success: false as const, error: "Only submitted KPI values can be returned for changes." };
+  }
+
+  const now = new Date();
+  await (prisma as unknown as { kpiValuePeriod: { update: (args: unknown) => Promise<unknown> } }).kpiValuePeriod.update({
+    where: { id: existing.id },
+    data: {
+      status: KpiValueStatus.DRAFT,
+      submittedAt: null,
+      submittedBy: null,
+      approvedAt: null,
+      approvedBy: null,
+      changesRequestedMessage: parsed.data.message.trim(),
+      changesRequestedAt: now,
+      changesRequestedBy: session.user.id,
+    },
+  });
+
+  return { success: true as const };
+}
+
+export async function submitOrgKpiValuesForApproval(data: z.infer<typeof kpiValuesInputSchema>) {
+  const session = await requireOrgMember();
+  const parsedResult = kpiValuesInputSchema.safeParse(data);
+  if (!parsedResult.success) {
+    return { success: false as const, error: "Validation failed", issues: zodIssues(parsedResult.error) };
+  }
+
+  const parsed = parsedResult.data;
+
+  if (session.user.role !== "ADMIN") {
+    const effective = await getMyEffectiveKpiIds();
+    const allowed = new Set(effective);
+    if (!allowed.has(parsed.kpiId)) {
+      return { success: false as const, error: "Unauthorized" };
+    }
+  }
+
+  const approvalContext = await getApprovalContext(session);
+
+  const computed = await computeAndValidateKpiValue({
+    orgId: session.user.orgId,
+    kpiId: parsed.kpiId,
+    note: parsed.note,
+    manualValue: parsed.manualValue,
+    values: parsed.values,
+  });
+  if (!computed.ok) return { success: false as const, error: computed.error, issues: computed.issues };
+
+  const existing = await loadExistingValuePeriod({ kpiId: parsed.kpiId, range: computed.range });
+  if (existing?.status === KpiValueStatus.SUBMITTED && !approvalContext.canApprove) {
+    return { success: false as const, error: "This KPI value is already submitted." };
+  }
+  if (existing?.status === KpiValueStatus.APPROVED && !approvalContext.canApprove) {
+    return { success: false as const, error: "This KPI value is already approved." };
+  }
+
+  const now = new Date();
+  const autoApprove = approvalContext.canApprove;
+
+  await upsertKpiValueWithVariables({
+    kpiId: parsed.kpiId,
+    range: computed.range,
+    calculatedValue: computed.calculatedValue,
+    status: autoApprove ? KpiValueStatus.APPROVED : KpiValueStatus.SUBMITTED,
+    note: parsed.note?.trim() ? parsed.note.trim() : null,
+    enteredBy: session.user.id,
+    submittedAt: existing?.submittedAt ?? now,
+    submittedBy: existing?.submittedBy ?? session.user.id,
+    ...(autoApprove
+      ? {
+          approvedAt: now,
+          approvedBy: session.user.id,
+        }
+      : {
+          approvedAt: null,
+          approvedBy: null,
+        }),
+    changesRequestedAt: null,
+    changesRequestedBy: null,
+    changesRequestedMessage: null,
+    valuesByVarId: parsed.values,
+    fillableVariableIds: computed.fillableVariableIds,
+  });
+
+  return { success: true as const, autoApproved: autoApprove };
+}
+
+export async function approveOrgKpiValues(data: z.infer<typeof kpiValuesInputSchema>) {
+  const session = await requireOrgMember();
+  const parsedResult = kpiValuesInputSchema.safeParse(data);
+  if (!parsedResult.success) {
+    return { success: false as const, error: "Validation failed", issues: zodIssues(parsedResult.error) };
+  }
+
+  const approvalContext = await getApprovalContext(session);
+  if (!approvalContext.canApprove) {
+    return { success: false as const, error: "Unauthorized" };
+  }
+
+  const parsed = parsedResult.data;
+
+  if (session.user.role !== "ADMIN") {
+    const effective = await getMyEffectiveKpiIds();
+    const allowed = new Set(effective);
+    if (!allowed.has(parsed.kpiId)) {
+      return { success: false as const, error: "Unauthorized" };
+    }
+  }
+
+  const computed = await computeAndValidateKpiValue({
+    orgId: session.user.orgId,
+    kpiId: parsed.kpiId,
+    note: parsed.note,
+    manualValue: parsed.manualValue,
+    values: parsed.values,
+  });
+  if (!computed.ok) return { success: false as const, error: computed.error, issues: computed.issues };
+
+  const existing = await loadExistingValuePeriod({ kpiId: parsed.kpiId, range: computed.range });
+
+  const now = new Date();
+  await upsertKpiValueWithVariables({
+    kpiId: parsed.kpiId,
+    range: computed.range,
+    calculatedValue: computed.calculatedValue,
+    status: KpiValueStatus.APPROVED,
+    note: parsed.note?.trim() ? parsed.note.trim() : null,
+    enteredBy: session.user.id,
+    submittedAt: existing?.submittedAt ?? now,
+    submittedBy: existing?.submittedBy ?? session.user.id,
+    approvedAt: now,
+    approvedBy: session.user.id,
+    changesRequestedAt: null,
+    changesRequestedBy: null,
+    changesRequestedMessage: null,
+    valuesByVarId: parsed.values,
+    fillableVariableIds: computed.fillableVariableIds,
+  });
+
+  return { success: true as const };
+}
+
+export async function getOrgKpiApprovals(input?: { status?: "SUBMITTED" | "APPROVED" }) {
+  const session = await requireOrgMember();
+  const approvalContext = await getApprovalContext(session);
+  if (!approvalContext.canApprove) {
+    throw new Error("Unauthorized");
+  }
+
+  const parsed = z
+    .object({ status: z.enum(["SUBMITTED", "APPROVED"]).optional() })
+    .optional()
+    .safeParse(input);
+
+  const status = parsed.success ? parsed.data?.status : undefined;
+
+  return prismaKpiValuePeriod.findMany<{
+    id: string;
+    kpiId: string;
+    periodStart: Date;
+    periodEnd: Date;
+    calculatedValue: number | null;
+    status: unknown;
+    note: string | null;
+    submittedAt: Date | null;
+    approvedAt: Date | null;
+    submittedByUser: { id: string; name: string } | null;
+    approvedByUser: { id: string; name: string } | null;
+    kpi: {
+      id: string;
+      name: string;
+      primaryNode: { name: string; nodeType: { displayName: string } } | null;
+    };
+  }>({
+    where: {
+      kpi: { orgId: session.user.orgId },
+      ...(status ? { status: status as KpiValueStatus } : { status: { in: [KpiValueStatus.SUBMITTED, KpiValueStatus.APPROVED] } }),
+    },
+    orderBy: [{ submittedAt: "desc" }, { updatedAt: "desc" }],
+    select: {
+      id: true,
+      kpiId: true,
+      periodStart: true,
+      periodEnd: true,
+      calculatedValue: true,
+      status: true,
+      note: true,
+      submittedAt: true,
+      approvedAt: true,
+      submittedByUser: { select: { id: true, name: true } },
+      approvedByUser: { select: { id: true, name: true } },
+      kpi: {
+        select: {
+          id: true,
+          name: true,
+          primaryNode: { select: { name: true, nodeType: { select: { displayName: true } } } },
+        },
+      },
+    },
+  });
+}
+
+export async function submitOrgKpiValues(data: z.infer<typeof kpiValuesInputSchema>) {
+  return saveOrgKpiValuesDraft(data);
 }
 
 export async function getOrgKpiPrimaryNodeOptions() {

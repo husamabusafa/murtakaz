@@ -23,6 +23,13 @@ enum Role {
   EMPLOYEE
 }
 
+enum KpiApprovalLevel {
+  MANAGER
+  PMO
+  EXECUTIVE
+  ADMIN
+}
+
 enum Status {
   PLANNED
   ACTIVE
@@ -94,6 +101,7 @@ model Organization {
   id        String    @id @default(uuid())
   name      String
   domain    String?
+  kpiApprovalLevel KpiApprovalLevel @default(MANAGER) @map("kpi_approval_level")
   createdAt DateTime  @default(now())
   updatedAt DateTime  @updatedAt
   deletedAt DateTime?
@@ -179,6 +187,8 @@ model User {
   ownedNodes       Node[]             @relation("NodeOwner")
   nodeAssignments  NodeAssignment[]
   kpiValuesEntered KpiValuePeriod[]   @relation("KpiValueEnteredBy")
+  kpiValuesSubmitted KpiValuePeriod[] @relation("KpiValueSubmittedBy")
+  kpiValuesChangesRequested KpiValuePeriod[] @relation("KpiValueChangesRequestedBy")
   kpiValuesApproved KpiValuePeriod[]  @relation("KpiValueApprovedBy")
   ownedKpis        KpiDefinition[]    @relation("KpiOwner")
 
@@ -537,8 +547,17 @@ model KpiValuePeriod {
   enteredBy       String?        @map("entered_by")
   enteredByUser   User?          @relation("KpiValueEnteredBy", fields: [enteredBy], references: [id], onDelete: SetNull)
 
+  submittedBy     String?        @map("submitted_by")
+  submittedByUser User?          @relation("KpiValueSubmittedBy", fields: [submittedBy], references: [id], onDelete: SetNull)
+
   approvedBy      String?        @map("approved_by")
   approvedByUser  User?          @relation("KpiValueApprovedBy", fields: [approvedBy], references: [id], onDelete: SetNull)
+
+  changesRequestedMessage String?   @map("changes_requested_message")
+  changesRequestedAt      DateTime? @map("changes_requested_at")
+
+  changesRequestedBy      String?   @map("changes_requested_by")
+  changesRequestedByUser  User?     @relation("KpiValueChangesRequestedBy", fields: [changesRequestedBy], references: [id], onDelete: SetNull)
 
   submittedAt     DateTime?      @map("submitted_at")
   approvedAt      DateTime?      @map("approved_at")
@@ -552,6 +571,8 @@ model KpiValuePeriod {
   @@unique([kpiId, periodStart, periodEnd])
   @@index([kpiId])
   @@index([enteredBy])
+  @@index([submittedBy])
+  @@index([changesRequestedBy])
   @@index([approvedBy])
   @@map("kpi_values")
 }

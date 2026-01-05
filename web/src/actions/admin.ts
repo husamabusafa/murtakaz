@@ -14,6 +14,15 @@ type NodeTypeRow = {
   canHaveKpis: boolean;
 };
 
+const prismaOrganization = (prisma as unknown as { organization: unknown }).organization as {
+  create: <T>(args: unknown) => Promise<T>;
+  update: <T>(args: unknown) => Promise<T>;
+  findFirst: <T>(args: unknown) => Promise<T | null>;
+  findMany: <T>(args: unknown) => Promise<T[]>;
+  delete: (args: unknown) => Promise<unknown>;
+  count: (args: unknown) => Promise<number>;
+};
+
 type PrismaWithNodeTypes = typeof prisma & {
   nodeType: {
     findMany: (args: {
@@ -32,10 +41,13 @@ type PrismaWithNodeTypes = typeof prisma & {
 
 const prismaWithNodeTypes = prisma as unknown as PrismaWithNodeTypes;
 
+const kpiApprovalLevelSchema = z.enum(["MANAGER", "PMO", "EXECUTIVE", "ADMIN"]);
+
 // Schema for creating an organization
 const createOrgSchema = z.object({
   name: z.string().min(2),
   domain: z.string().optional(),
+  kpiApprovalLevel: kpiApprovalLevelSchema.optional(),
 });
 
 // Schema for creating a user
@@ -66,6 +78,7 @@ const updateOrgSchema = z.object({
   orgId: z.string().uuid(),
   name: z.string().min(2).optional(),
   domain: z.string().optional(),
+  kpiApprovalLevel: kpiApprovalLevelSchema.optional(),
 });
 
 const updateUserSchema = z.object({
@@ -200,11 +213,13 @@ export async function createOrganization(data: z.infer<typeof createOrgSchema>) 
   const parsed = createOrgSchema.parse(data);
   
   try {
-    const org = await prisma.organization.create({
+    const org = await prismaOrganization.create<{ id: string }>({
       data: {
         name: parsed.name,
         domain: parsed.domain || null,
+        ...(typeof parsed.kpiApprovalLevel !== "undefined" ? { kpiApprovalLevel: parsed.kpiApprovalLevel } : {}),
       },
+      select: { id: true },
     });
     return { success: true, org };
   } catch (error) {
@@ -215,7 +230,13 @@ export async function createOrganization(data: z.infer<typeof createOrgSchema>) 
 
 export async function getOrganizations() {
   await requireSuperAdmin();
-  const orgs = await prisma.organization.findMany({
+  const orgs = await prismaOrganization.findMany<{
+    id: string;
+    name: string;
+    domain: string | null;
+    createdAt: Date;
+    _count?: { users: number };
+  }>({
     where: { deletedAt: null },
     orderBy: { createdAt: "desc" },
     include: {
@@ -232,16 +253,28 @@ export async function updateOrganization(data: z.infer<typeof updateOrgSchema>) 
   const parsed = updateOrgSchema.parse(data);
 
   try {
-    const org = await prisma.organization.update({
+    const org = await prismaOrganization.update<{
+      id: string;
+      name: string;
+      domain: string | null;
+      kpiApprovalLevel: unknown;
+      createdAt: Date;
+      updatedAt: Date;
+      deletedAt: Date | null;
+      _count: { users: number };
+      users: Array<{ id: string; name: string; email: string; role: Role; createdAt: Date }>;
+    }>({
       where: { id: parsed.orgId },
       data: {
         ...(typeof parsed.name === "string" ? { name: parsed.name } : {}),
         ...(typeof parsed.domain === "string" ? { domain: parsed.domain || null } : {}),
+        ...(typeof parsed.kpiApprovalLevel !== "undefined" ? { kpiApprovalLevel: parsed.kpiApprovalLevel } : {}),
       },
       select: {
         id: true,
         name: true,
         domain: true,
+        kpiApprovalLevel: true,
         createdAt: true,
         updatedAt: true,
         deletedAt: true,
@@ -369,6 +402,7 @@ export async function createOrganizationWithUsers(data: z.infer<typeof createOrg
       data: {
         name: parsed.name,
         domain: parsed.domain || null,
+        ...(typeof parsed.kpiApprovalLevel !== "undefined" ? { kpiApprovalLevel: parsed.kpiApprovalLevel } : {}),
       },
       select: { id: true },
     });
@@ -404,7 +438,7 @@ export async function createOrganizationWithUsers(data: z.infer<typeof createOrg
 
     if (orgId) {
       try {
-        await prisma.organization.delete({ where: { id: orgId } });
+        await prismaOrganization.delete({ where: { id: orgId } });
       } catch (cleanupError) {
         console.error("Failed to rollback organization creation:", cleanupError);
       }
@@ -458,7 +492,7 @@ export async function getSuperAdminOverviewStats() {
   await requireSuperAdmin();
 
   const [organizations, users] = await Promise.all([
-    prisma.organization.count({ where: { deletedAt: null } }),
+    prismaOrganization.count({ where: { deletedAt: null } }),
     prisma.user.count({ where: { deletedAt: null } }),
   ]);
 
@@ -469,15 +503,35 @@ export async function getOrganizationDetails(orgId: string) {
   await requireSuperAdmin();
   const parsedOrgId = orgIdSchema.parse(orgId);
 
-  const org = await prisma.organization.findFirst({
+  const org = await prismaOrganization.findFirst<{
+    id: string;
+    name: string;
+    domain: string | null;
+    kpiApprovalLevel: unknown;
+    createdAt: Date;
+    updatedAt: Date;
+    deletedAt: Date | null;
+    _count: { users: number };
+    nodeTypes: Array<{
+      id: string;
+      nodeTypeId: string;
+      nodeType: { id: string; code: string; displayName: string; levelOrder: number; canHaveKpis: boolean };
+    }>;
+    users: Array<{ id: string; name: string; email: string; role: Role; createdAt: Date }>;
+  }>({
     where: {
       id: parsedOrgId,
       deletedAt: null,
     },
-    include: {
-      _count: {
-        select: { users: true },
-      },
+    select: {
+      id: true,
+      name: true,
+      domain: true,
+      kpiApprovalLevel: true,
+      createdAt: true,
+      updatedAt: true,
+      deletedAt: true,
+      _count: { select: { users: true } },
       nodeTypes: {
         orderBy: { nodeType: { levelOrder: "asc" } },
         select: {

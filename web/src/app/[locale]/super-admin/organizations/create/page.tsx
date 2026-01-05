@@ -43,6 +43,7 @@ export default function CreateOrganizationPage() {
 
   const [orgName, setOrgName] = useState("");
   const [orgDomain, setOrgDomain] = useState("");
+  const [kpiApprovalLevel, setKpiApprovalLevel] = useState<"MANAGER" | "PMO" | "EXECUTIVE" | "ADMIN">("MANAGER");
   const [selectedNodeTypeIds, setSelectedNodeTypeIds] = useState<string[]>([]);
 
   const [users, setUsers] = useState<PendingUser[]>([
@@ -153,6 +154,7 @@ export default function CreateOrganizationPage() {
       const result = await createOrganizationWithUsers({
         name: orgName,
         domain: orgDomain || undefined,
+        kpiApprovalLevel,
         nodeTypeIds: selectedNodeTypeIds,
         users: normalizedUsers,
       });
@@ -225,6 +227,27 @@ export default function CreateOrganizationPage() {
                     className="bg-background"
                   />
                 </div>
+              </div>
+
+              <div className="space-y-2">
+                <Label>{tr("KPI Approval Level", "مستوى اعتماد المؤشرات")}</Label>
+                <Select value={kpiApprovalLevel} onValueChange={(v) => setKpiApprovalLevel(v as typeof kpiApprovalLevel)}>
+                  <SelectTrigger className="bg-background">
+                    <SelectValue placeholder={tr("Select level", "اختر المستوى")} />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="MANAGER">{tr("Manager", "مدير")}</SelectItem>
+                    <SelectItem value="PMO">{tr("PMO", "مكتب إدارة المشاريع")}</SelectItem>
+                    <SelectItem value="EXECUTIVE">{tr("Executive", "تنفيذي")}</SelectItem>
+                    <SelectItem value="ADMIN">{tr("Admin", "مسؤول")}</SelectItem>
+                  </SelectContent>
+                </Select>
+                <p className={cn("text-xs text-muted-foreground", isArabic && "text-right")}>
+                  {tr(
+                    "Minimum role level allowed to approve KPI values.",
+                    "أقل مستوى دور مسموح له باعتماد قيم المؤشرات.",
+                  )}
+                </p>
               </div>
 
               <div className="rounded-2xl border border-border bg-muted/30 p-4">

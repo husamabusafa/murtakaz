@@ -31,9 +31,11 @@ export default function OrganizationDetailsPage() {
   const [loading, setLoading] = useState(true);
   const [editNameOpen, setEditNameOpen] = useState(false);
   const [editDomainOpen, setEditDomainOpen] = useState(false);
+  const [editKpiApprovalOpen, setEditKpiApprovalOpen] = useState(false);
   const [savingOrg, setSavingOrg] = useState(false);
   const [nameDraft, setNameDraft] = useState("");
   const [domainDraft, setDomainDraft] = useState("");
+  const [kpiApprovalDraft, setKpiApprovalDraft] = useState<"MANAGER" | "PMO" | "EXECUTIVE" | "ADMIN">("MANAGER");
 
   const [deleteOrgOpen, setDeleteOrgOpen] = useState(false);
   const [deletingOrg, setDeletingOrg] = useState(false);
@@ -62,6 +64,7 @@ export default function OrganizationDetailsPage() {
           setOrg(data);
           setNameDraft(data?.name ?? "");
           setDomainDraft(data?.domain ?? "");
+          setKpiApprovalDraft((data?.kpiApprovalLevel as typeof kpiApprovalDraft) ?? "MANAGER");
           setSelectedNodeTypeIds(
             (data?.nodeTypes ?? [])
               .map((nt) => (nt as OrgNodeTypeRow).nodeTypeId)
@@ -152,6 +155,24 @@ export default function OrganizationDetailsPage() {
         const data = await getOrganizationDetails(params.orgId);
         setOrg(data);
         setEditNameOpen(false);
+        router.refresh();
+      } else {
+        alert(result.error || tr("Failed to update organization", "فشل تحديث المؤسسة"));
+      }
+    } finally {
+      setSavingOrg(false);
+    }
+  }
+
+  async function handleSaveKpiApprovalLevel() {
+    if (!org) return;
+    setSavingOrg(true);
+    try {
+      const result = await updateOrganization({ orgId: org.id, kpiApprovalLevel: kpiApprovalDraft });
+      if (result.success) {
+        const data = await getOrganizationDetails(params.orgId);
+        setOrg(data);
+        setEditKpiApprovalOpen(false);
         router.refresh();
       } else {
         alert(result.error || tr("Failed to update organization", "فشل تحديث المؤسسة"));
@@ -292,6 +313,25 @@ export default function OrganizationDetailsPage() {
               </div>
               <p className="mt-1">{org.domain || "—"}</p>
             </div>
+
+            <div className="rounded-xl border border-border bg-muted/30 px-4 py-3">
+              <div className="flex items-start justify-between gap-3">
+                <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">{tr("KPI Approval Level", "مستوى اعتماد المؤشرات")}</p>
+                <button
+                  type="button"
+                  className="inline-flex h-7 w-7 items-center justify-center rounded-md border border-border bg-card text-muted-foreground hover:text-foreground"
+                  onClick={() => {
+                    setKpiApprovalDraft((org.kpiApprovalLevel as typeof kpiApprovalDraft) ?? "MANAGER");
+                    setEditKpiApprovalOpen(true);
+                  }}
+                  aria-label={tr("Edit KPI approval level", "تعديل مستوى اعتماد المؤشرات")}
+                >
+                  <Pencil className="h-3.5 w-3.5" />
+                </button>
+              </div>
+              <p className="mt-1">{String(org.kpiApprovalLevel ?? "MANAGER")}</p>
+            </div>
+
             <div className="rounded-xl border border-border bg-muted/30 px-4 py-3">
               <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">{tr("Users", "المستخدمون")}</p>
               <p className="mt-1">{org._count?.users ?? users.length}</p>
@@ -411,6 +451,48 @@ export default function OrganizationDetailsPage() {
               {tr("Cancel", "إلغاء")}
             </Button>
             <Button type="button" onClick={handleSaveName} disabled={savingOrg}>
+              {savingOrg ? tr("Saving...", "جارٍ الحفظ...") : tr("Save", "حفظ")}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      <Dialog open={editKpiApprovalOpen} onOpenChange={setEditKpiApprovalOpen}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>{tr("Edit KPI Approval Level", "تعديل مستوى اعتماد المؤشرات")}</DialogTitle>
+            <DialogDescription className="text-muted-foreground">
+              {tr("Choose the minimum role level allowed to approve KPI values.", "اختر أقل مستوى دور يمكنه اعتماد قيم المؤشرات.")}
+            </DialogDescription>
+          </DialogHeader>
+
+          <div className="space-y-2">
+            <Label>{tr("KPI Approval Level", "مستوى اعتماد المؤشرات")}</Label>
+            <Select value={kpiApprovalDraft} onValueChange={(v) => setKpiApprovalDraft(v as typeof kpiApprovalDraft)}>
+              <SelectTrigger className="bg-card">
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="MANAGER">{tr("Manager", "مدير")}</SelectItem>
+                <SelectItem value="PMO">{tr("PMO", "مكتب إدارة المشاريع")}</SelectItem>
+                <SelectItem value="EXECUTIVE">{tr("Executive", "تنفيذي")}</SelectItem>
+                <SelectItem value="ADMIN">{tr("Admin", "مسؤول")}</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
+
+          <DialogFooter>
+            <Button
+              type="button"
+              variant="ghost"
+              onClick={() => {
+                setKpiApprovalDraft((org?.kpiApprovalLevel as typeof kpiApprovalDraft) ?? "MANAGER");
+                setEditKpiApprovalOpen(false);
+              }}
+            >
+              {tr("Cancel", "إلغاء")}
+            </Button>
+            <Button type="button" onClick={handleSaveKpiApprovalLevel} disabled={savingOrg}>
               {savingOrg ? tr("Saving...", "جارٍ الحفظ...") : tr("Save", "حفظ")}
             </Button>
           </DialogFooter>
