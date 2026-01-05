@@ -8,23 +8,56 @@ import { Input } from "@/components/ui/input";
 import { useLocale } from "@/providers/locale-provider";
 import { useAuth } from "@/providers/auth-provider";
 import { useEffect, useMemo, useState } from "react";
-import { getOrgKpisGrid } from "@/actions/kpis";
+import { getOrgKpisGridPaged } from "@/actions/kpis";
 import { KpiGauge } from "@/components/charts/kpi-gauge";
 import { Button } from "@/components/ui/button";
 import { Plus } from "lucide-react";
+import { useRouter, useSearchParams } from "next/navigation";
 
-type KpiGridRow = Awaited<ReturnType<typeof getOrgKpisGrid>>[number];
+type KpiGridRow = Awaited<ReturnType<typeof getOrgKpisGridPaged>>["items"][number];
 
 export default function KPIsPage() {
   const { locale, t, tr } = useLocale();
   const { user, loading: sessionLoading } = useAuth();
+  const router = useRouter();
+  const searchParams = useSearchParams();
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const userRole = (user as any)?.role as string | undefined;
   const isAdmin = userRole === "ADMIN";
 
   const [rows, setRows] = useState<KpiGridRow[]>([]);
+  const [total, setTotal] = useState(0);
   const [loading, setLoading] = useState(true);
+
+  const q = useMemo(() => {
+    const raw = searchParams?.get("q") ?? "";
+    const trimmed = raw.trim();
+    return trimmed.length ? trimmed : "";
+  }, [searchParams]);
+
+  const page = useMemo(() => {
+    const raw = searchParams?.get("page") ?? "1";
+    const n = Number.parseInt(raw, 10);
+    return Number.isFinite(n) && n > 0 ? n : 1;
+  }, [searchParams]);
+
+  const pageSize = useMemo(() => {
+    const raw = searchParams?.get("pageSize") ?? "24";
+    const n = Number.parseInt(raw, 10);
+    if (!Number.isFinite(n)) return 24;
+    return Math.min(100, Math.max(1, n));
+  }, [searchParams]);
+
+  const totalPages = useMemo(() => {
+    return total > 0 ? Math.max(1, Math.ceil(total / pageSize)) : 1;
+  }, [pageSize, total]);
+
+  const [searchDraft, setSearchDraft] = useState("");
+
+  useEffect(() => {
+    setSearchDraft(q);
+  }, [q]);
 
   useEffect(() => {
     let mounted = true;
@@ -32,8 +65,10 @@ export default function KPIsPage() {
 
     (async () => {
       try {
-        const data = await getOrgKpisGrid();
-        if (mounted) setRows(data);
+        const data = await getOrgKpisGridPaged({ q: q || undefined, page, pageSize });
+        if (!mounted) return;
+        setRows(data.items);
+        setTotal(data.total);
       } finally {
         if (mounted) setLoading(false);
       }
@@ -42,7 +77,25 @@ export default function KPIsPage() {
     return () => {
       mounted = false;
     };
-  }, [sessionLoading]);
+  }, [page, pageSize, q, sessionLoading]);
+
+  const applySearch = (nextQ: string) => {
+    const params = new URLSearchParams(searchParams?.toString() ?? "");
+    const cleaned = nextQ.trim();
+    if (cleaned) params.set("q", cleaned);
+    else params.delete("q");
+    params.set("page", "1");
+    params.set("pageSize", String(pageSize));
+    router.replace(`/${locale}/kpis?${params.toString()}`);
+  };
+
+  const goToPage = (nextPage: number) => {
+    const safe = Math.min(totalPages, Math.max(1, nextPage));
+    const params = new URLSearchParams(searchParams?.toString() ?? "");
+    params.set("page", String(safe));
+    params.set("pageSize", String(pageSize));
+    router.replace(`/${locale}/kpis?${params.toString()}`);
+  };
 
   const items = useMemo(() => {
     return rows.map((r) => ({
@@ -72,7 +125,15 @@ export default function KPIsPage() {
             </div>
             <div className="flex w-full flex-col gap-2 md:w-auto md:flex-row md:items-center">
               <div className="w-full max-w-xs">
-                <Input placeholder={tr("Search", "بحث")} className="border-white/10 bg-slate-950/40 text-white placeholder:text-slate-400" />
+                <Input
+                  value={searchDraft}
+                  placeholder={tr("Search", "بحث")}
+                  onChange={(e) => setSearchDraft(e.target.value)}
+                  onKeyDown={(e) => {
+                    if (e.key === "Enter") applySearch(searchDraft);
+                  }}
+                  className="border-white/10 bg-slate-950/40 text-white placeholder:text-slate-400"
+                />
               </div>
               {isAdmin ? (
                 <Button asChild className="bg-white/10 text-white hover:bg-white/15">
@@ -86,6 +147,23 @@ export default function KPIsPage() {
           </div>
         </CardHeader>
         <CardContent>
+          <div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
+            <div className="text-xs text-slate-200">
+              {tr("Total", "الإجمالي")}: {total}
+            </div>
+            <div className="flex items-center gap-2">
+              <Button variant="outline" size="sm" onClick={() => goToPage(page - 1)} disabled={page <= 1}>
+                {tr("Prev", "السابق")}
+              </Button>
+              <span className="text-xs text-slate-200">
+                {tr("Page", "الصفحة")} {page} / {totalPages}
+              </span>
+              <Button variant="outline" size="sm" onClick={() => goToPage(page + 1)} disabled={page >= totalPages}>
+                {tr("Next", "التالي")}
+              </Button>
+            </div>
+          </div>
+
           {loading ? (
             <div className="rounded-xl border border-white/10 bg-slate-950/40 p-6 text-sm text-slate-200">{tr("Loading…", "جارٍ التحميل…")}</div>
           ) : items.length ? (

@@ -1,0 +1,1213 @@
+{
+  "meta": {
+    "version": "1.0",
+    "orgKey": "mousa-almousa-group",
+    "generatedAt": "2026-01-05T00:00:00Z",
+    "hierarchy": ["STRATEGY", "OBJECTIVE", "INITIATIVE", "TASK"],
+    "notes": []
+  },
+  "organization": {
+    "name": "مجموعة موسى الموسى",
+    "domain": null,
+    "kpiApprovalLevel": "MANAGER"
+  },
+  "nodeTypes": [
+    { "id": "nt_01_strategy", "code": "STRATEGY", "displayName": "Strategy", "levelOrder": 1, "canHaveKpis": true },
+    { "id": "nt_02_pillar", "code": "PILLAR", "displayName": "Pillar", "levelOrder": 2, "canHaveKpis": false },
+    { "id": "nt_03_objective", "code": "OBJECTIVE", "displayName": "Objective", "levelOrder": 3, "canHaveKpis": true },
+    { "id": "nt_04_initiative", "code": "INITIATIVE", "displayName": "Initiative", "levelOrder": 4, "canHaveKpis": true },
+    { "id": "nt_05_project", "code": "PROJECT", "displayName": "Project", "levelOrder": 5, "canHaveKpis": false },
+    { "id": "nt_06_task", "code": "TASK", "displayName": "Task", "levelOrder": 6, "canHaveKpis": false }
+  ],
+  "nodes": [
+    {
+      "id": "node_str_0001",
+      "nodeTypeId": "nt_01_strategy",
+      "parentId": null,
+      "name": "استراتيجية مجموعة موسى الموسى (نوفمبر 2025)",
+      "description": "الرؤية: مجموعة استثمارية طموحة ذات كفاءه تبني استدامة النمو في قطاعات حيوية. الرسالة: نستثمر في القطاعات الحيوية ذات الأثر الاقتصادي لخلق قيمة مستدامة تجسد كفاءة المجموعة وريادتها. القيم: الابتكار، الكفاءة، الشفافية، الالتزام.",
+      "color": "#64748b",
+      "status": "PLANNED",
+      "progress": 0,
+      "startDate": "2025-11-01T00:00:00Z",
+      "endDate": "2028-12-31T23:59:59Z"
+    },
+
+    {
+      "id": "node_obj_0001",
+      "nodeTypeId": "nt_03_objective",
+      "parentId": "node_str_0001",
+      "name": "رفع القيمة الاسمية للمجموعة بنسبة (%) على مدى 3 سنوات",
+      "description": "Target is given as (%) over 3 years. Set numeric target when available.",
+      "color": "#64748b",
+      "status": "PLANNED",
+      "progress": 0,
+      "startDate": "2026-01-01T00:00:00Z",
+      "endDate": "2028-12-31T23:59:59Z"
+    },
+    {
+      "id": "node_obj_0002",
+      "nodeTypeId": "nt_03_objective",
+      "parentId": "node_str_0001",
+      "name": "تعزيز الوعي بالعلامة التجارية بنسبة (%) بحلول 2028",
+      "description": "Brand awareness uplift (%) by 2028. Define measurement method (survey/brand tracking).",
+      "color": "#64748b",
+      "status": "PLANNED",
+      "progress": 0,
+      "startDate": "2026-01-01T00:00:00Z",
+      "endDate": "2028-12-31T23:59:59Z"
+    },
+    {
+      "id": "node_obj_0003",
+      "nodeTypeId": "nt_03_objective",
+      "parentId": "node_str_0001",
+      "name": "رفع الجاهزية للإدراج عبر الحوكمة وتفعيل النموذج التشغيلي بحلول 2026",
+      "description": "IPO readiness via governance + operating model activation by 2026.",
+      "color": "#64748b",
+      "status": "PLANNED",
+      "progress": 0,
+      "startDate": "2025-11-01T00:00:00Z",
+      "endDate": "2026-12-31T23:59:59Z"
+    },
+    {
+      "id": "node_obj_0004",
+      "nodeTypeId": "nt_03_objective",
+      "parentId": "node_str_0001",
+      "name": "رفع إيرادات المجموعة لكي تصبح XXX ريال بحلول 2028",
+      "description": "Revenue target (XXX SAR) by 2028. Set numeric targetValue when confirmed.",
+      "color": "#64748b",
+      "status": "PLANNED",
+      "progress": 0,
+      "startDate": "2026-01-01T00:00:00Z",
+      "endDate": "2028-12-31T23:59:59Z"
+    },
+    {
+      "id": "node_obj_0005",
+      "nodeTypeId": "nt_03_objective",
+      "parentId": "node_str_0001",
+      "name": "توسيع المحفظة الاستثمارية عبر الدخول في 7 قطاعات جديدة بحلول نهاية 2028",
+      "description": "Enter 7 new sectors by end of 2028 (sectors list to be defined).",
+      "color": "#64748b",
+      "status": "PLANNED",
+      "progress": 0,
+      "startDate": "2026-01-01T00:00:00Z",
+      "endDate": "2028-12-31T23:59:59Z"
+    },
+    {
+      "id": "node_obj_0006",
+      "nodeTypeId": "nt_03_objective",
+      "parentId": "node_str_0001",
+      "name": "تحقيق معدل نمو سنوي مركب (CAGR) لا يقل عن 12% في الاستثمارات الجديدة بحلول 2028",
+      "description": "CAGR >= 12% for new investments by 2028.",
+      "color": "#64748b",
+      "status": "PLANNED",
+      "progress": 0,
+      "startDate": "2026-01-01T00:00:00Z",
+      "endDate": "2028-12-31T23:59:59Z"
+    },
+    {
+      "id": "node_obj_0007",
+      "nodeTypeId": "nt_03_objective",
+      "parentId": "node_str_0001",
+      "name": "إعادة هيكلة المجموعة والشركات التابعة لتمكين الأعمال واستدامتها بحلول 2027",
+      "description": "Operating model + structure clarity + accountability by 2027.",
+      "color": "#64748b",
+      "status": "PLANNED",
+      "progress": 0,
+      "startDate": "2025-11-01T00:00:00Z",
+      "endDate": "2027-12-31T23:59:59Z"
+    },
+    {
+      "id": "node_obj_0008",
+      "nodeTypeId": "nt_03_objective",
+      "parentId": "node_str_0001",
+      "name": "تعزيز الانضباط المالي بتطبيق نظام كفاءة إنفاق موحد وخفض الانحرافات 10% بحلول 2026",
+      "description": "Reduce financial variances by 10% by 2026 via unified spending efficiency system.",
+      "color": "#64748b",
+      "status": "PLANNED",
+      "progress": 0,
+      "startDate": "2025-11-01T00:00:00Z",
+      "endDate": "2026-12-31T23:59:59Z"
+    },
+    {
+      "id": "node_obj_0009",
+      "nodeTypeId": "nt_03_objective",
+      "parentId": "node_str_0001",
+      "name": "تعزيز الريادة الاستثمارية بعائد يفوق متوسط السوق بـ 15% بحلول 2028",
+      "description": "Excess return vs benchmark: +15 percentage points by 2028 (or +15% relative, decide method).",
+      "color": "#64748b",
+      "status": "PLANNED",
+      "progress": 0,
+      "startDate": "2026-01-01T00:00:00Z",
+      "endDate": "2028-12-31T23:59:59Z"
+    },
+    {
+      "id": "node_obj_0010",
+      "nodeTypeId": "nt_03_objective",
+      "parentId": "node_str_0001",
+      "name": "رفع مستوى إنتاجية الموظفين إلى 85% بحلول 2027",
+      "description": "Define productivity index scoring method; target 85% by 2027.",
+      "color": "#64748b",
+      "status": "PLANNED",
+      "progress": 0,
+      "startDate": "2026-01-01T00:00:00Z",
+      "endDate": "2027-12-31T23:59:59Z"
+    },
+
+    {
+      "id": "node_ini_0001",
+      "nodeTypeId": "nt_04_initiative",
+      "parentId": "node_obj_0009",
+      "name": "تصميم أطر الاستثمار",
+      "description": "تصميم إطار معياري استثماري وخطة نمو وتقييم مخاطر ولجنة استثمار.",
+      "color": "#64748b",
+      "status": "PLANNED",
+      "progress": 0,
+      "startDate": "2026-01-01T00:00:00Z",
+      "endDate": "2026-03-31T23:59:59Z"
+    },
+    {
+      "id": "node_ini_0002",
+      "nodeTypeId": "nt_04_initiative",
+      "parentId": "node_obj_0009",
+      "name": "تنفيذ أطر الاستثمار",
+      "description": "تفعيل الأطر الاستثمارية والحوكمة وخطة النمو والشراكات والتخارج.",
+      "color": "#64748b",
+      "status": "PLANNED",
+      "progress": 0,
+      "startDate": "2026-04-01T00:00:00Z",
+      "endDate": "2028-12-31T23:59:59Z"
+    },
+    {
+      "id": "node_ini_0003",
+      "nodeTypeId": "nt_04_initiative",
+      "parentId": "node_obj_0005",
+      "name": "إعداد الدراسات وأبحاث السوق وتأسيس ذكاء الأعمال",
+      "description": "نظام ذكاء سوق واستثمار ومستودع بيانات ولوحات قياس لدعم قرارات التوسع.",
+      "color": "#64748b",
+      "status": "PLANNED",
+      "progress": 0,
+      "startDate": "2026-01-01T00:00:00Z",
+      "endDate": "2026-12-31T23:59:59Z"
+    },
+    {
+      "id": "node_ini_0004",
+      "nodeTypeId": "nt_04_initiative",
+      "parentId": "node_obj_0008",
+      "name": "تعزيز التكامل المالي والتقني والامتثال المالي",
+      "description": "توحيد السياسات والأنظمة المالية وربط التقنية وأتمتة الامتثال والتدقيق.",
+      "color": "#64748b",
+      "status": "PLANNED",
+      "progress": 0,
+      "startDate": "2025-11-01T00:00:00Z",
+      "endDate": "2026-09-30T23:59:59Z"
+    },
+    {
+      "id": "node_ini_0005",
+      "nodeTypeId": "nt_04_initiative",
+      "parentId": "node_obj_0004",
+      "name": "مراجعة هيكلة رأس المال والتدفقات المالية",
+      "description": "تحسين السيولة والتوازن وتحديث سياسات إدارة النقد ونموذج محاكاة للتدفقات.",
+      "color": "#64748b",
+      "status": "PLANNED",
+      "progress": 0,
+      "startDate": "2026-01-01T00:00:00Z",
+      "endDate": "2026-09-30T23:59:59Z"
+    },
+    {
+      "id": "node_ini_0006",
+      "nodeTypeId": "nt_04_initiative",
+      "parentId": "node_obj_0007",
+      "name": "نقل خدمات المجموعة للشركات التابعة",
+      "description": "نقل/توحيد الخدمات المشتركة وتحسين جودة الخدمات ووضوح الأدوار.",
+      "color": "#64748b",
+      "status": "PLANNED",
+      "progress": 0,
+      "startDate": "2026-01-01T00:00:00Z",
+      "endDate": "2027-06-30T23:59:59Z"
+    },
+    {
+      "id": "node_ini_0007",
+      "nodeTypeId": "nt_04_initiative",
+      "parentId": "node_obj_0003",
+      "name": "تفعيل الخطط المتعلقة بالمخاطر والمراجعة الداخلية",
+      "description": "بناء/تحديث سجل المخاطر، تنفيذ خطة المراجعة، نظام متابعة إلكتروني وتقارير دورية.",
+      "color": "#64748b",
+      "status": "PLANNED",
+      "progress": 0,
+      "startDate": "2025-11-01T00:00:00Z",
+      "endDate": "2026-12-31T23:59:59Z"
+    },
+    {
+      "id": "node_ini_0008",
+      "nodeTypeId": "nt_04_initiative",
+      "parentId": "node_obj_0003",
+      "name": "تفعيل النموذج التشغيلي المعتمد",
+      "description": "تطبيق النموذج التشغيلي وتوحيد مؤشرات الأداء ورفع وضوح الأدوار والمساءلة.",
+      "color": "#64748b",
+      "status": "PLANNED",
+      "progress": 0,
+      "startDate": "2025-11-01T00:00:00Z",
+      "endDate": "2026-12-31T23:59:59Z"
+    },
+    {
+      "id": "node_ini_0009",
+      "nodeTypeId": "nt_04_initiative",
+      "parentId": "node_obj_0010",
+      "name": "تطوير وتنفيذ خطة تعلم وتطوير للموظفين",
+      "description": "رفع كفاءة الموظفين عبر إطار تعلم وتطوير ومسارات مهنية ونظام LMS وقياس الأثر.",
+      "color": "#64748b",
+      "status": "PLANNED",
+      "progress": 0,
+      "startDate": "2026-01-01T00:00:00Z",
+      "endDate": "2027-06-30T23:59:59Z"
+    },
+    {
+      "id": "node_ini_0010",
+      "nodeTypeId": "nt_04_initiative",
+      "parentId": "node_obj_0007",
+      "name": "تعزيز التواصل والتكامل بين المجموعة والشركات التابعة",
+      "description": "قنوات تواصل رسمية، منصة رقمية، لقاءات دورية، دليل تواصل، وقياس رضا الشركات التابعة.",
+      "color": "#64748b",
+      "status": "PLANNED",
+      "progress": 0,
+      "startDate": "2026-01-01T00:00:00Z",
+      "endDate": "2026-12-31T23:59:59Z"
+    },
+    {
+      "id": "node_ini_0011",
+      "nodeTypeId": "nt_04_initiative",
+      "parentId": "node_obj_0002",
+      "name": "تحديث وتنفيذ استراتيجية شاملة للتواصل والتسويق",
+      "description": "رفع الوعي بالعلامة وتعزيز الحضور عبر استراتيجية محتوى وحملات وإدارة السمعة وقياس الأداء.",
+      "color": "#64748b",
+      "status": "PLANNED",
+      "progress": 0,
+      "startDate": "2026-01-01T00:00:00Z",
+      "endDate": "2026-12-31T23:59:59Z"
+    },
+    {
+      "id": "node_ini_0012",
+      "nodeTypeId": "nt_04_initiative",
+      "parentId": "node_obj_0003",
+      "name": "تطوير وتفعيل استراتيجية التحول الرقمي",
+      "description": "تقييم النضج الرقمي وتحديث الاستراتيجية وخارطة طريق وأتمتة العمليات ومنصة بيانات وذكاء أعمال.",
+      "color": "#64748b",
+      "status": "PLANNED",
+      "progress": 0,
+      "startDate": "2026-01-01T00:00:00Z",
+      "endDate": "2027-06-30T23:59:59Z"
+    },
+
+    { "id": "node_tsk_0001", "nodeTypeId": "nt_06_task", "parentId": "node_ini_0001", "name": "تحليل أداء الاستثمارات الحالية ومصادر الإيرادات وتحديد الفرص غير المستغلة", "description": null, "color": "#64748b", "status": "PLANNED", "progress": 0, "startDate": null, "endDate": null },
+    { "id": "node_tsk_0002", "nodeTypeId": "nt_06_task", "parentId": "node_ini_0001", "name": "تحديد القطاعات الجديدة ذات النمو المرتفع المتوافقة مع الرؤية والأهداف", "description": null, "color": "#64748b", "status": "PLANNED", "progress": 0, "startDate": null, "endDate": null },
+    { "id": "node_tsk_0003", "nodeTypeId": "nt_06_task", "parentId": "node_ini_0001", "name": "تحديد أهداف كمية للإيرادات والعائد المستهدف لكل قطاع", "description": null, "color": "#64748b", "status": "PLANNED", "progress": 0, "startDate": null, "endDate": null },
+    { "id": "node_tsk_0004", "nodeTypeId": "nt_06_task", "parentId": "node_ini_0001", "name": "وضع إطار تقييم وإدارة المخاطر (بما في ذلك لجنة الاستثمار)", "description": null, "color": "#64748b", "status": "PLANNED", "progress": 0, "startDate": null, "endDate": null },
+    { "id": "node_tsk_0005", "nodeTypeId": "nt_06_task", "parentId": "node_ini_0001", "name": "تخصيص رأس المال البشري والمالي وفق الأطر الاستثمارية", "description": null, "color": "#64748b", "status": "PLANNED", "progress": 0, "startDate": null, "endDate": null },
+    { "id": "node_tsk_0006", "nodeTypeId": "nt_06_task", "parentId": "node_ini_0001", "name": "وضع مؤشرات قياس واضحة للأطر الاستثمارية", "description": null, "color": "#64748b", "status": "PLANNED", "progress": 0, "startDate": null, "endDate": null },
+    { "id": "node_tsk_0007", "nodeTypeId": "nt_06_task", "parentId": "node_ini_0001", "name": "إجراء مراجعة سنوية شاملة للأطر والخطة", "description": null, "color": "#64748b", "status": "PLANNED", "progress": 0, "startDate": null, "endDate": null },
+    { "id": "node_tsk_0008", "nodeTypeId": "nt_06_task", "parentId": "node_ini_0001", "name": "أتمتة لجنة تقييم استثماري متخصصة لمراجعة القرارات الكبرى", "description": null, "color": "#64748b", "status": "PLANNED", "progress": 0, "startDate": null, "endDate": null },
+
+    { "id": "node_tsk_0009", "nodeTypeId": "nt_06_task", "parentId": "node_ini_0002", "name": "اعتماد إطار الاستثمار وتدريب الإدارات", "description": null, "color": "#64748b", "status": "PLANNED", "progress": 0, "startDate": null, "endDate": null },
+    { "id": "node_tsk_0010", "nodeTypeId": "nt_06_task", "parentId": "node_ini_0002", "name": "تخصيص الموارد والميزانيات لتنفيذ خطة الاستثمار", "description": null, "color": "#64748b", "status": "PLANNED", "progress": 0, "startDate": null, "endDate": null },
+    { "id": "node_tsk_0011", "nodeTypeId": "nt_06_task", "parentId": "node_ini_0002", "name": "تنفيذ خطة الشراكات وجذب المستثمرين وتوقيع الاتفاقيات", "description": null, "color": "#64748b", "status": "PLANNED", "progress": 0, "startDate": null, "endDate": null },
+    { "id": "node_tsk_0012", "nodeTypeId": "nt_06_task", "parentId": "node_ini_0002", "name": "إطلاق مشاريع نمو في القطاعات الجديدة", "description": null, "color": "#64748b", "status": "PLANNED", "progress": 0, "startDate": null, "endDate": null },
+    { "id": "node_tsk_0013", "nodeTypeId": "nt_06_task", "parentId": "node_ini_0002", "name": "تطبيق آلية التخارج الدورية من الأصول غير المتوافقة", "description": null, "color": "#64748b", "status": "PLANNED", "progress": 0, "startDate": null, "endDate": null },
+    { "id": "node_tsk_0014", "nodeTypeId": "nt_06_task", "parentId": "node_ini_0002", "name": "إصدار تقارير دورية لقياس العائد على الاستثمار", "description": null, "color": "#64748b", "status": "PLANNED", "progress": 0, "startDate": null, "endDate": null },
+
+    { "id": "node_tsk_0015", "nodeTypeId": "nt_06_task", "parentId": "node_ini_0003", "name": "وضع إطار منهجي لأبحاث السوق (أهداف/منهجيات/شرائح)", "description": null, "color": "#64748b", "status": "PLANNED", "progress": 0, "startDate": null, "endDate": null },
+    { "id": "node_tsk_0016", "nodeTypeId": "nt_06_task", "parentId": "node_ini_0003", "name": "جمع وتحليل البيانات (استبيانات/مقابلات/مصادر سوق)", "description": null, "color": "#64748b", "status": "PLANNED", "progress": 0, "startDate": null, "endDate": null },
+    { "id": "node_tsk_0017", "nodeTypeId": "nt_06_task", "parentId": "node_ini_0003", "name": "إعداد تقارير السوق وتحليل المنافسين وصياغة التوصيات", "description": null, "color": "#64748b", "status": "PLANNED", "progress": 0, "startDate": null, "endDate": null },
+    { "id": "node_tsk_0018", "nodeTypeId": "nt_06_task", "parentId": "node_ini_0003", "name": "تأسيس مستودع بيانات وتوحيد مصادر البيانات", "description": null, "color": "#64748b", "status": "PLANNED", "progress": 0, "startDate": null, "endDate": null },
+    { "id": "node_tsk_0019", "nodeTypeId": "nt_06_task", "parentId": "node_ini_0003", "name": "تطوير لوحات مؤشرات الأداء (Dashboards)", "description": null, "color": "#64748b", "status": "PLANNED", "progress": 0, "startDate": null, "endDate": null },
+    { "id": "node_tsk_0020", "nodeTypeId": "nt_06_task", "parentId": "node_ini_0003", "name": "بناء القدرات وتدريب الكوادر على ذكاء الأعمال", "description": null, "color": "#64748b", "status": "PLANNED", "progress": 0, "startDate": null, "endDate": null },
+    { "id": "node_tsk_0021", "nodeTypeId": "nt_06_task", "parentId": "node_ini_0003", "name": "أتمتة وتحديث ذكاء الأعمال والنماذج التنبؤية", "description": null, "color": "#64748b", "status": "PLANNED", "progress": 0, "startDate": null, "endDate": null },
+    { "id": "node_tsk_0022", "nodeTypeId": "nt_06_task", "parentId": "node_ini_0003", "name": "تعريف دورة قرار استثماري مبنية على البيانات وقياس زمنها", "description": null, "color": "#64748b", "status": "PLANNED", "progress": 0, "startDate": null, "endDate": null },
+
+    { "id": "node_tsk_0023", "nodeTypeId": "nt_06_task", "parentId": "node_ini_0004", "name": "مراجعة الأنظمة والسياسات المالية الحالية وتحديد التباينات", "description": null, "color": "#64748b", "status": "PLANNED", "progress": 0, "startDate": null, "endDate": null },
+    { "id": "node_tsk_0024", "nodeTypeId": "nt_06_task", "parentId": "node_ini_0004", "name": "تصميم دليل موحد للسياسات المالية ومتطلبات التقنية", "description": null, "color": "#64748b", "status": "PLANNED", "progress": 0, "startDate": null, "endDate": null },
+    { "id": "node_tsk_0025", "nodeTypeId": "nt_06_task", "parentId": "node_ini_0004", "name": "توحيد واعتماد منصة تقنية مالية (Finance Platform)", "description": null, "color": "#64748b", "status": "PLANNED", "progress": 0, "startDate": null, "endDate": null },
+    { "id": "node_tsk_0026", "nodeTypeId": "nt_06_task", "parentId": "node_ini_0004", "name": "تطوير وتفعيل حوكمة الامتثال وأتمتة التدقيق والتقارير", "description": null, "color": "#64748b", "status": "PLANNED", "progress": 0, "startDate": null, "endDate": null },
+    { "id": "node_tsk_0027", "nodeTypeId": "nt_06_task", "parentId": "node_ini_0004", "name": "تدريب شامل للإدارات المالية على السياسات والمنصة", "description": null, "color": "#64748b", "status": "PLANNED", "progress": 0, "startDate": null, "endDate": null },
+
+    { "id": "node_tsk_0028", "nodeTypeId": "nt_06_task", "parentId": "node_ini_0005", "name": "تحليل الوضع المالي وهيكل رأس المال والسيولة والمديونية", "description": null, "color": "#64748b", "status": "PLANNED", "progress": 0, "startDate": null, "endDate": null },
+    { "id": "node_tsk_0029", "nodeTypeId": "nt_06_task", "parentId": "node_ini_0005", "name": "مراجعة توزيع رأس المال وتحديد الفائض/العجز", "description": null, "color": "#64748b", "status": "PLANNED", "progress": 0, "startDate": null, "endDate": null },
+    { "id": "node_tsk_0030", "nodeTypeId": "nt_06_task", "parentId": "node_ini_0005", "name": "تحديث سياسات إدارة النقد والتدفقات", "description": null, "color": "#64748b", "status": "PLANNED", "progress": 0, "startDate": null, "endDate": null },
+
+    { "id": "node_tsk_0031", "nodeTypeId": "nt_06_task", "parentId": "node_ini_0005", "name": "تصميم نموذج محاكاة للتدفقات النقدية المستقبلية", "description": null, "color": "#64748b", "status": "PLANNED", "progress": 0, "startDate": null, "endDate": null },
+    { "id": "node_tsk_0032", "nodeTypeId": "nt_06_task", "parentId": "node_ini_0005", "name": "اقتراح خطة لإعادة هيكلة رأس المال", "description": null, "color": "#64748b", "status": "PLANNED", "progress": 0, "startDate": null, "endDate": null },
+    { "id": "node_tsk_0033", "nodeTypeId": "nt_06_task", "parentId": "node_ini_0005", "name": "تطوير آلية مركزية لإدارة السيولة", "description": null, "color": "#64748b", "status": "PLANNED", "progress": 0, "startDate": null, "endDate": null },
+    { "id": "node_tsk_0034", "nodeTypeId": "nt_06_task", "parentId": "node_ini_0005", "name": "إصدار تقارير مالية دورية للإدارة العليا", "description": null, "color": "#64748b", "status": "PLANNED", "progress": 0, "startDate": null, "endDate": null },
+    { "id": "node_tsk_0035", "nodeTypeId": "nt_06_task", "parentId": "node_ini_0005", "name": "تنفيذ ورش عمل مالية لرفع الكفاءة", "description": null, "color": "#64748b", "status": "PLANNED", "progress": 0, "startDate": null, "endDate": null },
+
+    { "id": "node_tsk_0036", "nodeTypeId": "nt_06_task", "parentId": "node_ini_0006", "name": "تحديد الخدمات ذات الأولوية للنقل وخطة وجدول زمني", "description": null, "color": "#64748b", "status": "PLANNED", "progress": 0, "startDate": null, "endDate": null },
+    { "id": "node_tsk_0037", "nodeTypeId": "nt_06_task", "parentId": "node_ini_0006", "name": "تطوير أدوات متابعة جودة الخدمات", "description": null, "color": "#64748b", "status": "PLANNED", "progress": 0, "startDate": null, "endDate": null },
+    { "id": "node_tsk_0038", "nodeTypeId": "nt_06_task", "parentId": "node_ini_0006", "name": "إعداد خطة تواصل وإدارة تغيير لعملية النقل", "description": null, "color": "#64748b", "status": "PLANNED", "progress": 0, "startDate": null, "endDate": null },
+    { "id": "node_tsk_0039", "nodeTypeId": "nt_06_task", "parentId": "node_ini_0006", "name": "متابعة الأداء بعد النقل وتحديث الإجراءات", "description": null, "color": "#64748b", "status": "PLANNED", "progress": 0, "startDate": null, "endDate": null },
+    { "id": "node_tsk_0040", "nodeTypeId": "nt_06_task", "parentId": "node_ini_0006", "name": "تحديد نموذج تشغيلي للأدوار والمسؤوليات (RACI)", "description": null, "color": "#64748b", "status": "PLANNED", "progress": 0, "startDate": null, "endDate": null },
+    { "id": "node_tsk_0041", "nodeTypeId": "nt_06_task", "parentId": "node_ini_0006", "name": "توحيد الأنظمة التقنية والبيانات للخدمات المنقولة", "description": null, "color": "#64748b", "status": "PLANNED", "progress": 0, "startDate": null, "endDate": null },
+    { "id": "node_tsk_0042", "nodeTypeId": "nt_06_task", "parentId": "node_ini_0006", "name": "تقييم دوري لنضج الخدمات وفرص التحسين", "description": null, "color": "#64748b", "status": "PLANNED", "progress": 0, "startDate": null, "endDate": null },
+
+    { "id": "node_tsk_0043", "nodeTypeId": "nt_06_task", "parentId": "node_ini_0007", "name": "تحديث سجل المخاطر الاستراتيجية والتشغيلية", "description": null, "color": "#64748b", "status": "PLANNED", "progress": 0, "startDate": null, "endDate": null },
+    { "id": "node_tsk_0044", "nodeTypeId": "nt_06_task", "parentId": "node_ini_0007", "name": "تنفيذ خطة المراجعة وتغطية جميع الوحدات", "description": null, "color": "#64748b", "status": "PLANNED", "progress": 0, "startDate": null, "endDate": null },
+    { "id": "node_tsk_0045", "nodeTypeId": "nt_06_task", "parentId": "node_ini_0007", "name": "تفعيل نظام متابعة إلكتروني لحالات المراجعة", "description": null, "color": "#64748b", "status": "PLANNED", "progress": 0, "startDate": null, "endDate": null },
+    { "id": "node_tsk_0046", "nodeTypeId": "nt_06_task", "parentId": "node_ini_0007", "name": "إصدار تقارير ربع سنوية عن حالة المخاطر", "description": null, "color": "#64748b", "status": "PLANNED", "progress": 0, "startDate": null, "endDate": null },
+    { "id": "node_tsk_0047", "nodeTypeId": "nt_06_task", "parentId": "node_ini_0007", "name": "تنفيذ برامج توعية بإدارة المخاطر والالتزام", "description": null, "color": "#64748b", "status": "PLANNED", "progress": 0, "startDate": null, "endDate": null },
+    { "id": "node_tsk_0048", "nodeTypeId": "nt_06_task", "parentId": "node_ini_0007", "name": "تطبيق منهجية تقييم المخاطر (الاحتمالية × التأثير)", "description": null, "color": "#64748b", "status": "PLANNED", "progress": 0, "startDate": null, "endDate": null },
+    { "id": "node_tsk_0049", "nodeTypeId": "nt_06_task", "parentId": "node_ini_0007", "name": "تقييم نضج المخاطر لكل شركة وخطط التحسين", "description": null, "color": "#64748b", "status": "PLANNED", "progress": 0, "startDate": null, "endDate": null },
+    { "id": "node_tsk_0050", "nodeTypeId": "nt_06_task", "parentId": "node_ini_0007", "name": "تطوير مصفوفة الصلاحيات والمسؤوليات بين المجموعة والشركات", "description": null, "color": "#64748b", "status": "PLANNED", "progress": 0, "startDate": null, "endDate": null },
+
+    { "id": "node_tsk_0051", "nodeTypeId": "nt_06_task", "parentId": "node_ini_0008", "name": "خطة تطبيق النموذج التشغيلي (هيكل/عمليات/حوكمة/أدوار)", "description": null, "color": "#64748b", "status": "PLANNED", "progress": 0, "startDate": null, "endDate": null },
+    { "id": "node_tsk_0052", "nodeTypeId": "nt_06_task", "parentId": "node_ini_0008", "name": "توحيد مؤشرات الأداء الخاصة بالتشغيل والحوكمة", "description": null, "color": "#64748b", "status": "PLANNED", "progress": 0, "startDate": null, "endDate": null },
+    { "id": "node_tsk_0053", "nodeTypeId": "nt_06_task", "parentId": "node_ini_0008", "name": "تطبيق آليات التنسيق والاجتماعات الدورية بين المجموعة والشركات", "description": null, "color": "#64748b", "status": "PLANNED", "progress": 0, "startDate": null, "endDate": null },
+    { "id": "node_tsk_0054", "nodeTypeId": "nt_06_task", "parentId": "node_ini_0008", "name": "تحديث وتوثيق الأدوار والمساءلة (Role Clarity / RACI)", "description": null, "color": "#64748b", "status": "PLANNED", "progress": 0, "startDate": null, "endDate": null },
+    { "id": "node_tsk_0055", "nodeTypeId": "nt_06_task", "parentId": "node_ini_0008", "name": "قياس التحسن في كفاءة العمليات بعد التطبيق", "description": null, "color": "#64748b", "status": "PLANNED", "progress": 0, "startDate": null, "endDate": null },
+
+    { "id": "node_tsk_0056", "nodeTypeId": "nt_06_task", "parentId": "node_ini_0009", "name": "تحليل فجوات المهارات", "description": null, "color": "#64748b", "status": "PLANNED", "progress": 0, "startDate": null, "endDate": null },
+    { "id": "node_tsk_0057", "nodeTypeId": "nt_06_task", "parentId": "node_ini_0009", "name": "تصميم إطار تعلم وتطوير موحد ومسارات مهنية", "description": null, "color": "#64748b", "status": "PLANNED", "progress": 0, "startDate": null, "endDate": null },
+    { "id": "node_tsk_0058", "nodeTypeId": "nt_06_task", "parentId": "node_ini_0009", "name": "إعداد خطة سنوية للتطوير (قيادي/فني/تحول رقمي)", "description": null, "color": "#64748b", "status": "PLANNED", "progress": 0, "startDate": null, "endDate": null },
+    { "id": "node_tsk_0059", "nodeTypeId": "nt_06_task", "parentId": "node_ini_0009", "name": "تفعيل نظام إدارة تعلم إلكتروني (LMS)", "description": null, "color": "#64748b", "status": "PLANNED", "progress": 0, "startDate": null, "endDate": null },
+    { "id": "node_tsk_0060", "nodeTypeId": "nt_06_task", "parentId": "node_ini_0009", "name": "تنفيذ برامج تدريب داخلية وخارجية وشراكات أكاديمية", "description": null, "color": "#64748b", "status": "PLANNED", "progress": 0, "startDate": null, "endDate": null },
+
+    { "id": "node_tsk_0061", "nodeTypeId": "nt_06_task", "parentId": "node_ini_0009", "name": "إعداد قيادات الصف الثاني والثالث", "description": null, "color": "#64748b", "status": "PLANNED", "progress": 0, "startDate": null, "endDate": null },
+    { "id": "node_tsk_0062", "nodeTypeId": "nt_06_task", "parentId": "node_ini_0009", "name": "تطبيق آلية تحفيز تربط الأداء بالتطوير", "description": null, "color": "#64748b", "status": "PLANNED", "progress": 0, "startDate": null, "endDate": null },
+    { "id": "node_tsk_0063", "nodeTypeId": "nt_06_task", "parentId": "node_ini_0009", "name": "إطلاق برامج تعلم رقمية", "description": null, "color": "#64748b", "status": "PLANNED", "progress": 0, "startDate": null, "endDate": null },
+    { "id": "node_tsk_0064", "nodeTypeId": "nt_06_task", "parentId": "node_ini_0009", "name": "قياس أثر التدريب بمؤشرات الكفاءة والإنتاجية", "description": null, "color": "#64748b", "status": "PLANNED", "progress": 0, "startDate": null, "endDate": null },
+    { "id": "node_tsk_0065", "nodeTypeId": "nt_06_task", "parentId": "node_ini_0009", "name": "إعداد تقارير أداء فصلية لبرامج التطوير", "description": null, "color": "#64748b", "status": "PLANNED", "progress": 0, "startDate": null, "endDate": null },
+
+    { "id": "node_tsk_0066", "nodeTypeId": "nt_06_task", "parentId": "node_ini_0010", "name": "تصميم حوكمة للتواصل الداخلي (قنوات/مسؤوليات)", "description": null, "color": "#64748b", "status": "PLANNED", "progress": 0, "startDate": null, "endDate": null },
+    { "id": "node_tsk_0067", "nodeTypeId": "nt_06_task", "parentId": "node_ini_0010", "name": "تفعيل منصة رقمية موحدة للتواصل وتبادل المعلومات", "description": null, "color": "#64748b", "status": "PLANNED", "progress": 0, "startDate": null, "endDate": null },
+    { "id": "node_tsk_0068", "nodeTypeId": "nt_06_task", "parentId": "node_ini_0010", "name": "تنظيم لقاءات تنسيقية دورية بين المجموعة والشركات", "description": null, "color": "#64748b", "status": "PLANNED", "progress": 0, "startDate": null, "endDate": null },
+    { "id": "node_tsk_0069", "nodeTypeId": "nt_06_task", "parentId": "node_ini_0010", "name": "إصدار نشرات داخلية وتقارير موحدة", "description": null, "color": "#64748b", "status": "PLANNED", "progress": 0, "startDate": null, "endDate": null },
+    { "id": "node_tsk_0070", "nodeTypeId": "nt_06_task", "parentId": "node_ini_0010", "name": "تنفيذ برامج تواصل داخلي تفاعلية (ورش/فعاليات)", "description": null, "color": "#64748b", "status": "PLANNED", "progress": 0, "startDate": null, "endDate": null },
+    { "id": "node_tsk_0071", "nodeTypeId": "nt_06_task", "parentId": "node_ini_0010", "name": "متابعة القرارات المشتركة وقياس الالتزام", "description": null, "color": "#64748b", "status": "PLANNED", "progress": 0, "startDate": null, "endDate": null },
+    { "id": "node_tsk_0072", "nodeTypeId": "nt_06_task", "parentId": "node_ini_0010", "name": "تنفيذ استبيانات رضا الشركات التابعة", "description": null, "color": "#64748b", "status": "PLANNED", "progress": 0, "startDate": null, "endDate": null },
+    { "id": "node_tsk_0073", "nodeTypeId": "nt_06_task", "parentId": "node_ini_0010", "name": "إعداد دليل إجرائي للتواصل الداخلي", "description": null, "color": "#64748b", "status": "PLANNED", "progress": 0, "startDate": null, "endDate": null },
+
+    { "id": "node_tsk_0074", "nodeTypeId": "nt_06_task", "parentId": "node_ini_0011", "name": "تحليل الهوية الحالية ومراجعة أداء القنوات", "description": null, "color": "#64748b", "status": "PLANNED", "progress": 0, "startDate": null, "endDate": null },
+    { "id": "node_tsk_0075", "nodeTypeId": "nt_06_task", "parentId": "node_ini_0011", "name": "إعداد استراتيجية اتصال وتسويق (أهداف/جمهور/رسائل)", "description": null, "color": "#64748b", "status": "PLANNED", "progress": 0, "startDate": null, "endDate": null },
+    { "id": "node_tsk_0076", "nodeTypeId": "nt_06_task", "parentId": "node_ini_0011", "name": "خطة اتصال داخلية لتعزيز الوعي بالهوية", "description": null, "color": "#64748b", "status": "PLANNED", "progress": 0, "startDate": null, "endDate": null },
+    { "id": "node_tsk_0077", "nodeTypeId": "nt_06_task", "parentId": "node_ini_0011", "name": "بناء خطة محتوى متعددة القنوات", "description": null, "color": "#64748b", "status": "PLANNED", "progress": 0, "startDate": null, "endDate": null },
+    { "id": "node_tsk_0078", "nodeTypeId": "nt_06_task", "parentId": "node_ini_0011", "name": "تفعيل نظام لإدارة السمعة ومتابعة الانطباعات", "description": null, "color": "#64748b", "status": "PLANNED", "progress": 0, "startDate": null, "endDate": null },
+    { "id": "node_tsk_0079", "nodeTypeId": "nt_06_task", "parentId": "node_ini_0011", "name": "تنفيذ حملات تسويقية وإعلامية داعمة للمبادرات الكبرى", "description": null, "color": "#64748b", "status": "PLANNED", "progress": 0, "startDate": null, "endDate": null },
+    { "id": "node_tsk_0080", "nodeTypeId": "nt_06_task", "parentId": "node_ini_0011", "name": "إدارة التعاون مع وسائل الإعلام والشركاء", "description": null, "color": "#64748b", "status": "PLANNED", "progress": 0, "startDate": null, "endDate": null },
+    { "id": "node_tsk_0081", "nodeTypeId": "nt_06_task", "parentId": "node_ini_0011", "name": "تقييم دوري للأداء وتحديث الاستراتيجية", "description": null, "color": "#64748b", "status": "PLANNED", "progress": 0, "startDate": null, "endDate": null },
+    { "id": "node_tsk_0082", "nodeTypeId": "nt_06_task", "parentId": "node_ini_0011", "name": "برامج تواصل داخلي لتعزيز اندماج الموظفين", "description": null, "color": "#64748b", "status": "PLANNED", "progress": 0, "startDate": null, "endDate": null },
+
+    { "id": "node_tsk_0083", "nodeTypeId": "nt_06_task", "parentId": "node_ini_0012", "name": "تقييم النضج الرقمي وتحديد الفجوات", "description": null, "color": "#64748b", "status": "PLANNED", "progress": 0, "startDate": null, "endDate": null },
+    { "id": "node_tsk_0084", "nodeTypeId": "nt_06_task", "parentId": "node_ini_0012", "name": "تحديث استراتيجية التحول الرقمي لتتوافق مع الأهداف", "description": null, "color": "#64748b", "status": "PLANNED", "progress": 0, "startDate": null, "endDate": null },
+    { "id": "node_tsk_0085", "nodeTypeId": "nt_06_task", "parentId": "node_ini_0012", "name": "بناء خارطة طريق رقمية (أولويات/أنظمة/مراحل)", "description": null, "color": "#64748b", "status": "PLANNED", "progress": 0, "startDate": null, "endDate": null },
+    { "id": "node_tsk_0086", "nodeTypeId": "nt_06_task", "parentId": "node_ini_0012", "name": "أتمتة العمليات الأساسية (المشتريات/المالية/الموارد البشرية/التقارير)", "description": null, "color": "#64748b", "status": "PLANNED", "progress": 0, "startDate": null, "endDate": null },
+    { "id": "node_tsk_0087", "nodeTypeId": "nt_06_task", "parentId": "node_ini_0012", "name": "توحيد البنية التحتية الرقمية للتكامل بين الشركات", "description": null, "color": "#64748b", "status": "PLANNED", "progress": 0, "startDate": null, "endDate": null },
+    { "id": "node_tsk_0088", "nodeTypeId": "nt_06_task", "parentId": "node_ini_0012", "name": "تأسيس منصة بيانات مركزية للتحليل", "description": null, "color": "#64748b", "status": "PLANNED", "progress": 0, "startDate": null, "endDate": null },
+    { "id": "node_tsk_0089", "nodeTypeId": "nt_06_task", "parentId": "node_ini_0012", "name": "تفعيل ذكاء الأعمال لدعم القرار لحظياً", "description": null, "color": "#64748b", "status": "PLANNED", "progress": 0, "startDate": null, "endDate": null },
+    { "id": "node_tsk_0090", "nodeTypeId": "nt_06_task", "parentId": "node_ini_0012", "name": "توعية وتدريب رقمي للموظفين على الأنظمة الجديدة", "description": null, "color": "#64748b", "status": "PLANNED", "progress": 0, "startDate": null, "endDate": null }
+  ],
+  "kpis": [
+    {
+      "id": "kpi_str_0001",
+      "primaryNodeId": "node_str_0001",
+      "ownerUserId": null,
+      "name": "نسبة تقدم تنفيذ الاستراتيجية",
+      "description": "Rollup of objective completion (simple average).",
+      "formula": "(objectives_completed / objectives_total) * 100",
+      "unit": "%",
+      "direction": "INCREASE_IS_GOOD",
+      "aggregation": "LAST_VALUE",
+      "periodType": "QUARTERLY",
+      "baselineValue": 0,
+      "targetValue": 100,
+      "weight": null,
+      "status": "ACTIVE",
+      "variables": [
+        { "id": "kv_str_0001_a", "code": "objectives_completed", "displayName": "Objectives Completed", "dataType": "NUMBER", "isRequired": true, "isStatic": false, "staticValue": null },
+        { "id": "kv_str_0001_b", "code": "objectives_total", "displayName": "Objectives Total", "dataType": "NUMBER", "isRequired": true, "isStatic": true, "staticValue": 10 }
+      ]
+    },
+
+    {
+      "id": "kpi_obj_0001_01",
+      "primaryNodeId": "node_obj_0001",
+      "ownerUserId": null,
+      "name": "نمو القيمة الاسمية للمجموعة (%)",
+      "description": "((Current Nominal Value - Baseline Nominal Value) / Baseline) * 100. Target (%) over 3 years is not specified in data.",
+      "formula": "((current_nominal_value - baseline_nominal_value) / baseline_nominal_value) * 100",
+      "unit": "%",
+      "direction": "INCREASE_IS_GOOD",
+      "aggregation": "LAST_VALUE",
+      "periodType": "YEARLY",
+      "baselineValue": null,
+      "targetValue": null,
+      "weight": null,
+      "status": "ACTIVE",
+      "variables": [
+        { "id": "kv_obj_0001_a", "code": "current_nominal_value", "displayName": "Current Nominal Value", "dataType": "NUMBER", "isRequired": true, "isStatic": false, "staticValue": null },
+        { "id": "kv_obj_0001_b", "code": "baseline_nominal_value", "displayName": "Baseline Nominal Value", "dataType": "NUMBER", "isRequired": true, "isStatic": false, "staticValue": null }
+      ]
+    },
+    {
+      "id": "kpi_obj_0002_01",
+      "primaryNodeId": "node_obj_0002",
+      "ownerUserId": null,
+      "name": "الوعي بالعلامة التجارية (%)",
+      "description": "Survey-based: aware respondents / total respondents * 100.",
+      "formula": "(aware_respondents / total_respondents) * 100",
+      "unit": "%",
+      "direction": "INCREASE_IS_GOOD",
+      "aggregation": "LAST_VALUE",
+      "periodType": "YEARLY",
+      "baselineValue": null,
+      "targetValue": null,
+      "weight": null,
+      "status": "ACTIVE",
+      "variables": [
+        { "id": "kv_obj_0002_a", "code": "aware_respondents", "displayName": "Aware Respondents", "dataType": "NUMBER", "isRequired": true, "isStatic": false, "staticValue": null },
+        { "id": "kv_obj_0002_b", "code": "total_respondents", "displayName": "Total Respondents", "dataType": "NUMBER", "isRequired": true, "isStatic": false, "staticValue": null }
+      ]
+    },
+    {
+      "id": "kpi_obj_0003_01",
+      "primaryNodeId": "node_obj_0003",
+      "ownerUserId": null,
+      "name": "مؤشر جاهزية الإدراج (IPO Readiness Index) (%)",
+      "description": "readiness_score_obtained / readiness_score_total * 100. Define scoring rubric based on IPO readiness assessment domains.",
+      "formula": "(readiness_score_obtained / readiness_score_total) * 100",
+      "unit": "%",
+      "direction": "INCREASE_IS_GOOD",
+      "aggregation": "LAST_VALUE",
+      "periodType": "QUARTERLY",
+      "baselineValue": null,
+      "targetValue": 100,
+      "weight": null,
+      "status": "ACTIVE",
+      "variables": [
+        { "id": "kv_obj_0003_a", "code": "readiness_score_obtained", "displayName": "Readiness Score Obtained", "dataType": "NUMBER", "isRequired": true, "isStatic": false, "staticValue": null },
+        { "id": "kv_obj_0003_b", "code": "readiness_score_total", "displayName": "Readiness Score Total", "dataType": "NUMBER", "isRequired": true, "isStatic": true, "staticValue": 100 }
+      ]
+    },
+    {
+      "id": "kpi_obj_0004_01",
+      "primaryNodeId": "node_obj_0004",
+      "ownerUserId": null,
+      "name": "إيرادات المجموعة (SAR)",
+      "description": "Total group revenue for the period. Target XXX SAR by 2028 (unknown).",
+      "formula": "total_revenue_sar",
+      "unit": "SAR",
+      "direction": "INCREASE_IS_GOOD",
+      "aggregation": "SUM",
+      "periodType": "YEARLY",
+      "baselineValue": null,
+      "targetValue": null,
+      "weight": null,
+      "status": "ACTIVE",
+      "variables": [
+        { "id": "kv_obj_0004_a", "code": "total_revenue_sar", "displayName": "Total Revenue (SAR)", "dataType": "NUMBER", "isRequired": true, "isStatic": false, "staticValue": null }
+      ]
+    },
+    {
+      "id": "kpi_obj_0005_01",
+      "primaryNodeId": "node_obj_0005",
+      "ownerUserId": null,
+      "name": "عدد القطاعات الجديدة التي تم الدخول فيها",
+      "description": "Count of new sectors entered (as per approved sector taxonomy). Target = 7 by end of 2028.",
+      "formula": "sectors_entered_count",
+      "unit": "count",
+      "direction": "INCREASE_IS_GOOD",
+      "aggregation": "LAST_VALUE",
+      "periodType": "QUARTERLY",
+      "baselineValue": 0,
+      "targetValue": 7,
+      "weight": null,
+      "status": "ACTIVE",
+      "variables": [
+        { "id": "kv_obj_0005_a", "code": "sectors_entered_count", "displayName": "Sectors Entered Count", "dataType": "NUMBER", "isRequired": true, "isStatic": false, "staticValue": null }
+      ]
+    },
+    {
+      "id": "kpi_obj_0006_01",
+      "primaryNodeId": "node_obj_0006",
+      "ownerUserId": null,
+      "name": "معدل النمو السنوي المركب للاستثمارات الجديدة (CAGR) (%)",
+      "description": "((ending_value / beginning_value)^(1/years) - 1) * 100. Target >= 12 by 2028.",
+      "formula": "(((ending_value / beginning_value) ^ (1 / years)) - 1) * 100",
+      "unit": "%",
+      "direction": "INCREASE_IS_GOOD",
+      "aggregation": "LAST_VALUE",
+      "periodType": "YEARLY",
+      "baselineValue": null,
+      "targetValue": 12,
+      "weight": null,
+      "status": "ACTIVE",
+      "variables": [
+        { "id": "kv_obj_0006_a", "code": "beginning_value", "displayName": "Beginning Value", "dataType": "NUMBER", "isRequired": true, "isStatic": false, "staticValue": null },
+        { "id": "kv_obj_0006_b", "code": "ending_value", "displayName": "Ending Value", "dataType": "NUMBER", "isRequired": true, "isStatic": false, "staticValue": null },
+        { "id": "kv_obj_0006_c", "code": "years", "displayName": "Years", "dataType": "NUMBER", "isRequired": true, "isStatic": true, "staticValue": 3 }
+      ]
+    },
+    {
+      "id": "kpi_obj_0007_01",
+      "primaryNodeId": "node_obj_0007",
+      "ownerUserId": null,
+      "name": "نسبة إنجاز إعادة الهيكلة (%)",
+      "description": "milestones_done / milestones_total * 100. Milestones defined by operating model and org design plan.",
+      "formula": "(milestones_done / milestones_total) * 100",
+      "unit": "%",
+      "direction": "INCREASE_IS_GOOD",
+      "aggregation": "LAST_VALUE",
+      "periodType": "QUARTERLY",
+      "baselineValue": 0,
+      "targetValue": 100,
+      "weight": null,
+      "status": "ACTIVE",
+      "variables": [
+        { "id": "kv_obj_0007_a", "code": "milestones_done", "displayName": "Milestones Done", "dataType": "NUMBER", "isRequired": true, "isStatic": false, "staticValue": null },
+        { "id": "kv_obj_0007_b", "code": "milestones_total", "displayName": "Milestones Total", "dataType": "NUMBER", "isRequired": true, "isStatic": true, "staticValue": 10 }
+      ]
+    },
+    {
+      "id": "kpi_obj_0008_01",
+      "primaryNodeId": "node_obj_0008",
+      "ownerUserId": null,
+      "name": "نسبة خفض الانحرافات المالية (%)",
+      "description": "((baseline_variance_pct - current_variance_pct) / baseline_variance_pct) * 100. Target = 10% reduction by 2026.",
+      "formula": "((baseline_variance_pct - current_variance_pct) / baseline_variance_pct) * 100",
+      "unit": "%",
+      "direction": "INCREASE_IS_GOOD",
+      "aggregation": "LAST_VALUE",
+      "periodType": "QUARTERLY",
+      "baselineValue": null,
+      "targetValue": 10,
+      "weight": null,
+      "status": "ACTIVE",
+      "variables": [
+        { "id": "kv_obj_0008_a", "code": "baseline_variance_pct", "displayName": "Baseline Variance (%)", "dataType": "PERCENTAGE", "isRequired": true, "isStatic": false, "staticValue": null },
+        { "id": "kv_obj_0008_b", "code": "current_variance_pct", "displayName": "Current Variance (%)", "dataType": "PERCENTAGE", "isRequired": true, "isStatic": false, "staticValue": null }
+      ]
+    },
+    {
+      "id": "kpi_obj_0009_01",
+      "primaryNodeId": "node_obj_0009",
+      "ownerUserId": null,
+      "name": "الفائض على متوسط السوق (Excess Return) (نقطة مئوية)",
+      "description": "portfolio_return_pct - benchmark_return_pct. Target = +15 by 2028.",
+      "formula": "portfolio_return_pct - benchmark_return_pct",
+      "unit": "pp",
+      "direction": "INCREASE_IS_GOOD",
+      "aggregation": "LAST_VALUE",
+      "periodType": "YEARLY",
+      "baselineValue": null,
+      "targetValue": 15,
+      "weight": null,
+      "status": "ACTIVE",
+      "variables": [
+        { "id": "kv_obj_0009_a", "code": "portfolio_return_pct", "displayName": "Portfolio Return (%)", "dataType": "PERCENTAGE", "isRequired": true, "isStatic": false, "staticValue": null },
+        { "id": "kv_obj_0009_b", "code": "benchmark_return_pct", "displayName": "Benchmark Return (%)", "dataType": "PERCENTAGE", "isRequired": true, "isStatic": false, "staticValue": null }
+      ]
+    },
+    {
+      "id": "kpi_obj_0010_01",
+      "primaryNodeId": "node_obj_0010",
+      "ownerUserId": null,
+      "name": "مؤشر إنتاجية الموظفين (%)",
+      "description": "productivity_score_obtained / productivity_score_total * 100. Target = 85% by 2027.",
+      "formula": "(productivity_score_obtained / productivity_score_total) * 100",
+      "unit": "%",
+      "direction": "INCREASE_IS_GOOD",
+      "aggregation": "LAST_VALUE",
+      "periodType": "QUARTERLY",
+      "baselineValue": null,
+      "targetValue": 85,
+      "weight": null,
+      "status": "ACTIVE",
+      "variables": [
+        { "id": "kv_obj_0010_a", "code": "productivity_score_obtained", "displayName": "Productivity Score Obtained", "dataType": "NUMBER", "isRequired": true, "isStatic": false, "staticValue": null },
+        { "id": "kv_obj_0010_b", "code": "productivity_score_total", "displayName": "Productivity Score Total", "dataType": "NUMBER", "isRequired": true, "isStatic": true, "staticValue": 100 }
+      ]
+    },
+
+    {
+      "id": "kpi_ini_0001_01",
+      "primaryNodeId": "node_ini_0001",
+      "ownerUserId": null,
+      "name": "نسبة إنجاز وتوثيق الأطر الاستثمارية (%)",
+      "description": "completed_framework_deliverables / total_framework_deliverables * 100",
+      "formula": "(completed_framework_deliverables / total_framework_deliverables) * 100",
+      "unit": "%",
+      "direction": "INCREASE_IS_GOOD",
+      "aggregation": "LAST_VALUE",
+      "periodType": "MONTHLY",
+      "baselineValue": 0,
+      "targetValue": 100,
+      "weight": null,
+      "status": "ACTIVE",
+      "variables": [
+        { "id": "kv_ini_0001_a", "code": "completed_framework_deliverables", "displayName": "Completed Framework Deliverables", "dataType": "NUMBER", "isRequired": true, "isStatic": false, "staticValue": null },
+        { "id": "kv_ini_0001_b", "code": "total_framework_deliverables", "displayName": "Total Framework Deliverables", "dataType": "NUMBER", "isRequired": true, "isStatic": true, "staticValue": 8 }
+      ]
+    },
+    {
+      "id": "kpi_ini_0001_02",
+      "primaryNodeId": "node_ini_0001",
+      "ownerUserId": null,
+      "name": "تنوع مصادر الإيرادات في القطاعات المستهدفة (%)",
+      "description": "(revenue_target_sectors / total_revenue) * 100",
+      "formula": "(revenue_target_sectors / total_revenue) * 100",
+      "unit": "%",
+      "direction": "INCREASE_IS_GOOD",
+      "aggregation": "LAST_VALUE",
+      "periodType": "QUARTERLY",
+      "baselineValue": null,
+      "targetValue": null,
+      "weight": null,
+      "status": "ACTIVE",
+      "variables": [
+        { "id": "kv_ini_0001_c", "code": "revenue_target_sectors", "displayName": "Revenue from Target Sectors", "dataType": "NUMBER", "isRequired": true, "isStatic": false, "staticValue": null },
+        { "id": "kv_ini_0001_d", "code": "total_revenue", "displayName": "Total Revenue", "dataType": "NUMBER", "isRequired": true, "isStatic": false, "staticValue": null }
+      ]
+    },
+    {
+      "id": "kpi_ini_0001_03",
+      "primaryNodeId": "node_ini_0001",
+      "ownerUserId": null,
+      "name": "نسبة تغطية المخاطر ضمن الإطار المعياري (%)",
+      "description": "(risks_mapped_to_framework / total_risks_identified) * 100",
+      "formula": "(risks_mapped_to_framework / total_risks_identified) * 100",
+      "unit": "%",
+      "direction": "INCREASE_IS_GOOD",
+      "aggregation": "LAST_VALUE",
+      "periodType": "QUARTERLY",
+      "baselineValue": null,
+      "targetValue": 100,
+      "weight": null,
+      "status": "ACTIVE",
+      "variables": [
+        { "id": "kv_ini_0001_e", "code": "risks_mapped_to_framework", "displayName": "Risks Mapped to Framework", "dataType": "NUMBER", "isRequired": true, "isStatic": false, "staticValue": null },
+        { "id": "kv_ini_0001_f", "code": "total_risks_identified", "displayName": "Total Risks Identified", "dataType": "NUMBER", "isRequired": true, "isStatic": false, "staticValue": null }
+      ]
+    },
+
+    {
+      "id": "kpi_ini_0002_01",
+      "primaryNodeId": "node_ini_0002",
+      "ownerUserId": null,
+      "name": "العائد على الاستثمار للقطاعات الجديدة (%)",
+      "description": "(net_profit_new_sectors / invested_capital_new_sectors) * 100",
+      "formula": "(net_profit_new_sectors / invested_capital_new_sectors) * 100",
+      "unit": "%",
+      "direction": "INCREASE_IS_GOOD",
+      "aggregation": "LAST_VALUE",
+      "periodType": "YEARLY",
+      "baselineValue": null,
+      "targetValue": null,
+      "weight": null,
+      "status": "ACTIVE",
+      "variables": [
+        { "id": "kv_ini_0002_a", "code": "net_profit_new_sectors", "displayName": "Net Profit (New Sectors)", "dataType": "NUMBER", "isRequired": true, "isStatic": false, "staticValue": null },
+        { "id": "kv_ini_0002_b", "code": "invested_capital_new_sectors", "displayName": "Invested Capital (New Sectors)", "dataType": "NUMBER", "isRequired": true, "isStatic": false, "staticValue": null }
+      ]
+    },
+    {
+      "id": "kpi_ini_0002_02",
+      "primaryNodeId": "node_ini_0002",
+      "ownerUserId": null,
+      "name": "مساهمة القطاعات الجديدة في إجمالي المحفظة (%)",
+      "description": "(portfolio_value_new_sectors / total_portfolio_value) * 100",
+      "formula": "(portfolio_value_new_sectors / total_portfolio_value) * 100",
+      "unit": "%",
+      "direction": "INCREASE_IS_GOOD",
+      "aggregation": "LAST_VALUE",
+      "periodType": "QUARTERLY",
+      "baselineValue": null,
+      "targetValue": null,
+      "weight": null,
+      "status": "ACTIVE",
+      "variables": [
+        { "id": "kv_ini_0002_c", "code": "portfolio_value_new_sectors", "displayName": "Portfolio Value (New Sectors)", "dataType": "NUMBER", "isRequired": true, "isStatic": false, "staticValue": null },
+        { "id": "kv_ini_0002_d", "code": "total_portfolio_value", "displayName": "Total Portfolio Value", "dataType": "NUMBER", "isRequired": true, "isStatic": false, "staticValue": null }
+      ]
+    },
+    {
+      "id": "kpi_ini_0002_03",
+      "primaryNodeId": "node_ini_0002",
+      "ownerUserId": null,
+      "name": "نسبة الإيرادات عبر الشراكات الاستراتيجية (%)",
+      "description": "(partnership_revenue / total_revenue) * 100",
+      "formula": "(partnership_revenue / total_revenue) * 100",
+      "unit": "%",
+      "direction": "INCREASE_IS_GOOD",
+      "aggregation": "LAST_VALUE",
+      "periodType": "QUARTERLY",
+      "baselineValue": null,
+      "targetValue": null,
+      "weight": null,
+      "status": "ACTIVE",
+      "variables": [
+        { "id": "kv_ini_0002_e", "code": "partnership_revenue", "displayName": "Partnership Revenue", "dataType": "NUMBER", "isRequired": true, "isStatic": false, "staticValue": null },
+        { "id": "kv_ini_0002_f", "code": "total_revenue", "displayName": "Total Revenue", "dataType": "NUMBER", "isRequired": true, "isStatic": false, "staticValue": null }
+      ]
+    },
+    {
+      "id": "kpi_ini_0002_04",
+      "primaryNodeId": "node_ini_0002",
+      "ownerUserId": null,
+      "name": "نسبة تنفيذ خطة التخارج (%)",
+      "description": "(realized_exit_value / planned_exit_value) * 100",
+      "formula": "(realized_exit_value / planned_exit_value) * 100",
+      "unit": "%",
+      "direction": "INCREASE_IS_GOOD",
+      "aggregation": "LAST_VALUE",
+      "periodType": "YEARLY",
+      "baselineValue": null,
+      "targetValue": 100,
+      "weight": null,
+      "status": "ACTIVE",
+      "variables": [
+        { "id": "kv_ini_0002_g", "code": "realized_exit_value", "displayName": "Realized Exit Value", "dataType": "NUMBER", "isRequired": true, "isStatic": false, "staticValue": null },
+        { "id": "kv_ini_0002_h", "code": "planned_exit_value", "displayName": "Planned Exit Value", "dataType": "NUMBER", "isRequired": true, "isStatic": false, "staticValue": null }
+      ]
+    },
+    {
+      "id": "kpi_ini_0002_05",
+      "primaryNodeId": "node_ini_0002",
+      "ownerUserId": null,
+      "name": "معدل الامتثال للمعيار الاستثماري الجديد (%)",
+      "description": "(compliant_investment_decisions / total_investment_decisions) * 100",
+      "formula": "(compliant_investment_decisions / total_investment_decisions) * 100",
+      "unit": "%",
+      "direction": "INCREASE_IS_GOOD",
+      "aggregation": "LAST_VALUE",
+      "periodType": "QUARTERLY",
+      "baselineValue": null,
+      "targetValue": 100,
+      "weight": null,
+      "status": "ACTIVE",
+      "variables": [
+        { "id": "kv_ini_0002_i", "code": "compliant_investment_decisions", "displayName": "Compliant Investment Decisions", "dataType": "NUMBER", "isRequired": true, "isStatic": false, "staticValue": null },
+        { "id": "kv_ini_0002_j", "code": "total_investment_decisions", "displayName": "Total Investment Decisions", "dataType": "NUMBER", "isRequired": true, "isStatic": false, "staticValue": null }
+      ]
+    },
+
+    {
+      "id": "kpi_ini_0003_01",
+      "primaryNodeId": "node_ini_0003",
+      "ownerUserId": null,
+      "name": "اكتمال مستودع البيانات وذكاء الأعمال (%)",
+      "description": "(dw_scope_completed / dw_scope_total) * 100",
+      "formula": "(dw_scope_completed / dw_scope_total) * 100",
+      "unit": "%",
+      "direction": "INCREASE_IS_GOOD",
+      "aggregation": "LAST_VALUE",
+      "periodType": "MONTHLY",
+      "baselineValue": 0,
+      "targetValue": 100,
+      "weight": null,
+      "status": "ACTIVE",
+      "variables": [
+        { "id": "kv_ini_0003_a", "code": "dw_scope_completed", "displayName": "DW/BI Scope Completed", "dataType": "NUMBER", "isRequired": true, "isStatic": false, "staticValue": null },
+        { "id": "kv_ini_0003_b", "code": "dw_scope_total", "displayName": "DW/BI Scope Total", "dataType": "NUMBER", "isRequired": true, "isStatic": true, "staticValue": 8 }
+      ]
+    },
+    {
+      "id": "kpi_ini_0003_02",
+      "primaryNodeId": "node_ini_0003",
+      "ownerUserId": null,
+      "name": "زمن دورة تجهيز القرار الاستثماري (أيام)",
+      "description": "Average decision cycle time in days (lower is better).",
+      "formula": "avg_decision_cycle_days",
+      "unit": "days",
+      "direction": "DECREASE_IS_GOOD",
+      "aggregation": "AVERAGE",
+      "periodType": "QUARTERLY",
+      "baselineValue": null,
+      "targetValue": null,
+      "weight": null,
+      "status": "ACTIVE",
+      "variables": [
+        { "id": "kv_ini_0003_c", "code": "avg_decision_cycle_days", "displayName": "Avg Decision Cycle Days", "dataType": "NUMBER", "isRequired": true, "isStatic": false, "staticValue": null }
+      ]
+    },
+    {
+      "id": "kpi_ini_0003_03",
+      "primaryNodeId": "node_ini_0003",
+      "ownerUserId": null,
+      "name": "نسبة القرارات المدعومة بذكاء الأعمال (%)",
+      "description": "(decisions_supported_by_bi / total_decisions) * 100",
+      "formula": "(decisions_supported_by_bi / total_decisions) * 100",
+      "unit": "%",
+      "direction": "INCREASE_IS_GOOD",
+      "aggregation": "LAST_VALUE",
+      "periodType": "QUARTERLY",
+      "baselineValue": null,
+      "targetValue": null,
+      "weight": null,
+      "status": "ACTIVE",
+      "variables": [
+        { "id": "kv_ini_0003_d", "code": "decisions_supported_by_bi", "displayName": "Decisions Supported by BI", "dataType": "NUMBER", "isRequired": true, "isStatic": false, "staticValue": null },
+        { "id": "kv_ini_0003_e", "code": "total_decisions", "displayName": "Total Decisions", "dataType": "NUMBER", "isRequired": true, "isStatic": false, "staticValue": null }
+      ]
+    },
+    {
+      "id": "kpi_ini_0003_04",
+      "primaryNodeId": "node_ini_0003",
+      "ownerUserId": null,
+      "name": "دقة التوقعات في دراسات الجدوى (%)",
+      "description": "100 - (ABS(forecast - actual) / actual) * 100. Requires ABS support; otherwise compute externally and enter as variable.",
+      "formula": "forecast_accuracy_pct",
+      "unit": "%",
+      "direction": "INCREASE_IS_GOOD",
+      "aggregation": "LAST_VALUE",
+      "periodType": "YEARLY",
+      "baselineValue": null,
+      "targetValue": null,
+      "weight": null,
+      "status": "ACTIVE",
+      "variables": [
+        { "id": "kv_ini_0003_f", "code": "forecast_accuracy_pct", "displayName": "Forecast Accuracy (%)", "dataType": "PERCENTAGE", "isRequired": true, "isStatic": false, "staticValue": null }
+      ]
+    },
+
+    {
+      "id": "kpi_ini_0004_01",
+      "primaryNodeId": "node_ini_0004",
+      "ownerUserId": null,
+      "name": "نسبة توحيد السياسات والإجراءات المالية (%)",
+      "description": "(standardized_policies_count / total_policies_count) * 100",
+      "formula": "(standardized_policies_count / total_policies_count) * 100",
+      "unit": "%",
+      "direction": "INCREASE_IS_GOOD",
+      "aggregation": "LAST_VALUE",
+      "periodType": "MONTHLY",
+      "baselineValue": 0,
+      "targetValue": 100,
+      "weight": null,
+      "status": "ACTIVE",
+      "variables": [
+        { "id": "kv_ini_0004_a", "code": "standardized_policies_count", "displayName": "Standardized Policies Count", "dataType": "NUMBER", "isRequired": true, "isStatic": false, "staticValue": null },
+        { "id": "kv_ini_0004_b", "code": "total_policies_count", "displayName": "Total Policies Count", "dataType": "NUMBER", "isRequired": true, "isStatic": false, "staticValue": null }
+      ]
+    },
+    {
+      "id": "kpi_ini_0004_02",
+      "primaryNodeId": "node_ini_0004",
+      "ownerUserId": null,
+      "name": "نسبة الالتزام بالضوابط والسياسات المالية (%)",
+      "description": "(compliant_audit_samples / total_audit_samples) * 100",
+      "formula": "(compliant_audit_samples / total_audit_samples) * 100",
+      "unit": "%",
+      "direction": "INCREASE_IS_GOOD",
+      "aggregation": "LAST_VALUE",
+      "periodType": "QUARTERLY",
+      "baselineValue": null,
+      "targetValue": null,
+      "weight": null,
+      "status": "ACTIVE",
+      "variables": [
+        { "id": "kv_ini_0004_c", "code": "compliant_audit_samples", "displayName": "Compliant Audit Samples", "dataType": "NUMBER", "isRequired": true, "isStatic": false, "staticValue": null },
+        { "id": "kv_ini_0004_d", "code": "total_audit_samples", "displayName": "Total Audit Samples", "dataType": "NUMBER", "isRequired": true, "isStatic": false, "staticValue": null }
+      ]
+    },
+
+    {
+      "id": "kpi_ini_0005_01",
+      "primaryNodeId": "node_ini_0005",
+      "ownerUserId": null,
+      "name": "دقة نموذج التدفقات النقدية (%)",
+      "description": "Enter externally-calculated forecast accuracy as a single variable if ABS is not supported.",
+      "formula": "cashflow_model_accuracy_pct",
+      "unit": "%",
+      "direction": "INCREASE_IS_GOOD",
+      "aggregation": "LAST_VALUE",
+      "periodType": "QUARTERLY",
+      "baselineValue": null,
+      "targetValue": null,
+      "weight": null,
+      "status": "ACTIVE",
+      "variables": [
+        { "id": "kv_ini_0005_a", "code": "cashflow_model_accuracy_pct", "displayName": "Cashflow Model Accuracy (%)", "dataType": "PERCENTAGE", "isRequired": true, "isStatic": false, "staticValue": null }
+      ]
+    },
+
+    {
+      "id": "kpi_ini_0006_01",
+      "primaryNodeId": "node_ini_0006",
+      "ownerUserId": null,
+      "name": "نسبة الخدمات المنقولة إلى الشركات التابعة (%)",
+      "description": "(services_transferred / services_total) * 100",
+      "formula": "(services_transferred / services_total) * 100",
+      "unit": "%",
+      "direction": "INCREASE_IS_GOOD",
+      "aggregation": "LAST_VALUE",
+      "periodType": "QUARTERLY",
+      "baselineValue": 0,
+      "targetValue": 100,
+      "weight": null,
+      "status": "ACTIVE",
+      "variables": [
+        { "id": "kv_ini_0006_a", "code": "services_transferred", "displayName": "Services Transferred", "dataType": "NUMBER", "isRequired": true, "isStatic": false, "staticValue": null },
+        { "id": "kv_ini_0006_b", "code": "services_total", "displayName": "Services Total", "dataType": "NUMBER", "isRequired": true, "isStatic": false, "staticValue": null }
+      ]
+    },
+    {
+      "id": "kpi_ini_0006_02",
+      "primaryNodeId": "node_ini_0006",
+      "ownerUserId": null,
+      "name": "مؤشر جودة الخدمات بعد النقل (0-100)",
+      "description": "Service quality score (survey/SLAs).",
+      "formula": "service_quality_score",
+      "unit": "score",
+      "direction": "INCREASE_IS_GOOD",
+      "aggregation": "LAST_VALUE",
+      "periodType": "QUARTERLY",
+      "baselineValue": null,
+      "targetValue": null,
+      "weight": null,
+      "status": "ACTIVE",
+      "variables": [
+        { "id": "kv_ini_0006_c", "code": "service_quality_score", "displayName": "Service Quality Score", "dataType": "NUMBER", "isRequired": true, "isStatic": false, "staticValue": null }
+      ]
+    },
+
+    {
+      "id": "kpi_ini_0007_01",
+      "primaryNodeId": "node_ini_0007",
+      "ownerUserId": null,
+      "name": "نسبة تنفيذ خطة المراجعة السنوية (%)",
+      "description": "(audit_plan_executed / audit_plan_total) * 100",
+      "formula": "(audit_plan_executed / audit_plan_total) * 100",
+      "unit": "%",
+      "direction": "INCREASE_IS_GOOD",
+      "aggregation": "LAST_VALUE",
+      "periodType": "QUARTERLY",
+      "baselineValue": 0,
+      "targetValue": 100,
+      "weight": null,
+      "status": "ACTIVE",
+      "variables": [
+        { "id": "kv_ini_0007_a", "code": "audit_plan_executed", "displayName": "Audit Plan Executed", "dataType": "NUMBER", "isRequired": true, "isStatic": false, "staticValue": null },
+        { "id": "kv_ini_0007_b", "code": "audit_plan_total", "displayName": "Audit Plan Total", "dataType": "NUMBER", "isRequired": true, "isStatic": false, "staticValue": null }
+      ]
+    },
+    {
+      "id": "kpi_ini_0007_02",
+      "primaryNodeId": "node_ini_0007",
+      "ownerUserId": null,
+      "name": "نسبة انخفاض عدد المخاطر (%)",
+      "description": "((baseline_risk_count - current_risk_count) / baseline_risk_count) * 100",
+      "formula": "((baseline_risk_count - current_risk_count) / baseline_risk_count) * 100",
+      "unit": "%",
+      "direction": "INCREASE_IS_GOOD",
+      "aggregation": "LAST_VALUE",
+      "periodType": "YEARLY",
+      "baselineValue": null,
+      "targetValue": null,
+      "weight": null,
+      "status": "ACTIVE",
+      "variables": [
+        { "id": "kv_ini_0007_c", "code": "baseline_risk_count", "displayName": "Baseline Risk Count", "dataType": "NUMBER", "isRequired": true, "isStatic": false, "staticValue": null },
+        { "id": "kv_ini_0007_d", "code": "current_risk_count", "displayName": "Current Risk Count", "dataType": "NUMBER", "isRequired": true, "isStatic": false, "staticValue": null }
+      ]
+    },
+
+    {
+      "id": "kpi_ini_0008_01",
+      "primaryNodeId": "node_ini_0008",
+      "ownerUserId": null,
+      "name": "نسبة تطبيق النموذج التشغيلي في الشركات التابعة (%)",
+      "description": "(subsidiaries_implemented / subsidiaries_total) * 100",
+      "formula": "(subsidiaries_implemented / subsidiaries_total) * 100",
+      "unit": "%",
+      "direction": "INCREASE_IS_GOOD",
+      "aggregation": "LAST_VALUE",
+      "periodType": "QUARTERLY",
+      "baselineValue": 0,
+      "targetValue": 100,
+      "weight": null,
+      "status": "ACTIVE",
+      "variables": [
+        { "id": "kv_ini_0008_a", "code": "subsidiaries_implemented", "displayName": "Subsidiaries Implemented", "dataType": "NUMBER", "isRequired": true, "isStatic": false, "staticValue": null },
+        { "id": "kv_ini_0008_b", "code": "subsidiaries_total", "displayName": "Subsidiaries Total", "dataType": "NUMBER", "isRequired": true, "isStatic": false, "staticValue": null }
+      ]
+    },
+    {
+      "id": "kpi_ini_0008_02",
+      "primaryNodeId": "node_ini_0008",
+      "ownerUserId": null,
+      "name": "مؤشر وضوح الأدوار والمساءلة (0-100)",
+      "description": "Survey-based role clarity score.",
+      "formula": "role_clarity_score",
+      "unit": "score",
+      "direction": "INCREASE_IS_GOOD",
+      "aggregation": "LAST_VALUE",
+      "periodType": "QUARTERLY",
+      "baselineValue": null,
+      "targetValue": null,
+      "weight": null,
+      "status": "ACTIVE",
+      "variables": [
+        { "id": "kv_ini_0008_c", "code": "role_clarity_score", "displayName": "Role Clarity Score", "dataType": "NUMBER", "isRequired": true, "isStatic": false, "staticValue": null }
+      ]
+    },
+
+    {
+      "id": "kpi_ini_0009_01",
+      "primaryNodeId": "node_ini_0009",
+      "ownerUserId": null,
+      "name": "نسبة المشاركين سنوياً في برامج التطوير (%)",
+      "description": "(participants / eligible_employees) * 100",
+      "formula": "(participants / eligible_employees) * 100",
+      "unit": "%",
+      "direction": "INCREASE_IS_GOOD",
+      "aggregation": "LAST_VALUE",
+      "periodType": "YEARLY",
+      "baselineValue": null,
+      "targetValue": null,
+      "weight": null,
+      "status": "ACTIVE",
+      "variables": [
+        { "id": "kv_ini_0009_a", "code": "participants", "displayName": "Participants", "dataType": "NUMBER", "isRequired": true, "isStatic": false, "staticValue": null },
+        { "id": "kv_ini_0009_b", "code": "eligible_employees", "displayName": "Eligible Employees", "dataType": "NUMBER", "isRequired": true, "isStatic": false, "staticValue": null }
+      ]
+    },
+    {
+      "id": "kpi_ini_0009_02",
+      "primaryNodeId": "node_ini_0009",
+      "ownerUserId": null,
+      "name": "نسبة التحسن في الأداء بعد التدريب (%)",
+      "description": "((post_training_score - pre_training_score) / pre_training_score) * 100",
+      "formula": "((post_training_score - pre_training_score) / pre_training_score) * 100",
+      "unit": "%",
+      "direction": "INCREASE_IS_GOOD",
+      "aggregation": "LAST_VALUE",
+      "periodType": "QUARTERLY",
+      "baselineValue": null,
+      "targetValue": null,
+      "weight": null,
+      "status": "ACTIVE",
+      "variables": [
+        { "id": "kv_ini_0009_c", "code": "pre_training_score", "displayName": "Pre Training Score", "dataType": "NUMBER", "isRequired": true, "isStatic": false, "staticValue": null },
+        { "id": "kv_ini_0009_d", "code": "post_training_score", "displayName": "Post Training Score", "dataType": "NUMBER", "isRequired": true, "isStatic": false, "staticValue": null }
+      ]
+    },
+
+    {
+      "id": "kpi_ini_0010_01",
+      "primaryNodeId": "node_ini_0010",
+      "ownerUserId": null,
+      "name": "مؤشر رضا الشركات التابعة عن التواصل (0-100)",
+      "description": "Subsidiary satisfaction score from survey.",
+      "formula": "subsidiary_satisfaction_score",
+      "unit": "score",
+      "direction": "INCREASE_IS_GOOD",
+      "aggregation": "LAST_VALUE",
+      "periodType": "QUARTERLY",
+      "baselineValue": null,
+      "targetValue": null,
+      "weight": null,
+      "status": "ACTIVE",
+      "variables": [
+        { "id": "kv_ini_0010_a", "code": "subsidiary_satisfaction_score", "displayName": "Subsidiary Satisfaction Score", "dataType": "NUMBER", "isRequired": true, "isStatic": false, "staticValue": null }
+      ]
+    },
+    {
+      "id": "kpi_ini_0010_02",
+      "primaryNodeId": "node_ini_0010",
+      "ownerUserId": null,
+      "name": "نسبة انخفاض تكرار المهام المشتركة (%)",
+      "description": "((baseline_duplicate_tasks - current_duplicate_tasks) / baseline_duplicate_tasks) * 100",
+      "formula": "((baseline_duplicate_tasks - current_duplicate_tasks) / baseline_duplicate_tasks) * 100",
+      "unit": "%",
+      "direction": "INCREASE_IS_GOOD",
+      "aggregation": "LAST_VALUE",
+      "periodType": "QUARTERLY",
+      "baselineValue": null,
+      "targetValue": null,
+      "weight": null,
+      "status": "ACTIVE",
+      "variables": [
+        { "id": "kv_ini_0010_b", "code": "baseline_duplicate_tasks", "displayName": "Baseline Duplicate Tasks", "dataType": "NUMBER", "isRequired": true, "isStatic": false, "staticValue": null },
+        { "id": "kv_ini_0010_c", "code": "current_duplicate_tasks", "displayName": "Current Duplicate Tasks", "dataType": "NUMBER", "isRequired": true, "isStatic": false, "staticValue": null }
+      ]
+    },
+
+    {
+      "id": "kpi_ini_0011_01",
+      "primaryNodeId": "node_ini_0011",
+      "ownerUserId": null,
+      "name": "معدل التفاعل الرقمي (%)",
+      "description": "(total_engagements / total_reach) * 100",
+      "formula": "(total_engagements / total_reach) * 100",
+      "unit": "%",
+      "direction": "INCREASE_IS_GOOD",
+      "aggregation": "LAST_VALUE",
+      "periodType": "MONTHLY",
+      "baselineValue": null,
+      "targetValue": null,
+      "weight": null,
+      "status": "ACTIVE",
+      "variables": [
+        { "id": "kv_ini_0011_a", "code": "total_engagements", "displayName": "Total Engagements", "dataType": "NUMBER", "isRequired": true, "isStatic": false, "staticValue": null },
+        { "id": "kv_ini_0011_b", "code": "total_reach", "displayName": "Total Reach", "dataType": "NUMBER", "isRequired": true, "isStatic": false, "staticValue": null }
+      ]
+    },
+    {
+      "id": "kpi_ini_0011_02",
+      "primaryNodeId": "node_ini_0011",
+      "ownerUserId": null,
+      "name": "عدد الحملات المنفذة سنوياً",
+      "description": "Count of campaigns executed within the year.",
+      "formula": "campaigns_count",
+      "unit": "count",
+      "direction": "INCREASE_IS_GOOD",
+      "aggregation": "SUM",
+      "periodType": "YEARLY",
+      "baselineValue": null,
+      "targetValue": null,
+      "weight": null,
+      "status": "ACTIVE",
+      "variables": [
+        { "id": "kv_ini_0011_c", "code": "campaigns_count", "displayName": "Campaigns Count", "dataType": "NUMBER", "isRequired": true, "isStatic": false, "staticValue": null }
+      ]
+    },
+
+    {
+      "id": "kpi_ini_0012_01",
+      "primaryNodeId": "node_ini_0012",
+      "ownerUserId": null,
+      "name": "نسبة رقمنة العمليات (%)",
+      "description": "(digitized_processes / total_processes) * 100",
+      "formula": "(digitized_processes / total_processes) * 100",
+      "unit": "%",
+      "direction": "INCREASE_IS_GOOD",
+      "aggregation": "LAST_VALUE",
+      "periodType": "QUARTERLY",
+      "baselineValue": 0,
+      "targetValue": 100,
+      "weight": null,
+      "status": "ACTIVE",
+      "variables": [
+        { "id": "kv_ini_0012_a", "code": "digitized_processes", "displayName": "Digitized Processes", "dataType": "NUMBER", "isRequired": true, "isStatic": false, "staticValue": null },
+        { "id": "kv_ini_0012_b", "code": "total_processes", "displayName": "Total Processes", "dataType": "NUMBER", "isRequired": true, "isStatic": false, "staticValue": null }
+      ]
+    },
+    {
+      "id": "kpi_ini_0012_02",
+      "primaryNodeId": "node_ini_0012",
+      "ownerUserId": null,
+      "name": "نسبة التحسن في الكفاءة نتيجة التحول (%)",
+      "description": "((baseline_cycle_time - current_cycle_time) / baseline_cycle_time) * 100 (or cost-based).",
+      "formula": "((baseline_cycle_time - current_cycle_time) / baseline_cycle_time) * 100",
+      "unit": "%",
+      "direction": "INCREASE_IS_GOOD",
+      "aggregation": "LAST_VALUE",
+      "periodType": "QUARTERLY",
+      "baselineValue": null,
+      "targetValue": null,
+      "weight": null,
+      "status": "ACTIVE",
+      "variables": [
+        { "id": "kv_ini_0012_c", "code": "baseline_cycle_time", "displayName": "Baseline Cycle Time", "dataType": "NUMBER", "isRequired": true, "isStatic": false, "staticValue": null },
+        { "id": "kv_ini_0012_d", "code": "current_cycle_time", "displayName": "Current Cycle Time", "dataType": "NUMBER", "isRequired": true, "isStatic": false, "staticValue": null }
+      ]
+    }
+  ]
+}

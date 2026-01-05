@@ -10,11 +10,49 @@ import type { Role, Status } from "@prisma/client";
 const prismaNode = (prisma as unknown as { node: unknown }).node as {
   findMany: <T>(args: unknown) => Promise<T[]>;
   findFirst: <T>(args: unknown) => Promise<T | null>;
+  count: (args: unknown) => Promise<number>;
 };
 
 const prismaKpiDefinition = (prisma as unknown as { kpiDefinition: unknown }).kpiDefinition as {
   findMany: <T>(args: unknown) => Promise<T[]>;
 };
+
+function computeSubtreeKpiCounts(input: {
+  nodes: Array<{ id: string; parentId: string | null }>;
+  directKpiCountByNodeId: Map<string, number>;
+}) {
+  const childrenByParent = new Map<string, string[]>();
+  for (const n of input.nodes) {
+    if (!n.parentId) continue;
+    const list = childrenByParent.get(n.parentId) ?? [];
+    list.push(n.id);
+    childrenByParent.set(n.parentId, list);
+  }
+
+  const memo = new Map<string, number>();
+  const visiting = new Set<string>();
+
+  const dfs = (nodeId: string): number => {
+    const cached = memo.get(nodeId);
+    if (typeof cached === "number") return cached;
+    if (visiting.has(nodeId)) {
+      // Cycle safety (should never happen): fall back to direct count.
+      return input.directKpiCountByNodeId.get(nodeId) ?? 0;
+    }
+
+    visiting.add(nodeId);
+    let sum = input.directKpiCountByNodeId.get(nodeId) ?? 0;
+    for (const childId of childrenByParent.get(nodeId) ?? []) {
+      sum += dfs(childId);
+    }
+    visiting.delete(nodeId);
+    memo.set(nodeId, sum);
+    return sum;
+  };
+
+  for (const n of input.nodes) dfs(n.id);
+  return memo;
+}
 
 const prismaResponsibilityNodeAssignment = (prisma as unknown as { responsibilityNodeAssignment: unknown })
   .responsibilityNodeAssignment as {
@@ -155,48 +193,101 @@ async function getVisibility(input: { orgId: string; userId: string; role: unkno
   return { isAdmin: false, visibleNodeIds, effectiveKpiIds, allNodes, parentById };
 }
 
-const getNodesByTypeSchema = z.object({ code: z.string().min(1) });
+const getNodesByTypeSchema = z.object({
+  code: z.string().min(1),
+  q: z.string().trim().min(1).optional(),
+  page: z.number().int().min(1).optional(),
+  pageSize: z.number().int().min(1).max(100).optional(),
+});
 
 export async function getOrgNodesByType(data: z.infer<typeof getNodesByTypeSchema>) {
   const session = await requireOrgMember();
   const parsed = getNodesByTypeSchema.safeParse(data);
-  if (!parsed.success) return [];
+  if (!parsed.success) return { items: [], total: 0, page: 1, pageSize: 20 };
 
   const { nodeType } = await resolveEnabledNodeTypeByCode({ orgId: session.user.orgId, code: parsed.data.code });
-  if (!nodeType) return [];
+  if (!nodeType) return { items: [], total: 0, page: 1, pageSize: 20 };
 
   const visibility = await getVisibility({ orgId: session.user.orgId, userId: session.user.id, role: session.user.role });
 
-  return prismaNode.findMany<{
-    id: string;
-    name: string;
-    description: string | null;
-    color: string;
-    status: Status;
-    parentId: string | null;
-    createdAt: Date;
-    parent: { id: string; name: string } | null;
-    _count: { children: number; kpis: number };
-  }>({
-    where: {
-      orgId: session.user.orgId,
-      nodeTypeId: nodeType.id,
-      deletedAt: null,
-      ...(visibility.isAdmin ? {} : { id: { in: Array.from(visibility.visibleNodeIds) } }),
-    },
-    orderBy: [{ createdAt: "desc" }],
-    select: {
-      id: true,
-      name: true,
-      description: true,
-      color: true,
-      status: true,
-      parentId: true,
-      createdAt: true,
-      parent: { select: { id: true, name: true } },
-      _count: { select: { children: true, kpis: true } },
-    },
+  const page = parsed.data.page ?? 1;
+  const pageSize = parsed.data.pageSize ?? 20;
+  const q = parsed.data.q;
+
+  const where = {
+    orgId: session.user.orgId,
+    nodeTypeId: nodeType.id,
+    deletedAt: null,
+    ...(visibility.isAdmin ? {} : { id: { in: Array.from(visibility.visibleNodeIds) } }),
+    ...(q
+      ? {
+          OR: [
+            { name: { contains: q, mode: "insensitive" } },
+            { description: { contains: q, mode: "insensitive" } },
+          ],
+        }
+      : {}),
+  };
+
+  const [total, items, allKpis] = await Promise.all([
+    prismaNode.count({ where }),
+    prismaNode.findMany<{
+      id: string;
+      name: string;
+      description: string | null;
+      color: string;
+      status: Status;
+      parentId: string | null;
+      createdAt: Date;
+      parent: { id: string; name: string } | null;
+      _count: { children: number; kpis: number };
+    }>({
+      where,
+      orderBy: [{ createdAt: "desc" }],
+      skip: (page - 1) * pageSize,
+      take: pageSize,
+      select: {
+        id: true,
+        name: true,
+        description: true,
+        color: true,
+        status: true,
+        parentId: true,
+        createdAt: true,
+        parent: { select: { id: true, name: true } },
+        _count: { select: { children: true, kpis: true } },
+      },
+    }),
+    prismaKpiDefinition.findMany<{ primaryNodeId: string }>({
+      where: {
+        orgId: session.user.orgId,
+        ...(visibility.isAdmin
+          ? {}
+          : {
+              id: {
+                in: (visibility.effectiveKpiIds ?? []) as string[],
+              },
+            }),
+      },
+      select: { primaryNodeId: true },
+    }),
+  ]);
+
+  const directKpiCountByNodeId = new Map<string, number>();
+  for (const row of allKpis) {
+    directKpiCountByNodeId.set(row.primaryNodeId, (directKpiCountByNodeId.get(row.primaryNodeId) ?? 0) + 1);
+  }
+
+  const subtreeCounts = computeSubtreeKpiCounts({
+    nodes: visibility.allNodes.map((n) => ({ id: n.id, parentId: n.parentId })),
+    directKpiCountByNodeId,
   });
+
+  for (const n of items) {
+    n._count.kpis = subtreeCounts.get(n.id) ?? 0;
+  }
+
+  return { items, total, page, pageSize };
 }
 
 const getNodeDetailSchema = z.object({ nodeId: z.string().uuid(), code: z.string().min(1) });

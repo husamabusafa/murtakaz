@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { useParams } from "next/navigation";
+import { useSearchParams } from "next/navigation";
 import { useRouter } from "next/navigation";
 import { Plus, Pencil, Trash2 } from "lucide-react";
 import { PageHeader } from "@/components/page-header";
@@ -29,7 +30,7 @@ import { getOrgNodesByType } from "@/actions/nodes";
 import type { Status } from "@prisma/client";
 
 type EnabledNodeTypeRow = Awaited<ReturnType<typeof getMyOrganizationNodeTypes>>[number];
-type NodeRow = Awaited<ReturnType<typeof getOrgNodesByType>>[number];
+type NodeRow = Awaited<ReturnType<typeof getOrgNodesByType>>["items"][number];
 type ParentOptionRow = Awaited<ReturnType<typeof getOrgAdminParentOptionsForNodeType>>[number];
 
 const presetColors = [
@@ -71,6 +72,7 @@ function formatIssues(issues: unknown): string | null {
 export default function NodeTypePage() {
   const router = useRouter();
   const params = useParams<{ code: string }>();
+  const searchParams = useSearchParams();
   const { tr } = useLocale();
   const { locale } = useLocale();
   const { user, loading: sessionLoading } = useAuth();
@@ -85,6 +87,7 @@ export default function NodeTypePage() {
   const [loading, setLoading] = useState(true);
   const [enabledTypes, setEnabledTypes] = useState<EnabledNodeTypeRow[]>([]);
   const [nodes, setNodes] = useState<NodeRow[]>([]);
+  const [total, setTotal] = useState(0);
   const [parents, setParents] = useState<ParentOptionRow[]>([]);
 
   const [createOpen, setCreateOpen] = useState(false);
@@ -114,6 +117,31 @@ export default function NodeTypePage() {
   });
 
   const [deleteTarget, setDeleteTarget] = useState<NodeRow | null>(null);
+
+  const q = useMemo(() => {
+    const raw = searchParams?.get("q") ?? "";
+    const trimmed = raw.trim();
+    return trimmed.length ? trimmed : "";
+  }, [searchParams]);
+
+  const page = useMemo(() => {
+    const raw = searchParams?.get("page") ?? "1";
+    const n = Number.parseInt(raw, 10);
+    return Number.isFinite(n) && n > 0 ? n : 1;
+  }, [searchParams]);
+
+  const pageSize = useMemo(() => {
+    const raw = searchParams?.get("pageSize") ?? "20";
+    const n = Number.parseInt(raw, 10);
+    if (!Number.isFinite(n)) return 20;
+    return Math.min(100, Math.max(1, n));
+  }, [searchParams]);
+
+  const [searchDraft, setSearchDraft] = useState("");
+
+  useEffect(() => {
+    setSearchDraft(q);
+  }, [q]);
 
   const title = useMemo(() => {
     const match = enabledTypes.find((t) => String(t.code).toLowerCase() === normalizedCode);
@@ -152,26 +180,56 @@ export default function NodeTypePage() {
     try {
       const [types, rows, parentOptions] = await Promise.all([
         getMyOrganizationNodeTypes(),
-        getOrgNodesByType({ code }),
+        getOrgNodesByType({ code, q: q || undefined, page, pageSize }),
         isAdmin ? getOrgAdminParentOptionsForNodeType({ code }) : Promise.resolve([]),
       ]);
       setEnabledTypes(types);
-      setNodes(rows);
+      setNodes(rows.items);
+      setTotal(rows.total);
       setParents(parentOptions);
     } catch {
       setEnabledTypes([]);
       setNodes([]);
+      setTotal(0);
       setParents([]);
     } finally {
       setLoading(false);
     }
-  }, [code, isAdmin]);
+  }, [code, isAdmin, page, pageSize, q]);
 
   useEffect(() => {
     if (sessionLoading) return;
     if (!code) return;
     void loadData();
   }, [code, loadData, sessionLoading]);
+
+  const totalPages = useMemo(() => {
+    return total > 0 ? Math.max(1, Math.ceil(total / pageSize)) : 1;
+  }, [pageSize, total]);
+
+  const applySearch = useCallback(
+    (nextQ: string) => {
+      const params = new URLSearchParams(searchParams?.toString() ?? "");
+      const cleaned = nextQ.trim();
+      if (cleaned) params.set("q", cleaned);
+      else params.delete("q");
+      params.set("page", "1");
+      params.set("pageSize", String(pageSize));
+      router.replace(`/${locale}/nodes/${normalizedCode}?${params.toString()}`);
+    },
+    [locale, normalizedCode, pageSize, router, searchParams],
+  );
+
+  const goToPage = useCallback(
+    (nextPage: number) => {
+      const safe = Math.min(totalPages, Math.max(1, nextPage));
+      const params = new URLSearchParams(searchParams?.toString() ?? "");
+      params.set("page", String(safe));
+      params.set("pageSize", String(pageSize));
+      router.replace(`/${locale}/nodes/${normalizedCode}?${params.toString()}`);
+    },
+    [locale, normalizedCode, pageSize, router, searchParams, totalPages],
+  );
 
   const currentTypeIndex = useMemo(() => {
     if (!enabledTypes.length) return -1;
@@ -383,19 +441,31 @@ export default function NodeTypePage() {
                       )}
               </CardDescription>
             </div>
-            {isAdmin ? (
-              <Dialog open={createOpen} onOpenChange={setCreateOpen}>
-                <DialogTrigger asChild>
-                  <Button disabled={!effectiveCanCreate}>
-                    <Plus className="h-4 w-4" />
-                    <span className="ms-2">{tr("New", "جديد")}</span>
-                  </Button>
-                </DialogTrigger>
-                <DialogContent className="sm:max-w-[520px]">
-                  <DialogHeader>
-                    <DialogTitle>{tr(`Create ${title}`, `إنشاء ${title}`)}</DialogTitle>
-                    <DialogDescription>{title}</DialogDescription>
-                  </DialogHeader>
+            <div className="flex w-full flex-col gap-2 md:w-auto md:flex-row md:items-center">
+              <div className="w-full max-w-xs">
+                <Input
+                  value={searchDraft}
+                  placeholder={tr("Search", "بحث")}
+                  onChange={(e) => setSearchDraft(e.target.value)}
+                  onKeyDown={(e) => {
+                    if (e.key === "Enter") applySearch(searchDraft);
+                  }}
+                />
+              </div>
+
+              {isAdmin ? (
+                <Dialog open={createOpen} onOpenChange={setCreateOpen}>
+                  <DialogTrigger asChild>
+                    <Button disabled={!effectiveCanCreate}>
+                      <Plus className="h-4 w-4" />
+                      <span className="ms-2">{tr("New", "جديد")}</span>
+                    </Button>
+                  </DialogTrigger>
+                  <DialogContent className="sm:max-w-[520px]">
+                    <DialogHeader>
+                      <DialogTitle>{tr(`Create ${title}`, `إنشاء ${title}`)}</DialogTitle>
+                      <DialogDescription>{title}</DialogDescription>
+                    </DialogHeader>
 
                   {createError ? (
                     <div className="rounded-md border border-rose-500/30 bg-rose-500/10 p-3 text-sm text-rose-200 whitespace-pre-wrap">{createError}</div>
@@ -484,13 +554,31 @@ export default function NodeTypePage() {
                       {tr(`Create ${title}`, `إنشاء ${title}`)}
                     </Button>
                   </DialogFooter>
-                </DialogContent>
-              </Dialog>
-            ) : null}
+                  </DialogContent>
+                </Dialog>
+              ) : null}
+            </div>
           </div>
         </CardHeader>
 
         <CardContent>
+          <div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
+            <div className="text-xs text-muted-foreground">
+              {tr("Total", "الإجمالي")}: {total}
+            </div>
+            <div className="flex items-center gap-2">
+              <Button variant="outline" size="sm" onClick={() => goToPage(page - 1)} disabled={page <= 1}>
+                {tr("Prev", "السابق")}
+              </Button>
+              <span className="text-xs text-muted-foreground">
+                {tr("Page", "الصفحة")} {page} / {totalPages}
+              </span>
+              <Button variant="outline" size="sm" onClick={() => goToPage(page + 1)} disabled={page >= totalPages}>
+                {tr("Next", "التالي")}
+              </Button>
+            </div>
+          </div>
+
           {isTopLevel ? (
             <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
               {nodes.map((n) => (

@@ -22,6 +22,7 @@ const prismaKpiDefinition = (prisma as unknown as { kpiDefinition: unknown }).kp
   create: <T>(args: unknown) => Promise<T>;
   update: <T>(args: unknown) => Promise<T>;
   delete: <T>(args: unknown) => Promise<T>;
+  count: (args: unknown) => Promise<number>;
 };
 
 const prismaKpiValuePeriod = (prisma as unknown as { kpiValuePeriod: unknown }).kpiValuePeriod as {
@@ -167,55 +168,89 @@ function evaluateFormula(input: { formula: string; valuesByCode: Record<string, 
 }
 
 export async function getOrgKpisGrid() {
+  const result = await getOrgKpisGridPaged({ page: 1, pageSize: 500 });
+  return result.items;
+}
+
+const getOrgKpisGridPagedSchema = z.object({
+  q: z.string().trim().min(1).optional(),
+  page: z.number().int().min(1).optional(),
+  pageSize: z.number().int().min(1).max(100).optional(),
+});
+
+export async function getOrgKpisGridPaged(input: z.infer<typeof getOrgKpisGridPagedSchema>) {
   const session = await requireOrgMember();
+  const parsed = getOrgKpisGridPagedSchema.safeParse(input);
+  if (!parsed.success) return { items: [], total: 0, page: 1, pageSize: 24 };
+
+  const page = parsed.data.page ?? 1;
+  const pageSize = parsed.data.pageSize ?? 24;
+  const q = parsed.data.q;
 
   const effectiveIds = session.user.role === "ADMIN" ? null : await getMyEffectiveKpiIds();
-  if (effectiveIds && effectiveIds.length === 0) return [];
+  if (effectiveIds && effectiveIds.length === 0) return { items: [], total: 0, page, pageSize };
 
-  return prismaKpiDefinition.findMany<{
-    id: string;
-    name: string;
-    description: string | null;
-    unit: string | null;
-    targetValue: number | null;
-    baselineValue: number | null;
-    periodType: KpiPeriodType;
-    status: unknown;
-    primaryNode: { id: string; name: string; nodeType: { displayName: string } };
-    values: Array<{ calculatedValue: number | null; periodEnd: Date; status: unknown }>;
-  }>({
-    where: {
-      orgId: session.user.orgId,
-      ...(effectiveIds ? { id: { in: effectiveIds } } : {}),
-    },
-    orderBy: [{ name: "asc" }],
-    select: {
-      id: true,
-      name: true,
-      description: true,
-      unit: true,
-      targetValue: true,
-      baselineValue: true,
-      periodType: true,
-      status: true,
-      primaryNode: {
-        select: {
-          id: true,
-          name: true,
-          nodeType: { select: { displayName: true } },
+  const where = {
+    orgId: session.user.orgId,
+    ...(effectiveIds ? { id: { in: effectiveIds } } : {}),
+    ...(q
+      ? {
+          OR: [
+            { name: { contains: q, mode: "insensitive" } },
+            { description: { contains: q, mode: "insensitive" } },
+          ],
+        }
+      : {}),
+  };
+
+  const [total, items] = await Promise.all([
+    prismaKpiDefinition.count({ where }),
+    prismaKpiDefinition.findMany<{
+      id: string;
+      name: string;
+      description: string | null;
+      unit: string | null;
+      targetValue: number | null;
+      baselineValue: number | null;
+      periodType: KpiPeriodType;
+      status: unknown;
+      primaryNode: { id: string; name: string; nodeType: { displayName: string } };
+      values: Array<{ calculatedValue: number | null; periodEnd: Date; status: unknown }>;
+    }>({
+      where,
+      orderBy: [{ name: "asc" }],
+      skip: (page - 1) * pageSize,
+      take: pageSize,
+      select: {
+        id: true,
+        name: true,
+        description: true,
+        unit: true,
+        targetValue: true,
+        baselineValue: true,
+        periodType: true,
+        status: true,
+        primaryNode: {
+          select: {
+            id: true,
+            name: true,
+            nodeType: { select: { displayName: true } },
+          },
+        },
+        values: {
+          orderBy: [{ periodEnd: "desc" }],
+          take: 1,
+          select: {
+            calculatedValue: true,
+            periodEnd: true,
+            status: true,
+          },
         },
       },
-      values: {
-        orderBy: [{ periodEnd: "desc" }],
-        take: 1,
-        select: {
-          calculatedValue: true,
-          periodEnd: true,
-          status: true,
-        },
-      },
-    },
-  });
+    }),
+  ]);
+
+  return { items, total, page, pageSize };
 }
 
 export async function getOrgKpiDetail(input: { kpiId: string }) {
