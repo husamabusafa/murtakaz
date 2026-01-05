@@ -116,7 +116,7 @@ export default function NodeTypePage() {
 
   const title = useMemo(() => {
     const match = enabledTypes.find((t) => String(t.code).toLowerCase() === normalizedCode);
-    return match?.displayName ?? (code ? code.toUpperCase() : tr("Node Type", "نوع العقدة"));
+    return match?.displayName ?? (code ? code.toUpperCase() : tr("Type", "النوع"));
   }, [code, enabledTypes, normalizedCode, tr]);
 
   const isTopLevel = useMemo(() => {
@@ -124,6 +124,16 @@ export default function NodeTypePage() {
     const top = enabledTypes[0];
     return String(top.code).toLowerCase() === normalizedCode;
   }, [enabledTypes, normalizedCode]);
+
+  const lowerType = useMemo(() => {
+    if (!enabledTypes.length) return null;
+    const idx = enabledTypes.findIndex((t) => String(t.code).toLowerCase() === normalizedCode);
+    if (idx < 0) return null;
+    return enabledTypes[idx + 1] ?? null;
+  }, [enabledTypes, normalizedCode]);
+
+  const hasLowerType = Boolean(lowerType);
+  const lowerTypeLabel = lowerType?.displayName ?? "";
 
   const pageIcon = useMemo(() => {
     const lower = normalizedCode;
@@ -190,13 +200,13 @@ export default function NodeTypePage() {
             `No ${requiredParentTypeLabel} nodes yet. Create one first.`,
             `لا توجد عقد ${requiredParentTypeLabel} بعد. أنشئ واحدة أولاً.`,
           )
-        : tr("No higher nodes yet. Create one first.", "لا توجد عقد أعلى بعد. أنشئ واحدة أولاً.");
+        : tr("Nothing to select yet. Create a higher level first.", "لا يوجد شيء للاختيار بعد. أنشئ المستوى الأعلى أولاً.");
     }
-    return tr("Cannot create node.", "لا يمكن إنشاء عقدة.");
-  }, [effectiveCanCreate, enabledTypes.length, requiredParentTypeLabel, requiresParent, tr]);
+    return tr(`Cannot create ${title}.`, `لا يمكن إنشاء ${title}.`);
+  }, [effectiveCanCreate, enabledTypes.length, requiredParentTypeLabel, requiresParent, title, tr]);
 
   const higherNodeLabel = useMemo(() => {
-    return requiredParentTypeLabel ?? tr("Higher node", "العقدة الأعلى");
+    return requiredParentTypeLabel ?? tr("Higher level", "المستوى الأعلى");
   }, [requiredParentTypeLabel, tr]);
 
   const createParentOptions = useMemo(() => {
@@ -352,7 +362,7 @@ export default function NodeTypePage() {
     <div className="space-y-8">
       <PageHeader
         title={title}
-        subtitle={tr("Manage nodes and explore hierarchy.", "إدارة العقد واستعراض التسلسل الهرمي.")}
+        subtitle={tr("Manage and explore hierarchy.", "إدارة العناصر واستعراض التسلسل الهرمي.")}
         icon={<Icon name={pageIcon} className="h-5 w-5" />}
       />
 
@@ -365,7 +375,15 @@ export default function NodeTypePage() {
                 {title}
               </CardTitle>
               <CardDescription>
-                {tr("Create, edit, delete, and open nodes to see their children and KPIs.", "أنشئ وحرّر واحذف وافتح العقد لرؤية العقد التابعة والمؤشرات.")}
+                {hasLowerType
+                  ? tr(
+                      `Create, edit, delete, and open ${title} items to see ${lowerTypeLabel} and KPIs.`,
+                      `أنشئ وحرّر واحذف وافتح عناصر ${title} لرؤية ${lowerTypeLabel} والمؤشرات.`,
+                    )
+                  : tr(
+                      `Create, edit, delete, and open ${title} items to see KPIs.`,
+                      `أنشئ وحرّر واحذف وافتح عناصر ${title} لرؤية المؤشرات.`,
+                    )}
               </CardDescription>
             </div>
             <Dialog open={createOpen} onOpenChange={setCreateOpen}>
@@ -377,7 +395,7 @@ export default function NodeTypePage() {
               </DialogTrigger>
               <DialogContent className="sm:max-w-[520px]">
                 <DialogHeader>
-                  <DialogTitle>{tr("Create node", "إنشاء عقدة")}</DialogTitle>
+                  <DialogTitle>{tr(`Create ${title}`, `إنشاء ${title}`)}</DialogTitle>
                   <DialogDescription>{title}</DialogDescription>
                 </DialogHeader>
 
@@ -465,7 +483,7 @@ export default function NodeTypePage() {
                     {tr("Cancel", "إلغاء")}
                   </Button>
                   <Button onClick={handleCreate} disabled={submitting || (requiresParent && createDraft.parentId === "__none__")}>
-                    {tr("Create", "إنشاء")}
+                    {tr(`Create ${title}`, `إنشاء ${title}`)}
                   </Button>
                 </DialogFooter>
               </DialogContent>
@@ -500,9 +518,11 @@ export default function NodeTypePage() {
                     </div>
                     <div className="flex items-center gap-2">
                       <StatusBadge status={n.status as Status} />
-                      <Badge variant="outline" className="border-white/10 bg-white/5">
-                        {tr("Children", "العُقد التابعة")}: {n._count.children}
-                      </Badge>
+                      {hasLowerType ? (
+                        <Badge variant="outline" className="border-white/10 bg-white/5">
+                          {lowerTypeLabel}: {n._count.children}
+                        </Badge>
+                      ) : null}
                       <Badge variant="outline" className="border-white/10 bg-white/5">
                         {tr("KPIs", "المؤشرات")}: {n._count.kpis}
                       </Badge>
@@ -513,7 +533,7 @@ export default function NodeTypePage() {
 
               {nodes.length === 0 ? (
                 <div className="col-span-full rounded-md border border-border bg-card/50 p-6 text-sm text-muted-foreground">
-                  {tr("No nodes yet.", "لا توجد عقد بعد.")}
+                  {tr(`No ${title} yet.`, `لا توجد ${title} بعد.`)}
                 </div>
               ) : null}
             </div>
@@ -525,7 +545,7 @@ export default function NodeTypePage() {
                     <TableHead>{tr("Name", "الاسم")}</TableHead>
                     <TableHead>{higherNodeLabel}</TableHead>
                     <TableHead>{tr("Status", "الحالة")}</TableHead>
-                    <TableHead>{tr("Children", "العُقد التابعة")}</TableHead>
+                    {hasLowerType ? <TableHead>{lowerTypeLabel}</TableHead> : null}
                     <TableHead>{tr("KPIs", "المؤشرات")}</TableHead>
                     <TableHead className="text-right">{tr("Actions", "الإجراءات")}</TableHead>
                   </TableRow>
@@ -546,7 +566,7 @@ export default function NodeTypePage() {
                       <TableCell>
                         <StatusBadge status={n.status as Status} />
                       </TableCell>
-                      <TableCell className="text-muted-foreground">{n._count.children}</TableCell>
+                      {hasLowerType ? <TableCell className="text-muted-foreground">{n._count.children}</TableCell> : null}
                       <TableCell className="text-muted-foreground">{n._count.kpis}</TableCell>
                       <TableCell className="text-right">
                         <div className="inline-flex items-center gap-2">
@@ -562,8 +582,8 @@ export default function NodeTypePage() {
                   ))}
                   {nodes.length === 0 ? (
                     <TableRow>
-                      <TableCell colSpan={6} className="py-8 text-center text-sm text-muted-foreground">
-                        {tr("No nodes yet.", "لا توجد عقد بعد.")}
+                      <TableCell colSpan={hasLowerType ? 6 : 5} className="py-8 text-center text-sm text-muted-foreground">
+                        {tr(`No ${title} yet.`, `لا توجد ${title} بعد.`)}
                       </TableCell>
                     </TableRow>
                   ) : null}
@@ -581,7 +601,7 @@ export default function NodeTypePage() {
       <Dialog open={editOpen} onOpenChange={setEditOpen}>
         <DialogContent className="sm:max-w-[520px]">
           <DialogHeader>
-            <DialogTitle>{tr("Edit node", "تعديل العقدة")}</DialogTitle>
+            <DialogTitle>{tr(`Edit ${title}`, `تعديل ${title}`)}</DialogTitle>
             <DialogDescription>{editTarget?.name ?? ""}</DialogDescription>
           </DialogHeader>
 
@@ -674,7 +694,7 @@ export default function NodeTypePage() {
       <Dialog open={deleteOpen} onOpenChange={setDeleteOpen}>
         <DialogContent className="sm:max-w-[520px]">
           <DialogHeader>
-            <DialogTitle>{tr("Delete node", "حذف العقدة")}</DialogTitle>
+            <DialogTitle>{tr(`Delete ${title}`, `حذف ${title}`)}</DialogTitle>
             <DialogDescription>{deleteTarget?.name ?? ""}</DialogDescription>
           </DialogHeader>
 
@@ -683,7 +703,7 @@ export default function NodeTypePage() {
           ) : null}
 
           <p className="text-sm text-muted-foreground">
-            {tr("This will soft-delete the node.", "سيتم حذف العقدة (حذف منطقي).")}
+            {tr("This will soft-delete the item.", "سيتم حذف العنصر (حذف منطقي).")}
           </p>
 
           <DialogFooter>

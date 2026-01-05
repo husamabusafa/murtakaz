@@ -57,7 +57,7 @@ export default function NodeDetailPage() {
     };
   }, [code, nodeId, sessionLoading, userRole]);
 
-  const title = data?.node?.name ?? tr("Node", "عقدة");
+  const title = data?.node?.name ?? tr("Item", "عنصر");
 
   const currentTypeLabel = useMemo(() => {
     const t = data?.enabledNodeTypes?.find((x) => String(x.code).toLowerCase() === normalizedCode);
@@ -75,6 +75,16 @@ export default function NodeDetailPage() {
       code: String(next.code).toLowerCase(),
       displayName: next.displayName,
     };
+  }, [data?.enabledNodeTypes, data?.node?.nodeType?.code]);
+
+  const grandChildTypeLabel = useMemo(() => {
+    if (!data?.enabledNodeTypes?.length || !data?.node?.nodeType?.code) return null;
+    const enabled = data.enabledNodeTypes;
+    const idx = enabled.findIndex((t) => String(t.code) === String(data.node.nodeType.code));
+    if (idx < 0) return null;
+    const next = enabled[idx + 2];
+    if (!next) return null;
+    return next.displayName;
   }, [data?.enabledNodeTypes, data?.node?.nodeType?.code]);
 
   const pageIcon = useMemo(() => {
@@ -121,9 +131,9 @@ export default function NodeDetailPage() {
   if (!data?.node) {
     return (
       <div className="space-y-8">
-        <PageHeader title={tr("Not found", "غير موجود")} subtitle={tr("Node was not found.", "لم يتم العثور على العقدة.")} icon={<Icon name={pageIcon} className="h-5 w-5" />} />
+        <PageHeader title={tr("Not found", "غير موجود")} subtitle={tr("Item was not found.", "لم يتم العثور على العنصر.")} icon={<Icon name={pageIcon} className="h-5 w-5" />} />
         <Card className="bg-card/70 backdrop-blur shadow-sm">
-          <CardContent className="p-6 text-sm text-muted-foreground">{tr("Node not found.", "العقدة غير موجودة.")}</CardContent>
+          <CardContent className="p-6 text-sm text-muted-foreground">{tr("Item not found.", "العنصر غير موجود.")}</CardContent>
         </Card>
       </div>
     );
@@ -133,7 +143,14 @@ export default function NodeDetailPage() {
     <div className="space-y-8">
       <PageHeader
         title={title}
-        subtitle={tr("Explore children and aggregated KPIs for this node.", "استعرض العقد التابعة والمؤشرات المجمعة لهذه العقدة.")}
+        subtitle={
+          childType
+            ? tr(
+                `Explore ${childType.displayName} and aggregated KPIs for this item.`,
+                `استعرض ${childType.displayName} والمؤشرات المجمعة لهذا العنصر.`,
+              )
+            : tr("Explore hierarchy and aggregated KPIs for this item.", "استعرض التسلسل الهرمي والمؤشرات المجمعة لهذا العنصر.")
+        }
         icon={<Icon name={pageIcon} className="h-5 w-5" />}
       />
 
@@ -160,49 +177,53 @@ export default function NodeDetailPage() {
         </CardHeader>
       </Card>
 
-      <Card className="bg-card/70 backdrop-blur shadow-sm">
-        <CardHeader>
-          <CardTitle className="text-base">
-            {childType ? tr("Children", "العُقد التابعة") + ` (${childType.displayName})` : tr("Children", "العُقد التابعة")}
-          </CardTitle>
-          <CardDescription>{tr("Click a child node to open its page.", "اضغط على عقدة تابعة لفتح صفحتها.")}</CardDescription>
-        </CardHeader>
-        <CardContent>
-          {data.children.length ? (
-            <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-              {data.children.map((c) => (
-                <Card key={c.id} className="bg-card/50 backdrop-blur shadow-sm">
-                  <CardHeader className="space-y-2">
-                    <CardTitle className="flex items-center gap-2 text-base">
-                      <span className="inline-block h-2.5 w-2.5 rounded-full" style={{ backgroundColor: c.color }} />
-                      <Link href={`/${locale}/nodes/${childType?.code ?? normalizedCode}/${c.id}`} className="hover:underline">
-                        {c.name}
-                      </Link>
-                    </CardTitle>
-                    {c.description ? <CardDescription className="line-clamp-2">{c.description}</CardDescription> : null}
-                    <div className="flex items-center gap-2">
-                      <StatusBadge status={c.status as Status} />
-                      <Badge variant="outline" className="border-white/10 bg-white/5">
-                        {tr("Children", "العُقد التابعة")}: {c._count.children}
-                      </Badge>
-                      <Badge variant="outline" className="border-white/10 bg-white/5">
-                        {tr("KPIs", "المؤشرات")}: {c._count.kpis}
-                      </Badge>
-                    </div>
-                  </CardHeader>
-                </Card>
-              ))}
-            </div>
-          ) : (
-            <div className="rounded-md border border-border bg-card/50 p-6 text-sm text-muted-foreground">{tr("No children.", "لا توجد عقد تابعة.")}</div>
-          )}
-        </CardContent>
-      </Card>
+      {childType ? (
+        <Card className="bg-card/70 backdrop-blur shadow-sm">
+          <CardHeader>
+            <CardTitle className="text-base">{childType.displayName}</CardTitle>
+            <CardDescription>{tr("Click an item to open its page.", "اضغط على عنصر لفتح صفحته.")}</CardDescription>
+          </CardHeader>
+          <CardContent>
+            {data.children.length ? (
+              <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+                {data.children.map((c) => (
+                  <Card key={c.id} className="bg-card/50 backdrop-blur shadow-sm">
+                    <CardHeader className="space-y-2">
+                      <CardTitle className="flex items-center gap-2 text-base">
+                        <span className="inline-block h-2.5 w-2.5 rounded-full" style={{ backgroundColor: c.color }} />
+                        <Link href={`/${locale}/nodes/${childType.code}/${c.id}`} className="hover:underline">
+                          {c.name}
+                        </Link>
+                      </CardTitle>
+                      {c.description ? <CardDescription className="line-clamp-2">{c.description}</CardDescription> : null}
+                      <div className="flex items-center gap-2">
+                        <StatusBadge status={c.status as Status} />
+                        {grandChildTypeLabel ? (
+                          <Badge variant="outline" className="border-white/10 bg-white/5">
+                            {grandChildTypeLabel}: {c._count.children}
+                          </Badge>
+                        ) : null}
+                        <Badge variant="outline" className="border-white/10 bg-white/5">
+                          {tr("KPIs", "المؤشرات")}: {c._count.kpis}
+                        </Badge>
+                      </div>
+                    </CardHeader>
+                  </Card>
+                ))}
+              </div>
+            ) : (
+              <div className="rounded-md border border-border bg-card/50 p-6 text-sm text-muted-foreground">
+                {tr(`No ${childType.displayName} yet.`, `لا توجد ${childType.displayName} بعد.`)}
+              </div>
+            )}
+          </CardContent>
+        </Card>
+      ) : null}
 
       <Card className="bg-card/70 backdrop-blur shadow-sm">
         <CardHeader>
           <CardTitle className="text-base">{tr("KPIs (subtree)", "المؤشرات (ضمن الشجرة)")}</CardTitle>
-          <CardDescription>{tr("All KPIs linked to this node or any descendant node.", "كل المؤشرات المرتبطة بهذه العقدة أو أي عقدة تحتها.")}</CardDescription>
+          <CardDescription>{tr("All KPIs linked to this item or any descendant item.", "كل المؤشرات المرتبطة بهذا العنصر أو أي عنصر تحته.")}</CardDescription>
         </CardHeader>
         <CardContent>
           <div className="overflow-hidden rounded-xl border border-border">
@@ -211,7 +232,7 @@ export default function NodeDetailPage() {
                 <TableRow className="hover:bg-transparent">
                   <TableHead>{tr("KPI", "المؤشر")}</TableHead>
                   <TableHead>{tr("Owner", "المالك")}</TableHead>
-                  <TableHead>{tr("Node", "العقدة")}</TableHead>
+                  <TableHead>{tr("Linked to", "مرتبط بـ")}</TableHead>
                   <TableHead>{tr("Target", "المستهدف")}</TableHead>
                   <TableHead>{tr("Baseline", "الأساس")}</TableHead>
                 </TableRow>
