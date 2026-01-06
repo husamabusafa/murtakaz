@@ -16,13 +16,14 @@ import { useAuth } from "@/providers/auth-provider";
 import { useLocale } from "@/providers/locale-provider";
 import {
   assignResponsibilities,
+  getAssignableNodePickerNodes,
   getMyDirectReports,
   getResponsibilitiesForUser,
   previewNodeCascade,
   searchAssignableKpis,
-  searchAssignableNodes,
   unassignResponsibility,
 } from "@/actions/responsibilities";
+import { NodePickerTree } from "@/components/node-picker-dialog";
 
 type DirectReport = {
   id: string;
@@ -99,8 +100,8 @@ export default function ResponsibilitiesPage() {
 
   const [mode, setMode] = useState<Mode>("node");
 
-  const [nodeQuery, setNodeQuery] = useState("");
-  const [nodeResults, setNodeResults] = useState<NodeSearchRow[]>([]);
+  const [nodePickerNodes, setNodePickerNodes] = useState<Array<{ id: string; name: string; parentId: string | null; color: string; nodeType: { displayName: string } }>>([]);
+  const [selectedNodeId, setSelectedNodeId] = useState<string>("");
 
   const [kpiQuery, setKpiQuery] = useState("");
   const [kpiResults, setKpiResults] = useState<KpiSearchRow[]>([]);
@@ -140,9 +141,13 @@ export default function ResponsibilitiesPage() {
 
     void (async () => {
       try {
-        const rows = await getMyDirectReports();
+        const [rows, pickerNodes] = await Promise.all([
+          getMyDirectReports(),
+          canUse ? getAssignableNodePickerNodes() : Promise.resolve([]),
+        ]);
         if (!mounted) return;
         setReports(rows);
+        setNodePickerNodes(pickerNodes);
         const firstId = rows[0]?.id ?? "";
         setSelectedReportId(firstId);
         if (firstId) {
@@ -159,15 +164,7 @@ export default function ResponsibilitiesPage() {
     return () => {
       mounted = false;
     };
-  }, [loadAssignments, sessionLoading, tr, user]);
-
-  useEffect(() => {
-    if (!canUse) return;
-    void (async () => {
-      const rows = await searchAssignableNodes({ query: nodeQuery });
-      setNodeResults(rows);
-    })();
-  }, [canUse, nodeQuery]);
+  }, [canUse, loadAssignments, sessionLoading, tr, user]);
 
   useEffect(() => {
     if (!canUse) return;
@@ -405,47 +402,38 @@ export default function ResponsibilitiesPage() {
             {mode === "node" ? (
               <div className="space-y-3">
                 <div className="space-y-2">
-                  <Label>{tr("Search nodes", "بحث العناصر")}</Label>
-                  <Input
-                    value={nodeQuery}
-                    onChange={(e) => setNodeQuery(e.target.value)}
-                    placeholder={tr("Type a name…", "اكتب اسمًا…")}
-                    className="bg-card"
+                  <Label>{tr("Linked node", "العنصر")}</Label>
+                  <NodePickerTree
+                    nodes={nodePickerNodes}
+                    selectedId={selectedNodeId || null}
+                    onSelect={(id) => {
+                      if (!id) {
+                        setSelectedNodeId("");
+                        return;
+                      }
+
+                      const found = nodePickerNodes.find((n) => n.id === id);
+                      if (!found) return;
+                      setSelectedNodeId(id);
+
+                      void openCascadePreview({
+                        id: found.id,
+                        name: found.name,
+                        color: found.color,
+                        parentId: found.parentId,
+                        nodeType: { code: "", displayName: found.nodeType.displayName, levelOrder: 0 },
+                        parent: null,
+                        _count: { children: 0, kpis: 0 },
+                      });
+                    }}
+                    searchPlaceholder={tr("Search nodes…", "ابحث في العناصر…")}
+                    clearLabel={tr("Clear", "مسح")}
+                    typeFallbackLabel={tr("Type", "النوع")}
+                    heightClassName="h-[360px]"
+                    variant="light"
+                    showClear={false}
+                    showSelectedIndicator={false}
                   />
-                </div>
-
-                <div className="grid gap-2">
-                  {nodeResults.map((n) => (
-                    <button
-                      key={n.id}
-                      type="button"
-                      className="group flex w-full items-start justify-between gap-3 rounded-xl border border-border bg-background/50 px-4 py-3 text-left transition hover:bg-accent"
-                      onClick={() => void openCascadePreview(n)}
-                    >
-                      <div className="min-w-0">
-                        <div className="flex items-center gap-2">
-                          <span className="h-2.5 w-2.5 rounded-full" style={{ background: n.color }} />
-                          <p className="truncate text-sm font-semibold">{n.name}</p>
-                          <Badge variant="outline" className="border-border bg-muted/30">
-                            {n.nodeType.displayName}
-                          </Badge>
-                        </div>
-                        <p className="mt-1 truncate text-xs text-muted-foreground">
-                          {n.parent ? `${tr("Parent", "الأصل")}: ${n.parent.nodeType.displayName} • ${n.parent.name}` : tr("Top level", "مستوى أعلى")}
-                        </p>
-                        <p className="mt-2 text-xs text-muted-foreground">
-                          {tr("Includes", "يشمل")}: {n._count.children} {tr("children", "عناصر فرعية")} • {n._count.kpis} {tr("KPIs", "مؤشرات")}
-                        </p>
-                      </div>
-                      <span className="text-xs text-muted-foreground group-hover:text-foreground">{tr("Preview", "معاينة")}</span>
-                    </button>
-                  ))}
-
-                  {nodeResults.length === 0 ? (
-                    <div className="rounded-xl border border-dashed border-border bg-muted/10 p-6 text-sm text-muted-foreground">
-                      {tr("No nodes found.", "لا توجد نتائج.")}
-                    </div>
-                  ) : null}
                 </div>
               </div>
             ) : (

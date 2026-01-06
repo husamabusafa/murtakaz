@@ -17,6 +17,24 @@ const prismaKpiDefinition = (prisma as unknown as { kpiDefinition: unknown }).kp
   findMany: <T>(args: unknown) => Promise<T[]>;
 };
 
+const prismaOrganization = (prisma as unknown as { organization: unknown }).organization as {
+  findFirst: <T>(args: unknown) => Promise<T | null>;
+  update: <T>(args: unknown) => Promise<T>;
+};
+
+const prismaNodeType = (prisma as unknown as { nodeType: unknown }).nodeType as {
+  findMany: <T>(args: unknown) => Promise<T[]>;
+};
+
+const prismaOrganizationNodeType = (prisma as unknown as { organizationNodeType: unknown }).organizationNodeType as {
+  findMany: <T>(args: unknown) => Promise<T[]>;
+  deleteMany: (args: unknown) => Promise<unknown>;
+  createMany: (args: unknown) => Promise<unknown>;
+};
+
+type KpiApprovalLevelCode = "MANAGER" | "PMO" | "EXECUTIVE" | "ADMIN";
+const kpiApprovalLevelSchema = z.enum(["MANAGER", "PMO", "EXECUTIVE", "ADMIN"]);
+
 export type ActionValidationIssue = {
   path: (string | number)[];
   message: string;
@@ -200,7 +218,15 @@ export async function createOrgAdminDepartment(data: z.infer<typeof createOrgDep
 export async function getOrgAdminEnabledNodeTypes() {
   const session = await requireOrgAdmin();
 
-  const rows = await prisma.organizationNodeType.findMany({
+  const rows = await prismaOrganizationNodeType.findMany<{
+    nodeType: {
+      id: string;
+      code: unknown;
+      displayName: string;
+      levelOrder: number;
+      canHaveKpis: boolean;
+    };
+  }>({
     where: {
       orgId: session.user.orgId,
     },
@@ -221,6 +247,124 @@ export async function getOrgAdminEnabledNodeTypes() {
   });
 
   return rows.map((r) => r.nodeType);
+}
+
+export async function getOrgAdminOrganizationSettings() {
+  const session = await requireOrgAdmin();
+
+  const [org, nodeTypeOptions, enabledNodeTypes, nodeTypeIds] = await Promise.all([
+    prismaOrganization.findFirst<{
+      id: string;
+      name: string;
+      domain: string | null;
+      kpiApprovalLevel: unknown;
+      createdAt: Date;
+      updatedAt: Date;
+      _count: { users: number; departments: number; nodes: number; kpis: number };
+    }>({
+      where: { id: session.user.orgId, deletedAt: null },
+      select: {
+        id: true,
+        name: true,
+        domain: true,
+        kpiApprovalLevel: true,
+        createdAt: true,
+        updatedAt: true,
+        _count: { select: { users: true, departments: true, nodes: true, kpis: true } },
+      },
+    }),
+    prismaNodeType.findMany<{
+      id: string;
+      code: unknown;
+      displayName: string;
+      levelOrder: number;
+      canHaveKpis: boolean;
+    }>({
+      orderBy: [{ levelOrder: "asc" }, { code: "asc" }],
+      select: { id: true, code: true, displayName: true, levelOrder: true, canHaveKpis: true },
+    }),
+    getOrgAdminEnabledNodeTypes(),
+    prismaNode.findMany<{ nodeTypeId: string }>({
+      where: { orgId: session.user.orgId, deletedAt: null },
+      select: { nodeTypeId: true },
+    }),
+  ]);
+
+  const nodeTypeIdCounts = new Map<string, number>();
+  for (const row of nodeTypeIds) {
+    nodeTypeIdCounts.set(row.nodeTypeId, (nodeTypeIdCounts.get(row.nodeTypeId) ?? 0) + 1);
+  }
+
+  const enabledNodeTypeCounts = enabledNodeTypes.map((nt) => ({
+    nodeTypeId: nt.id,
+    displayName: nt.displayName,
+    count: nodeTypeIdCounts.get(nt.id) ?? 0,
+  }));
+
+  return {
+    org,
+    enabledNodeTypes,
+    enabledNodeTypeCounts,
+    nodeTypeOptions,
+  };
+}
+
+const updateOrgSettingsSchema = z.object({
+  name: z.string().trim().min(2).optional(),
+  domain: z.string().trim().optional(),
+  kpiApprovalLevel: kpiApprovalLevelSchema.optional(),
+});
+
+export async function updateOrgAdminOrganizationSettings(data: z.infer<typeof updateOrgSettingsSchema>) {
+  const session = await requireOrgAdmin();
+  const parsedResult = updateOrgSettingsSchema.safeParse(data);
+  if (!parsedResult.success) {
+    return { success: false as const, error: "Validation failed", issues: zodIssues(parsedResult.error) };
+  }
+
+  const parsed = parsedResult.data;
+
+  try {
+    await prismaOrganization.update({
+      where: { id: session.user.orgId },
+      data: {
+        ...(typeof parsed.name === "string" ? { name: parsed.name } : {}),
+        ...(typeof parsed.domain === "string" ? { domain: parsed.domain ? parsed.domain : null } : {}),
+        ...(typeof parsed.kpiApprovalLevel !== "undefined" ? { kpiApprovalLevel: parsed.kpiApprovalLevel as KpiApprovalLevelCode } : {}),
+      },
+      select: { id: true },
+    });
+    return { success: true as const };
+  } catch (error: unknown) {
+    const message = error instanceof Error ? error.message : "Failed to update organization";
+    return { success: false as const, error: message };
+  }
+}
+
+const updateOrgNodeTypesSchema = z.object({
+  nodeTypeIds: z.array(z.string().uuid()).min(1),
+});
+
+export async function updateOrgAdminEnabledNodeTypes(data: z.infer<typeof updateOrgNodeTypesSchema>) {
+  const session = await requireOrgAdmin();
+  const parsedResult = updateOrgNodeTypesSchema.safeParse(data);
+  if (!parsedResult.success) {
+    return { success: false as const, error: "Validation failed", issues: zodIssues(parsedResult.error) };
+  }
+
+  const parsed = parsedResult.data;
+
+  try {
+    await prismaOrganizationNodeType.deleteMany({ where: { orgId: session.user.orgId } });
+    await prismaOrganizationNodeType.createMany({
+      data: parsed.nodeTypeIds.map((nodeTypeId) => ({ orgId: session.user.orgId, nodeTypeId })),
+      skipDuplicates: true,
+    });
+    return { success: true as const };
+  } catch (error: unknown) {
+    const message = error instanceof Error ? error.message : "Failed to update node types";
+    return { success: false as const, error: message };
+  }
 }
 
 async function getOrgEnabledNodeTypesByOrder(orgId: string) {

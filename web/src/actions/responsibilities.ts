@@ -115,6 +115,32 @@ const searchNodesSchema = z.object({
   query: z.string().optional(),
 });
 
+export async function getAssignableNodePickerNodes() {
+  const session = await requireOrgMember();
+  assertCanUseResponsibilities(session.user.role);
+
+  return prismaNode.findMany<{
+    id: string;
+    name: string;
+    parentId: string | null;
+    color: string;
+    nodeType: { displayName: string; levelOrder: number };
+  }>({
+    where: {
+      orgId: session.user.orgId,
+      deletedAt: null,
+    },
+    orderBy: [{ nodeType: { levelOrder: "asc" } }, { name: "asc" }],
+    select: {
+      id: true,
+      name: true,
+      parentId: true,
+      color: true,
+      nodeType: { select: { displayName: true, levelOrder: true } },
+    },
+  });
+}
+
 export async function searchAssignableNodes(input: z.infer<typeof searchNodesSchema>) {
   const session = await requireOrgMember();
   assertCanUseResponsibilities(session.user.role);

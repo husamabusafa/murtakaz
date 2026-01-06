@@ -947,6 +947,7 @@ export async function getOrgKpiPrimaryNodeOptions() {
     select: {
       id: true,
       name: true,
+      parentId: true,
       nodeType: { select: { displayName: true } },
     },
   });

@@ -15,6 +15,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { useAuth } from "@/providers/auth-provider";
 import { useLocale } from "@/providers/locale-provider";
 import { getOrgAdminKpiEditData, getOrgKpiPrimaryNodeOptions, updateOrgAdminKpi } from "@/actions/kpis";
+import { NodePickerDialog } from "@/components/node-picker-dialog";
 
 type PrimaryNodeOption = Awaited<ReturnType<typeof getOrgKpiPrimaryNodeOptions>>[number];
 
@@ -45,6 +46,7 @@ export default function EditKpiPage() {
 
   const [loading, setLoading] = useState(true);
   const [primaryNodes, setPrimaryNodes] = useState<PrimaryNodeOption[]>([]);
+  const [nodePickerOpen, setNodePickerOpen] = useState(false);
 
   const [error, setError] = useState<string | null>(null);
   const [issues, setIssues] = useState<string | null>(null);
@@ -130,6 +132,14 @@ export default function EditKpiPage() {
     if (!draft.variables.length) return false;
     return true;
   }, [draft, isAdmin]);
+
+  const selectedPrimaryNodeLabel = useMemo(() => {
+    const selectedId = draft?.primaryNodeId;
+    if (!selectedId) return "";
+    const found = primaryNodes.find((n) => n.id === selectedId);
+    if (!found) return "";
+    return `${found.nodeType?.displayName ?? tr("Type", "النوع")}: ${found.name}`;
+  }, [draft?.primaryNodeId, primaryNodes, tr]);
 
   async function handleSave() {
     if (!draft) return;
@@ -269,20 +279,31 @@ export default function EditKpiPage() {
 
             <div className="grid gap-2">
               <Label>{tr("Linked item", "العنصر المرتبط")}</Label>
-              <Select value={draft.primaryNodeId} onValueChange={(v) => setDraft((p) => (p ? { ...p, primaryNodeId: v } : p))}>
-                <SelectTrigger className="border-white/10 bg-black/20 text-white">
-                  <SelectValue placeholder={tr("Select", "اختر")} />
-                </SelectTrigger>
-                <SelectContent>
-                  {primaryNodes.map((n) => (
-                    <SelectItem key={n.id} value={n.id}>
-                      {(n.nodeType?.displayName ?? tr("Type", "النوع"))}: {n.name}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
+              <button
+                type="button"
+                onClick={() => setNodePickerOpen(true)}
+                className="flex h-10 w-full items-center justify-between rounded-md border border-white/10 bg-black/20 px-3 text-left text-sm text-white hover:bg-white/5"
+              >
+                <span className={selectedPrimaryNodeLabel ? "truncate" : "text-slate-400"}>
+                  {selectedPrimaryNodeLabel || tr("Select linked item", "اختر العنصر المرتبط")}
+                </span>
+                <span className="text-slate-400">{tr("Change", "تغيير")}</span>
+              </button>
             </div>
           </div>
+
+          <NodePickerDialog
+            open={nodePickerOpen}
+            onOpenChange={setNodePickerOpen}
+            nodes={primaryNodes}
+            selectedId={draft.primaryNodeId || null}
+            onSelect={(nodeId) => setDraft((p) => (p ? { ...p, primaryNodeId: nodeId } : p))}
+            title={tr("Select linked item", "اختر العنصر المرتبط")}
+            description={tr("Pick a node from the hierarchy.", "اختر عقدة من التسلسل الهرمي.")}
+            searchPlaceholder={tr("Search nodes…", "ابحث في العناصر…")}
+            clearLabel={tr("Clear", "مسح")}
+            typeFallbackLabel={tr("Type", "النوع")}
+          />
 
           <div className="grid gap-4 md:grid-cols-2">
             <div className="grid gap-2">
