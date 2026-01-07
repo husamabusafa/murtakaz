@@ -11,39 +11,40 @@ import { kpis, pillars } from "@/lib/mock-data";
 import { useLocale } from "@/providers/locale-provider";
 
 export default function ExecutiveDashboardPage() {
-  const { locale, tr, isArabic } = useLocale();
+  const { t, locale, isArabic } = useLocale();
   const initiatives = pillars.flatMap((pillar) => pillar.initiatives);
   const atRisk = initiatives.filter((initiative) => initiative.health !== "GREEN");
 
   return (
     <div className="space-y-8">
       <PageHeader
-        title={tr("CEO / Executive dashboard", "لوحة التنفيذيين")}
-        subtitle={tr("One-screen view of strategy posture, KPI attainment, and critical escalations.", "عرض تنفيذي موحد لموقف الاستراتيجية وتحقيق مؤشرات الأداء الرئيسية والتصعيدات الحرجة.")}
+        title={t("ceoExecutiveDashboard")}
+        subtitle={t("ceoExecutiveDashboardSubtitle")}
+        icon={<Icon name="tabler:layout-dashboard" className="h-5 w-5" />}
       />
 
       <section className="grid gap-6 lg:grid-cols-3">
         <Card className="border-white/10 bg-white/5 text-white shadow-lg shadow-black/20">
           <CardHeader className="space-y-1">
             <div className="flex items-center justify-between">
-              <CardTitle className="text-base">{tr("Delivery confidence", "ثقة التنفيذ")}</CardTitle>
+              <CardTitle className="text-base">{t("deliveryConfidence")}</CardTitle>
               <Icon name="tabler:trend-up" className="text-slate-200" />
             </div>
-            <CardDescription className="text-slate-200">{tr("Last 12 periods (demo index).", "آخر 12 فترة (مؤشر تجريبي).")}</CardDescription>
+            <CardDescription className="text-slate-200">{t("last12PeriodsIndexDesc")}</CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">
             <div className="flex items-center justify-between">
-              <p className="text-sm font-semibold text-white">{tr("Confidence index", "مؤشر الثقة")}</p>
+              <p className="text-sm font-semibold text-white">{t("confidenceIndex")}</p>
               <p className="text-sm text-slate-200">{executiveTrend.at(-1)} / 100</p>
             </div>
             <SparkLine values={executiveTrend} />
             <div className="grid grid-cols-2 gap-3">
               <div className="rounded-xl border border-white/10 bg-slate-950/40 px-4 py-3">
-                <p className="text-xs text-slate-200">{tr("At-risk initiatives", "مبادرات معرضة للمخاطر")}</p>
+                <p className="text-xs text-slate-200">{t("atRiskInitiatives")}</p>
                 <p className="mt-1 text-xl font-semibold text-white">{atRisk.length}</p>
               </div>
               <div className="rounded-xl border border-white/10 bg-slate-950/40 px-4 py-3">
-                <p className="text-xs text-slate-200">{tr("Pillars active", "ركائز نشطة")}</p>
+                <p className="text-xs text-slate-200">{t("pillarsActive")}</p>
                 <p className="mt-1 text-xl font-semibold text-white">{pillars.length}</p>
               </div>
             </div>
@@ -53,10 +54,10 @@ export default function ExecutiveDashboardPage() {
         <Card className="border-white/10 bg-white/5 text-white shadow-lg shadow-black/20">
           <CardHeader className="space-y-1">
             <div className="flex items-center justify-between">
-              <CardTitle className="text-base">{tr("Risk mix", "مزيج المخاطر")}</CardTitle>
+              <CardTitle className="text-base">{t("riskMix")}</CardTitle>
               <Icon name="tabler:shield-exclamation" className="text-slate-200" />
             </div>
-            <CardDescription className="text-slate-200">{tr("Severity distribution (demo).", "توزيع الخطورة (عرض تجريبي).")}</CardDescription>
+            <CardDescription className="text-slate-200">{t("severityDistributionDesc")}</CardDescription>
           </CardHeader>
           <CardContent>
             <Donut items={riskSeverityBreakdown} />
@@ -66,10 +67,10 @@ export default function ExecutiveDashboardPage() {
         <Card className="border-white/10 bg-white/5 text-white shadow-lg shadow-black/20">
           <CardHeader className="space-y-1">
             <div className="flex items-center justify-between">
-              <CardTitle className="text-base">{tr("Governance aging", "عمر الحوكمة")}</CardTitle>
+              <CardTitle className="text-base">{t("governanceAging")}</CardTitle>
               <Icon name="tabler:gavel" className="text-slate-200" />
             </div>
-            <CardDescription className="text-slate-200">{tr("Approval queue aging buckets.", "توزيع أعمار قائمة الموافقات.")}</CardDescription>
+            <CardDescription className="text-slate-200">{t("approvalQueueAgingDesc")}</CardDescription>
           </CardHeader>
           <CardContent>
             <Bar categories={approvalsAging.categories} values={approvalsAging.values} color="#a78bfa" />
@@ -81,11 +82,11 @@ export default function ExecutiveDashboardPage() {
         <Card className="border-white/10 bg-white/5 text-white shadow-lg shadow-black/20 lg:col-span-2">
           <CardHeader className="flex flex-row items-start justify-between gap-3">
             <div className="space-y-1">
-              <CardTitle className="text-base">{tr("Initiatives requiring intervention", "مبادرات تتطلب تدخلًا")}</CardTitle>
-              <CardDescription className="text-slate-200">{tr("Drill down to investigate health drivers.", "استعراض تفصيلي لفهم أسباب الحالة.")}</CardDescription>
+              <CardTitle className="text-base">{t("initiativesRequiringIntervention")}</CardTitle>
+              <CardDescription className="text-slate-200">{t("investigateHealthDriversDesc")}</CardDescription>
             </div>
             <Link href={`/${locale}/dashboards/initiative-health`} className="text-sm font-medium text-indigo-200 hover:text-indigo-100">
-              {tr("Open initiative health", "فتح أداء المبادرات")}
+              {t("openInitiativeHealth")}
             </Link>
           </CardHeader>
           <CardContent className="space-y-3">
@@ -109,8 +110,8 @@ export default function ExecutiveDashboardPage() {
 
         <Card className="border-white/10 bg-white/5 text-white shadow-lg shadow-black/20">
           <CardHeader className="space-y-1">
-            <CardTitle className="text-base">{tr("Top KPIs", "أهم مؤشرات الأداء الرئيسية")}</CardTitle>
-            <CardDescription className="text-slate-200">{tr("Quick links to KPI drill-down.", "روابط سريعة لاستعراض مؤشرات الأداء الرئيسية.")}</CardDescription>
+            <CardTitle className="text-base">{t("topKpis")}</CardTitle>
+            <CardDescription className="text-slate-200">{t("quickLinksKpiDrillDownDesc")}</CardDescription>
           </CardHeader>
           <CardContent className="space-y-3">
             {kpis.map((kpi) => (
@@ -121,8 +122,8 @@ export default function ExecutiveDashboardPage() {
               >
                 <p className="text-sm font-semibold text-white">{isArabic ? kpi.nameAr ?? kpi.name : kpi.name}</p>
                   <p className="mt-1 text-xs text-slate-200">
-                    {tr("Current", "الحالي")} {kpi.current}
-                    {kpi.unit} • {tr("Target", "المستهدف")} {kpi.target}
+                    {t("current")} {kpi.current}
+                    {kpi.unit} • {t("target")} {kpi.target}
                     {kpi.unit}
                   </p>
                 </Link>

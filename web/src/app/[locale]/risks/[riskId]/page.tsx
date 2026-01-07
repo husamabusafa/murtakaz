@@ -23,7 +23,7 @@ import {
 
 export default function RiskDetailPage() {
   const params = useParams<{ riskId: string }>();
-  const { locale, tr, isArabic, t } = useLocale();
+  const { locale, isArabic, t } = useLocale();
   const { user } = useAuth();
 
   const baseRisk = getBaseRisk(params.riskId);
@@ -35,9 +35,9 @@ export default function RiskDetailPage() {
   if (!baseRisk) {
     return (
       <div className="rounded-2xl border border-white/10 bg-white/5 p-8 text-white">
-        <p className="text-sm text-slate-200">{tr("Risk not found.", "المخاطرة غير موجودة.")}</p>
+        <p className="text-sm text-slate-200">{t("riskNotFound")}</p>
         <Link href={`/${locale}/risks`} className="mt-3 inline-flex text-sm font-semibold text-indigo-200 hover:text-indigo-100">
-          {tr("Back to risks", "العودة إلى المخاطر")}
+          {t("backToRisks")}
         </Link>
       </div>
     );
@@ -46,7 +46,7 @@ export default function RiskDetailPage() {
   if (!hydrated) {
     return (
       <div className="rounded-2xl border border-white/10 bg-white/5 p-8 text-white">
-        <p className="text-sm text-slate-200">{tr("Loading risk…", "جارٍ تحميل المخاطرة…")}</p>
+        <p className="text-sm text-slate-200">{t("loadingRisk")}</p>
       </div>
     );
   }
@@ -61,7 +61,7 @@ export default function RiskDetailPage() {
     <div className="space-y-8">
       <PageHeader
         title={isArabic ? risk.titleAr ?? risk.title : risk.title}
-        subtitle={`${risk.severity} • ${risk.owner} • ${tr("Context:", "السياق:")} ${context}`}
+        subtitle={`${risk.severity} • ${risk.owner} • ${t("contextPrefix")} ${context}`}
         icon={<Icon name="tabler:shield-exclamation" className="h-5 w-5" />}
         actions={
           <div className="flex items-center gap-2">
@@ -76,10 +76,10 @@ export default function RiskDetailPage() {
                     {
                       id: `note-${Date.now()}`,
                       at: new Date().toISOString(),
-                      author: user?.name ?? tr("User", "مستخدم"),
+                      author: user?.name ?? t("user"),
                       message: risk.escalated
-                        ? tr("Removed escalation flag.", "تمت إزالة علامة التصعيد.")
-                        : tr("Escalated risk for executive visibility.", "تم تصعيد المخاطرة لعرضها على الإدارة التنفيذية."),
+                        ? t("removedEscalationFlag")
+                        : t("escalatedForExecutiveVisibility"),
                     },
                     ...risk.notes,
                   ],
@@ -88,7 +88,7 @@ export default function RiskDetailPage() {
             >
               <span className="inline-flex items-center gap-2">
                 <Icon name={risk.escalated ? "tabler:flag-3-off" : "tabler:flag-3"} className="h-4 w-4" />
-                {risk.escalated ? tr("De-escalate", "خفض التصعيد") : tr("Escalate", "تصعيد")}
+                {risk.escalated ? t("deEscalate") : t("escalate")}
               </span>
             </Button>
             <Button
@@ -102,8 +102,8 @@ export default function RiskDetailPage() {
                     {
                       id: `note-${Date.now()}`,
                       at: new Date().toISOString(),
-                      author: user?.name ?? tr("User", "مستخدم"),
-                      message: risk.status === "COMPLETED" ? tr("Reopened risk.", "تمت إعادة فتح المخاطرة.") : tr("Closed risk.", "تم إغلاق المخاطرة."),
+                      author: user?.name ?? t("user"),
+                      message: risk.status === "COMPLETED" ? t("reopenedRisk") : t("closedRisk"),
                     },
                     ...risk.notes,
                   ],
@@ -112,7 +112,7 @@ export default function RiskDetailPage() {
             >
               <span className="inline-flex items-center gap-2">
                 <Icon name={risk.status === "COMPLETED" ? "tabler:refresh" : "tabler:circle-check"} className="h-4 w-4" />
-                {risk.status === "COMPLETED" ? tr("Reopen", "إعادة فتح") : tr("Close", "إغلاق")}
+                {risk.status === "COMPLETED" ? t("reopen") : t("close")}
               </span>
             </Button>
           </div>
@@ -122,13 +122,13 @@ export default function RiskDetailPage() {
       <Tabs defaultValue="summary" className="space-y-6">
         <TabsList className="border border-white/10 bg-white/5">
           <TabsTrigger value="summary" className="data-[state=active]:bg-white/10 data-[state=active]:text-white">
-            {tr("Summary", "ملخص")}
+            {t("summary")}
           </TabsTrigger>
           <TabsTrigger value="mitigation" className="data-[state=active]:bg-white/10 data-[state=active]:text-white">
-            {tr("Mitigation", "التخفيف")}
+            {t("mitigation")}
           </TabsTrigger>
           <TabsTrigger value="history" className="data-[state=active]:bg-white/10 data-[state=active]:text-white">
-            {tr("History", "السجل")}
+            {t("history")}
           </TabsTrigger>
         </TabsList>
 
@@ -164,7 +164,7 @@ export default function RiskDetailPage() {
                     update({
                       ...risk,
                       notes: [
-                        { id: `note-${Date.now()}`, at: new Date().toISOString(), author: user?.name ?? tr("User", "مستخدم"), message },
+                        { id: `note-${Date.now()}`, at: new Date().toISOString(), author: user?.name ?? t("user"), message },
                         ...risk.notes,
                       ],
                     })
@@ -178,9 +178,9 @@ export default function RiskDetailPage() {
             <CardHeader>
               <CardTitle className="flex items-center gap-2 text-base">
                 <Icon name="tabler:clipboard-list" className="h-4 w-4 text-slate-100" />
-                {tr("Quick links", "روابط سريعة")}
+                {t("quickLinks")}
               </CardTitle>
-              <CardDescription className="text-slate-200">{tr("Related dashboards and queues.", "لوحات وقوائم ذات صلة.")}</CardDescription>
+              <CardDescription className="text-slate-200">{t("relatedDashboardsDesc")}</CardDescription>
             </CardHeader>
             <CardContent className="space-y-2 text-sm text-slate-100">
               <Link
@@ -189,9 +189,9 @@ export default function RiskDetailPage() {
               >
                 <p className="flex items-center gap-2 font-semibold text-white">
                   <Icon name="tabler:shield-exclamation" className="h-4 w-4 text-slate-100" />
-                  {tr("Risk dashboard", "لوحة المخاطر")}
+                  {t("riskDashboard")}
                 </p>
-                <p className="mt-1 text-xs text-slate-200">{tr("Severity distribution and escalations.", "توزيع الخطورة والتصعيدات.")}</p>
+                <p className="mt-1 text-xs text-slate-200">{t("severityDistributionDesc")}</p>
               </Link>
               <Link
                 href={`/${locale}/approvals`}
@@ -199,9 +199,9 @@ export default function RiskDetailPage() {
               >
                 <p className="flex items-center gap-2 font-semibold text-white">
                   <Icon name="tabler:gavel" className="h-4 w-4 text-slate-100" />
-                  {tr("Governance queue", "قائمة الحوكمة")}
+                  {t("governanceQueue")}
                 </p>
-                <p className="mt-1 text-xs text-slate-200">{tr("Review change requests and approvals.", "مراجعة طلبات التغيير والموافقات.")}</p>
+                <p className="mt-1 text-xs text-slate-200">{t("reviewApprovalsDesc")}</p>
               </Link>
             </CardContent>
           </Card>
@@ -212,9 +212,9 @@ export default function RiskDetailPage() {
             <CardHeader>
               <CardTitle className="flex items-center gap-2 text-base">
                 <Icon name="tabler:clipboard-text" className="h-4 w-4 text-slate-100" />
-                {tr("Mitigation plan", "خطة التخفيف")}
+                {t("mitigationPlan")}
               </CardTitle>
-              <CardDescription className="text-slate-200">{tr("Add steps, owners, and due dates.", "إضافة خطوات ومسؤولين وتواريخ استحقاق.")}</CardDescription>
+              <CardDescription className="text-slate-200">{t("addMitigationStepsDesc")}</CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">
               <MitigationEditor
@@ -223,7 +223,7 @@ export default function RiskDetailPage() {
                     ...risk,
                     mitigation: [{ id: `step-${Date.now()}`, ...step }, ...risk.mitigation],
                     notes: [
-                      { id: `note-${Date.now()}`, at: new Date().toISOString(), author: user?.name ?? tr("User", "مستخدم"), message: tr("Added mitigation step.", "تمت إضافة خطوة تخفيف.") },
+                      { id: `note-${Date.now()}`, at: new Date().toISOString(), author: user?.name ?? t("user"), message: t("addedMitigationStep") },
                       ...risk.notes,
                     ],
                   })
@@ -234,7 +234,7 @@ export default function RiskDetailPage() {
 
               <div className="space-y-2">
                 {risk.mitigation.length === 0 ? (
-                  <p className="text-sm text-slate-200">{tr("No mitigation steps yet.", "لا توجد خطوات تخفيف بعد.")}</p>
+                  <p className="text-sm text-slate-200">{t("noMitigationStepsYet")}</p>
                 ) : (
                   risk.mitigation.map((step) => (
                     <div key={step.id} className="rounded-xl border border-white/10 bg-slate-950/40 px-4 py-3">
@@ -242,8 +242,8 @@ export default function RiskDetailPage() {
                         <div className="space-y-1">
                           <p className="text-sm font-semibold text-white">{step.text}</p>
                           <p className="text-xs text-slate-200">
-                            {step.owner ? `${tr("Owner:", "المسؤول:")} ${step.owner}` : `${tr("Owner:", "المسؤول:")} —`}
-                            {step.due ? ` • ${tr("Due:", "الاستحقاق:")} ${step.due}` : ""}
+                            {step.owner ? `${t("owner")}: ${step.owner}` : `${t("owner")}: —`}
+                            {step.due ? ` • ${t("due")}: ${step.due}` : ""}
                           </p>
                         </div>
                         <Button
@@ -254,7 +254,7 @@ export default function RiskDetailPage() {
                               ...risk,
                               mitigation: risk.mitigation.map((s) => (s.id === step.id ? { ...s, done: !s.done } : s)),
                               notes: [
-                                { id: `note-${Date.now()}`, at: new Date().toISOString(), author: user?.name ?? tr("User", "مستخدم"), message: tr("Updated mitigation step status.", "تم تحديث حالة خطوة التخفيف.") },
+                                { id: `note-${Date.now()}`, at: new Date().toISOString(), author: user?.name ?? t("user"), message: t("updatedMitigationStep") },
                                 ...risk.notes,
                               ],
                             })
@@ -274,22 +274,22 @@ export default function RiskDetailPage() {
             <CardHeader>
               <CardTitle className="flex items-center gap-2 text-base">
                 <Icon name="tabler:alert-triangle" className="h-4 w-4 text-amber-200" />
-                {tr("Guidance", "إرشادات")}
+                {t("guidance")}
               </CardTitle>
-              <CardDescription className="text-slate-200">{tr("Recommended governance workflow.", "توصيات لمسار الحوكمة.")}</CardDescription>
+              <CardDescription className="text-slate-200">{t("recommendedGovernanceWorkflowDesc")}</CardDescription>
             </CardHeader>
             <CardContent className="space-y-2 text-sm text-slate-100">
               <div className="rounded-xl border border-white/10 bg-slate-950/40 px-4 py-3">
-                <p className="font-semibold text-white">{tr("Assign owners", "تعيين المسؤولين")}</p>
-                <p className="mt-1 text-xs text-slate-200">{tr("Define accountability and due dates.", "تحديد المسؤوليات وتواريخ الاستحقاق.")}</p>
+                <p className="font-semibold text-white">{t("assignOwners")}</p>
+                <p className="mt-1 text-xs text-slate-200">{t("defineAccountabilityDesc")}</p>
               </div>
               <div className="rounded-xl border border-white/10 bg-slate-950/40 px-4 py-3">
-                <p className="font-semibold text-white">{tr("Escalate critical risks", "تصعيد المخاطر الحرجة")}</p>
-                <p className="mt-1 text-xs text-slate-200">{tr("Flag for executive visibility when needed.", "تحديدها للعرض التنفيذي عند الحاجة.")}</p>
+                <p className="font-semibold text-white">{t("escalateCriticalRisks")}</p>
+                <p className="mt-1 text-xs text-slate-200">{t("flagForExecutiveDesc")}</p>
               </div>
               <div className="rounded-xl border border-white/10 bg-slate-950/40 px-4 py-3">
-                <p className="font-semibold text-white">{tr("Close with a note", "الإغلاق مع توثيق")}</p>
-                <p className="mt-1 text-xs text-slate-200">{tr("Ensure auditability and learnings.", "ضمان التدقيق واستخلاص الدروس.")}</p>
+                <p className="font-semibold text-white">{t("closeWithNote")}</p>
+                <p className="mt-1 text-xs text-slate-200">{t("ensureAuditabilityDesc")}</p>
               </div>
             </CardContent>
           </Card>
@@ -300,13 +300,13 @@ export default function RiskDetailPage() {
             <CardHeader>
               <CardTitle className="flex items-center gap-2 text-base">
                 <Icon name="tabler:history" className="h-4 w-4 text-slate-100" />
-                {tr("Activity log", "سجل النشاط")}
+                {t("activityLog")}
               </CardTitle>
-              <CardDescription className="text-slate-200">{tr("Timeline of risk updates (prototype).", "سجل زمني لتحديثات المخاطرة (نموذج أولي).")}</CardDescription>
+              <CardDescription className="text-slate-200">{t("timelineRiskUpdatesDesc")}</CardDescription>
             </CardHeader>
             <CardContent className="space-y-3">
               {risk.notes.length === 0 ? (
-                <p className="text-sm text-slate-200">{tr("No activity recorded yet.", "لا يوجد نشاط مسجل حتى الآن.")}</p>
+                <p className="text-sm text-slate-200">{t("noActivityRecorded")}</p>
               ) : (
                 risk.notes.map((note) => (
                   <div key={note.id} className="rounded-xl border border-white/10 bg-slate-950/40 px-4 py-3">
@@ -326,14 +326,14 @@ export default function RiskDetailPage() {
 }
 
 function RiskNoteEditor({ onSubmit }: { onSubmit: (message: string) => void }) {
-  const { tr } = useLocale();
+  const { t } = useLocale();
   const [message, setMessage] = useState("");
   return (
     <div className="space-y-3 pt-2">
       <Textarea
         value={message}
         onChange={(e) => setMessage(e.target.value)}
-        placeholder={tr("Add a risk note, blocker, or escalation context…", "أضف ملاحظة للمخاطرة أو عائقًا أو سياق التصعيد…")}
+        placeholder={t("addRiskNotePlaceholder")}
         className="border-white/10 bg-black/20 text-white placeholder:text-slate-400"
       />
       <Button
@@ -346,7 +346,7 @@ function RiskNoteEditor({ onSubmit }: { onSubmit: (message: string) => void }) {
       >
         <span className="inline-flex items-center gap-2">
           <Icon name="tabler:send" className="h-4 w-4" />
-          {tr("Add note", "إضافة ملاحظة")}
+          {t("addNote")}
         </span>
       </Button>
     </div>
@@ -358,7 +358,7 @@ function MitigationEditor({
 }: {
   onAdd: (step: { text: string; owner?: string; due?: string; done?: boolean }) => void;
 }) {
-  const { tr } = useLocale();
+  const { t } = useLocale();
   const [text, setText] = useState("");
   const [owner, setOwner] = useState("");
   const [due, setDue] = useState("");
@@ -366,25 +366,25 @@ function MitigationEditor({
   return (
     <div className="grid gap-3 md:grid-cols-3">
       <div className="space-y-2 md:col-span-3">
-        <p className="text-sm font-semibold text-white">{tr("New mitigation step", "خطوة تخفيف جديدة")}</p>
+        <p className="text-sm font-semibold text-white">{t("newMitigationStep")}</p>
         <Input
           value={text}
           onChange={(e) => setText(e.target.value)}
-          placeholder={tr("Describe the mitigation action…", "صف إجراء التخفيف…")}
+          placeholder={t("describeMitigationActionPlaceholder")}
           className="border-white/10 bg-black/20 text-white placeholder:text-slate-400"
         />
       </div>
       <div className="space-y-2">
-        <p className="text-sm font-semibold text-white">{tr("Owner", "المسؤول")}</p>
+        <p className="text-sm font-semibold text-white">{t("owner")}</p>
         <Input
           value={owner}
           onChange={(e) => setOwner(e.target.value)}
-          placeholder={tr("Team / person", "فريق / شخص")}
+          placeholder={t("teamPersonPlaceholder")}
           className="border-white/10 bg-black/20 text-white placeholder:text-slate-400"
         />
       </div>
       <div className="space-y-2">
-        <p className="text-sm font-semibold text-white">{tr("Due date", "تاريخ الاستحقاق")}</p>
+        <p className="text-sm font-semibold text-white">{t("dueDate")}</p>
         <Input value={due} onChange={(e) => setDue(e.target.value)} type="date" className="border-white/10 bg-black/20 text-white" />
       </div>
       <div className="flex items-end">
@@ -400,7 +400,7 @@ function MitigationEditor({
         >
           <span className="inline-flex items-center gap-2">
             <Icon name="tabler:plus" className="h-4 w-4" />
-            {tr("Add", "إضافة")}
+            {t("add")}
           </span>
         </Button>
       </div>

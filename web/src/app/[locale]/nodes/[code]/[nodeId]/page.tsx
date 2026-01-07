@@ -22,7 +22,7 @@ function normalizeCode(code: string) {
 
 export default function NodeDetailPage() {
   const params = useParams<{ code: string; nodeId: string }>();
-  const { tr, locale, nodeTypeLabel } = useLocale();
+  const { t, locale, nodeTypeLabel, df } = useLocale();
   const { loading: sessionLoading } = useAuth();
 
   const code = typeof params?.code === "string" ? params.code : "";
@@ -53,35 +53,36 @@ export default function NodeDetailPage() {
     };
   }, [code, nodeId, sessionLoading]);
 
-  const title = data?.node?.name ?? tr("Item", "عنصر");
+  const title = df(data?.node?.name, data?.node?.nameAr) || t("item");
 
   const currentTypeLabel = useMemo(() => {
-    const t = data?.enabledNodeTypes?.find((x) => String(x.code).toLowerCase() === normalizedCode);
-    return t?.displayName ?? code.toUpperCase();
-  }, [code, data?.enabledNodeTypes, normalizedCode]);
+    const typeMatch = data?.enabledNodeTypes?.find((x: any) => String(x.code).toLowerCase() === normalizedCode);
+    if (!typeMatch) return code.toUpperCase();
+    return df(typeMatch.displayName, typeMatch.nameAr);
+  }, [code, data?.enabledNodeTypes, df, normalizedCode]);
 
   const childType = useMemo(() => {
     if (!data?.enabledNodeTypes?.length || !data?.node?.nodeType?.code) return null;
     const enabled = data.enabledNodeTypes;
-    const idx = enabled.findIndex((t) => String(t.code) === String(data.node.nodeType.code));
+    const idx = enabled.findIndex((it: any) => String(it.code) === String(data.node.nodeType.code));
     if (idx < 0) return null;
-    const next = enabled[idx + 1];
+    const next = enabled[idx + 1] as any;
     if (!next) return null;
     return {
       code: String(next.code).toLowerCase(),
-      displayName: next.displayName,
+      displayName: df(next.displayName, next.nameAr),
     };
-  }, [data?.enabledNodeTypes, data?.node?.nodeType?.code]);
+  }, [data?.enabledNodeTypes, data?.node?.nodeType?.code, df]);
 
   const grandChildTypeLabel = useMemo(() => {
     if (!data?.enabledNodeTypes?.length || !data?.node?.nodeType?.code) return null;
     const enabled = data.enabledNodeTypes;
-    const idx = enabled.findIndex((t) => String(t.code) === String(data.node.nodeType.code));
+    const idx = enabled.findIndex((it: any) => String(it.code) === String(data.node.nodeType.code));
     if (idx < 0) return null;
-    const next = enabled[idx + 2];
+    const next = enabled[idx + 2] as any;
     if (!next) return null;
-    return next.displayName;
-  }, [data?.enabledNodeTypes, data?.node?.nodeType?.code]);
+    return df(next.displayName, next.nameAr);
+  }, [data?.enabledNodeTypes, data?.node?.nodeType?.code, df]);
 
   const pageIcon = useMemo(() => {
     const lower = normalizedCode;
@@ -97,11 +98,11 @@ export default function NodeDetailPage() {
   if (sessionLoading || loading) {
     return (
       <div className="space-y-8">
-        <PageHeader title={title} subtitle={tr("Loading...", "جارٍ التحميل...")} icon={<Icon name={pageIcon} className="h-5 w-5" />} />
+        <PageHeader title={title} subtitle={t("loadingEllipsis")} icon={<Icon name={pageIcon} className="h-5 w-5" />} />
         <Card className="bg-card/70 backdrop-blur shadow-sm">
           <CardHeader>
-            <CardTitle className="text-base">{tr("Loading", "جارٍ التحميل")}</CardTitle>
-            <CardDescription>{tr("Please wait", "يرجى الانتظار")}</CardDescription>
+            <CardTitle className="text-base">{t("loading")}</CardTitle>
+            <CardDescription>{t("pleaseWait")}</CardDescription>
           </CardHeader>
           <CardContent />
         </Card>
@@ -112,9 +113,9 @@ export default function NodeDetailPage() {
   if (!data?.node) {
     return (
       <div className="space-y-8">
-        <PageHeader title={tr("Not found", "غير موجود")} subtitle={tr("Item was not found.", "لم يتم العثور على العنصر.")} icon={<Icon name={pageIcon} className="h-5 w-5" />} />
+        <PageHeader title={t("notFound")} subtitle={t("itemNotFoundDesc")} icon={<Icon name={pageIcon} className="h-5 w-5" />} />
         <Card className="bg-card/70 backdrop-blur shadow-sm">
-          <CardContent className="p-6 text-sm text-muted-foreground">{tr("Item not found.", "العنصر غير موجود.")}</CardContent>
+          <CardContent className="p-6 text-sm text-muted-foreground">{t("itemNotFoundDesc")}</CardContent>
         </Card>
       </div>
     );
@@ -126,11 +127,8 @@ export default function NodeDetailPage() {
         title={title}
         subtitle={
           childType
-            ? tr(
-                `Explore ${childType.displayName} and aggregated KPIs for this item.`,
-                `استعرض ${childType.displayName} ومؤشرات الأداء الرئيسية المجمعة لهذا العنصر.`,
-              )
-            : tr("Explore hierarchy and aggregated KPIs for this item.", "استعرض التسلسل الهرمي ومؤشرات الأداء الرئيسية المجمعة لهذا العنصر.")
+            ? t("exploreChildTypeAndKpisDesc", { type: childType.displayName })
+            : t("exploreHierarchyDesc")
         }
         icon={<Icon name={pageIcon} className="h-5 w-5" />}
       />
@@ -145,13 +143,13 @@ export default function NodeDetailPage() {
               </CardTitle>
               <CardDescription>
                 {currentTypeLabel}
-                {data.node.parent ? ` • ${tr("Parent", "الأعلى")}: ${data.node.parent.name}` : ""}
+                {df(data.node.parent?.name, data.node.parent?.nameAr) ? ` • ${t("parent")}: ${df(data.node.parent?.name, data.node.parent?.nameAr)}` : ""}
               </CardDescription>
             </div>
             <div className="flex items-center gap-2">
               <StatusBadge status={data.node.status as Status} />
               <Badge variant="outline" className="border-white/10 bg-white/5">
-                {tr("KPIs", "مؤشرات الأداء الرئيسية")}: {data.kpis.length}
+                {t("kpis")}: {data.kpis.length}
               </Badge>
             </div>
           </div>
@@ -162,7 +160,7 @@ export default function NodeDetailPage() {
         <Card className="bg-card/70 backdrop-blur shadow-sm">
           <CardHeader>
             <CardTitle className="text-base">{childType.displayName}</CardTitle>
-            <CardDescription>{tr("Click an item to open its page.", "اضغط على عنصر لفتح صفحته.")}</CardDescription>
+            <CardDescription>{t("clickToOpenPageDesc")}</CardDescription>
           </CardHeader>
           <CardContent>
             {data.children.length ? (
@@ -173,10 +171,10 @@ export default function NodeDetailPage() {
                       <CardTitle className="flex items-center gap-2 text-base">
                         <span className="inline-block h-2.5 w-2.5 rounded-full" style={{ backgroundColor: c.color }} />
                         <Link href={`/${locale}/nodes/${childType.code}/${c.id}`} className="hover:underline">
-                          {c.name}
+                          {df(c.name, c.nameAr)}
                         </Link>
                       </CardTitle>
-                      {c.description ? <CardDescription className="line-clamp-2">{c.description}</CardDescription> : null}
+                      {df(c.description, c.descriptionAr) ? <CardDescription className="line-clamp-2">{df(c.description, c.descriptionAr)}</CardDescription> : null}
                       <div className="flex items-center gap-2">
                         <StatusBadge status={c.status as Status} />
                         {grandChildTypeLabel ? (
@@ -185,7 +183,7 @@ export default function NodeDetailPage() {
                           </Badge>
                         ) : null}
                         <Badge variant="outline" className="border-white/10 bg-white/5">
-                          {tr("KPIs", "مؤشرات الأداء الرئيسية")}: {c._count.kpis}
+                          {t("kpis")}: {c._count.kpis}
                         </Badge>
                       </div>
                     </CardHeader>
@@ -194,7 +192,7 @@ export default function NodeDetailPage() {
               </div>
             ) : (
               <div className="rounded-md border border-border bg-card/50 p-6 text-sm text-muted-foreground">
-                {tr(`No ${childType.displayName} yet.`, `لا توجد ${childType.displayName} بعد.`)}
+                {t("noChildItemsOfTypeYet", { type: childType.displayName })}
               </div>
             )}
           </CardContent>
@@ -203,19 +201,19 @@ export default function NodeDetailPage() {
 
       <Card className="bg-card/70 backdrop-blur shadow-sm">
         <CardHeader>
-          <CardTitle className="text-base">{tr("KPIs (subtree)", "مؤشرات الأداء الرئيسية (ضمن الشجرة)")}</CardTitle>
-          <CardDescription>{tr("All KPIs linked to this item or any descendant item.", "كل مؤشرات الأداء الرئيسية المرتبطة بهذا العنصر أو أي عنصر تحته.")}</CardDescription>
+          <CardTitle className="text-base">{t("kpisSubtree")}</CardTitle>
+          <CardDescription>{t("allKpisLinkedToItemDesc")}</CardDescription>
         </CardHeader>
         <CardContent>
           <div className="overflow-hidden rounded-xl border border-border">
             <Table>
               <TableHeader>
                 <TableRow className="hover:bg-transparent">
-                  <TableHead>{tr("KPI", "مؤشر أداء رئيسي")}</TableHead>
-                  <TableHead>{tr("Owner", "المسؤول")}</TableHead>
-                  <TableHead>{tr("Linked to", "مرتبط بـ")}</TableHead>
-                  <TableHead>{tr("Target", "المستهدف")}</TableHead>
-                  <TableHead>{tr("Baseline", "الأساس")}</TableHead>
+                  <TableHead>{t("kpi")}</TableHead>
+                  <TableHead>{t("owner")}</TableHead>
+                  <TableHead>{t("linkedTo")}</TableHead>
+                  <TableHead>{t("target")}</TableHead>
+                  <TableHead>{t("baseline")}</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
@@ -223,16 +221,16 @@ export default function NodeDetailPage() {
                   <TableRow key={k.id} className="hover:bg-card/40">
                     <TableCell className="font-medium">
                       <Link href={`/${locale}/kpis/${k.id}`} className="hover:underline">
-                        {k.name}
+                        {df(k.name, k.nameAr)}
                       </Link>
-                      {k.unit ? <span className="ms-2 text-xs text-muted-foreground">({k.unit})</span> : null}
+                      {df(k.unit, k.unitAr) ? <span className="ms-2 text-xs text-muted-foreground">({df(k.unit, k.unitAr)})</span> : null}
                     </TableCell>
                     <TableCell className="text-muted-foreground">{k.ownerUser?.name ?? "—"}</TableCell>
                     <TableCell className="text-muted-foreground">
-                      {k.primaryNode?.name ?? "—"}
+                      {df(k.primaryNode?.name, k.primaryNode?.nameAr) || "—"}
                       {k.primaryNode?.nodeType?.displayName ? (
                         <span className="ms-2 text-xs text-muted-foreground">
-                          ({nodeTypeLabel(String(k.primaryNode.nodeType.code), k.primaryNode.nodeType.displayName)})
+                          ({nodeTypeLabel(String(k.primaryNode.nodeType.code), df(k.primaryNode.nodeType.displayName, k.primaryNode.nodeType.nameAr))})
                         </span>
                       ) : null}
                     </TableCell>
@@ -244,7 +242,7 @@ export default function NodeDetailPage() {
                 {data.kpis.length === 0 ? (
                   <TableRow>
                     <TableCell colSpan={5} className="py-8 text-center text-sm text-muted-foreground">
-                      {tr("No KPIs found.", "لا توجد مؤشرات أداء رئيسية.")}
+                      {t("noKpisFound")}
                     </TableCell>
                   </TableRow>
                 ) : null}

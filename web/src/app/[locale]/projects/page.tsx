@@ -11,14 +11,14 @@ import { pillars } from "@/lib/mock-data";
 import { useLocale } from "@/providers/locale-provider";
 
 export default function ProjectsPage() {
-  const { locale, t, tr, isArabic } = useLocale();
+  const { locale, t, isArabic } = useLocale();
   const projects = pillars.flatMap((pillar) => pillar.initiatives.flatMap((initiative) => initiative.projects));
 
   return (
     <div className="space-y-8">
       <PageHeader
         title={t("projects")}
-        subtitle={tr("High-level execution view with milestones, dependencies, and health roll-up.", "عرض تنفيذي للمشاريع مع المعالم والاعتمادات وتجميع الأداء.")}
+        subtitle={t("projectsSubtitle")}
         icon={<Icon name="tabler:timeline" className="h-5 w-5" />}
       />
 
@@ -28,12 +28,12 @@ export default function ProjectsPage() {
             <div>
               <CardTitle className="flex items-center gap-2 text-base">
                 <Icon name="tabler:briefcase" className="h-4 w-4 text-slate-100" />
-                {tr("Project portfolio", "محفظة المشاريع")}
+                {t("projectPortfolio")}
               </CardTitle>
-              <CardDescription className="text-slate-200">{tr("Filter and drill into project execution.", "تصفية واستعراض تفصيلي لتنفيذ المشاريع.")}</CardDescription>
+              <CardDescription className="text-slate-200">{t("projectPortfolioDesc")}</CardDescription>
             </div>
             <div className="w-full max-w-xs">
-              <Input placeholder={tr("Search (demo)", "بحث (تجريبي)")} className="border-white/10 bg-slate-950/40 text-white placeholder:text-slate-400" />
+              <Input placeholder={t("searchDemoPlaceholder")} className="border-white/10 bg-slate-950/40 text-white placeholder:text-slate-400" />
             </div>
           </div>
         </CardHeader>
@@ -42,11 +42,11 @@ export default function ProjectsPage() {
             <Table>
               <TableHeader>
                 <TableRow className="border-white/10 hover:bg-white/0">
-                  <TableHead className="text-slate-200">{tr("Project", "المشروع")}</TableHead>
+                  <TableHead className="text-slate-200">{t("project")}</TableHead>
                   <TableHead className="text-slate-200">{t("owner")}</TableHead>
                   <TableHead className="text-slate-200">{t("status")}</TableHead>
                   <TableHead className="text-slate-200">{t("health")}</TableHead>
-                  <TableHead className="text-right text-slate-200">{tr("Milestones", "المعالم")}</TableHead>
+                  <TableHead className="text-right text-slate-200">{t("milestones")}</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>

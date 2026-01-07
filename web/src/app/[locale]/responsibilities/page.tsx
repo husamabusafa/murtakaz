@@ -33,6 +33,8 @@ type DirectReport = {
   department: { id: string; name: string } | null;
 };
 
+type NodePickerItem = { id: string; name: string; parentId: string | null; color: string; nodeType: { displayName: string; code: string } };
+
 type NodeSearchRow = {
   id: string;
   name: string;
@@ -47,13 +49,13 @@ type KpiSearchRow = {
   id: string;
   name: string;
   unit: string | null;
-  primaryNode: { id: string; name: string; nodeType: { displayName: string } };
+  primaryNode: { id: string; name: string; nodeType: { displayName: string; code: string } };
 };
 
 type CurrentAssignments = {
   nodeAssignments: Array<{
     id: string;
-    rootNode: { id: string; name: string; color: string; nodeType: { displayName: string } };
+    rootNode: { id: string; name: string; color: string; nodeType: { displayName: string; code: string } };
     assignedBy: { id: string; name: string; role: string };
     createdAt: Date;
   }>;
@@ -63,7 +65,7 @@ type CurrentAssignments = {
       id: string;
       name: string;
       unit: string | null;
-      primaryNode: { id: string; name: string; nodeType: { displayName: string } };
+      primaryNode: { id: string; name: string; nodeType: { displayName: string; code: string } };
     };
     assignedBy: { id: string; name: string; role: string };
     createdAt: Date;
@@ -85,7 +87,7 @@ function initials(name: string) {
 
 export default function ResponsibilitiesPage() {
   const { user, loading: sessionLoading } = useAuth();
-  const { locale, tr, nodeTypeLabel } = useLocale();
+  const { t, locale, nodeTypeLabel } = useLocale();
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const userRole = (user as any)?.role as string | undefined;
@@ -100,7 +102,7 @@ export default function ResponsibilitiesPage() {
 
   const [mode, setMode] = useState<Mode>("node");
 
-  const [nodePickerNodes, setNodePickerNodes] = useState<Array<{ id: string; name: string; parentId: string | null; color: string; nodeType: { displayName: string } }>>([]);
+  const [nodePickerNodes, setNodePickerNodes] = useState<NodePickerItem[]>([]);
   const [selectedNodeId, setSelectedNodeId] = useState<string>("");
 
   const [kpiQuery, setKpiQuery] = useState("");
@@ -123,7 +125,7 @@ export default function ResponsibilitiesPage() {
         return;
       }
       const res = await getResponsibilitiesForUser({ assignedToId: reportId });
-      setAssignments(res);
+      setAssignments(res as unknown as CurrentAssignments);
     },
     [setAssignments],
   );
@@ -147,7 +149,7 @@ export default function ResponsibilitiesPage() {
         ]);
         if (!mounted) return;
         setReports(rows);
-        setNodePickerNodes(pickerNodes);
+        setNodePickerNodes(pickerNodes as unknown as NodePickerItem[]);
         const firstId = rows[0]?.id ?? "";
         setSelectedReportId(firstId);
         if (firstId) {
@@ -155,7 +157,7 @@ export default function ResponsibilitiesPage() {
         }
       } catch (e: unknown) {
         if (!mounted) return;
-        setError(e instanceof Error ? e.message : tr("Failed to load", "فشل التحميل"));
+        setError(e instanceof Error ? e.message : t("failedToLoad"));
       } finally {
         if (mounted) setLoading(false);
       }
@@ -164,13 +166,13 @@ export default function ResponsibilitiesPage() {
     return () => {
       mounted = false;
     };
-  }, [canUse, loadAssignments, sessionLoading, tr, user]);
+  }, [canUse, loadAssignments, sessionLoading, t, user]);
 
   useEffect(() => {
     if (!canUse) return;
     void (async () => {
       const rows = await searchAssignableKpis({ query: kpiQuery });
-      setKpiResults(rows);
+      setKpiResults(rows as unknown as KpiSearchRow[]);
     })();
   }, [canUse, kpiQuery]);
 
@@ -199,7 +201,7 @@ export default function ResponsibilitiesPage() {
       setCascade(null);
       await loadAssignments(selectedReportId);
     } catch (e: unknown) {
-      setError(e instanceof Error ? e.message : tr("Failed to assign", "فشل الإسناد"));
+      setError(e instanceof Error ? e.message : t("failedToSave"));
     } finally {
       setSubmitting(false);
     }
@@ -218,7 +220,7 @@ export default function ResponsibilitiesPage() {
       setSelectedKpis([]);
       await loadAssignments(selectedReportId);
     } catch (e: unknown) {
-      setError(e instanceof Error ? e.message : tr("Failed to assign", "فشل الإسناد"));
+      setError(e instanceof Error ? e.message : t("failedToSave"));
     } finally {
       setSubmitting(false);
     }
@@ -236,7 +238,7 @@ export default function ResponsibilitiesPage() {
       }
       await loadAssignments(selectedReportId);
     } catch (e: unknown) {
-      setError(e instanceof Error ? e.message : tr("Failed to remove", "فشل الإزالة"));
+      setError(e instanceof Error ? e.message : t("failedToSave"));
     } finally {
       setSubmitting(false);
     }
@@ -254,7 +256,7 @@ export default function ResponsibilitiesPage() {
       }
       await loadAssignments(selectedReportId);
     } catch (e: unknown) {
-      setError(e instanceof Error ? e.message : tr("Failed to remove", "فشل الإزالة"));
+      setError(e instanceof Error ? e.message : t("failedToSave"));
     } finally {
       setSubmitting(false);
     }
@@ -265,7 +267,7 @@ export default function ResponsibilitiesPage() {
       <div className="rounded-2xl border border-border bg-card p-8">
         <div className="flex items-center gap-2 text-sm text-muted-foreground">
           <Loader2 className="h-4 w-4 animate-spin" />
-          <span>{tr("Loading…", "جارٍ التحميل…")}</span>
+          <span>{t("loadingEllipsis")}</span>
         </div>
       </div>
     );
@@ -274,9 +276,9 @@ export default function ResponsibilitiesPage() {
   if (!user) {
     return (
       <div className="rounded-2xl border border-border bg-card p-8">
-        <p className="text-sm text-muted-foreground">{tr("No active session.", "لا توجد جلسة نشطة.")}</p>
+        <p className="text-sm text-muted-foreground">{t("noActiveSession")}</p>
         <Link href={`/${locale}/auth/login`} className="mt-3 inline-flex text-sm font-semibold text-primary hover:opacity-90">
-          {tr("Go to sign in", "الذهاب لتسجيل الدخول")}
+          {t("goToSignIn")}
         </Link>
       </div>
     );
@@ -285,9 +287,9 @@ export default function ResponsibilitiesPage() {
   if (!canUse) {
     return (
       <div className="rounded-2xl border border-border bg-card p-8">
-        <p className="text-sm text-muted-foreground">{tr("Unauthorized.", "غير مصرح.")}</p>
+        <p className="text-sm text-muted-foreground">{t("unauthorized")}</p>
         <Link href={`/${locale}/overview`} className="mt-3 inline-flex text-sm font-semibold text-primary hover:opacity-90">
-          {tr("Back", "رجوع")}
+          {t("back")}
         </Link>
       </div>
     );
@@ -296,11 +298,8 @@ export default function ResponsibilitiesPage() {
   return (
     <div className="space-y-8">
       <PageHeader
-        title={tr("Responsibilities", "المسؤوليات")}
-        subtitle={tr(
-          "Assign nodes (with cascading scope) or individual KPIs to your direct reports.",
-          "قم بإسناد العناصر (مع نطاق متسلسل) أو مؤشرات الأداء الرئيسية الفردية لموظفيك المباشرين.",
-        )}
+        title={t("responsibilities")}
+        subtitle={t("responsibilitiesSubtitle")}
         icon={<Icon name="tabler:user-check" className="h-5 w-5" />}
       />
 
@@ -311,12 +310,12 @@ export default function ResponsibilitiesPage() {
       <div className="grid gap-6 lg:grid-cols-3">
         <Card className="bg-card/70 backdrop-blur shadow-sm lg:col-span-1">
           <CardHeader>
-            <CardTitle className="text-base">{tr("Choose a user", "اختر مستخدم")}</CardTitle>
-            <CardDescription>{tr("You can only assign to direct reports.", "يمكنك الإسناد فقط للموظفين المباشرين.")}</CardDescription>
+            <CardTitle className="text-base">{t("chooseUser")}</CardTitle>
+            <CardDescription>{t("onlyAssignToDirectReportsDesc")}</CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">
             <div className="space-y-2">
-              <Label>{tr("Direct report", "الموظف المباشر")}</Label>
+              <Label>{t("directReport")}</Label>
               <Select
                 value={selectedReportId}
                 onValueChange={async (id) => {
@@ -328,7 +327,7 @@ export default function ResponsibilitiesPage() {
                 }}
               >
                 <SelectTrigger className="bg-card">
-                  <SelectValue placeholder={tr("Select user", "اختر مستخدم")} />
+                  <SelectValue placeholder={t("selectUser")} />
                 </SelectTrigger>
                 <SelectContent>
                   {reports.map((r) => (
@@ -365,7 +364,7 @@ export default function ResponsibilitiesPage() {
                   setSelectedKpis([]);
                 }}
               >
-                {tr("Assign item", "إسناد عنصر")}
+                {t("assignItem")}
               </Button>
               <Button
                 variant={mode === "kpi" ? "default" : "outline"}
@@ -375,15 +374,15 @@ export default function ResponsibilitiesPage() {
                   setCascade(null);
                 }}
               >
-                {tr("Assign KPIs", "إسناد مؤشرات أداء رئيسية")}
+                {t("assignKpis")}
               </Button>
             </div>
 
             <div className="rounded-xl border border-border bg-muted/20 p-4 text-xs text-muted-foreground">
-              <p className="font-semibold text-foreground">{tr("Tip", "معلومة")}</p>
+              <p className="font-semibold text-foreground">{t("tip")}</p>
               <div className="mt-2 space-y-2">
-                <p>{tr("Item assignment cascades to all child items and all KPIs under them (including future ones).", "إسناد العنصر يتسلسل لكل العناصر الفرعية وجميع مؤشرات الأداء الرئيسية تحتها (بما في ذلك المستقبلية).")}</p>
-                <p>{tr("KPI assignment assigns only selected KPIs.", "إسناد مؤشرات الأداء الرئيسية يقتصر على المحددة فقط.")}</p>
+                <p>{t("itemAssignmentCascadeHelp")}</p>
+                <p>{t("kpiAssignmentHelp")}</p>
               </div>
             </div>
           </CardContent>
@@ -391,18 +390,18 @@ export default function ResponsibilitiesPage() {
 
         <Card className="bg-card/70 backdrop-blur shadow-sm lg:col-span-2">
           <CardHeader>
-            <CardTitle className="text-base">{mode === "node" ? tr("Select an item", "اختر عنصرًا") : tr("Select KPIs", "اختر مؤشرات أداء رئيسية")}</CardTitle>
+            <CardTitle className="text-base">{mode === "node" ? t("selectAnItem") : t("selectKpis")}</CardTitle>
             <CardDescription>
               {mode === "node"
-                ? tr("Pick an item and preview the cascading scope before confirming.", "اختر عنصرًا وعاين نطاق التسلسل قبل التأكيد.")
-                : tr("Search and add KPIs, then assign them in one action.", "ابحث وأضف مؤشرات أداء رئيسية، ثم قم بإسنادها دفعة واحدة.")}
+                ? t("pickAndPreviewCascadeDesc")
+                : t("searchAndAddKpisDesc")}
             </CardDescription>
           </CardHeader>
           <CardContent className="space-y-5">
             {mode === "node" ? (
               <div className="space-y-3">
                 <div className="space-y-2">
-                  <Label>{tr("Linked node", "العنصر")}</Label>
+                  <Label>{t("linkedNode")}</Label>
                   <NodePickerTree
                     nodes={nodePickerNodes}
                     selectedId={selectedNodeId || null}
@@ -421,14 +420,14 @@ export default function ResponsibilitiesPage() {
                         name: found.name,
                         color: found.color,
                         parentId: found.parentId,
-                        nodeType: { code: "", displayName: found.nodeType.displayName, levelOrder: 0 },
+                        nodeType: { code: found.nodeType.code, displayName: found.nodeType.displayName, levelOrder: 0 },
                         parent: null,
                         _count: { children: 0, kpis: 0 },
                       });
                     }}
-                    searchPlaceholder={tr("Search nodes…", "ابحث في العناصر…")}
-                    clearLabel={tr("Clear", "مسح")}
-                    typeFallbackLabel={tr("Type", "النوع")}
+                    searchPlaceholder={t("searchNodesPlaceholder")}
+                    clearLabel={t("clear")}
+                    typeFallbackLabel={t("type")}
                     heightClassName="h-[360px]"
                     variant="light"
                     showClear={false}
@@ -439,18 +438,18 @@ export default function ResponsibilitiesPage() {
             ) : (
               <div className="space-y-4">
                 <div className="space-y-2">
-                  <Label>{tr("Search KPIs", "بحث مؤشرات الأداء الرئيسية")}</Label>
+                  <Label>{t("searchKpis")}</Label>
                   <Input
                     value={kpiQuery}
                     onChange={(e) => setKpiQuery(e.target.value)}
-                    placeholder={tr("Type a name…", "اكتب اسمًا…")}
+                    placeholder={t("typeANamePlaceholder")}
                     className="bg-card"
                   />
                 </div>
 
                 {selectedKpis.length ? (
                   <div className="rounded-xl border border-border bg-muted/20 p-3">
-                    <p className="text-xs font-semibold text-foreground">{tr("Selected", "المختار")}</p>
+                    <p className="text-xs font-semibold text-foreground">{t("selected")}</p>
                     <div className="mt-2 flex flex-wrap gap-2">
                       {selectedKpis.map((k) => (
                         <span key={k.id} className="inline-flex items-center gap-2 rounded-full border border-border bg-background/60 px-3 py-1 text-xs">
@@ -459,7 +458,7 @@ export default function ResponsibilitiesPage() {
                             type="button"
                             className="text-muted-foreground hover:text-foreground"
                             onClick={() => setSelectedKpis((prev) => prev.filter((x) => x.id !== k.id))}
-                            aria-label={tr("Remove", "إزالة")}
+                            aria-label={t("remove")}
                           >
                             <Trash2 className="h-3.5 w-3.5" />
                           </button>
@@ -492,7 +491,7 @@ export default function ResponsibilitiesPage() {
                             setSelectedKpis((prev) => [...prev, k]);
                           }}
                         >
-                          {isSelected ? tr("Remove", "إزالة") : tr("Add", "إضافة")}
+                          {isSelected ? t("remove") : t("add")}
                         </Button>
                       </div>
                     );
@@ -500,7 +499,7 @@ export default function ResponsibilitiesPage() {
 
                   {kpiResults.length === 0 ? (
                     <div className="rounded-xl border border-dashed border-border bg-muted/10 p-6 text-sm text-muted-foreground">
-                      {tr("No KPIs found.", "لا توجد نتائج.")}
+                      {t("noKpisFound")}
                     </div>
                   ) : null}
                 </div>
@@ -508,7 +507,7 @@ export default function ResponsibilitiesPage() {
                 <div className="flex justify-end">
                   <Button onClick={() => void applyKpiAssignment()} disabled={!selectedReportId || selectedKpis.length === 0 || submitting}>
                     {submitting ? <Loader2 className="me-2 h-4 w-4 animate-spin" /> : <Plus className="me-2 h-4 w-4" />}
-                    {tr("Assign selected KPIs", "إسناد مؤشرات الأداء الرئيسية المختارة")}
+                    {t("assignSelectedKpis")}
                   </Button>
                 </div>
               </div>
@@ -519,13 +518,13 @@ export default function ResponsibilitiesPage() {
 
       <Card className="bg-card/70 backdrop-blur shadow-sm">
         <CardHeader>
-          <CardTitle className="text-base">{tr("Current responsibilities", "المسؤوليات الحالية")}</CardTitle>
-          <CardDescription>{tr("These are the responsibilities you have assigned to this direct report.", "هذه هي المسؤوليات التي قمت بإسنادها لهذا الموظف المباشر.")}</CardDescription>
+          <CardTitle className="text-base">{t("currentResponsibilities")}</CardTitle>
+          <CardDescription>{t("assignedToDirectReportDesc")}</CardDescription>
         </CardHeader>
         <CardContent className="space-y-6">
           {!selectedReportId ? (
             <div className="rounded-xl border border-dashed border-border bg-muted/10 p-6 text-sm text-muted-foreground">
-              {tr("Select a direct report to view responsibilities.", "اختر موظفًا مباشرًا لعرض المسؤوليات.")}
+              {t("selectReportToViewDesc")}
             </div>
           ) : null}
 
@@ -533,7 +532,7 @@ export default function ResponsibilitiesPage() {
             <div className="grid gap-6 lg:grid-cols-2">
               <div className="space-y-3">
                 <div className="flex items-center justify-between">
-                  <p className="text-sm font-semibold">{tr("Item responsibilities", "مسؤوليات العناصر")}</p>
+                  <p className="text-sm font-semibold">{t("itemResponsibilities")}</p>
                   <Badge variant="outline" className="border-border bg-muted/30">
                     {assignments?.nodeAssignments.length ?? 0}
                   </Badge>
@@ -551,7 +550,7 @@ export default function ResponsibilitiesPage() {
                           </Badge>
                         </div>
                         <p className="mt-1 text-xs text-muted-foreground">
-                          {tr("Assigned by", "أُسند بواسطة")}: {a.assignedBy.name} ({a.assignedBy.role})
+                          {t("assignedBy")}: {a.assignedBy.name} ({a.assignedBy.role})
                         </p>
                       </div>
                       <Button
@@ -567,7 +566,7 @@ export default function ResponsibilitiesPage() {
 
                   {(assignments?.nodeAssignments.length ?? 0) === 0 ? (
                     <div className="rounded-xl border border-dashed border-border bg-muted/10 p-6 text-sm text-muted-foreground">
-                      {tr("No node responsibilities assigned.", "لا توجد مسؤوليات عناصر.")}
+                      {t("noNodeResponsibilitiesDesc")}
                     </div>
                   ) : null}
                 </div>
@@ -575,7 +574,7 @@ export default function ResponsibilitiesPage() {
 
               <div className="space-y-3">
                 <div className="flex items-center justify-between">
-                  <p className="text-sm font-semibold">{tr("KPI responsibilities", "مسؤوليات مؤشرات الأداء الرئيسية")}</p>
+                  <p className="text-sm font-semibold">{t("kpiResponsibilities")}</p>
                   <Badge variant="outline" className="border-border bg-muted/30">
                     {assignments?.kpiAssignments.length ?? 0}
                   </Badge>
@@ -591,7 +590,7 @@ export default function ResponsibilitiesPage() {
                           {a.kpi.unit ? ` • ${a.kpi.unit}` : ""}
                         </p>
                         <p className="mt-2 text-xs text-muted-foreground">
-                          {tr("Assigned by", "أُسند بواسطة")}: {a.assignedBy.name} ({a.assignedBy.role})
+                          {t("assignedBy")}: {a.assignedBy.name} ({a.assignedBy.role})
                         </p>
                       </div>
                       <Button
@@ -607,7 +606,7 @@ export default function ResponsibilitiesPage() {
 
                   {(assignments?.kpiAssignments.length ?? 0) === 0 ? (
                     <div className="rounded-xl border border-dashed border-border bg-muted/10 p-6 text-sm text-muted-foreground">
-                      {tr("No KPI responsibilities assigned.", "لا توجد مسؤوليات مؤشرات أداء رئيسية.")}
+                      {t("noKpiResponsibilitiesDesc")}
                     </div>
                   ) : null}
                 </div>
@@ -620,12 +619,9 @@ export default function ResponsibilitiesPage() {
       <Dialog open={cascadeOpen} onOpenChange={setCascadeOpen}>
         <DialogContent className="sm:max-w-[640px]">
           <DialogHeader>
-            <DialogTitle>{tr("Confirm node assignment", "تأكيد إسناد العنصر")}</DialogTitle>
+            <DialogTitle>{t("confirmNodeAssignment")}</DialogTitle>
             <DialogDescription>
-              {tr(
-                "This will cascade responsibility to all child nodes and all KPIs under them.",
-                "سيتم تسلسل المسؤولية لكل العناصر الفرعية وجميع مؤشرات الأداء الرئيسية تحتها.",
-              )}
+              {t("cascadeResponsibilityHelp")}
             </DialogDescription>
           </DialogHeader>
 
@@ -645,21 +641,21 @@ export default function ResponsibilitiesPage() {
             {!cascade ? (
               <div className="flex items-center gap-2 text-sm text-muted-foreground">
                 <Loader2 className="h-4 w-4 animate-spin" />
-                <span>{tr("Building cascade preview…", "جارٍ تجهيز المعاينة…")}</span>
+                <span>{t("buildingCascadePreview")}</span>
               </div>
             ) : (
               <div className="grid gap-4 sm:grid-cols-2">
                 <div className="rounded-xl border border-border bg-background/50 p-4">
-                  <p className="text-xs font-semibold text-muted-foreground">{tr("Nodes in scope", "العناصر ضمن النطاق")}</p>
+                  <p className="text-xs font-semibold text-muted-foreground">{t("nodesInScope")}</p>
                   <p className="mt-2 text-2xl font-semibold">{cascade.counts.nodes}</p>
                 </div>
                 <div className="rounded-xl border border-border bg-background/50 p-4">
-                  <p className="text-xs font-semibold text-muted-foreground">{tr("KPIs in scope", "مؤشرات الأداء الرئيسية ضمن النطاق")}</p>
+                  <p className="text-xs font-semibold text-muted-foreground">{t("kpisInScope")}</p>
                   <p className="mt-2 text-2xl font-semibold">{cascade.counts.kpis}</p>
                 </div>
 
                 <div className="sm:col-span-2 rounded-xl border border-border bg-muted/20 p-4">
-                  <p className="text-xs font-semibold text-foreground">{tr("Sample KPIs", "أمثلة على مؤشرات الأداء الرئيسية")}</p>
+                  <p className="text-xs font-semibold text-foreground">{t("sampleKpis")}</p>
                   <div className="mt-3 space-y-2">
                     {cascade.sampleKpis.length ? (
                       cascade.sampleKpis.map((k) => (
@@ -671,7 +667,7 @@ export default function ResponsibilitiesPage() {
                         </div>
                       ))
                     ) : (
-                      <p className="text-sm text-muted-foreground">{tr("No KPIs under this node.", "لا توجد مؤشرات أداء رئيسية تحت هذا العنصر.")}</p>
+                      <p className="text-sm text-muted-foreground">{t("noKpisUnderNode")}</p>
                     )}
                   </div>
                 </div>
@@ -689,11 +685,11 @@ export default function ResponsibilitiesPage() {
               }}
               disabled={submitting}
             >
-              {tr("Cancel", "إلغاء")}
+              {t("cancel")}
             </Button>
             <Button onClick={() => void applyNodeAssignment()} disabled={!cascadeNode || submitting}>
               {submitting ? <Loader2 className="me-2 h-4 w-4 animate-spin" /> : null}
-              {tr("Confirm assignment", "تأكيد الإسناد")}
+              {t("confirmAssignment")}
             </Button>
           </DialogFooter>
         </DialogContent>

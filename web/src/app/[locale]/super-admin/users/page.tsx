@@ -19,7 +19,7 @@ import type { User, Organization, Role } from "@prisma/client";
 const roles: Role[] = ["SUPER_ADMIN", "ADMIN", "EXECUTIVE", "PMO", "MANAGER", "EMPLOYEE"] as Role[];
 
 export default function UsersManagementPage() {
-  const { tr, locale } = useLocale();
+  const { t, locale } = useLocale();
   const router = useRouter();
 
   const [users, setUsers] = useState<(User & { org: Organization })[]>([]);
@@ -59,7 +59,7 @@ export default function UsersManagementPage() {
   async function handleCreate(e: React.FormEvent) {
     e.preventDefault();
     if (!newUser.orgId) {
-      alert("Please select an organization");
+      alert(t("selectOrganization"));
       return;
     }
 
@@ -78,7 +78,7 @@ export default function UsersManagementPage() {
         loadData();
         router.refresh();
       } else {
-        alert(result.error || "Failed to create user");
+        alert(result.error || t("failedToCreateUser"));
       }
     } catch (error) {
       console.error(error);
@@ -92,27 +92,27 @@ export default function UsersManagementPage() {
     <div className="space-y-8">
       <div className="flex items-center justify-between">
         <PageHeader
-          title={tr("Users", "المستخدمون")}
-          subtitle={tr("Manage users, roles, and organization assignment.", "إدارة المستخدمين والأدوار وتعيين الجهات.")}
+          title={t("users")}
+          subtitle={t("superAdminUsersSubtitle")}
         />
 
         <Dialog open={createOpen} onOpenChange={setCreateOpen}>
           <DialogTrigger asChild>
             <Button>
               <Plus className="me-2 h-4 w-4" />
-              {tr("New User", "مستخدم جديد")}
+              {t("newUser")}
             </Button>
           </DialogTrigger>
           <DialogContent className="max-h-[90vh] overflow-y-auto border-border bg-card text-foreground">
             <DialogHeader>
-              <DialogTitle>{tr("Create User", "إنشاء مستخدم")}</DialogTitle>
+              <DialogTitle>{t("createUser")}</DialogTitle>
               <DialogDescription className="text-muted-foreground">
-                {tr("Add a new user to an organization.", "إضافة مستخدم جديد إلى جهة.")}
+                {t("addUserToOrgDesc")}
               </DialogDescription>
             </DialogHeader>
             <form onSubmit={handleCreate} className="space-y-4">
               <div className="space-y-2">
-                <Label htmlFor="name">{tr("Full Name", "الاسم الكامل")}</Label>
+                <Label htmlFor="name">{t("fullName")}</Label>
                 <Input
                   id="name"
                   value={newUser.name}
@@ -124,7 +124,7 @@ export default function UsersManagementPage() {
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor="email">{tr("Email", "البريد الإلكتروني")}</Label>
+                <Label htmlFor="email">{t("email")}</Label>
                 <Input
                   id="email"
                   type="email"
@@ -137,7 +137,7 @@ export default function UsersManagementPage() {
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor="password">{tr("Password", "كلمة المرور")}</Label>
+                <Label htmlFor="password">{t("password")}</Label>
                 <Input
                   id="password"
                   type="password"
@@ -151,10 +151,10 @@ export default function UsersManagementPage() {
               </div>
 
               <div className="space-y-2">
-                <Label>{tr("Organization", "الجهة")}</Label>
+                <Label>{t("organization")}</Label>
                 <Select value={newUser.orgId} onValueChange={(val) => setNewUser({ ...newUser, orgId: val })}>
                   <SelectTrigger className="bg-card">
-                    <SelectValue placeholder={tr("Select Organization", "اختر الجهة")} />
+                    <SelectValue placeholder={t("selectOrganization")} />
                   </SelectTrigger>
                   <SelectContent>
                     {orgs.map((org) => (
@@ -167,10 +167,10 @@ export default function UsersManagementPage() {
               </div>
 
               <div className="space-y-2">
-                <Label>{tr("Role", "الدور")}</Label>
+                <Label>{t("role")}</Label>
                 <Select value={newUser.role} onValueChange={(val) => setNewUser({ ...newUser, role: val as Role })}>
                   <SelectTrigger className="bg-card">
-                    <SelectValue placeholder={tr("Select Role", "اختر الدور")} />
+                    <SelectValue placeholder={t("selectRole")} />
                   </SelectTrigger>
                   <SelectContent>
                     {roles.map((role) => (
@@ -184,10 +184,10 @@ export default function UsersManagementPage() {
 
               <DialogFooter>
                 <Button type="button" variant="ghost" onClick={() => setCreateOpen(false)}>
-                  {tr("Cancel", "إلغاء")}
+                  {t("cancel")}
                 </Button>
                 <Button type="submit" disabled={submitting}>
-                  {submitting ? tr("Creating...", "جارٍ الإنشاء...") : tr("Create", "إنشاء")}
+                  {submitting ? t("creating") : t("create")}
                 </Button>
               </DialogFooter>
             </form>
@@ -197,9 +197,9 @@ export default function UsersManagementPage() {
 
       <Card className="bg-card/70 backdrop-blur shadow-sm">
         <CardHeader>
-          <CardTitle className="text-base">{tr("User Directory", "دليل المستخدمين")}</CardTitle>
+          <CardTitle className="text-base">{t("userDirectory")}</CardTitle>
           <CardDescription>
-            {tr("View and manage users across all organizations.", "عرض وإدارة المستخدمين في جميع الجهات.")}
+            {t("userDirectoryAllOrgsDesc")}
           </CardDescription>
         </CardHeader>
         <CardContent>
@@ -207,23 +207,23 @@ export default function UsersManagementPage() {
             <Table>
               <TableHeader>
                 <TableRow>
-                  <TableHead>{tr("User", "المستخدم")}</TableHead>
-                  <TableHead>{tr("Organization", "الجهة")}</TableHead>
-                  <TableHead>{tr("Role", "الدور")}</TableHead>
-                  <TableHead className="text-right">{tr("Joined", "تاريخ الانضمام")}</TableHead>
+                  <TableHead>{t("user")}</TableHead>
+                  <TableHead>{t("organization")}</TableHead>
+                  <TableHead>{t("role")}</TableHead>
+                  <TableHead className="text-right">{t("joined")}</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
                 {loading ? (
                   <TableRow>
                     <TableCell colSpan={4} className="py-8 text-center text-muted-foreground">
-                      {tr("Loading...", "جارٍ التحميل...")}
+                      {t("loadingEllipsis")}
                     </TableCell>
                   </TableRow>
                 ) : users.length === 0 ? (
                   <TableRow>
                     <TableCell colSpan={4} className="py-8 text-center text-muted-foreground">
-                      {tr("No users found.", "لا يوجد مستخدمين.")}
+                      {t("noUsersFound")}
                     </TableCell>
                   </TableRow>
                 ) : (

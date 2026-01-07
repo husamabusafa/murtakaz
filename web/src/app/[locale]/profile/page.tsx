@@ -13,7 +13,7 @@ import { useEffect, useState } from "react";
 
 export default function ProfilePage() {
   const { user, loading, signOut } = useAuth();
-  const { locale, tr } = useLocale();
+  const { locale, t } = useLocale();
 
   const [profile, setProfile] = useState<Awaited<ReturnType<typeof getMyProfile>> | null>(null);
   const [profileLoading, setProfileLoading] = useState(false);
@@ -45,7 +45,7 @@ export default function ProfilePage() {
   if (loading) {
     return (
       <div className="rounded-2xl border border-white/10 bg-white/5 p-8 text-white">
-        <p className="text-sm text-slate-200">{tr("Loading…", "جارٍ التحميل…")}</p>
+        <p className="text-sm text-slate-200">{t("loading")}</p>
       </div>
     );
   }
@@ -53,9 +53,9 @@ export default function ProfilePage() {
   if (!user) {
     return (
       <div className="rounded-2xl border border-white/10 bg-white/5 p-8 text-white">
-        <p className="text-sm text-slate-200">{tr("No active session.", "لا توجد جلسة نشطة.")}</p>
-        <Link href={`/${locale}/auth/login`} className="mt-3 inline-flex text-sm font-semibold text-indigo-200 hover:text-indigo-100">
-          {tr("Go to sign in", "الذهاب لتسجيل الدخول")}
+        <p className="text-sm text-slate-200">{t("noActiveSession")}</p>
+        <Link href={`/${locale}/auth/login`} className="mt-3 inline-flex text-sm font-semibold text-primary hover:opacity-90">
+          {t("goToSignIn")}
         </Link>
       </div>
     );
@@ -78,18 +78,18 @@ export default function ProfilePage() {
   return (
     <div className="space-y-8">
       <PageHeader
-        title={tr("Profile", "الملف الشخصي")}
-        subtitle={tr("Your account info and organization scope.", "معلومات حسابك ونطاق الجهة.")}
+        title={t("profile")}
+        subtitle={t("profileSubtitle")}
         actions={
           <Button variant="destructive" onClick={() => void signOut()}>
-            {tr("Logout", "تسجيل الخروج")}
+            {t("logout")}
           </Button>
         }
       />
 
       {profileLoading ? (
         <div className="rounded-2xl border border-white/10 bg-white/5 p-6 text-white">
-          <p className="text-sm text-slate-200">{tr("Loading profile…", "جارٍ تحميل الملف…")}</p>
+          <p className="text-sm text-slate-200">{t("loadingProfile")}</p>
         </div>
       ) : null}
 
@@ -113,19 +113,19 @@ export default function ProfilePage() {
           </CardHeader>
           <CardContent className="space-y-3 text-sm text-slate-100">
             <div className="rounded-xl border border-white/10 bg-slate-950/40 px-4 py-3">
-              <p className="text-xs font-semibold uppercase tracking-wide text-slate-200">{tr("Email", "البريد الإلكتروني")}</p>
+              <p className="text-xs font-semibold uppercase tracking-wide text-slate-200">{t("email")}</p>
               <p className="mt-1 text-white">{pUser?.email ?? "—"}</p>
             </div>
             <div className="rounded-xl border border-white/10 bg-slate-950/40 px-4 py-3">
-              <p className="text-xs font-semibold uppercase tracking-wide text-slate-200">{tr("Role", "الدور")}</p>
+              <p className="text-xs font-semibold uppercase tracking-wide text-slate-200">{t("role")}</p>
               <p className="mt-1 text-white">{pUser?.role ?? "—"}</p>
             </div>
             <div className="rounded-xl border border-white/10 bg-slate-950/40 px-4 py-3">
-              <p className="text-xs font-semibold uppercase tracking-wide text-slate-200">{tr("Title", "المسمى الوظيفي")}</p>
+              <p className="text-xs font-semibold uppercase tracking-wide text-slate-200">{t("title")}</p>
               <p className="mt-1 text-white">{pUser?.title ?? "—"}</p>
             </div>
             <div className="rounded-xl border border-white/10 bg-slate-950/40 px-4 py-3">
-              <p className="text-xs font-semibold uppercase tracking-wide text-slate-200">{tr("Department", "الإدارة")}</p>
+              <p className="text-xs font-semibold uppercase tracking-wide text-slate-200">{t("department")}</p>
               <p className="mt-1 text-white">{pDept?.name ?? "—"}</p>
             </div>
           </CardContent>
@@ -133,17 +133,17 @@ export default function ProfilePage() {
 
         <Card className="border-white/10 bg-white/5 text-white shadow-lg shadow-black/20 lg:col-span-2">
           <CardHeader>
-            <CardTitle className="text-base">{tr("Organization", "الجهة")}</CardTitle>
-            <CardDescription className="text-slate-200">{tr("Your organization and reporting line.", "معلومات الجهة وخط الإشراف.")}</CardDescription>
+            <CardTitle className="text-base">{t("organization")}</CardTitle>
+            <CardDescription className="text-slate-200">{t("orgAndReportingLineDesc")}</CardDescription>
           </CardHeader>
           <CardContent className="space-y-4 text-sm text-slate-100">
             <div className="rounded-xl border border-white/10 bg-slate-950/40 px-4 py-3">
-              <p className="text-xs font-semibold uppercase tracking-wide text-slate-200">{tr("Organization", "الجهة")}</p>
+              <p className="text-xs font-semibold uppercase tracking-wide text-slate-200">{t("organization")}</p>
               <p className="mt-1 text-white">{pOrg?.name ?? "—"}</p>
               <p className="mt-1 text-xs text-slate-200">{pOrg?.domain ?? "—"}</p>
             </div>
             <div className="rounded-xl border border-white/10 bg-slate-950/40 px-4 py-3">
-              <p className="text-xs font-semibold uppercase tracking-wide text-slate-200">{tr("Manager", "المدير المباشر")}</p>
+              <p className="text-xs font-semibold uppercase tracking-wide text-slate-200">{t("directManager")}</p>
               <p className="mt-1 text-white">{pManager?.name ?? "—"}</p>
               <p className="mt-1 text-xs text-slate-200">
                 {pManager?.title ? `${pManager.title} • ` : ""}
@@ -156,13 +156,13 @@ export default function ProfilePage() {
                 href={`/${locale}/super-admin/users`}
                 className="inline-flex items-center justify-center rounded-xl bg-white px-4 py-3 text-sm font-semibold text-slate-900 transition hover:bg-slate-100"
               >
-                {tr("Manage users", "إدارة المستخدمين")}
+                {t("manageUsers")}
               </Link>
             ) : (
               <div className="rounded-xl border border-white/10 bg-slate-950/40 px-4 py-3">
-                <p className="font-semibold text-white">{tr("Session", "الجلسة")}</p>
+                <p className="font-semibold text-white">{t("session")}</p>
                 <p className="mt-1 text-xs text-slate-200">
-                  {tr("Session expires at:", "تنتهي الجلسة في:")}{" "}
+                  {t("sessionExpiresAt")}{" "}
                   {profile?.session?.expiresAt ? new Date(profile.session.expiresAt).toLocaleString() : "—"}
                 </p>
               </div>

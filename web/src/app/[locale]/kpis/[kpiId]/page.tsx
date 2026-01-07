@@ -28,7 +28,7 @@ import { Loader2 } from "lucide-react";
 
 export default function KPIDetailPage() {
   const params = useParams<{ kpiId: string }>();
-  const { locale, tr, kpiValueStatusLabel } = useLocale();
+  const { t, locale, kpiValueStatusLabel, formatDate, formatNumber, df } = useLocale();
   const { user, loading: sessionLoading } = useAuth();
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -131,12 +131,12 @@ export default function KPIDetailPage() {
             symbol: "none",
             lineStyle: { color: "rgba(52,211,153,0.55)", type: "dashed" },
             label: { color: "rgba(226,232,240,0.75)" },
-            data: [{ yAxis: kpi?.targetValue ?? 0, name: "Target" }],
+            data: [{ yAxis: kpi?.targetValue ?? 0, name: t("target") }],
           },
         },
       ],
     };
-  }, [kpi?.targetValue, kpi?.values]);
+  }, [kpi?.targetValue, kpi?.values, t]);
 
   function buildPayload() {
     if (!kpi) return null;
@@ -322,7 +322,7 @@ export default function KPIDetailPage() {
   if (loading) {
     return (
       <div className="rounded-2xl border border-white/10 bg-white/5 p-8 text-white">
-        <p className="text-sm text-slate-200">{tr("Loading…", "جارٍ التحميل…")}</p>
+        <p className="text-sm text-slate-200">{t("loadingEllipsis")}</p>
       </div>
     );
   }
@@ -330,9 +330,9 @@ export default function KPIDetailPage() {
   if (!kpi) {
     return (
       <div className="rounded-2xl border border-white/10 bg-white/5 p-8 text-white">
-        <p className="text-sm text-slate-200">{tr("KPI not found.", "مؤشر الأداء الرئيسي غير موجود.")}</p>
+        <p className="text-sm text-slate-200">{t("kpiNotFound")}</p>
         <Link href={`/${locale}/kpis`} className="mt-3 inline-flex text-sm font-semibold text-indigo-200 hover:text-indigo-100">
-          {tr("Back to KPIs", "العودة إلى مؤشرات الأداء الرئيسية")}
+          {t("backToKpis")}
         </Link>
       </div>
     );
@@ -341,8 +341,8 @@ export default function KPIDetailPage() {
   return (
     <div className="space-y-8">
       <PageHeader
-        title={kpi.name}
-        subtitle={`${tr("Linked to", "مرتبط بـ")}: ${(kpi.primaryNode?.nodeType?.displayName ?? tr("Type", "النوع"))} • ${kpi.primaryNode?.name ?? "—"}`}
+        title={df(kpi.name, kpi.nameAr)}
+        subtitle={`${t("linkedTo")}: ${df(kpi.primaryNode?.nodeType?.displayName, kpi.primaryNode?.nodeType?.nameAr) || t("type")} • ${df(kpi.primaryNode?.name, kpi.primaryNode?.nameAr) || "—"}`}
         icon={<Icon name="tabler:chart-line" className="h-5 w-5" />}
       />
 
@@ -353,23 +353,23 @@ export default function KPIDetailPage() {
               <div>
                 <CardTitle className="flex items-center gap-2 text-base">
                   <Icon name="tabler:target-arrow" className="h-4 w-4 text-slate-100" />
-                  {tr("Current vs target", "الحالي مقابل المستهدف")}
+                  {t("currentVsTarget")}
                 </CardTitle>
-                <CardDescription className="text-slate-200">{tr("At-a-glance KPI performance.", "نظرة سريعة على أداء مؤشر الأداء الرئيسي.")}</CardDescription>
+                <CardDescription className="text-slate-200">{t("atAGlanceKpiPerformanceDesc")}</CardDescription>
               </div>
               {canAdmin ? (
                 <div className="flex items-center gap-2">
                   <Button asChild className="bg-white/10 text-white hover:bg-white/15">
-                    <Link href={`/${locale}/kpis/${kpi.id}/edit`}>{tr("Edit", "تعديل")}</Link>
+                    <Link href={`/${locale}/kpis/${kpi.id}/edit`}>{t("edit")}</Link>
                   </Button>
                   <Button variant="destructive" onClick={() => setDeleteOpen(true)} disabled={submitting}>
                     {submitting ? (
                       <span className="inline-flex items-center gap-2">
                         <Loader2 className="h-4 w-4 animate-spin" />
-                        {tr("Working…", "جارٍ التنفيذ…")}
+                        {t("working")}
                       </span>
                     ) : (
-                      tr("Delete", "حذف")
+                      t("delete")
                     )}
                   </Button>
                 </div>
@@ -378,22 +378,22 @@ export default function KPIDetailPage() {
           </CardHeader>
           <CardContent className="space-y-4">
             <div className="rounded-xl border border-white/10 bg-slate-950/40 px-3 py-3">
-              <KpiGauge value={currentValue} target={kpi.targetValue} unit={kpi.unit ?? undefined} height={190} />
+              <KpiGauge value={currentValue} target={kpi.targetValue} unit={df(kpi.unit, kpi.unitAr) || undefined} height={190} />
             </div>
 
             <div className="grid gap-3">
               <div className="rounded-xl border border-white/10 bg-slate-950/40 px-4 py-3">
-                <p className="text-xs text-slate-200">{tr("Current", "الحالي")}</p>
+                <p className="text-xs text-slate-200">{t("current")}</p>
                 <p className="text-2xl font-semibold text-white" dir="ltr">
-                  {currentValue ?? "—"}
-                  {kpi.unit ?? ""}
+                  {formatNumber(currentValue)}
+                  {df(kpi.unit, kpi.unitAr)}
                 </p>
               </div>
               <div className="rounded-xl border border-white/10 bg-slate-950/40 px-4 py-3">
-                <p className="text-xs text-slate-200">{tr("Target", "المستهدف")}</p>
+                <p className="text-xs text-slate-200">{t("target")}</p>
                 <p className="text-2xl font-semibold text-white" dir="ltr">
-                  {kpi.targetValue ?? "—"}
-                  {kpi.unit ?? ""}
+                  {formatNumber(kpi.targetValue)}
+                  {df(kpi.unit, kpi.unitAr)}
                 </p>
               </div>
             </div>
@@ -404,9 +404,9 @@ export default function KPIDetailPage() {
           <CardHeader>
             <CardTitle className="flex items-center gap-2 text-base">
               <Icon name="tabler:chart-line" className="h-4 w-4 text-slate-100" />
-              {tr("Trend", "الاتجاه")}
+              {t("trend")}
             </CardTitle>
-            <CardDescription className="text-slate-200">{tr("Latest periods.", "آخر الفترات.")}</CardDescription>
+            <CardDescription className="text-slate-200">{t("latestPeriods")}</CardDescription>
           </CardHeader>
           <CardContent>
             <div className="rounded-xl border border-white/10 bg-slate-950/40 px-4 py-4">
@@ -420,42 +420,39 @@ export default function KPIDetailPage() {
         <CardHeader>
           <CardTitle className="flex items-center gap-2 text-base">
             <Icon name="tabler:edit" className="h-4 w-4 text-slate-100" />
-            {tr("Update inputs", "تحديث المدخلات")}
+            {t("updateInputs")}
           </CardTitle>
           <CardDescription className="text-slate-200">
-            {kpi.formula ? tr("Calculated using formula.", "يتم الاحتساب باستخدام المعادلة.") : tr("Formula is empty: the result is the sum of inputs.", "المعادلة فارغة: النتيجة هي مجموع المدخلات.")}
+            {kpi.formula ? t("calculatedUsingFormulaDesc") : t("formulaEmptyDesc")}
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
           <div className="rounded-xl border border-white/10 bg-slate-950/40 px-4 py-3 text-sm text-slate-100">
-            <p className="text-xs font-semibold uppercase tracking-wide text-slate-200">{tr("Status", "الحالة")}</p>
+            <p className="text-xs font-semibold uppercase tracking-wide text-slate-200">{t("status")}</p>
             <p className="mt-1">{kpiValueStatusLabel(periodStatus)}</p>
             {data?.currentPeriod?.changesRequestedMessage ? (
               <div className="mt-3 rounded-lg border border-orange-500/30 bg-orange-500/10 px-3 py-2">
-                <p className="text-xs font-semibold text-orange-100">{tr("Requested changes", "التعديلات المطلوبة")}</p>
+                <p className="text-xs font-semibold text-orange-100">{t("requestedChanges")}</p>
                 <p className="mt-1 text-sm text-orange-50 whitespace-pre-wrap">{data.currentPeriod.changesRequestedMessage}</p>
                 <p className="mt-1 text-xs text-orange-100/80">
                   {(data.currentPeriod.changesRequestedByUser?.name ?? "—")}{" "}
-                  {data.currentPeriod.changesRequestedAt ? `• ${new Date(data.currentPeriod.changesRequestedAt).toLocaleString()}` : ""}
+                  {data.currentPeriod.changesRequestedAt ? `• ${formatDate(data.currentPeriod.changesRequestedAt, { dateStyle: "medium", timeStyle: "short" })}` : ""}
                 </p>
               </div>
             ) : null}
             {data?.currentPeriod?.submittedAt ? (
               <p className="mt-1 text-xs text-slate-200">
-                {tr("Submitted", "تم الإرسال")} • {new Date(data.currentPeriod.submittedAt).toLocaleString()} • {data.currentPeriod.submittedByUser?.name ?? "—"}
+                {t("statusSubmitted")} • {formatDate(data.currentPeriod.submittedAt, { dateStyle: "medium", timeStyle: "short" })} • {data.currentPeriod.submittedByUser?.name ?? "—"}
               </p>
             ) : null}
             {data?.currentPeriod?.approvedAt ? (
               <p className="mt-1 text-xs text-slate-200">
-                {tr("Approved", "تم الاعتماد")} • {new Date(data.currentPeriod.approvedAt).toLocaleString()} • {data.currentPeriod.approvedByUser?.name ?? "—"}
+                {t("statusApproved")} • {formatDate(data.currentPeriod.approvedAt, { dateStyle: "medium", timeStyle: "short" })} • {data.currentPeriod.approvedByUser?.name ?? "—"}
               </p>
             ) : null}
             {lockedForUser ? (
               <p className="mt-2 text-xs text-slate-200">
-                {tr(
-                  "This period is submitted for approval. You can no longer edit until it is approved.",
-                  "تم إرسال هذه الفترة للاعتماد. لا يمكنك التعديل حتى يتم اعتمادها.",
-                )}
+                {t("periodSubmittedForApprovalDesc")}
               </p>
             ) : null}
           </div>
@@ -465,13 +462,13 @@ export default function KPIDetailPage() {
 
           {staticVariables.length ? (
             <div className="rounded-xl border border-white/10 bg-slate-950/40 px-4 py-3">
-              <p className="text-xs font-semibold uppercase tracking-wide text-slate-200">{tr("Static inputs", "مدخلات ثابتة")}</p>
+              <p className="text-xs font-semibold uppercase tracking-wide text-slate-200">{t("staticInputs")}</p>
               <div className="mt-2 grid gap-2 md:grid-cols-2">
                 {staticVariables.map((v) => (
                   <div key={v.id} className="rounded-lg border border-white/10 bg-black/20 px-3 py-2">
-                    <p className="text-xs text-slate-200">{v.displayName}</p>
+                    <p className="text-xs text-slate-200">{df(v.displayName, v.nameAr)}</p>
                     <p className="text-sm text-white" dir="ltr">
-                      {v.staticValue ?? 0}
+                      {formatNumber(v.staticValue)}
                     </p>
                   </div>
                 ))}
@@ -484,7 +481,7 @@ export default function KPIDetailPage() {
               {fillableVariables.map((v) => (
                 <div key={v.id} className="grid gap-2">
                   <Label>
-                    {v.displayName}
+                    {df(v.displayName, v.nameAr)}
                     {v.isRequired ? " *" : ""}
                   </Label>
                   <Input
@@ -502,7 +499,7 @@ export default function KPIDetailPage() {
             </div>
           ) : (
             <div className="grid gap-2">
-              <Label>{tr("Value", "القيمة")}</Label>
+              <Label>{t("value")}</Label>
               <Input
                 value={manualValue}
                 onChange={(e) => setManualValue(e.target.value)}
@@ -514,13 +511,13 @@ export default function KPIDetailPage() {
           )}
 
           <div className="grid gap-2">
-            <Label>{tr("Note (optional)", "ملاحظة (اختياري)")}</Label>
+            <Label>{t("noteOptional")}</Label>
             <Textarea
               value={note}
               onChange={(e) => setNote(e.target.value)}
               disabled={lockedForUser}
               className="border-white/10 bg-black/20 text-white placeholder:text-slate-400"
-              placeholder={tr("Add context…", "أضف سياقًا…")}
+              placeholder={t("addContextPlaceholder")}
             />
           </div>
 
@@ -529,10 +526,10 @@ export default function KPIDetailPage() {
               {submitting ? (
                 <span className="inline-flex items-center gap-2">
                   <Loader2 className="h-4 w-4 animate-spin" />
-                  {tr("Saving…", "جارٍ الحفظ…")}
+                  {t("saving")}
                 </span>
               ) : (
-                tr("Save", "حفظ")
+                t("save")
               )}
             </Button>
 
@@ -548,16 +545,16 @@ export default function KPIDetailPage() {
                     }}
                     disabled={submitting}
                   >
-                    {tr("Request changes", "طلب تعديلات")}
+                    {t("requestChanges")}
                   </Button>
                 ) : null}
                 <Button className="bg-emerald-500 text-white hover:bg-emerald-600" onClick={handleApprove} disabled={submitting}>
-                  {tr("Approve", "اعتماد")}
+                  {t("approve")}
                 </Button>
               </>
             ) : (
               <Button className="bg-orange-500 text-white hover:bg-orange-600" onClick={handleSubmitForApproval} disabled={submitting || lockedForUser}>
-                {tr("Send for approval", "إرسال للاعتماد")}
+                {t("sendForApproval")}
               </Button>
             )}
           </div>
@@ -567,22 +564,19 @@ export default function KPIDetailPage() {
       <Dialog open={requestChangesOpen} onOpenChange={setRequestChangesOpen}>
         <DialogContent className="sm:max-w-[520px]">
           <DialogHeader>
-            <DialogTitle>{tr("Request changes", "طلب تعديلات")}</DialogTitle>
+            <DialogTitle>{t("requestChanges")}</DialogTitle>
             <DialogDescription className="text-slate-200">
-              {tr(
-                "Write a message explaining what needs to be fixed. The KPI owner will see it.",
-                "اكتب رسالة توضح ما المطلوب تعديله. سيتمكن مسؤول مؤشر الأداء الرئيسي من رؤيتها.",
-              )}
+              {t("requestChangesExplainDesc")}
             </DialogDescription>
           </DialogHeader>
 
           <div className="grid gap-2">
-            <Label>{tr("Message", "الرسالة")}</Label>
+            <Label>{t("message")}</Label>
             <Textarea
               value={requestChangesMessage}
               onChange={(e) => setRequestChangesMessage(e.target.value)}
               className="border-white/10 bg-black/20 text-white placeholder:text-slate-400"
-              placeholder={tr("Example: Please update variable X and add a note.", "مثال: يرجى تحديث المتغير X وإضافة ملاحظة.")}
+              placeholder={t("requestChangesExamplePlaceholder")}
             />
           </div>
 
@@ -597,7 +591,7 @@ export default function KPIDetailPage() {
               }}
               disabled={submitting}
             >
-              {tr("Cancel", "إلغاء")}
+              {t("cancel")}
             </Button>
             <Button
               type="button"
@@ -608,10 +602,10 @@ export default function KPIDetailPage() {
               {submitting ? (
                 <span className="inline-flex items-center gap-2">
                   <Loader2 className="h-4 w-4 animate-spin" />
-                  {tr("Sending…", "جارٍ الإرسال…")}
+                  {t("sending")}
                 </span>
               ) : (
-                tr("Send", "إرسال")
+                t("send")
               )}
             </Button>
           </DialogFooter>
@@ -621,28 +615,28 @@ export default function KPIDetailPage() {
       <Dialog open={deleteOpen} onOpenChange={setDeleteOpen}>
         <DialogContent className="sm:max-w-[520px]">
           <DialogHeader>
-            <DialogTitle>{tr("Delete KPI", "حذف مؤشر أداء رئيسي")}</DialogTitle>
-            <DialogDescription>{kpi.name}</DialogDescription>
+            <DialogTitle>{t("deleteKpi")}</DialogTitle>
+            <DialogDescription>{df(kpi.name, kpi.nameAr)}</DialogDescription>
           </DialogHeader>
 
           {deleteError ? (
             <div className="rounded-md border border-rose-500/30 bg-rose-500/10 p-3 text-sm text-rose-200 whitespace-pre-wrap">{deleteError}</div>
           ) : null}
 
-          <p className="text-sm text-slate-200">{tr("This will permanently delete the KPI.", "سيتم حذف مؤشر الأداء الرئيسي نهائيًا.")}</p>
+          <p className="text-sm text-slate-200">{t("permanentDeleteKpiDesc")}</p>
 
           <DialogFooter>
             <Button variant="outline" onClick={() => setDeleteOpen(false)} disabled={submitting}>
-              {tr("Cancel", "إلغاء")}
+              {t("cancel")}
             </Button>
             <Button variant="destructive" onClick={handleDelete} disabled={submitting}>
               {submitting ? (
                 <span className="inline-flex items-center gap-2">
                   <Loader2 className="h-4 w-4 animate-spin" />
-                  {tr("Deleting…", "جارٍ الحذف…")}
+                  {t("deleting")}
                 </span>
               ) : (
-                tr("Delete", "حذف")
+                t("delete")
               )}
             </Button>
           </DialogFooter>

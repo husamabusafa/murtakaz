@@ -46,7 +46,7 @@ function formatPercent(value: number | null | undefined) {
 }
 
 export default function OverviewPage() {
-  const { t, locale, tr, nodeTypeLabel, kpiValueStatusLabel } = useLocale();
+  const { t, locale, tr, nodeTypeLabel, kpiValueStatusLabel, df } = useLocale();
   const { user, loading: sessionLoading } = useAuth();
 
   const [loading, setLoading] = useState(true);
@@ -74,7 +74,7 @@ export default function OverviewPage() {
       } catch (e: unknown) {
         if (!mounted) return;
         setData(null);
-        setError(e instanceof Error ? e.message : tr("Failed to load overview.", "فشل تحميل النظرة العامة."));
+        setError(e instanceof Error ? e.message : t("overviewFailedToLoad"));
       } finally {
         if (mounted) setLoading(false);
       }
@@ -83,7 +83,7 @@ export default function OverviewPage() {
     return () => {
       mounted = false;
     };
-  }, [sessionLoading, tr, user]);
+  }, [sessionLoading, t, user]);
 
   const isAdmin = useMemo(() => data?.user.role === "ADMIN", [data?.user.role]);
 
@@ -91,15 +91,15 @@ export default function OverviewPage() {
     const b = data?.kpiCompletion?.buckets;
     if (!b) return null;
     const segs = [
-      { key: "LT_60", label: tr("Off track", "خارج المسار"), color: "bg-rose-500/80", value: b.LT_60 ?? 0 },
-      { key: "LT_90", label: tr("At risk", "معرّض للخطر"), color: "bg-amber-500/80", value: b.LT_90 ?? 0 },
-      { key: "LT_110", label: tr("On track", "ضمن المسار"), color: "bg-sky-500/80", value: b.LT_110 ?? 0 },
-      { key: "GTE_110", label: tr("Exceeded", "متجاوز"), color: "bg-emerald-500/80", value: b.GTE_110 ?? 0 },
+      { key: "LT_60", label: t("offTrack"), color: "bg-rose-500/80", value: b.LT_60 ?? 0 },
+      { key: "LT_90", label: t("atRisk"), color: "bg-amber-500/80", value: b.LT_90 ?? 0 },
+      { key: "LT_110", label: t("onTrack"), color: "bg-sky-500/80", value: b.LT_110 ?? 0 },
+      { key: "GTE_110", label: t("exceeded"), color: "bg-emerald-500/80", value: b.GTE_110 ?? 0 },
     ].filter((s) => s.value > 0);
     const total = segs.reduce((sum, s) => sum + s.value, 0);
     if (!total) return null;
     return { total, segs };
-  }, [data?.kpiCompletion?.buckets, tr]);
+  }, [data?.kpiCompletion?.buckets, t]);
 
   const completionAvgLabel = useMemo(() => formatPercent(data?.kpiCompletion?.avgPercent), [data?.kpiCompletion?.avgPercent]);
 
@@ -127,10 +127,10 @@ export default function OverviewPage() {
       return (data.approvals ?? []).slice(0, 6).map((a) => ({
         id: a.id,
         href: `/${locale}/approvals`,
-        title: a.kpiName,
+        title: df(a.kpiName, a.kpiNameAr),
         subtitle:
           a.typeDisplayName && a.primaryName
-            ? `${nodeTypeLabel(a.typeCode, a.typeDisplayName)} • ${a.primaryName}`
+            ? `${nodeTypeLabel(a.typeCode, df(a.typeDisplayName, a.typeDisplayNameAr))} • ${df(a.primaryName, a.primaryNameAr)}`
             : "—",
         right: a.calculatedValue === null ? "—" : formatNumber(a.calculatedValue),
         badge: undefined,
@@ -140,14 +140,14 @@ export default function OverviewPage() {
     return (data.workItems ?? []).slice(0, 6).map((it) => ({
       id: it.id,
       href: `/${locale}/nodes/${it.type.code}/${it.id}`,
-      title: it.name,
+      title: df(it.name, it.nameAr),
       subtitle: it.parent
-        ? `${nodeTypeLabel(it.type.code, it.type.displayName)} • ${nodeTypeLabel(it.parent.typeCode, it.parent.typeDisplayName)}: ${it.parent.name}`
-        : nodeTypeLabel(it.type.code, it.type.displayName),
+        ? `${nodeTypeLabel(it.type.code, df(it.type.displayName, it.type.nameAr))} • ${nodeTypeLabel(it.parent.typeCode, df(it.parent.typeDisplayName, it.parent.typeDisplayNameAr))}: ${df(it.parent.name, it.parent.nameAr)}`
+        : nodeTypeLabel(it.type.code, df(it.type.displayName, it.type.nameAr)),
       right: `${it.progress}%`,
       badge: it.assignmentRole,
     }));
-  }, [data, locale]);
+  }, [data, df, locale, nodeTypeLabel]);
 
   const topKpis = useMemo(() => (data?.kpis ?? []).slice(0, 8), [data?.kpis]);
 
@@ -155,23 +155,16 @@ export default function OverviewPage() {
     <div className="space-y-8">
       <PageHeader
         title={t("overviewTitle")}
-        subtitle={tr(
-          isAdmin
-            ? "Organization-wide snapshot for KPI oversight and execution health."
-            : "Your workspace snapshot based on what you own, what is assigned to you, and which KPIs you can access.",
-          isAdmin
-            ? "ملخص عام للجهة لمتابعة مؤشرات الأداء الرئيسية وأداء التنفيذ."
-            : "ملخص لمساحة عملك بناءً على ما تملكه وما هو مُسند لك ومؤشرات الأداء الرئيسية التي يمكنك الوصول إليها.",
-        )}
+        subtitle={isAdmin ? t("overviewAdminSubtitle") : t("overviewUserSubtitle")}
         icon={<Icon name="tabler:layout-dashboard" className="h-5 w-5" />}
         actions={
           data?.canApprove ? (
             <Button asChild variant="secondary">
-              <Link href={`/${locale}/approvals`}>{tr("Open approvals", "فتح الموافقات")}</Link>
+              <Link href={`/${locale}/approvals`}>{t("openApprovals")}</Link>
             </Button>
           ) : (
             <Button asChild variant="secondary">
-              <Link href={`/${locale}/dashboards`}>{tr("Open dashboard", "فتح لوحة المعلومات")}</Link>
+              <Link href={`/${locale}/dashboards`}>{t("openDashboard")}</Link>
             </Button>
           )
         }
@@ -184,23 +177,23 @@ export default function OverviewPage() {
       {sessionLoading || loading ? (
         <Card className="bg-card/70 backdrop-blur shadow-sm">
           <CardHeader>
-            <CardTitle className="text-base">{tr("Loading", "جارٍ التحميل")}</CardTitle>
-            <CardDescription>{tr("Please wait…", "يرجى الانتظار…")}</CardDescription>
+            <CardTitle className="text-base">{t("loading")}</CardTitle>
+            <CardDescription>{t("pleaseWait")}</CardDescription>
           </CardHeader>
           <CardContent />
         </Card>
       ) : !user ? (
         <Card className="bg-card/70 backdrop-blur shadow-sm">
           <CardContent className="p-6 text-sm text-muted-foreground">
-            <p>{tr("Please sign in to view your workspace overview.", "يرجى تسجيل الدخول لعرض النظرة العامة لمساحة العمل.")}</p>
+            <p>{t("signInToViewWorkspace")}</p>
             <Link href={`/${locale}/auth/login?next=/${locale}/overview`} className="mt-3 inline-flex text-sm font-semibold text-primary hover:opacity-90">
-              {tr("Sign in", "تسجيل الدخول")}
+              {t("signIn")}
             </Link>
           </CardContent>
         </Card>
       ) : !data ? (
         <Card className="bg-card/70 backdrop-blur shadow-sm">
-          <CardContent className="p-6 text-sm text-muted-foreground">{tr("No overview data.", "لا توجد بيانات للنظرة العامة.")}</CardContent>
+          <CardContent className="p-6 text-sm text-muted-foreground">{t("noOverviewData")}</CardContent>
         </Card>
       ) : (
         <>
@@ -208,11 +201,11 @@ export default function OverviewPage() {
             <Card className="bg-card/70 backdrop-blur shadow-sm">
               <CardHeader className="flex flex-row items-start justify-between gap-3">
                 <div className="space-y-1">
-                  <CardTitle className="text-base">{tr("Inbox", "الوارد")}</CardTitle>
+                  <CardTitle className="text-base">{t("inbox")}</CardTitle>
                   <CardDescription>
                     {data.canApprove
-                      ? tr("Latest submitted KPI values to review.", "آخر قيم مؤشرات الأداء الرئيسية المُرسلة للمراجعة.")
-                      : tr("Items that need your next action.", "عناصر تحتاج الإجراء التالي منك.")}
+                      ? t("inboxAdminDesc")
+                      : t("inboxUserDesc")}
                   </CardDescription>
                 </div>
                 <Badge variant="outline" className="border-border bg-muted/30 text-muted-foreground">
@@ -249,12 +242,12 @@ export default function OverviewPage() {
                   ))
                 ) : (
                   <div className="rounded-xl border border-dashed border-border bg-muted/10 p-6 text-sm text-muted-foreground">
-                    {data.canApprove ? tr("No pending items.", "لا توجد عناصر معلّقة.") : tr("No assigned items.", "لا توجد عناصر مُسندة.")}
+                    {data.canApprove ? t("noPendingItems") : t("noAssignedItems")}
                   </div>
                 )}
 
                 <Button asChild variant="outline" className="w-full">
-                  <Link href={data.canApprove ? `/${locale}/approvals` : `/${locale}/dashboards`}>{tr("Open", "فتح")}</Link>
+                  <Link href={data.canApprove ? `/${locale}/approvals` : `/${locale}/dashboards`}>{t("open")}</Link>
                 </Button>
               </CardContent>
             </Card>
@@ -262,8 +255,8 @@ export default function OverviewPage() {
             <Card className="bg-card/70 backdrop-blur shadow-sm">
               <CardHeader className="flex flex-row items-start justify-between gap-3">
                 <div className="space-y-1">
-                  <CardTitle className="text-base">{tr("Needs attention", "يتطلب متابعة")}</CardTitle>
-                  <CardDescription>{tr("KPIs that are missing data or awaiting action.", "مؤشرات أداء رئيسية بلا بيانات أو تحتاج إجراء.")}</CardDescription>
+                  <CardTitle className="text-base">{t("needsAttention")}</CardTitle>
+                  <CardDescription>{t("needsAttentionDesc")}</CardDescription>
                 </div>
                 <Badge variant="outline" className="border-border bg-muted/30 text-muted-foreground">
                   {attentionCount}
@@ -279,9 +272,9 @@ export default function OverviewPage() {
                     >
                       <div className="flex items-start justify-between gap-3">
                         <div className="min-w-0">
-                          <p className="truncate text-sm font-semibold">{k.name}</p>
+                          <p className="truncate text-sm font-semibold">{df(k.name, k.nameAr)}</p>
                           <p className="mt-1 truncate text-xs text-muted-foreground">
-                            {nodeTypeLabel(k.primary.typeCode, k.primary.typeDisplayName)} • {k.primary.name}
+                            {nodeTypeLabel(k.primary.typeCode, df(k.primary.typeDisplayName, k.primary.typeDisplayNameAr))} • {df(k.primary.name, k.primary.nameAr)}
                           </p>
                         </div>
                         <Badge variant="outline" className={pillForKpiStatus(k.latest?.status ?? "NO_DATA")}>
@@ -292,7 +285,7 @@ export default function OverviewPage() {
                   ))
                 ) : (
                   <div className="rounded-xl border border-dashed border-border bg-muted/10 p-6 text-sm text-muted-foreground">
-                    {tr("Nothing urgent right now.", "لا يوجد شيء عاجل حالياً.")}
+                    {t("nothingUrgent")}
                   </div>
                 )}
               </CardContent>
@@ -300,19 +293,19 @@ export default function OverviewPage() {
 
             <Card className="bg-card/70 backdrop-blur shadow-sm">
               <CardHeader className="space-y-1">
-                <CardTitle className="text-base">{tr("Completion health", "مستوى الإنجاز")}</CardTitle>
-                <CardDescription>{tr("A compact view of completion vs target.", "عرض مختصر للإنجاز مقابل المستهدف.")}</CardDescription>
+                <CardTitle className="text-base">{t("completionHealth")}</CardTitle>
+                <CardDescription>{t("completionHealthDesc")}</CardDescription>
               </CardHeader>
               <CardContent className="space-y-4">
                 <div className="flex items-end justify-between">
                   <div>
-                    <p className="text-xs text-muted-foreground">{tr("Average", "المتوسط")}</p>
+                    <p className="text-xs text-muted-foreground">{t("average")}</p>
                     <p className="text-2xl font-semibold" dir="ltr">
                       {completionAvgLabel}
                     </p>
                   </div>
                   <Badge variant="outline" className="border-border bg-muted/30 text-muted-foreground">
-                    {tr("Tracked", "مُتتبّع")}: {data.kpiCompletion.totalWithTargets}
+                    {t("tracked")}: {data.kpiCompletion.totalWithTargets}
                   </Badge>
                 </div>
 
@@ -341,7 +334,7 @@ export default function OverviewPage() {
                   </>
                 ) : (
                   <div className="rounded-xl border border-dashed border-border bg-muted/10 p-6 text-sm text-muted-foreground">
-                    {tr("No completion data.", "لا توجد بيانات إنجاز.")}
+                    {t("noCompletionData")}
                   </div>
                 )}
               </CardContent>
@@ -351,17 +344,17 @@ export default function OverviewPage() {
           <section className="grid gap-6 lg:grid-cols-2">
             <Card className="bg-card/70 backdrop-blur shadow-sm">
               <CardHeader className="space-y-1">
-                <CardTitle className="text-base">{tr("Upcoming", "القادم")}</CardTitle>
+                <CardTitle className="text-base">{t("upcoming")}</CardTitle>
                 <CardDescription>
                   {isAdmin
-                    ? tr("A quick view of owned items across the organization.", "عرض سريع للعناصر المملوكة على مستوى الجهة.")
-                    : tr("What you should focus on next.", "ما الذي يجب أن تركز عليه بعد ذلك.")}
+                    ? t("upcomingAdminDesc")
+                    : t("upcomingUserDesc")}
                 </CardDescription>
               </CardHeader>
               <CardContent className="space-y-3">
                 {!isAdmin && upcomingAssigned.length ? (
                   <>
-                    <p className="text-xs font-semibold text-muted-foreground">{tr("Assigned", "مُسند")}</p>
+                    <p className="text-xs font-semibold text-muted-foreground">{t("assigned")}</p>
                     {upcomingAssigned.map((it) => (
                       <Link
                         key={it.id}
@@ -372,11 +365,11 @@ export default function OverviewPage() {
                           <div className="min-w-0">
                             <p className="truncate text-sm font-semibold">
                               <span className="me-2 inline-block h-2.5 w-2.5 rounded-full" style={{ backgroundColor: it.color }} />
-                              {it.name}
+                              {df(it.name, it.nameAr)}
                             </p>
                             <p className="mt-1 truncate text-xs text-muted-foreground">
-                              {it.type.displayName}
-                              {it.parent ? ` • ${nodeTypeLabel(it.parent.typeCode, it.parent.typeDisplayName)}: ${it.parent.name}` : ""}
+                              {df(it.type.displayName, it.type.nameAr)}
+                              {it.parent ? ` • ${nodeTypeLabel(it.parent.typeCode, df(it.parent.typeDisplayName, it.parent.typeDisplayNameAr))}: ${df(it.parent.name, it.parent.nameAr)}` : ""}
                             </p>
                           </div>
                           <span className="text-xs text-muted-foreground" dir="ltr">
@@ -393,7 +386,7 @@ export default function OverviewPage() {
 
                 {upcomingOwned.length ? (
                   <>
-                    <p className="text-xs font-semibold text-muted-foreground">{tr("Owned", "مملوك")}</p>
+                    <p className="text-xs font-semibold text-muted-foreground">{t("owned")}</p>
                     {upcomingOwned.map((it) => (
                       <Link
                         key={it.id}
@@ -404,9 +397,9 @@ export default function OverviewPage() {
                           <div className="min-w-0">
                             <p className="truncate text-sm font-semibold">
                               <span className="me-2 inline-block h-2.5 w-2.5 rounded-full" style={{ backgroundColor: it.color }} />
-                              {it.name}
+                              {df(it.name, it.nameAr)}
                             </p>
-                            <p className="mt-1 truncate text-xs text-muted-foreground">{it.type.displayName}</p>
+                            <p className="mt-1 truncate text-xs text-muted-foreground">{df(it.type.displayName, it.type.nameAr)}</p>
                           </div>
                           <div className="flex shrink-0 flex-col items-end gap-2">
                             <StatusBadge status={it.status as unknown as UiStatus} />
@@ -423,7 +416,7 @@ export default function OverviewPage() {
                   </>
                 ) : (
                   <div className="rounded-xl border border-dashed border-border bg-muted/10 p-6 text-sm text-muted-foreground">
-                    {tr("No items yet.", "لا توجد عناصر بعد.")}
+                    {t("noItemsYet")}
                   </div>
                 )}
               </CardContent>
@@ -431,12 +424,12 @@ export default function OverviewPage() {
 
             <Card className="bg-card/70 backdrop-blur shadow-sm">
               <CardHeader className="space-y-1">
-                <CardTitle className="text-base">{tr("Quick access", "وصول سريع")}</CardTitle>
-                <CardDescription>{tr("Jump to what you need quickly.", "انتقل سريعاً إلى ما تحتاجه.")}</CardDescription>
+                <CardTitle className="text-base">{t("quickAccess")}</CardTitle>
+                <CardDescription>{t("quickAccessDesc")}</CardDescription>
               </CardHeader>
               <CardContent className="space-y-4">
                 <div className="grid gap-3 sm:grid-cols-2">
-                  {data.enabledNodeTypes.map((nt) => {
+                  {data.enabledNodeTypes.map((nt: any) => {
                     const codeLower = String(nt.code).toLowerCase();
                     return (
                       <Link
@@ -446,9 +439,9 @@ export default function OverviewPage() {
                       >
                         <div className="flex items-center justify-between gap-3">
                           <div className="min-w-0">
-                            <p className="truncate text-sm font-semibold">{nt.displayName}</p>
+                            <p className="truncate text-sm font-semibold">{df(nt.displayName, nt.nameAr)}</p>
                             <p className="mt-1 text-xs text-muted-foreground" dir="ltr">
-                              {tr("Level", "المستوى")}: {nt.levelOrder}
+                              {t("level")}: {nt.levelOrder}
                             </p>
                           </div>
                           <Icon name="tabler:layers-subtract" className="h-5 w-5 text-muted-foreground" />
@@ -460,7 +453,7 @@ export default function OverviewPage() {
 
                 <div className="grid gap-3 sm:grid-cols-2">
                   <Button asChild variant="secondary" className="w-full">
-                    <Link href={`/${locale}/kpis`}>{tr("KPIs", "مؤشرات الأداء الرئيسية")}</Link>
+                    <Link href={`/${locale}/kpis`}>{t("kpis")}</Link>
                   </Button>
                   <Button asChild variant="secondary" className="w-full">
                     <Link href={`/${locale}/dashboards`}>{t("dashboards")}</Link>
@@ -470,11 +463,11 @@ export default function OverviewPage() {
                 <div className="grid gap-3 sm:grid-cols-2">
                   {data.canApprove ? (
                     <Button asChild variant="outline" className="w-full">
-                      <Link href={`/${locale}/approvals`}>{tr("Approvals", "الموافقات")}</Link>
+                      <Link href={`/${locale}/approvals`}>{t("approvals")}</Link>
                     </Button>
                   ) : (
                     <Button asChild variant="outline" className="w-full">
-                      <Link href={`/${locale}/responsibilities`}>{tr("Responsibilities", "المسؤوليات")}</Link>
+                      <Link href={`/${locale}/responsibilities`}>{t("responsibilities")}</Link>
                     </Button>
                   )}
 
@@ -490,8 +483,8 @@ export default function OverviewPage() {
             <Card className="bg-card/70 backdrop-blur shadow-sm">
               <CardHeader className="flex flex-row items-start justify-between gap-3">
                 <div className="space-y-1">
-                  <CardTitle className="text-base">{tr("KPIs you can access", "مؤشرات الأداء الرئيسية التي يمكنك الوصول إليها")}</CardTitle>
-                  <CardDescription>{tr("Latest values, targets, and linked structure.", "آخر القيم والمستهدف والارتباط بالتسلسل.")}</CardDescription>
+                  <CardTitle className="text-base">{t("kpisYouCanAccess")}</CardTitle>
+                  <CardDescription>{t("kpisYouCanAccessDesc")}</CardDescription>
                 </div>
                 <Button asChild variant="ghost" className="text-primary hover:text-primary">
                   <Link href={`/${locale}/kpis`}>{t("viewAll")}</Link>
@@ -502,10 +495,10 @@ export default function OverviewPage() {
                   <Table>
                     <TableHeader>
                       <TableRow className="hover:bg-transparent">
-                        <TableHead>{tr("KPI", "مؤشر أداء رئيسي")}</TableHead>
-                        <TableHead>{tr("Latest", "آخر قيمة")}</TableHead>
+                        <TableHead>{t("kpi")}</TableHead>
+                        <TableHead>{t("latest")}</TableHead>
                         <TableHead>{t("target")}</TableHead>
-                        <TableHead>{tr("Linked to", "مرتبط بـ")}</TableHead>
+                        <TableHead>{t("linkedTo")}</TableHead>
                         <TableHead className="text-right">{t("status")}</TableHead>
                       </TableRow>
                     </TableHeader>
@@ -516,9 +509,9 @@ export default function OverviewPage() {
                           <TableRow key={k.id} className="hover:bg-card/40">
                             <TableCell className="font-medium">
                               <Link href={`/${locale}/kpis/${k.id}`} className="hover:underline">
-                                {k.name}
+                                {df(k.name, k.nameAr)}
                               </Link>
-                              {k.unit ? <span className="ms-2 text-xs text-muted-foreground">({k.unit})</span> : null}
+                              {df(k.unit, k.unitAr) ? <span className="ms-2 text-xs text-muted-foreground">({df(k.unit, k.unitAr)})</span> : null}
                             </TableCell>
                             <TableCell className="text-muted-foreground" dir="ltr">
                               {formatNumber(k.latest?.calculatedValue)}
@@ -527,7 +520,7 @@ export default function OverviewPage() {
                               {formatNumber(k.targetValue)}
                             </TableCell>
                             <TableCell className="text-muted-foreground">
-                              {nodeTypeLabel(k.primary.typeCode, k.primary.typeDisplayName)} • {k.primary.name}
+                              {nodeTypeLabel(k.primary.typeCode, df(k.primary.typeDisplayName, k.primary.typeDisplayNameAr))} • {df(k.primary.name, k.primary.nameAr)}
                             </TableCell>
                             <TableCell className="text-right">
                               <Badge variant="outline" className={pillForKpiStatus(latestStatus)}>
@@ -540,7 +533,7 @@ export default function OverviewPage() {
                       {topKpis.length === 0 ? (
                         <TableRow>
                           <TableCell colSpan={5} className="py-8 text-center text-sm text-muted-foreground">
-                            {tr("No KPIs found.", "لا توجد مؤشرات أداء رئيسية.")}
+                            {t("noKpisFound")}
                           </TableCell>
                         </TableRow>
                       ) : null}

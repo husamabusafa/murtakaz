@@ -13,8 +13,8 @@ export default function FAQPage() {
   return (
     <div className="space-y-8">
       <PageHeader
-        title={isArabic ? "الأسئلة الشائعة" : "FAQ"}
-        subtitle={isArabic ? "إجابات واضحة ومختصرة لأسئلة العملاء." : "Clear, concise answers for customer discussions."}
+        title={t("faq")}
+        subtitle={t("faqSubtitle")}
         icon={<Icon name="tabler:help" className="h-5 w-5" />}
       />
 
@@ -41,7 +41,7 @@ export default function FAQPage() {
         </Link>
         <span className="text-slate-400">•</span>
         <Link href={`/${locale}/auth/login?next=/${locale}/overview`} className="text-sm font-semibold text-indigo-200 hover:text-indigo-100">
-          {isArabic ? "ابدأ التجربة" : "Start the demo"}
+          {t("startTheDemo")}
         </Link>
       </div>
     </div>

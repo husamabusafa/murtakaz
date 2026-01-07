@@ -10,7 +10,7 @@ import { pillars } from "@/lib/mock-data";
 import { useLocale } from "@/providers/locale-provider";
 
 export default function ProjectExecutionDashboardPage() {
-  const { locale, tr, isArabic } = useLocale();
+  const { t, locale, isArabic } = useLocale();
   const initiatives = pillars.flatMap((pillar) => pillar.initiatives);
   const projects = initiatives.flatMap((initiative) => initiative.projects);
 
@@ -21,18 +21,19 @@ export default function ProjectExecutionDashboardPage() {
   return (
     <div className="space-y-8">
       <PageHeader
-        title={tr("Project Execution dashboard", "لوحة تنفيذ المشاريع")}
-        subtitle={tr("Milestone completion, blockers/dependencies, and delivery confidence (prototype).", "اكتمال المعالم والعوائق/الاعتمادات وثقة التنفيذ (نموذج أولي).")}
+        title={t("projectExecutionDashboardTitle")}
+        subtitle={t("projectExecutionDashboardSubtitle")}
+        icon={<Icon name="tabler:timeline" className="h-5 w-5" />}
       />
 
       <section className="grid gap-6 lg:grid-cols-3">
         <Card className="border-white/10 bg-white/5 text-white shadow-lg shadow-black/20 lg:col-span-2">
           <CardHeader className="space-y-1">
             <div className="flex items-center justify-between">
-              <CardTitle className="text-base">{tr("Milestone completion", "اكتمال المعالم")}</CardTitle>
+              <CardTitle className="text-base">{t("milestoneCompletion")}</CardTitle>
               <Icon name="tabler:timeline" className="text-slate-200" />
             </div>
-            <CardDescription className="text-slate-200">{tr("Completion percentage by project (demo).", "نسبة الاكتمال حسب المشروع (عرض تجريبي).")}</CardDescription>
+            <CardDescription className="text-slate-200">{t("completionByProjectDesc")}</CardDescription>
           </CardHeader>
           <CardContent>
             <Bar
@@ -46,8 +47,8 @@ export default function ProjectExecutionDashboardPage() {
 
         <Card className="border-white/10 bg-white/5 text-white shadow-lg shadow-black/20">
           <CardHeader className="space-y-1">
-            <CardTitle className="text-base">{tr("Dependency watch", "مراقبة الاعتمادات")}</CardTitle>
-            <CardDescription className="text-slate-200">{tr("Projects with dependencies recorded.", "مشاريع تحتوي على اعتمادات مسجلة.")}</CardDescription>
+            <CardTitle className="text-base">{t("dependencyWatch")}</CardTitle>
+            <CardDescription className="text-slate-200">{t("projectsWithDependenciesDesc")}</CardDescription>
           </CardHeader>
           <CardContent className="space-y-3">
             {projects
@@ -69,8 +70,8 @@ export default function ProjectExecutionDashboardPage() {
       <section>
         <Card className="border-white/10 bg-white/5 text-white shadow-lg shadow-black/20">
           <CardHeader className="space-y-1">
-            <CardTitle className="text-base">{tr("Project portfolio", "محفظة المشاريع")}</CardTitle>
-            <CardDescription className="text-slate-200">{tr("Health, status, and drill-down.", "الأداء والحالة والاستعراض التفصيلي.")}</CardDescription>
+            <CardTitle className="text-base">{t("projectPortfolio")}</CardTitle>
+            <CardDescription className="text-slate-200">{t("healthStatusDrilldownDesc")}</CardDescription>
           </CardHeader>
           <CardContent className="grid gap-3 md:grid-cols-2 lg:grid-cols-3">
             {projects.map((project) => (

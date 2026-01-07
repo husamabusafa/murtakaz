@@ -6,31 +6,11 @@ import { Role, Status } from "@prisma/client";
 import { prisma } from "@/lib/prisma";
 import { auth } from "@/lib/auth";
 
-const prismaNode = (prisma as unknown as { node: unknown }).node as {
-  findMany: <T>(args: unknown) => Promise<T[]>;
-  findFirst: <T>(args: unknown) => Promise<T | null>;
-  create: <T>(args: unknown) => Promise<T>;
-  update: <T>(args: unknown) => Promise<T>;
-};
-
-const prismaKpiDefinition = (prisma as unknown as { kpiDefinition: unknown }).kpiDefinition as {
-  findMany: <T>(args: unknown) => Promise<T[]>;
-};
-
-const prismaOrganization = (prisma as unknown as { organization: unknown }).organization as {
-  findFirst: <T>(args: unknown) => Promise<T | null>;
-  update: <T>(args: unknown) => Promise<T>;
-};
-
-const prismaNodeType = (prisma as unknown as { nodeType: unknown }).nodeType as {
-  findMany: <T>(args: unknown) => Promise<T[]>;
-};
-
-const prismaOrganizationNodeType = (prisma as unknown as { organizationNodeType: unknown }).organizationNodeType as {
-  findMany: <T>(args: unknown) => Promise<T[]>;
-  deleteMany: (args: unknown) => Promise<unknown>;
-  createMany: (args: unknown) => Promise<unknown>;
-};
+const prismaNode = (prisma as any).node;
+const prismaKpiDefinition = (prisma as any).kpiDefinition;
+const prismaOrganization = (prisma as any).organization;
+const prismaNodeType = (prisma as any).nodeType;
+const prismaOrganizationNodeType = (prisma as any).organizationNodeType;
 
 type KpiApprovalLevelCode = "MANAGER" | "PMO" | "EXECUTIVE" | "ADMIN";
 const kpiApprovalLevelSchema = z.enum(["MANAGER", "PMO", "EXECUTIVE", "ADMIN"]);
@@ -129,11 +109,13 @@ const deleteOrgUserSchema = z.object({
 
 const createOrgDepartmentSchema = z.object({
   name: z.string().min(2),
+  nameAr: z.string().optional(),
 });
 
 const updateOrgDepartmentSchema = z.object({
   departmentId: z.string().uuid(),
   name: z.string().min(2),
+  nameAr: z.string().optional(),
 });
 
 const deleteOrgDepartmentSchema = z.object({
@@ -150,7 +132,7 @@ function zodIssues(error: z.ZodError): ActionValidationIssue[] {
 export async function getOrgAdminUsers() {
   const session = await requireOrgAdmin();
 
-  return prisma.user.findMany({
+  return (prisma.user as any).findMany({
     where: {
       orgId: session.user.orgId,
       deletedAt: null,
@@ -175,10 +157,45 @@ export async function getOrgAdminUsers() {
         select: {
           id: true,
           name: true,
+          nameAr: true,
         },
       },
     },
   });
+}
+
+export async function getOrgAdminEnabledNodeTypes() {
+  const session = await requireOrgAdmin();
+
+  const rows = await (prismaOrganizationNodeType as any).findMany({
+    where: {
+      orgId: session.user.orgId,
+    },
+    orderBy: {
+      nodeType: { levelOrder: "asc" },
+    },
+    select: {
+      nodeType: {
+        select: {
+          id: true,
+          code: true,
+          displayName: true,
+          nameAr: true,
+          levelOrder: true,
+          canHaveKpis: true,
+        },
+      },
+    },
+  });
+
+  return (rows as any[]).map((r) => r.nodeType) as Array<{
+    id: string;
+    code: unknown;
+    displayName: string;
+    nameAr: string | null;
+    levelOrder: number;
+    canHaveKpis: boolean;
+  }>;
 }
 
 export async function createOrgAdminDepartment(data: z.infer<typeof createOrgDepartmentSchema>) {
@@ -195,14 +212,16 @@ export async function createOrgAdminDepartment(data: z.infer<typeof createOrgDep
   const parsed = parsedResult.data;
 
   try {
-    const department = await prisma.department.create({
+    const department = await (prisma.department as any).create({
       data: {
         orgId: session.user.orgId,
         name: parsed.name,
+        nameAr: parsed.nameAr || null,
       },
       select: {
         id: true,
         name: true,
+        nameAr: true,
         createdAt: true,
       },
     });
@@ -215,57 +234,16 @@ export async function createOrgAdminDepartment(data: z.infer<typeof createOrgDep
   }
 }
 
-export async function getOrgAdminEnabledNodeTypes() {
-  const session = await requireOrgAdmin();
-
-  const rows = await prismaOrganizationNodeType.findMany<{
-    nodeType: {
-      id: string;
-      code: unknown;
-      displayName: string;
-      levelOrder: number;
-      canHaveKpis: boolean;
-    };
-  }>({
-    where: {
-      orgId: session.user.orgId,
-    },
-    orderBy: {
-      nodeType: { levelOrder: "asc" },
-    },
-    select: {
-      nodeType: {
-        select: {
-          id: true,
-          code: true,
-          displayName: true,
-          levelOrder: true,
-          canHaveKpis: true,
-        },
-      },
-    },
-  });
-
-  return rows.map((r) => r.nodeType);
-}
-
 export async function getOrgAdminOrganizationSettings() {
   const session = await requireOrgAdmin();
 
   const [org, nodeTypeOptions, enabledNodeTypes, nodeTypeIds] = await Promise.all([
-    prismaOrganization.findFirst<{
-      id: string;
-      name: string;
-      domain: string | null;
-      kpiApprovalLevel: unknown;
-      createdAt: Date;
-      updatedAt: Date;
-      _count: { users: number; departments: number; nodes: number; kpis: number };
-    }>({
+    (prismaOrganization as any).findFirst({
       where: { id: session.user.orgId, deletedAt: null },
       select: {
         id: true,
         name: true,
+        nameAr: true,
         domain: true,
         kpiApprovalLevel: true,
         createdAt: true,
@@ -273,25 +251,19 @@ export async function getOrgAdminOrganizationSettings() {
         _count: { select: { users: true, departments: true, nodes: true, kpis: true } },
       },
     }),
-    prismaNodeType.findMany<{
-      id: string;
-      code: unknown;
-      displayName: string;
-      levelOrder: number;
-      canHaveKpis: boolean;
-    }>({
+    (prismaNodeType as any).findMany({
       orderBy: [{ levelOrder: "asc" }, { code: "asc" }],
       select: { id: true, code: true, displayName: true, levelOrder: true, canHaveKpis: true },
     }),
     getOrgAdminEnabledNodeTypes(),
-    prismaNode.findMany<{ nodeTypeId: string }>({
+    (prismaNode as any).findMany({
       where: { orgId: session.user.orgId, deletedAt: null },
       select: { nodeTypeId: true },
     }),
   ]);
 
   const nodeTypeIdCounts = new Map<string, number>();
-  for (const row of nodeTypeIds) {
+  for (const row of nodeTypeIds as any[]) {
     nodeTypeIdCounts.set(row.nodeTypeId, (nodeTypeIdCounts.get(row.nodeTypeId) ?? 0) + 1);
   }
 
@@ -302,15 +274,32 @@ export async function getOrgAdminOrganizationSettings() {
   }));
 
   return {
-    org,
+    org: org as {
+      id: string;
+      name: string;
+      nameAr: string | null;
+      domain: string | null;
+      kpiApprovalLevel: unknown;
+      createdAt: Date;
+      updatedAt: Date;
+      _count: { users: number; departments: number; nodes: number; kpis: number };
+    } | null,
     enabledNodeTypes,
     enabledNodeTypeCounts,
-    nodeTypeOptions,
+    nodeTypeOptions: nodeTypeOptions as Array<{
+      id: string;
+      code: unknown;
+      displayName: string;
+      nameAr: string | null;
+      levelOrder: number;
+      canHaveKpis: boolean;
+    }>,
   };
 }
 
 const updateOrgSettingsSchema = z.object({
   name: z.string().trim().min(2).optional(),
+  nameAr: z.string().trim().optional(),
   domain: z.string().trim().optional(),
   kpiApprovalLevel: kpiApprovalLevelSchema.optional(),
 });
@@ -329,6 +318,7 @@ export async function updateOrgAdminOrganizationSettings(data: z.infer<typeof up
       where: { id: session.user.orgId },
       data: {
         ...(typeof parsed.name === "string" ? { name: parsed.name } : {}),
+        ...(typeof parsed.nameAr === "string" ? { nameAr: parsed.nameAr || null } : {}),
         ...(typeof parsed.domain === "string" ? { domain: parsed.domain ? parsed.domain : null } : {}),
         ...(typeof parsed.kpiApprovalLevel !== "undefined" ? { kpiApprovalLevel: parsed.kpiApprovalLevel as KpiApprovalLevelCode } : {}),
       },
@@ -368,7 +358,7 @@ export async function updateOrgAdminEnabledNodeTypes(data: z.infer<typeof update
 }
 
 async function getOrgEnabledNodeTypesByOrder(orgId: string) {
-  const rows = await prisma.organizationNodeType.findMany({
+  const rows = await (prisma.organizationNodeType as any).findMany({
     where: {
       orgId,
     },
@@ -381,13 +371,14 @@ async function getOrgEnabledNodeTypesByOrder(orgId: string) {
           id: true,
           code: true,
           displayName: true,
+          nameAr: true,
           levelOrder: true,
           canHaveKpis: true,
         },
       },
     },
   });
-  return rows.map((r) => r.nodeType);
+  return rows.map((r: any) => r.nodeType);
 }
 
 function normalizeNodeTypeCode(code: string) {
@@ -397,20 +388,20 @@ function normalizeNodeTypeCode(code: string) {
 async function resolveEnabledNodeTypeByCode(input: { orgId: string; code: string }) {
   const enabled = await getOrgEnabledNodeTypesByOrder(input.orgId);
   const normalized = normalizeNodeTypeCode(input.code);
-  const found = enabled.find((t) => String(t.code) === normalized);
+  const found = enabled.find((t: any) => String(t.code) === normalized);
   return { enabled, nodeType: found ?? null };
 }
 
 function getDirectHigherEnabledNodeType(input: { enabled: Array<{ code: unknown }>; currentCode: string }) {
   const normalized = normalizeNodeTypeCode(input.currentCode);
-  const idx = input.enabled.findIndex((t) => String(t.code) === normalized);
+  const idx = input.enabled.findIndex((t: any) => String(t.code) === normalized);
   if (idx <= 0) return null;
   return input.enabled[idx - 1] ?? null;
 }
 
 function getDirectLowerEnabledNodeType(input: { enabled: Array<{ code: unknown }>; currentCode: string }) {
   const normalized = normalizeNodeTypeCode(input.currentCode);
-  const idx = input.enabled.findIndex((t) => String(t.code) === normalized);
+  const idx = input.enabled.findIndex((t: any) => String(t.code) === normalized);
   if (idx < 0) return null;
   return input.enabled[idx + 1] ?? null;
 }
@@ -430,17 +421,7 @@ export async function getOrgAdminNodesByType(data: z.infer<typeof getNodesByType
   const { nodeType } = await resolveEnabledNodeTypeByCode({ orgId: session.user.orgId, code: parsed.code });
   if (!nodeType) return [];
 
-  return prismaNode.findMany<{
-    id: string;
-    name: string;
-    description: string | null;
-    color: string;
-    status: Status;
-    parentId: string | null;
-    createdAt: Date;
-    parent: { id: string; name: string } | null;
-    _count: { children: number; kpis: number };
-  }>({
+  return (prisma.node as any).findMany({
     where: {
       orgId: session.user.orgId,
       nodeTypeId: nodeType.id,
@@ -450,7 +431,9 @@ export async function getOrgAdminNodesByType(data: z.infer<typeof getNodesByType
     select: {
       id: true,
       name: true,
+      nameAr: true,
       description: true,
+      descriptionAr: true,
       color: true,
       status: true,
       parentId: true,
@@ -459,6 +442,7 @@ export async function getOrgAdminNodesByType(data: z.infer<typeof getNodesByType
         select: {
           id: true,
           name: true,
+          nameAr: true,
         },
       },
       _count: {
@@ -487,10 +471,10 @@ export async function getOrgAdminParentOptionsForNodeType(data: z.infer<typeof g
   const higher = getDirectHigherEnabledNodeType({ enabled, currentCode: String(nodeType.code) });
   if (!higher) return [];
 
-  const higherType = enabled.find((t) => String(t.code) === String(higher.code));
+  const higherType = enabled.find((t: any) => String(t.code) === String(higher.code));
   if (!higherType) return [];
 
-  return prismaNode.findMany<{ id: string; name: string; color: string; status: Status }>({
+  const nodes = await (prisma.node as any).findMany({
     where: {
       orgId: session.user.orgId,
       nodeTypeId: (higherType as { id: string }).id,
@@ -500,16 +484,21 @@ export async function getOrgAdminParentOptionsForNodeType(data: z.infer<typeof g
     select: {
       id: true,
       name: true,
+      nameAr: true,
       color: true,
       status: true,
     },
   });
+
+  return nodes as Array<{ id: string; name: string; nameAr: string | null; color: string; status: Status }>;
 }
 
 const createNodeSchema = z.object({
   code: z.string().min(1),
   name: z.string().min(2),
+  nameAr: z.string().optional(),
   description: z.string().optional(),
+  descriptionAr: z.string().optional(),
   parentId: optionalUuidNullable.optional(),
   color: optionalHexColor,
   status: z.nativeEnum(Status).optional(),
@@ -545,7 +534,7 @@ export async function createOrgAdminNode(data: z.infer<typeof createNodeSchema>)
       };
     }
 
-    const parent = await prismaNode.findFirst<{ id: string; nodeType: { code: unknown } }>({
+    const parent = await (prisma.node as any).findFirst({
       where: {
         id: parentId,
         orgId: session.user.orgId,
@@ -601,21 +590,15 @@ export async function createOrgAdminNode(data: z.infer<typeof createNodeSchema>)
   }
 
   try {
-    const node = await prismaNode.create<{
-      id: string;
-      name: string;
-      description: string | null;
-      color: string;
-      status: Status;
-      parentId: string | null;
-      createdAt: Date;
-    }>({
+    const node = await (prisma.node as any).create({
       data: {
         orgId: session.user.orgId,
         nodeTypeId: nodeType.id,
         parentId,
         name: parsed.name,
+        nameAr: parsed.nameAr || null,
         description: parsed.description ?? null,
+        descriptionAr: parsed.descriptionAr ?? null,
         color: parsed.color ?? undefined,
         status: parsed.status ?? undefined,
         ownerUserId: typeof parsed.ownerUserId === "undefined" ? undefined : parsed.ownerUserId,
@@ -623,7 +606,9 @@ export async function createOrgAdminNode(data: z.infer<typeof createNodeSchema>)
       select: {
         id: true,
         name: true,
+        nameAr: true,
         description: true,
+        descriptionAr: true,
         color: true,
         status: true,
         parentId: true,
@@ -643,7 +628,9 @@ const updateNodeSchema = z.object({
   nodeId: z.string().uuid(),
   code: z.string().min(1),
   name: z.string().min(2).optional(),
+  nameAr: z.string().optional(),
   description: z.string().optional(),
+  descriptionAr: z.string().optional(),
   parentId: optionalUuidNullable.optional(),
   color: optionalHexColor,
   status: z.nativeEnum(Status).optional(),
@@ -663,7 +650,7 @@ export async function updateOrgAdminNode(data: z.infer<typeof updateNodeSchema>)
 
   const parsed = parsedResult.data;
 
-  const existing = await prismaNode.findFirst<{ id: string; nodeType: { id: string; code: unknown } }>({
+  const existing = await (prisma.node as any).findFirst({
     where: {
       id: parsed.nodeId,
       orgId: session.user.orgId,
@@ -696,7 +683,7 @@ export async function updateOrgAdminNode(data: z.infer<typeof updateNodeSchema>)
         };
       }
 
-      const parent = await prismaNode.findFirst<{ id: string; nodeType: { code: unknown } }>({
+      const parent = await (prisma.node as any).findFirst({
         where: {
           id: parentId,
           orgId: session.user.orgId,
@@ -750,19 +737,13 @@ export async function updateOrgAdminNode(data: z.infer<typeof updateNodeSchema>)
   }
 
   try {
-    const node = await prismaNode.update<{
-      id: string;
-      name: string;
-      description: string | null;
-      color: string;
-      status: Status;
-      parentId: string | null;
-      createdAt: Date;
-    }>({
+    const node = await (prisma.node as any).update({
       where: { id: parsed.nodeId },
       data: {
         ...(typeof parsed.name === "string" ? { name: parsed.name } : {}),
+        ...(typeof parsed.nameAr === "string" ? { nameAr: parsed.nameAr || null } : {}),
         ...(typeof parsed.description !== "undefined" ? { description: parsed.description || null } : {}),
+        ...(typeof parsed.descriptionAr !== "undefined" ? { descriptionAr: parsed.descriptionAr || null } : {}),
         ...(typeof parsed.parentId !== "undefined" ? { parentId: parsed.parentId } : {}),
         ...(typeof parsed.color !== "undefined" ? { color: parsed.color } : {}),
         ...(typeof parsed.status !== "undefined" ? { status: parsed.status } : {}),
@@ -771,7 +752,9 @@ export async function updateOrgAdminNode(data: z.infer<typeof updateNodeSchema>)
       select: {
         id: true,
         name: true,
+        nameAr: true,
         description: true,
+        descriptionAr: true,
         color: true,
         status: true,
         parentId: true,
@@ -785,217 +768,6 @@ export async function updateOrgAdminNode(data: z.infer<typeof updateNodeSchema>)
     const message = error instanceof Error ? error.message : "Failed to update node";
     return { success: false, error: message };
   }
-}
-
-const deleteNodeSchema = z.object({
-  nodeId: z.string().uuid(),
-});
-
-export async function deleteOrgAdminNode(data: z.infer<typeof deleteNodeSchema>) {
-  const session = await requireOrgAdmin();
-  const parsedResult = deleteNodeSchema.safeParse(data);
-  if (!parsedResult.success) {
-    return {
-      success: false,
-      error: "Validation failed",
-      issues: zodIssues(parsedResult.error),
-    };
-  }
-
-  const parsed = parsedResult.data;
-
-  try {
-    const existing = await prismaNode.findFirst<{ id: string }>({
-      where: {
-        id: parsed.nodeId,
-        orgId: session.user.orgId,
-        deletedAt: null,
-      },
-      select: { id: true },
-    });
-
-    if (!existing) return { success: false, error: "Node not found." };
-
-    await prismaNode.update({
-      where: { id: parsed.nodeId },
-      data: { deletedAt: new Date() },
-      select: { id: true },
-    });
-
-    return { success: true };
-  } catch (error: unknown) {
-    console.error("Failed to delete node:", error);
-    const message = error instanceof Error ? error.message : "Failed to delete node";
-    return { success: false, error: message };
-  }
-}
-
-const getNodeDetailSchema = z.object({
-  nodeId: z.string().uuid(),
-  code: z.string().min(1),
-});
-
-function buildSubtreeIds(input: { rootId: string; nodes: Array<{ id: string; parentId: string | null }> }) {
-  const childrenByParent = new Map<string, string[]>();
-  for (const n of input.nodes) {
-    if (!n.parentId) continue;
-    const list = childrenByParent.get(n.parentId) ?? [];
-    list.push(n.id);
-    childrenByParent.set(n.parentId, list);
-  }
-
-  const ids: string[] = [];
-  const queue: string[] = [input.rootId];
-  const seen = new Set<string>();
-
-  while (queue.length) {
-    const current = queue.shift();
-    if (!current) break;
-    if (seen.has(current)) continue;
-    seen.add(current);
-    ids.push(current);
-    const children = childrenByParent.get(current) ?? [];
-    for (const child of children) queue.push(child);
-  }
-
-  return ids;
-}
-
-export async function getOrgAdminNodeDetail(data: z.infer<typeof getNodeDetailSchema>) {
-  const session = await requireOrgAdmin();
-  const parsedResult = getNodeDetailSchema.safeParse(data);
-  if (!parsedResult.success) return null;
-
-  const parsed = parsedResult.data;
-
-  const { enabled, nodeType } = await resolveEnabledNodeTypeByCode({ orgId: session.user.orgId, code: parsed.code });
-  if (!nodeType) return null;
-
-  const node = await prismaNode.findFirst<{
-    id: string;
-    name: string;
-    description: string | null;
-    color: string;
-    status: Status;
-    parentId: string | null;
-    createdAt: Date;
-    parent: { id: string; name: string; color: string; status: Status } | null;
-    nodeType: { id: string; code: unknown; displayName: string; levelOrder: number };
-  }>({
-    where: {
-      id: parsed.nodeId,
-      orgId: session.user.orgId,
-      deletedAt: null,
-      nodeTypeId: nodeType.id,
-    },
-    select: {
-      id: true,
-      name: true,
-      description: true,
-      color: true,
-      status: true,
-      parentId: true,
-      createdAt: true,
-      parent: { select: { id: true, name: true, color: true, status: true } },
-      nodeType: { select: { id: true, code: true, displayName: true, levelOrder: true } },
-    },
-  });
-
-  if (!node) return null;
-
-  const lower = getDirectLowerEnabledNodeType({ enabled, currentCode: String(node.nodeType.code) });
-  const lowerTypeId = lower ? (enabled.find((t) => String(t.code) === String(lower.code)) as { id: string } | undefined)?.id : undefined;
-
-  const children = lowerTypeId
-    ? await prismaNode.findMany<{
-        id: string;
-        name: string;
-        description: string | null;
-        color: string;
-        status: Status;
-        _count: { children: number; kpis: number };
-      }>({
-        where: {
-          orgId: session.user.orgId,
-          deletedAt: null,
-          parentId: node.id,
-          nodeTypeId: lowerTypeId,
-        },
-        orderBy: [{ name: "asc" }],
-        select: {
-          id: true,
-          name: true,
-          description: true,
-          color: true,
-          status: true,
-          _count: { select: { children: true, kpis: true } },
-        },
-      })
-    : [];
-
-  const allNodes = await prismaNode.findMany<{ id: string; parentId: string | null }>({
-    where: {
-      orgId: session.user.orgId,
-      deletedAt: null,
-    },
-    select: {
-      id: true,
-      parentId: true,
-    },
-  });
-
-  const subtreeIds = buildSubtreeIds({ rootId: node.id, nodes: allNodes });
-
-  const kpis = await prismaKpiDefinition.findMany<{
-    id: string;
-    name: string;
-    description: string | null;
-    status: unknown;
-    unit: string | null;
-    baselineValue: number | null;
-    targetValue: number | null;
-    primaryNodeId: string;
-    primaryNode: { id: string; name: string; nodeType: { code: unknown; displayName: string } };
-    ownerUser: { id: string; name: string; role: Role } | null;
-  }>({
-    where: {
-      orgId: session.user.orgId,
-      primaryNodeId: { in: subtreeIds },
-    },
-    orderBy: [{ name: "asc" }],
-    select: {
-      id: true,
-      name: true,
-      description: true,
-      status: true,
-      unit: true,
-      baselineValue: true,
-      targetValue: true,
-      primaryNodeId: true,
-      primaryNode: {
-        select: {
-          id: true,
-          name: true,
-          nodeType: { select: { code: true, displayName: true } },
-        },
-      },
-      ownerUser: {
-        select: {
-          id: true,
-          name: true,
-          role: true,
-        },
-      },
-    },
-  });
-
-  return {
-    node,
-    children,
-    subtreeIds,
-    kpis,
-    enabledNodeTypes: enabled,
-  };
 }
 
 export async function updateOrgAdminDepartment(data: z.infer<typeof updateOrgDepartmentSchema>) {
@@ -1012,7 +784,7 @@ export async function updateOrgAdminDepartment(data: z.infer<typeof updateOrgDep
   const parsed = parsedResult.data;
 
   try {
-    const existing = await prisma.department.findFirst({
+    const existing = await (prisma.department as any).findFirst({
       where: {
         id: parsed.departmentId,
         orgId: session.user.orgId,
@@ -1023,10 +795,13 @@ export async function updateOrgAdminDepartment(data: z.infer<typeof updateOrgDep
 
     if (!existing) return { success: false, error: "Department not found." };
 
-    const department = await prisma.department.update({
+    const department = await (prisma.department as any).update({
       where: { id: parsed.departmentId },
-      data: { name: parsed.name },
-      select: { id: true, name: true, createdAt: true },
+      data: {
+        name: parsed.name,
+        nameAr: parsed.nameAr || null,
+      },
+      select: { id: true, name: true, nameAr: true, createdAt: true },
     });
 
     return { success: true, department };
@@ -1051,7 +826,7 @@ export async function deleteOrgAdminDepartment(data: z.infer<typeof deleteOrgDep
   const parsed = parsedResult.data;
 
   try {
-    const existing = await prisma.department.findFirst({
+    const existing = await (prisma.department as any).findFirst({
       where: {
         id: parsed.departmentId,
         orgId: session.user.orgId,
@@ -1062,7 +837,7 @@ export async function deleteOrgAdminDepartment(data: z.infer<typeof deleteOrgDep
 
     if (!existing) return { success: false, error: "Department not found." };
 
-    await prisma.department.update({
+    await (prisma.department as any).update({
       where: { id: parsed.departmentId },
       data: { deletedAt: new Date() },
       select: { id: true },
@@ -1079,7 +854,7 @@ export async function deleteOrgAdminDepartment(data: z.infer<typeof deleteOrgDep
 export async function getOrgAdminDepartments() {
   const session = await requireOrgAdmin();
 
-  return prisma.department.findMany({
+  return (prisma.department as any).findMany({
     where: {
       orgId: session.user.orgId,
       deletedAt: null,
@@ -1088,6 +863,7 @@ export async function getOrgAdminDepartments() {
     select: {
       id: true,
       name: true,
+      nameAr: true,
       createdAt: true,
       _count: {
         select: {
@@ -1342,4 +1118,18 @@ export async function deleteOrgAdminUser(data: z.infer<typeof deleteOrgUserSchem
     const message = error instanceof Error ? error.message : "Failed to delete user";
     return { success: false, error: message };
   }
+}
+
+export async function deleteOrgAdminNode(data: { nodeId: string }) {
+  const session = await requireOrgAdmin();
+  const target = await (prisma.node as any).findFirst({
+    where: { id: data.nodeId, orgId: session.user.orgId, deletedAt: null },
+    select: { id: true },
+  });
+  if (!target) return { success: false, error: "Node not found." };
+  await (prisma.node as any).update({
+    where: { id: data.nodeId },
+    data: { deletedAt: new Date() },
+  });
+  return { success: true };
 }

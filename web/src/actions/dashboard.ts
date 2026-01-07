@@ -6,34 +6,13 @@ import { prisma } from "@/lib/prisma";
 import { getMyEffectiveKpiIds } from "@/actions/responsibilities";
 import { KpiValueStatus, type Role, type Status } from "@prisma/client";
 
-const prismaOrganization = (prisma as unknown as { organization: unknown }).organization as {
-  findFirst: <T>(args: unknown) => Promise<T | null>;
-};
-
-const prismaOrganizationNodeType = (prisma as unknown as { organizationNodeType: unknown }).organizationNodeType as {
-  findMany: <T>(args: unknown) => Promise<T[]>;
-};
-
-const prismaNode = (prisma as unknown as { node: unknown }).node as {
-  findMany: <T>(args: unknown) => Promise<T[]>;
-};
-
-const prismaKpiDefinition = (prisma as unknown as { kpiDefinition: unknown }).kpiDefinition as {
-  findMany: <T>(args: unknown) => Promise<T[]>;
-};
-
-const prismaNodeAssignment = (prisma as unknown as { nodeAssignment: unknown }).nodeAssignment as {
-  findMany: <T>(args: unknown) => Promise<T[]>;
-};
-
-const prismaResponsibilityNodeAssignment = (prisma as unknown as { responsibilityNodeAssignment: unknown })
-  .responsibilityNodeAssignment as {
-  findMany: <T>(args: unknown) => Promise<T[]>;
-};
-
-const prismaKpiValuePeriod = (prisma as unknown as { kpiValuePeriod: unknown }).kpiValuePeriod as {
-  findMany: <T>(args: unknown) => Promise<T[]>;
-};
+const prismaOrganization = (prisma as any).organization;
+const prismaOrganizationNodeType = (prisma as any).organizationNodeType;
+const prismaNode = (prisma as any).node;
+const prismaKpiDefinition = (prisma as any).kpiDefinition;
+const prismaNodeAssignment = (prisma as any).nodeAssignment;
+const prismaResponsibilityNodeAssignment = (prisma as any).responsibilityNodeAssignment;
+const prismaKpiValuePeriod = (prisma as any).kpiValuePeriod;
 
 const ROLE_RANK: Record<string, number> = {
   EMPLOYEE: 0,
@@ -128,13 +107,11 @@ export async function getMyDashboardData() {
   const isAdmin = String(userRole) === "ADMIN";
 
   const [org, enabledNodeTypesRows] = await Promise.all([
-    prismaOrganization.findFirst<{ id: string; name: string; kpiApprovalLevel: KpiApprovalLevelCode }>({
+    (prisma as any).organization.findFirst({
       where: { id: orgId, deletedAt: null },
-      select: { id: true, name: true, kpiApprovalLevel: true },
+      select: { id: true, name: true, nameAr: true, kpiApprovalLevel: true },
     }),
-    prismaOrganizationNodeType.findMany<{
-      nodeType: { id: string; code: unknown; displayName: string; levelOrder: number };
-    }>({
+    (prisma as any).organizationNodeType.findMany({
       where: { orgId },
       orderBy: { nodeType: { levelOrder: "asc" } },
       select: {
@@ -143,6 +120,7 @@ export async function getMyDashboardData() {
             id: true,
             code: true,
             displayName: true,
+            nameAr: true,
             levelOrder: true,
           },
         },
@@ -150,35 +128,16 @@ export async function getMyDashboardData() {
     }),
   ]);
 
-  const enabledNodeTypes = enabledNodeTypesRows.map((r) => r.nodeType);
+  const enabledNodeTypes = (enabledNodeTypesRows as any[]).map((r) => r.nodeType);
 
-  const approvalLevel = org?.kpiApprovalLevel ?? "MANAGER";
+  const approvalLevel = (org as any)?.kpiApprovalLevel ?? "MANAGER";
   const canApprove = resolveRoleRank(userRole) >= resolveRoleRank(approvalLevel);
 
   const effectiveKpiIds = isAdmin ? null : await getMyEffectiveKpiIds();
 
   const myKpis = effectiveKpiIds && effectiveKpiIds.length === 0
     ? []
-    : await prismaKpiDefinition.findMany<{
-        id: string;
-        name: string;
-        unit: string | null;
-        targetValue: number | null;
-        baselineValue: number | null;
-        periodType: unknown;
-        primaryNode: {
-          id: string;
-          name: string;
-          nodeType: { code: unknown; displayName: string; levelOrder: number };
-        };
-        ownerUser: { id: string; name: string; role: Role } | null;
-        values: Array<{
-          calculatedValue: number | null;
-          status: KpiValueStatus;
-          periodEnd: Date;
-          periodStart: Date;
-        }>;
-      }>({
+    : await prismaKpiDefinition.findMany({
         where: {
           orgId,
           ...(effectiveKpiIds ? { id: { in: effectiveKpiIds } } : {}),
@@ -187,7 +146,9 @@ export async function getMyDashboardData() {
         select: {
           id: true,
           name: true,
+          nameAr: true,
           unit: true,
+          unitAr: true,
           targetValue: true,
           baselineValue: true,
           periodType: true,
@@ -195,7 +156,8 @@ export async function getMyDashboardData() {
             select: {
               id: true,
               name: true,
-              nodeType: { select: { code: true, displayName: true, levelOrder: true } },
+              nameAr: true,
+              nodeType: { select: { code: true, displayName: true, nameAr: true, levelOrder: true } },
             },
           },
           ownerUser: { select: { id: true, name: true, role: true } },
@@ -215,7 +177,7 @@ export async function getMyDashboardData() {
   const now = new Date();
 
   const completion = (() => {
-    const rows = myKpis
+    const rows = (myKpis as any[])
       .map((k) => {
         const latest = k.values[0] ?? null;
         const target = typeof k.targetValue === "number" && Number.isFinite(k.targetValue) && k.targetValue > 0 ? k.targetValue : null;
@@ -266,7 +228,7 @@ export async function getMyDashboardData() {
       return { categories, values };
     }
 
-    const rows = await prismaKpiValuePeriod.findMany<{ updatedAt: Date }>({
+    const rows = await prismaKpiValuePeriod.findMany({
       where: {
         kpi: {
           orgId,
@@ -281,7 +243,7 @@ export async function getMyDashboardData() {
     });
 
     const byMonth = new Map<string, number>();
-    for (const r of rows) {
+    for (const r of rows as any[]) {
       const key = formatMonthKey(r.updatedAt);
       byMonth.set(key, (byMonth.get(key) ?? 0) + 1);
     }
@@ -306,7 +268,7 @@ export async function getMyDashboardData() {
     LOCKED: 0,
   };
 
-  for (const k of myKpis) {
+  for (const k of myKpis as any[]) {
     const latest = k.values[0] ?? null;
     if (!latest) {
       kpiStatusCounts.NO_DATA += 1;
@@ -315,18 +277,7 @@ export async function getMyDashboardData() {
     kpiStatusCounts[String(latest.status)] = (kpiStatusCounts[String(latest.status)] ?? 0) + 1;
   }
 
-  const allNodes = await prismaNode.findMany<{
-    id: string;
-    parentId: string | null;
-    ownerUserId: string | null;
-    name: string;
-    color: string;
-    status: Status;
-    progress: number;
-    startDate: Date | null;
-    endDate: Date | null;
-    nodeType: { id: string; code: unknown; displayName: string; levelOrder: number };
-  }>({
+  const allNodes = await prismaNode.findMany({
     where: {
       orgId,
       deletedAt: null,
@@ -336,32 +287,20 @@ export async function getMyDashboardData() {
       parentId: true,
       ownerUserId: true,
       name: true,
+      nameAr: true,
       color: true,
       status: true,
       progress: true,
       startDate: true,
       endDate: true,
-      nodeType: { select: { id: true, code: true, displayName: true, levelOrder: true } },
+      nodeType: { select: { id: true, code: true, displayName: true, nameAr: true, levelOrder: true } },
     },
   });
 
-  const nodeById = new Map(allNodes.map((n) => [n.id, n] as const));
-  const childrenByParent = buildChildrenByParent(allNodes.map((n) => ({ id: n.id, parentId: n.parentId })));
+  const nodeById = new Map((allNodes as any[]).map((n) => [n.id, n] as const));
+  const childrenByParent = buildChildrenByParent((allNodes as any[]).map((n) => ({ id: n.id, parentId: n.parentId })));
 
-  const myAssignedWork = await prismaNodeAssignment.findMany<{
-    role: unknown;
-    node: {
-      id: string;
-      name: string;
-      color: string;
-      status: Status;
-      progress: number;
-      startDate: Date | null;
-      endDate: Date | null;
-      nodeType: { code: unknown; displayName: string; levelOrder: number };
-      parent: { id: string; name: string; nodeType: { displayName: string } } | null;
-    };
-  }>({
+  const myAssignedWork = await prismaNodeAssignment.findMany({
     where: {
       userId,
       node: {
@@ -376,19 +315,20 @@ export async function getMyDashboardData() {
         select: {
           id: true,
           name: true,
+          nameAr: true,
           color: true,
           status: true,
           progress: true,
           startDate: true,
           endDate: true,
-          nodeType: { select: { code: true, displayName: true, levelOrder: true } },
-          parent: { select: { id: true, name: true, nodeType: { select: { displayName: true, code: true } } } },
+          nodeType: { select: { code: true, displayName: true, nameAr: true, levelOrder: true } },
+          parent: { select: { id: true, name: true, nameAr: true, nodeType: { select: { displayName: true, nameAr: true, code: true } } } },
         },
       },
     },
   });
 
-  const ownedItems = allNodes
+  const ownedItems = (allNodes as any[])
     .filter((n) => n.ownerUserId === userId)
     .map((n) => {
       const parent = n.parentId ? nodeById.get(n.parentId) ?? null : null;
@@ -398,6 +338,7 @@ export async function getMyDashboardData() {
       return {
         id: n.id,
         name: n.name,
+        nameAr: n.nameAr,
         color: n.color,
         status: String(n.status),
         progress: n.progress,
@@ -407,13 +348,16 @@ export async function getMyDashboardData() {
         type: {
           code: String(n.nodeType.code).toLowerCase(),
           displayName: n.nodeType.displayName,
+          nameAr: n.nodeType.nameAr,
           levelOrder: n.nodeType.levelOrder,
         },
         parent: parent
           ? {
               id: parent.id,
               name: parent.name,
+              nameAr: parent.nameAr,
               typeDisplayName: parent.nodeType.displayName,
+              typeDisplayNameAr: parent.nodeType.nameAr,
               typeCode: String(parent.nodeType.code).toLowerCase(),
             }
           : null,
@@ -427,7 +371,7 @@ export async function getMyDashboardData() {
       return a.name.localeCompare(b.name);
     });
 
-  const workItems = myAssignedWork
+  const workItems = (myAssignedWork as any[])
     .map((a) => {
       const endDateIso = a.node.endDate ? a.node.endDate.toISOString() : null;
       const startDateIso = a.node.startDate ? a.node.startDate.toISOString() : null;
@@ -436,6 +380,7 @@ export async function getMyDashboardData() {
         assignmentRole: String(a.role ?? ""),
         id: a.node.id,
         name: a.node.name,
+        nameAr: a.node.nameAr,
         color: a.node.color,
         status: String(a.node.status),
         progress: a.node.progress,
@@ -445,13 +390,16 @@ export async function getMyDashboardData() {
         type: {
           code: String(a.node.nodeType.code).toLowerCase(),
           displayName: a.node.nodeType.displayName,
+          nameAr: a.node.nodeType.nameAr,
           levelOrder: a.node.nodeType.levelOrder,
         },
         parent: a.node.parent
           ? {
               id: a.node.parent.id,
               name: a.node.parent.name,
+              nameAr: a.node.parent.nameAr,
               typeDisplayName: a.node.parent.nodeType.displayName,
+              typeDisplayNameAr: a.node.parent.nodeType.nameAr,
               typeCode: String(a.node.parent.nodeType.code).toLowerCase(),
             }
           : null,
@@ -464,16 +412,7 @@ export async function getMyDashboardData() {
       return (a.type.levelOrder ?? 0) - (b.type.levelOrder ?? 0);
     });
 
-  const responsibilityRoots = await prismaResponsibilityNodeAssignment.findMany<{
-    rootNode: {
-      id: string;
-      name: string;
-      color: string;
-      status: Status;
-      progress: number;
-      nodeType: { code: unknown; displayName: string; levelOrder: number };
-    };
-  }>({
+  const responsibilityRoots = await prismaResponsibilityNodeAssignment.findMany({
     where: {
       orgId,
       assignedToId: userId,
@@ -483,21 +422,22 @@ export async function getMyDashboardData() {
         select: {
           id: true,
           name: true,
+          nameAr: true,
           color: true,
           status: true,
           progress: true,
-          nodeType: { select: { code: true, displayName: true, levelOrder: true } },
+          nodeType: { select: { code: true, displayName: true, nameAr: true, levelOrder: true } },
         },
       },
     },
   });
 
   const kpiCountByPrimaryNodeId = new Map<string, number>();
-  for (const k of myKpis) {
+  for (const k of myKpis as any[]) {
     kpiCountByPrimaryNodeId.set(k.primaryNode.id, (kpiCountByPrimaryNodeId.get(k.primaryNode.id) ?? 0) + 1);
   }
 
-  const scopes = responsibilityRoots
+  const scopes = (responsibilityRoots as any[])
     .map((r) => {
       const root = r.rootNode;
       const subtreeIds = buildSubtreeIds({ rootId: root.id, childrenByParent });
@@ -513,10 +453,11 @@ export async function getMyDashboardData() {
       const atRiskItems: Array<{
         id: string;
         name: string;
+        nameAr: string | null;
         progress: number;
         status: string;
         color: string;
-        type: { displayName: string; levelOrder: number; code: string };
+        type: { displayName: string; nameAr: string | null; levelOrder: number; code: string };
       }> = [];
 
       for (const id of subtreeIds) {
@@ -532,10 +473,16 @@ export async function getMyDashboardData() {
           atRiskItems.push({
             id: n.id,
             name: n.name,
+            nameAr: n.nameAr,
             progress: n.progress,
             status: String(n.status),
             color: n.color,
-            type: { displayName: n.nodeType.displayName, levelOrder: n.nodeType.levelOrder, code: String(n.nodeType.code).toLowerCase() },
+            type: {
+              displayName: n.nodeType.displayName,
+              nameAr: n.nodeType.nameAr,
+              levelOrder: n.nodeType.levelOrder,
+              code: String(n.nodeType.code).toLowerCase(),
+            },
           });
         }
       }
@@ -555,12 +502,14 @@ export async function getMyDashboardData() {
         root: {
           id: root.id,
           name: root.name,
+          nameAr: root.nameAr,
           color: root.color,
           status: String(root.status),
           progress: root.progress,
           type: {
             code: String(root.nodeType.code).toLowerCase(),
             displayName: root.nodeType.displayName,
+            nameAr: root.nodeType.nameAr,
             levelOrder: root.nodeType.levelOrder,
           },
         },
@@ -575,19 +524,7 @@ export async function getMyDashboardData() {
     });
 
   const approvals = canApprove
-    ? await prismaKpiValuePeriod.findMany<{
-        id: string;
-        kpiId: string;
-        periodEnd: Date;
-        calculatedValue: number | null;
-        submittedAt: Date | null;
-        submittedByUser: { id: string; name: string } | null;
-        kpi: {
-          id: string;
-          name: string;
-          primaryNode: { id: string; name: string; nodeType: { displayName: string } } | null;
-        };
-      }>({
+    ? await prismaKpiValuePeriod.findMany({
         where: {
           status: KpiValueStatus.SUBMITTED,
           kpi: {
@@ -607,20 +544,23 @@ export async function getMyDashboardData() {
             select: {
               id: true,
               name: true,
-              primaryNode: { select: { id: true, name: true, nodeType: { select: { displayName: true, code: true } } } },
+              nameAr: true,
+              primaryNode: { select: { id: true, name: true, nameAr: true, nodeType: { select: { displayName: true, nameAr: true, code: true } } } },
             },
           },
         },
       })
     : [];
 
-  const kpisForUi = myKpis
+  const kpisForUi = (myKpis as any[])
     .map((k) => {
       const latest = k.values[0] ?? null;
       return {
         id: k.id,
         name: k.name,
+        nameAr: k.nameAr,
         unit: k.unit,
+        unitAr: k.unitAr,
         targetValue: k.targetValue,
         baselineValue: k.baselineValue,
         periodType: String(k.periodType ?? ""),
@@ -628,7 +568,9 @@ export async function getMyDashboardData() {
         primary: {
           id: k.primaryNode.id,
           name: k.primaryNode.name,
+          nameAr: k.primaryNode.nameAr,
           typeDisplayName: k.primaryNode.nodeType.displayName,
+          typeDisplayNameAr: k.primaryNode.nodeType.nameAr,
           typeCode: String(k.primaryNode.nodeType.code).toLowerCase(),
         },
         latest: latest
@@ -651,7 +593,7 @@ export async function getMyDashboardData() {
     });
 
   const pendingApprovalsCount = canApprove
-    ? await (prisma as unknown as { kpiValuePeriod: { count: (args: unknown) => Promise<number> } }).kpiValuePeriod.count({
+    ? await (prisma as any).kpiValuePeriod.count({
         where: { status: KpiValueStatus.SUBMITTED, kpi: { orgId } },
       })
     : 0;
@@ -679,10 +621,10 @@ export async function getMyDashboardData() {
     },
     org: {
       id: orgId,
-      name: org?.name ?? "",
+      name: (org as any)?.name ?? "",
       approvalLevel,
     },
-    enabledNodeTypes: enabledNodeTypes.map((t) => ({
+    enabledNodeTypes: enabledNodeTypes.map((t: any) => ({
       id: t.id,
       code: String(t.code),
       displayName: t.displayName,
@@ -701,13 +643,16 @@ export async function getMyDashboardData() {
     scopes,
     workItems: isAdmin ? [] : workItems,
     ownedItems,
-    approvals: approvals.map((a) => ({
+    approvals: (approvals as any[]).map((a) => ({
       id: a.id,
       kpiId: a.kpiId,
       kpiName: a.kpi.name,
+      kpiNameAr: a.kpi.nameAr,
       typeDisplayName: a.kpi.primaryNode?.nodeType.displayName ?? null,
+      typeDisplayNameAr: a.kpi.primaryNode?.nodeType.nameAr ?? null,
       typeCode: a.kpi.primaryNode?.nodeType?.code ? String(a.kpi.primaryNode.nodeType.code).toLowerCase() : null,
       primaryName: a.kpi.primaryNode?.name ?? null,
+      primaryNameAr: a.kpi.primaryNode?.nameAr ?? null,
       calculatedValue: a.calculatedValue,
       submittedAt: a.submittedAt ? a.submittedAt.toISOString() : null,
       submittedBy: a.submittedByUser?.name ?? null,

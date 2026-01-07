@@ -59,7 +59,7 @@ function formatIssues(issues: unknown): string | null {
 export default function UsersPage() {
   const router = useRouter();
   const { user, loading: sessionLoading } = useAuth();
-  const { locale, tr } = useLocale();
+  const { locale, t } = useLocale();
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const userRole = (user as any)?.role as string | undefined;
@@ -159,7 +159,7 @@ export default function UsersPage() {
 
       if (!result.success) {
         const issuesText = formatIssues((result as unknown as { issues?: unknown }).issues);
-        setCreateError(issuesText || result.error || tr("Failed to create user", "فشل إنشاء المستخدم"));
+        setCreateError(issuesText || result.error || t("failedToCreateUser"));
         return;
       }
 
@@ -168,7 +168,7 @@ export default function UsersPage() {
       await loadData();
       router.refresh();
     } catch (error: unknown) {
-      const message = error instanceof Error ? error.message : tr("Failed to create user", "فشل إنشاء المستخدم");
+      const message = error instanceof Error ? error.message : t("failedToCreateUser");
       setCreateError(message);
     } finally {
       setSubmitting(false);
@@ -191,7 +191,7 @@ export default function UsersPage() {
 
       if (!result.success) {
         const issuesText = formatIssues((result as unknown as { issues?: unknown }).issues);
-        setEditError(issuesText || result.error || tr("Failed to update user", "فشل تحديث المستخدم"));
+        setEditError(issuesText || result.error || t("failedToUpdateUser"));
         return;
       }
 
@@ -200,7 +200,7 @@ export default function UsersPage() {
       await loadData();
       router.refresh();
     } catch (error: unknown) {
-      const message = error instanceof Error ? error.message : tr("Failed to update user", "فشل تحديث المستخدم");
+      const message = error instanceof Error ? error.message : t("failedToUpdateUser");
       setEditError(message);
     } finally {
       setSubmitting(false);
@@ -215,7 +215,7 @@ export default function UsersPage() {
       const result = await deleteOrgAdminUser({ userId: selectedUser.id });
       if (!result.success) {
         const issuesText = formatIssues((result as unknown as { issues?: unknown }).issues);
-        setDeleteError(issuesText || result.error || tr("Failed to delete user", "فشل حذف المستخدم"));
+        setDeleteError(issuesText || result.error || t("failedToDeleteUser"));
         return;
       }
 
@@ -224,7 +224,7 @@ export default function UsersPage() {
       await loadData();
       router.refresh();
     } catch (error: unknown) {
-      const message = error instanceof Error ? error.message : tr("Failed to delete user", "فشل حذف المستخدم");
+      const message = error instanceof Error ? error.message : t("failedToDeleteUser");
       setDeleteError(message);
     } finally {
       setSubmitting(false);
@@ -234,7 +234,7 @@ export default function UsersPage() {
   if (sessionLoading) {
     return (
       <div className="rounded-2xl border border-border bg-card p-8">
-        <p className="text-sm text-muted-foreground">{tr("Loading…", "جارٍ التحميل…")}</p>
+        <p className="text-sm text-muted-foreground">{t("loading")}</p>
       </div>
     );
   }
@@ -242,9 +242,9 @@ export default function UsersPage() {
   if (!user) {
     return (
       <div className="rounded-2xl border border-border bg-card p-8">
-        <p className="text-sm text-muted-foreground">{tr("No active session.", "لا توجد جلسة نشطة.")}</p>
+        <p className="text-sm text-muted-foreground">{t("noActiveSession")}</p>
         <Link href={`/${locale}/auth/login`} className="mt-3 inline-flex text-sm font-semibold text-primary hover:opacity-90">
-          {tr("Go to sign in", "الذهاب لتسجيل الدخول")}
+          {t("goToSignIn")}
         </Link>
       </div>
     );
@@ -253,9 +253,9 @@ export default function UsersPage() {
   if (userRole !== "ADMIN") {
     return (
       <div className="rounded-2xl border border-border bg-card p-8">
-        <p className="text-sm text-muted-foreground">{tr("Unauthorized.", "غير مصرح.")}</p>
+        <p className="text-sm text-muted-foreground">{t("unauthorized")}</p>
         <Link href={`/${locale}/overview`} className="mt-3 inline-flex text-sm font-semibold text-primary hover:opacity-90">
-          {tr("Back", "رجوع")}
+          {t("back")}
         </Link>
       </div>
     );
@@ -264,7 +264,7 @@ export default function UsersPage() {
   return (
     <div className="space-y-8">
       <div className="flex items-center justify-between gap-3">
-        <PageHeader title={tr("Users", "المستخدمون")} subtitle={tr("Manage users in your organization.", "إدارة مستخدمي مؤسستك.")} />
+        <PageHeader title={t("users")} subtitle={t("usersSubtitle")} />
 
         <Dialog
           open={createOpen}
@@ -276,14 +276,14 @@ export default function UsersPage() {
           <DialogTrigger asChild>
             <Button>
               <Plus className="me-2 h-4 w-4" />
-              {tr("New User", "مستخدم جديد")}
+              {t("newUser")}
             </Button>
           </DialogTrigger>
           <DialogContent className="max-h-[90vh] overflow-y-auto border-border bg-card text-foreground">
             <DialogHeader>
-              <DialogTitle>{tr("Create User", "إنشاء مستخدم")}</DialogTitle>
+              <DialogTitle>{t("createUser")}</DialogTitle>
               <DialogDescription className="text-muted-foreground">
-                {tr("Add a new user to your organization.", "إضافة مستخدم جديد إلى مؤسستك.")}
+                {t("addUserDesc")}
               </DialogDescription>
             </DialogHeader>
             <form onSubmit={handleCreate} className="space-y-4">
@@ -294,12 +294,12 @@ export default function UsersPage() {
               ) : null}
 
               <div className="space-y-2">
-                <Label htmlFor="name">{tr("Full Name", "الاسم الكامل")}</Label>
+                <Label htmlFor="name">{t("fullName")}</Label>
                 <Input id="name" value={newUser.name} onChange={(e) => setNewUser((p) => ({ ...p, name: e.target.value }))} required className="bg-card" />
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor="email">{tr("Email", "البريد الإلكتروني")}</Label>
+                <Label htmlFor="email">{t("email")}</Label>
                 <Input
                   id="email"
                   type="email"
@@ -311,7 +311,7 @@ export default function UsersPage() {
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor="password">{tr("Password", "كلمة المرور")}</Label>
+                <Label htmlFor="password">{t("password")}</Label>
                 <Input
                   id="password"
                   type="password"
@@ -324,7 +324,7 @@ export default function UsersPage() {
               </div>
 
               <div className="space-y-2">
-                <Label>{tr("Role", "الدور")}</Label>
+                <Label>{t("role")}</Label>
                 <Select
                   value={newUser.role}
                   onValueChange={(val) => {
@@ -338,7 +338,7 @@ export default function UsersPage() {
                   }}
                 >
                   <SelectTrigger className="bg-card">
-                    <SelectValue placeholder={tr("Select Role", "اختر الدور")} />
+                    <SelectValue placeholder={t("selectRole")} />
                   </SelectTrigger>
                   <SelectContent>
                     {roles.map((r) => (
@@ -351,17 +351,17 @@ export default function UsersPage() {
               </div>
 
               <div className="space-y-2">
-                <Label>{tr("Manager", "المدير")}</Label>
+                <Label>{t("manager")}</Label>
                 <Select
                   value={newUser.managerId || "__none__"}
                   onValueChange={(val) => setNewUser((p) => ({ ...p, managerId: val === "__none__" ? "" : val }))}
                   disabled={newUser.role === "ADMIN"}
                 >
                   <SelectTrigger className="bg-card">
-                    <SelectValue placeholder={tr("Select Manager", "اختر المدير")} />
+                    <SelectValue placeholder={t("selectManager")} />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="__none__">{tr("No manager", "بدون مدير")}</SelectItem>
+                    <SelectItem value="__none__">{t("noManager")}</SelectItem>
                     {createManagerOptions.map((m) => (
                       <SelectItem key={m.id} value={m.id}>
                         {managerLabel(m)}
@@ -372,16 +372,16 @@ export default function UsersPage() {
               </div>
 
               <div className="space-y-2">
-                <Label>{tr("Department", "الإدارة")}</Label>
+                <Label>{t("department")}</Label>
                 <Select
                   value={newUser.departmentId || "__none__"}
                   onValueChange={(val) => setNewUser((p) => ({ ...p, departmentId: val === "__none__" ? "" : val }))}
                 >
                   <SelectTrigger className="bg-card">
-                    <SelectValue placeholder={tr("Select Department", "اختر الإدارة")} />
+                    <SelectValue placeholder={t("selectDepartment")} />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="__none__">{tr("No department", "بدون إدارة")}</SelectItem>
+                    <SelectItem value="__none__">{t("noDepartment")}</SelectItem>
                     {departments.map((d) => (
                       <SelectItem key={d.id} value={d.id}>
                         {d.name}
@@ -393,10 +393,10 @@ export default function UsersPage() {
 
               <DialogFooter>
                 <Button type="button" variant="ghost" onClick={() => setCreateOpen(false)}>
-                  {tr("Cancel", "إلغاء")}
+                  {t("cancel")}
                 </Button>
                 <Button type="submit" disabled={submitting}>
-                  {submitting ? tr("Creating...", "جارٍ الإنشاء...") : tr("Create", "إنشاء")}
+                  {submitting ? t("creating") : t("create")}
                 </Button>
               </DialogFooter>
             </form>
@@ -406,32 +406,32 @@ export default function UsersPage() {
 
       <Card className="bg-card/70 backdrop-blur shadow-sm">
         <CardHeader>
-          <CardTitle className="text-base">{tr("User Directory", "دليل المستخدمين")}</CardTitle>
-          <CardDescription>{tr("Create, update, and remove users.", "إنشاء وتحديث وحذف المستخدمين.")}</CardDescription>
+          <CardTitle className="text-base">{t("userDirectory")}</CardTitle>
+          <CardDescription>{t("userDirectoryDesc")}</CardDescription>
         </CardHeader>
         <CardContent>
           <div className="overflow-hidden rounded-xl border border-border">
             <Table>
               <TableHeader>
                 <TableRow>
-                  <TableHead>{tr("User", "المستخدم")}</TableHead>
-                  <TableHead>{tr("Role", "الدور")}</TableHead>
-                  <TableHead>{tr("Manager", "المدير")}</TableHead>
-                  <TableHead>{tr("Department", "الإدارة")}</TableHead>
-                  <TableHead className="text-right">{tr("Actions", "الإجراءات")}</TableHead>
+                  <TableHead>{t("user")}</TableHead>
+                  <TableHead>{t("role")}</TableHead>
+                  <TableHead>{t("manager")}</TableHead>
+                  <TableHead>{t("department")}</TableHead>
+                  <TableHead className="text-right">{t("actions")}</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
                 {loading ? (
                   <TableRow>
                     <TableCell colSpan={5} className="py-8 text-center text-muted-foreground">
-                      {tr("Loading...", "جارٍ التحميل...")}
+                      {t("loading")}
                     </TableCell>
                   </TableRow>
                 ) : users.length === 0 ? (
                   <TableRow>
                     <TableCell colSpan={5} className="py-8 text-center text-muted-foreground">
-                      {tr("No users found.", "لا يوجد مستخدمين.")}
+                      {t("noUsersFound")}
                     </TableCell>
                   </TableRow>
                 ) : (
@@ -505,9 +505,9 @@ export default function UsersPage() {
       >
         <DialogContent className="max-h-[90vh] overflow-y-auto border-border bg-card text-foreground">
           <DialogHeader>
-            <DialogTitle>{tr("Edit User", "تعديل المستخدم")}</DialogTitle>
+            <DialogTitle>{t("editUser")}</DialogTitle>
             <DialogDescription className="text-muted-foreground">
-              {tr("Update user details.", "تحديث بيانات المستخدم.")}
+              {t("updateUserDetailsDesc")}
             </DialogDescription>
           </DialogHeader>
           <form onSubmit={handleUpdate} className="space-y-4">
@@ -518,12 +518,12 @@ export default function UsersPage() {
             ) : null}
 
             <div className="space-y-2">
-              <Label htmlFor="edit-name">{tr("Full Name", "الاسم الكامل")}</Label>
+              <Label htmlFor="edit-name">{t("fullName")}</Label>
               <Input id="edit-name" value={editUser.name} onChange={(e) => setEditUser((p) => ({ ...p, name: e.target.value }))} required className="bg-card" />
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="edit-email">{tr("Email", "البريد الإلكتروني")}</Label>
+              <Label htmlFor="edit-email">{t("email")}</Label>
               <Input
                 id="edit-email"
                 type="email"
@@ -535,7 +535,7 @@ export default function UsersPage() {
             </div>
 
             <div className="space-y-2">
-              <Label>{tr("Role", "الدور")}</Label>
+              <Label>{t("role")}</Label>
               <Select
                 value={editUser.role}
                 onValueChange={(val) => {
@@ -549,7 +549,7 @@ export default function UsersPage() {
                 }}
               >
                 <SelectTrigger className="bg-card">
-                  <SelectValue placeholder={tr("Select Role", "اختر الدور")} />
+                  <SelectValue placeholder={t("selectRole")} />
                 </SelectTrigger>
                 <SelectContent>
                   {roles.map((r) => (
@@ -562,17 +562,17 @@ export default function UsersPage() {
             </div>
 
             <div className="space-y-2">
-              <Label>{tr("Manager", "المدير")}</Label>
+              <Label>{t("manager")}</Label>
               <Select
                 value={editUser.managerId || "__none__"}
                 onValueChange={(val) => setEditUser((p) => ({ ...p, managerId: val === "__none__" ? "" : val }))}
                 disabled={editUser.role === "ADMIN"}
               >
                 <SelectTrigger className="bg-card">
-                  <SelectValue placeholder={tr("Select Manager", "اختر المدير")} />
+                  <SelectValue placeholder={t("selectManager")} />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="__none__">{tr("No manager", "بدون مدير")}</SelectItem>
+                  <SelectItem value="__none__">{t("noManager")}</SelectItem>
                   {editManagerOptions.map((m) => (
                     <SelectItem key={m.id} value={m.id}>
                       {managerLabel(m)}
@@ -583,16 +583,16 @@ export default function UsersPage() {
             </div>
 
             <div className="space-y-2">
-              <Label>{tr("Department", "الإدارة")}</Label>
+              <Label>{t("department")}</Label>
               <Select
                 value={editUser.departmentId || "__none__"}
                 onValueChange={(val) => setEditUser((p) => ({ ...p, departmentId: val === "__none__" ? "" : val }))}
               >
                 <SelectTrigger className="bg-card">
-                  <SelectValue placeholder={tr("Select Department", "اختر الإدارة")} />
+                  <SelectValue placeholder={t("selectDepartment")} />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="__none__">{tr("No department", "بدون إدارة")}</SelectItem>
+                  <SelectItem value="__none__">{t("noDepartment")}</SelectItem>
                   {departments.map((d) => (
                     <SelectItem key={d.id} value={d.id}>
                       {d.name}
@@ -604,10 +604,10 @@ export default function UsersPage() {
 
             <DialogFooter>
               <Button type="button" variant="ghost" onClick={() => setEditOpen(false)}>
-                {tr("Cancel", "إلغاء")}
+                {t("cancel")}
               </Button>
               <Button type="submit" disabled={submitting}>
-                {submitting ? tr("Saving...", "جارٍ الحفظ...") : tr("Save", "حفظ")}
+                {submitting ? t("saving") : t("save")}
               </Button>
             </DialogFooter>
           </form>
@@ -624,9 +624,9 @@ export default function UsersPage() {
       >
         <DialogContent className="border-border bg-card text-foreground">
           <DialogHeader>
-            <DialogTitle>{tr("Delete user?", "حذف المستخدم؟")}</DialogTitle>
+            <DialogTitle>{t("deleteUserConfirm")}</DialogTitle>
             <DialogDescription className="text-muted-foreground">
-              {tr("This will remove the user from your organization.", "سيتم حذف المستخدم من مؤسستك.")}
+              {t("removeUserDesc")}
             </DialogDescription>
           </DialogHeader>
 
@@ -643,10 +643,10 @@ export default function UsersPage() {
 
           <DialogFooter>
             <Button type="button" variant="ghost" onClick={() => setDeleteOpen(false)}>
-              {tr("Cancel", "إلغاء")}
+              {t("cancel")}
             </Button>
             <Button type="button" variant="destructive" onClick={() => void handleDelete()} disabled={submitting}>
-              {submitting ? tr("Deleting...", "جارٍ الحذف...") : tr("Delete", "حذف")}
+              {submitting ? t("deleting") : t("delete")}
             </Button>
           </DialogFooter>
         </DialogContent>

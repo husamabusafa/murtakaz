@@ -7,14 +7,17 @@ import { Input } from "@/components/ui/input";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Button } from "@/components/ui/button";
 
+import { useLocale } from "@/providers/locale-provider";
+
 export type NodePickerNode = {
   id: string;
   name: string;
+  nameAr?: string | null;
   parentId: string | null;
-  nodeType?: { displayName?: string | null } | null;
+  nodeType?: { displayName?: string | null; nameAr?: string | null } | null;
 };
 
-function buildMaps(nodes: NodePickerNode[]) {
+function buildMaps(nodes: NodePickerNode[], df: (en: string | null | undefined, ar: string | null | undefined) => string) {
   const nodeById = new Map<string, NodePickerNode>();
   const childrenByParent = new Map<string | null, string[]>();
 
@@ -27,8 +30,8 @@ function buildMaps(nodes: NodePickerNode[]) {
 
   for (const [k, list] of childrenByParent) {
     list.sort((a, b) => {
-      const na = nodeById.get(a)?.name ?? "";
-      const nb = nodeById.get(b)?.name ?? "";
+      const na = df(nodeById.get(a)?.name, nodeById.get(a)?.nameAr);
+      const nb = df(nodeById.get(b)?.name, nodeById.get(b)?.nameAr);
       return na.localeCompare(nb);
     });
     childrenByParent.set(k, list);
@@ -64,7 +67,8 @@ export function NodePickerTree(props: {
   showSelectedIndicator?: boolean;
   showClear?: boolean;
 }) {
-  const { nodeById, childrenByParent, roots } = useMemo(() => buildMaps(props.nodes), [props.nodes]);
+  const { df } = useLocale();
+  const { nodeById, childrenByParent, roots } = useMemo(() => buildMaps(props.nodes, df), [props.nodes, df]);
 
   const parentById = useMemo(() => {
     const m = new Map<string, string | null>();
@@ -86,7 +90,9 @@ export function NodePickerTree(props: {
 
     const matches = new Set<string>();
     for (const n of props.nodes) {
-      const label = `${n.nodeType?.displayName ?? props.typeFallbackLabel}: ${n.name}`.toLowerCase();
+      const typeLabel = df(n.nodeType?.displayName, n.nodeType?.nameAr) || props.typeFallbackLabel;
+      const nameLabel = df(n.name, n.nameAr);
+      const label = `${typeLabel}: ${nameLabel}`.toLowerCase();
       if (label.includes(q)) matches.add(n.id);
     }
 
@@ -200,10 +206,13 @@ export function NodePickerTree(props: {
             <button
               type="button"
               onClick={() => props.onSelect(id)}
-              className="min-w-0 flex-1 text-left"
+              className="min-w-0 flex-1 text-left rtl:text-right"
             >
               <div className="truncate text-sm">
-                <span className={labelMutedClassName}>{n.nodeType?.displayName ?? props.typeFallbackLabel}:</span> {n.name}
+                <span className={labelMutedClassName}>
+                  {df(n.nodeType?.displayName, n.nodeType?.nameAr) || props.typeFallbackLabel}:
+                </span>{" "}
+                {df(n.name, n.nameAr)}
               </div>
             </button>
           </div>
@@ -223,7 +232,7 @@ export function NodePickerTree(props: {
   return (
     <div className="grid gap-3">
       <div className="relative">
-        <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" />
+        <Search className="pointer-events-none absolute start-3 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" />
         <Input value={query} onChange={(e) => setQuery(e.target.value)} placeholder={props.searchPlaceholder} className={`ps-9 ${inputClassName}`} />
       </div>
 

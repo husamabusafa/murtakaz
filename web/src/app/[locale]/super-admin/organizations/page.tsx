@@ -13,7 +13,7 @@ import { Plus } from "lucide-react";
 import type { Organization } from "@prisma/client";
 
 export default function OrganizationsPage() {
-  const { tr, locale } = useLocale();
+  const { t, locale } = useLocale();
   const router = useRouter();
   const [organizations, setOrganizations] = useState<(Organization & { _count?: { users: number } })[]>([]);
   const [loading, setLoading] = useState(true);
@@ -38,22 +38,22 @@ export default function OrganizationsPage() {
     <div className="space-y-8">
       <div className="flex items-center justify-between">
         <PageHeader
-          title={tr("Organizations", "الجهات")}
-          subtitle={tr("Manage tenant organizations and their settings.", "إدارة الجهات وإعداداتها.")}
+          title={t("organizations")}
+          subtitle={t("organizationsSubtitle")}
         />
         <Button asChild>
           <Link href={`/${locale}/super-admin/organizations/create`}>
             <Plus className="me-2 h-4 w-4" />
-            {tr("New Organization", "جهة جديدة")}
+            {t("newOrganization")}
           </Link>
         </Button>
       </div>
 
       <Card className="bg-card/70 backdrop-blur shadow-sm">
         <CardHeader>
-          <CardTitle className="text-base">{tr("All Organizations", "جميع الجهات")}</CardTitle>
+          <CardTitle className="text-base">{t("allOrganizations")}</CardTitle>
           <CardDescription>
-            {tr("List of all registered organizations in the system.", "قائمة بجميع الجهات المسجلة في النظام.")}
+            {t("organizationsListDesc")}
           </CardDescription>
         </CardHeader>
         <CardContent>
@@ -61,23 +61,23 @@ export default function OrganizationsPage() {
             <Table>
               <TableHeader>
                 <TableRow>
-                  <TableHead>{tr("Name", "الاسم")}</TableHead>
-                  <TableHead>{tr("Domain", "النطاق")}</TableHead>
-                  <TableHead>{tr("Users", "المستخدمين")}</TableHead>
-                  <TableHead className="text-right">{tr("Created At", "تاريخ الإنشاء")}</TableHead>
+                  <TableHead>{t("name")}</TableHead>
+                  <TableHead>{t("domain")}</TableHead>
+                  <TableHead>{t("users")}</TableHead>
+                  <TableHead className="text-right">{t("createdAt")}</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
                 {loading ? (
                   <TableRow>
                     <TableCell colSpan={4} className="text-center text-muted-foreground py-8">
-                      {tr("Loading...", "جارٍ التحميل...")}
+                      {t("loadingEllipsis")}
                     </TableCell>
                   </TableRow>
                 ) : organizations.length === 0 ? (
                   <TableRow>
                     <TableCell colSpan={4} className="text-center text-muted-foreground py-8">
-                      {tr("No organizations found.", "لا توجد مؤسسات.")}
+                      {t("noOrganizationsFound")}
                     </TableCell>
                   </TableRow>
                 ) : (

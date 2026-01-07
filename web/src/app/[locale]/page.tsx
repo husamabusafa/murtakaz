@@ -49,7 +49,7 @@ function SectionHeading({
 }
 
 export default function LandingPage() {
-  const { locale, isArabic } = useLocale();
+  const { locale, isArabic, t } = useLocale();
   const { user, loading } = useAuth();
   const shouldReduceMotion = useReducedMotion();
 
@@ -59,9 +59,7 @@ export default function LandingPage() {
   const primaryCtaText = loading
     ? null
     : user
-      ? isArabic
-        ? "الدخول إلى النظام"
-        : "Enter workspace"
+      ? t("enterWorkspace")
       : isArabic
         ? landing.hero.ctaAr
         : landing.hero.cta;
@@ -95,7 +93,7 @@ export default function LandingPage() {
       >
         <section className="relative grid gap-12 lg:grid-cols-2 lg:items-center">
           {/* Background Gradient for Hero */}
-          <div className="absolute -left-20 -top-20 -z-10 h-[500px] w-[500px] rounded-full bg-indigo-500/20 blur-[120px] opacity-30 mix-blend-screen" />
+          <div className="absolute -start-20 -top-20 -z-10 h-[500px] w-[500px] rounded-full bg-indigo-500/20 blur-[120px] opacity-30 mix-blend-screen" />
 
           <m.div
             className={cn("space-y-8", isArabic && "text-right")}
@@ -113,7 +111,7 @@ export default function LandingPage() {
                 }}
               >
                 <Icon name="tabler:language" className="h-3.5 w-3.5" />
-                <span>{isArabic ? "ثنائي اللغة (EN/AR) + دعم RTL" : "Bilingual (EN/AR) + RTL support"}</span>
+                <span>{t("bilingualRtlSupport")}</span>
               </m.div>
 
               <m.h1
@@ -167,13 +165,13 @@ export default function LandingPage() {
               }}
             >
               <Link href={`/${locale}#features`} className="hover:text-white transition-colors">
-                {isArabic ? "الميزات" : "Features"}
+                {t("features")}
               </Link>
               <Link href={`/${locale}#how-it-works`} className="hover:text-white transition-colors">
-                {isArabic ? "كيف يعمل" : "How it works"}
+                {t("howItWorks")}
               </Link>
               <Link href={`/${locale}#faq`} className="hover:text-white transition-colors">
-                {isArabic ? "الأسئلة الشائعة" : "FAQ"}
+                {t("faq")}
               </Link>
             </m.div>
           </m.div>
@@ -196,7 +194,7 @@ export default function LandingPage() {
               <div className="relative overflow-hidden rounded-xl border border-white/5 bg-slate-950">
                   <Image
                     src={landing.hero.image}
-                    alt={isArabic ? "واجهة المنتج" : "Product UI preview"}
+                    alt={t("productUiPreview")}
                     width={880}
                     height={560}
                     priority
@@ -213,12 +211,8 @@ export default function LandingPage() {
         <m.div variants={cardVariants} className="text-center">
           <SectionHeading
             isArabic={isArabic}
-            title={isArabic ? "الميزات الأساسية" : "Core features"}
-            subtitle={
-              isArabic
-                ? "كل ما تحتاجه لربط الاستراتيجية بالتنفيذ والحوكمة — بدون تعقيد."
-                : "Everything you need to connect strategy, execution, and governance — without the clutter."
-            }
+            title={t("coreFeatures")}
+            subtitle={t("coreFeaturesDesc")}
             centered
           />
         </m.div>
@@ -246,8 +240,8 @@ export default function LandingPage() {
         <m.div variants={cardVariants}>
           <SectionHeading
             isArabic={isArabic}
-            title={isArabic ? "كيف يعمل" : "How it works"}
-            subtitle={isArabic ? "رحلة بسيطة من التخطيط إلى النتائج." : "A simple path from planning to outcomes."}
+            title={t("howItWorks")}
+            subtitle={t("howItWorksDesc")}
           />
         </m.div>
 
@@ -261,26 +255,26 @@ export default function LandingPage() {
           {[
             {
               icon: "tabler:target-arrow",
-              title: isArabic ? "عرّف الاستراتيجية" : "Define strategy",
-              body: isArabic ? "الركائز والأهداف والمبادرات في مكان واحد." : "Pillars, goals, and initiatives in one place.",
+              title: t("defineStrategy"),
+              body: t("defineStrategyDesc"),
               step: "01"
             },
             {
               icon: "tabler:chart-line",
-              title: isArabic ? "راقب الأداء" : "Track performance",
-              body: isArabic ? "مؤشرات أداء رئيسية واضحة وتقدم تنفيذي سريع." : "Clear KPIs and executive-ready progress.",
+              title: t("trackPerformance"),
+              body: t("trackPerformanceDesc"),
               step: "02"
             },
             {
               icon: "tabler:gavel",
-              title: isArabic ? "حوكمة وامتثال" : "Govern & comply",
-              body: isArabic ? "قرارات موثّقة وموافقات ومسار تدقيق." : "Auditable decisions, approvals, and accountability.",
+              title: t("governAndComply"),
+              body: t("governAndComplyDesc"),
               step: "03"
             },
           ].map((step) => (
             <m.div key={step.title} variants={cardVariants} whileHover={shouldReduceMotion ? undefined : { y: -5 }} transition={{ duration: 0.3, ease: "easeOut" }}>
               <div className="group relative h-full rounded-2xl border border-white/10 bg-slate-900/40 p-8 backdrop-blur-sm transition-all hover:bg-slate-900/60">
-                <div className="absolute top-8 right-8 text-4xl font-bold text-white/5 select-none">{step.step}</div>
+                <div className="absolute top-8 end-8 text-4xl font-bold text-white/5 select-none">{step.step}</div>
                 <div className="space-y-6">
                   <div className="flex h-14 w-14 items-center justify-center rounded-2xl border border-white/10 bg-white/5 group-hover:border-indigo-500/30 group-hover:bg-indigo-500/10 transition-colors">
                     <Icon name={step.icon} className="h-7 w-7 text-white group-hover:text-indigo-300 transition-colors" />
@@ -300,8 +294,8 @@ export default function LandingPage() {
         <m.div variants={cardVariants}>
           <SectionHeading
             isArabic={isArabic}
-            title={isArabic ? "شهادات" : "What teams say"}
-            subtitle={isArabic ? "لمحات قصيرة من مستخدمين تجريبيين." : "Short highlights from demo users."}
+            title={t("whatTeamsSay")}
+            subtitle={t("shortHighlightsDesc")}
             centered
           />
         </m.div>
@@ -349,8 +343,8 @@ export default function LandingPage() {
         <m.div variants={cardVariants}>
           <SectionHeading
             isArabic={isArabic}
-            title={isArabic ? "الأسئلة الشائعة" : "FAQ"}
-            subtitle={isArabic ? "إجابات سريعة قبل البدء." : "Quick answers before you start."}
+            title={t("faq")}
+            subtitle={t("quickAnswersDesc")}
             centered
           />
         </m.div>
@@ -397,7 +391,7 @@ export default function LandingPage() {
 
       <section className="relative overflow-hidden rounded-3xl border border-white/10 bg-slate-900/50 p-12 text-white shadow-2xl shadow-black/30 backdrop-blur-xl">
         <div className="absolute inset-0 bg-gradient-to-r from-indigo-500/10 via-purple-500/5 to-transparent opacity-50" />
-        <div className="absolute -top-24 -right-24 h-64 w-64 rounded-full bg-indigo-500/20 blur-3xl opacity-30" />
+        <div className="absolute -top-24 -end-24 h-64 w-64 rounded-full bg-indigo-500/20 blur-3xl opacity-30" />
         
         <m.div
           className={cn("relative z-10 flex flex-col gap-8 md:flex-row md:items-center md:justify-between", isArabic && "md:flex-row-reverse")}
@@ -409,7 +403,7 @@ export default function LandingPage() {
           <div className={cn("space-y-4 max-w-2xl", isArabic && "text-right")}>
             <h3 className="text-3xl font-bold tracking-tight md:text-4xl">{isArabic ? landing.cta_section.titleAr : landing.cta_section.title}</h3>
             <p className="text-lg text-slate-300">
-              {isArabic ? "تواصل معنا للحصول على عرض توضيحي يناسب احتياجك." : "Talk to us for a demo tailored to your scope."}
+              {t("talkToUsForDemoDesc")}
             </p>
           </div>
           <Button asChild size="lg" className="bg-white text-base text-slate-900 hover:bg-indigo-50 px-8 py-6 h-auto shadow-[0_0_20px_rgba(255,255,255,0.2)] hover:shadow-[0_0_30px_rgba(255,255,255,0.3)] transition-all">

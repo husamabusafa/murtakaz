@@ -10,25 +10,26 @@ import { pillars } from "@/lib/mock-data";
 import { useLocale } from "@/providers/locale-provider";
 
 export default function RiskEscalationDashboardPage() {
-  const { locale, tr, isArabic } = useLocale();
+  const { t, locale, isArabic } = useLocale();
   const risks = pillars.flatMap((pillar) => pillar.initiatives.flatMap((initiative) => initiative.risks));
   const escalated = risks.filter((risk) => risk.escalated);
 
   return (
     <div className="space-y-8">
       <PageHeader
-        title={tr("Risk & Escalation dashboard", "لوحة المخاطر والتصعيد")}
-        subtitle={tr("Critical risks, escalations, severity distribution, and drill-down to mitigation.", "المخاطر الحرجة والتصعيدات وتوزيع الخطورة واستعراض خطط التخفيف.")}
+        title={t("riskEscalationDashboardTitle")}
+        subtitle={t("riskEscalationDashboardSubtitle")}
+        icon={<Icon name="tabler:shield-exclamation" className="h-5 w-5" />}
       />
 
       <section className="grid gap-6 lg:grid-cols-3">
         <Card className="border-white/10 bg-white/5 text-white shadow-lg shadow-black/20">
           <CardHeader className="space-y-1">
             <div className="flex items-center justify-between">
-              <CardTitle className="text-base">{tr("Severity distribution", "توزيع الخطورة")}</CardTitle>
+              <CardTitle className="text-base">{t("severityDistribution")}</CardTitle>
               <Icon name="tabler:shield-exclamation" className="text-slate-200" />
             </div>
-            <CardDescription className="text-slate-200">{tr("Across open risks (demo).", "عبر المخاطر المفتوحة (عرض تجريبي).")}</CardDescription>
+            <CardDescription className="text-slate-200">{t("acrossOpenRisksDesc")}</CardDescription>
           </CardHeader>
           <CardContent>
             <Donut items={riskSeverityBreakdown} />
@@ -37,8 +38,8 @@ export default function RiskEscalationDashboardPage() {
 
         <Card className="border-white/10 bg-white/5 text-white shadow-lg shadow-black/20 lg:col-span-2">
           <CardHeader className="space-y-1">
-            <CardTitle className="text-base">{tr("Escalated risks", "مخاطر مصعّدة")}</CardTitle>
-            <CardDescription className="text-slate-200">{tr("Items flagged for executive visibility.", "عناصر مميزة للعرض التنفيذي.")}</CardDescription>
+            <CardTitle className="text-base">{t("escalatedRisks")}</CardTitle>
+            <CardDescription className="text-slate-200">{t("executiveVisibilityDesc")}</CardDescription>
           </CardHeader>
           <CardContent className="space-y-3">
             {escalated.map((risk) => (

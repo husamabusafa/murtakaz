@@ -2,9 +2,7 @@
 
 import Link from "next/link";
 import { useCallback, useEffect, useMemo, useState } from "react";
-import { useParams } from "next/navigation";
-import { useSearchParams } from "next/navigation";
-import { useRouter } from "next/navigation";
+import { useParams, useSearchParams, useRouter } from "next/navigation";
 import { Plus, Pencil, Trash2 } from "lucide-react";
 import { PageHeader } from "@/components/page-header";
 import { Badge } from "@/components/ui/badge";
@@ -73,8 +71,7 @@ export default function NodeTypePage() {
   const router = useRouter();
   const params = useParams<{ code: string }>();
   const searchParams = useSearchParams();
-  const { tr } = useLocale();
-  const { locale } = useLocale();
+  const { t, locale, df } = useLocale();
   const { user, loading: sessionLoading } = useAuth();
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -145,8 +142,9 @@ export default function NodeTypePage() {
 
   const title = useMemo(() => {
     const match = enabledTypes.find((t) => String(t.code).toLowerCase() === normalizedCode);
-    return match?.displayName ?? (code ? code.toUpperCase() : tr("Type", "النوع"));
-  }, [code, enabledTypes, normalizedCode, tr]);
+    if (!match) return code ? code.toUpperCase() : t("type");
+    return df(match.displayName, match.nameAr);
+  }, [code, df, enabledTypes, normalizedCode, t]);
 
   const isTopLevel = useMemo(() => {
     if (!enabledTypes.length) return false;
@@ -162,7 +160,10 @@ export default function NodeTypePage() {
   }, [enabledTypes, normalizedCode]);
 
   const hasLowerType = Boolean(lowerType);
-  const lowerTypeLabel = lowerType?.displayName ?? "";
+  const lowerTypeLabel = useMemo(() => {
+    if (!lowerType) return "";
+    return df(lowerType.displayName, lowerType.nameAr);
+  }, [df, lowerType]);
 
   const pageIcon = useMemo(() => {
     const lower = normalizedCode;
@@ -241,8 +242,9 @@ export default function NodeTypePage() {
   const requiredParentTypeLabel = useMemo(() => {
     if (!requiresParent) return null;
     const parentType = enabledTypes[currentTypeIndex - 1];
-    return parentType?.displayName ?? null;
-  }, [currentTypeIndex, enabledTypes, requiresParent]);
+    if (!parentType) return null;
+    return df(parentType.displayName, parentType.nameAr);
+  }, [currentTypeIndex, df, enabledTypes, requiresParent]);
 
   const effectiveCanCreate = useMemo(() => {
     if (!isAdmin) return false;
@@ -253,21 +255,18 @@ export default function NodeTypePage() {
   const createDisabledReason = useMemo(() => {
     if (!isAdmin) return null;
     if (effectiveCanCreate) return null;
-    if (!enabledTypes.length) return tr("No node types enabled for this organization.", "لا توجد أنواع عقد مفعّلة لهذه الجهة.");
+    if (!enabledTypes.length) return t("noNodeTypesEnabled");
     if (requiresParent) {
       return requiredParentTypeLabel
-        ? tr(
-            `No ${requiredParentTypeLabel} nodes yet. Create one first.`,
-            `لا توجد عقد ${requiredParentTypeLabel} بعد. أنشئ واحدة أولاً.`,
-          )
-        : tr("Nothing to select yet. Create a higher level first.", "لا يوجد شيء للاختيار بعد. أنشئ المستوى الأعلى أولاً.");
+        ? t("noNodesOfParentTypeYet", { type: requiredParentTypeLabel })
+        : t("nothingToSelectYetDesc");
     }
-    return tr(`Cannot create ${title}.`, `لا يمكن إنشاء ${title}.`);
-  }, [effectiveCanCreate, enabledTypes.length, isAdmin, requiredParentTypeLabel, requiresParent, title, tr]);
+    return t("cannotCreateItem", { type: title });
+  }, [effectiveCanCreate, enabledTypes.length, isAdmin, requiredParentTypeLabel, requiresParent, t, title]);
 
   const higherNodeLabel = useMemo(() => {
-    return requiredParentTypeLabel ?? tr("Higher level", "المستوى الأعلى");
-  }, [requiredParentTypeLabel, tr]);
+    return requiredParentTypeLabel ?? t("higherLevel");
+  }, [requiredParentTypeLabel, t]);
 
   const createParentOptions = useMemo(() => {
     return parents.map((p: ParentOptionRow) => ({ id: p.id, name: p.name }));
@@ -298,7 +297,7 @@ export default function NodeTypePage() {
       });
 
       if (!result.success) {
-        setCreateError(formatIssues((result as unknown as { issues?: unknown }).issues) ?? result.error ?? tr("Failed to create", "فشل الإنشاء"));
+        setCreateError(formatIssues((result as unknown as { issues?: unknown }).issues) ?? result.error ?? t("failedToCreate"));
         return;
       }
 
@@ -349,7 +348,7 @@ export default function NodeTypePage() {
       });
 
       if (!result.success) {
-        setEditError(formatIssues((result as unknown as { issues?: unknown }).issues) ?? result.error ?? tr("Failed to update", "فشل التحديث"));
+        setEditError(formatIssues((result as unknown as { issues?: unknown }).issues) ?? result.error ?? t("failedToUpdate"));
         return;
       }
 
@@ -375,7 +374,7 @@ export default function NodeTypePage() {
     try {
       const result = await deleteOrgAdminNode({ nodeId: deleteTarget.id });
       if (!result.success) {
-        setDeleteError(formatIssues((result as unknown as { issues?: unknown }).issues) ?? result.error ?? tr("Failed to delete", "فشل الحذف"));
+        setDeleteError(formatIssues((result as unknown as { issues?: unknown }).issues) ?? result.error ?? t("failedToDelete"));
         return;
       }
 
@@ -391,11 +390,11 @@ export default function NodeTypePage() {
   if (sessionLoading || loading) {
     return (
       <div className="space-y-8">
-        <PageHeader title={title} subtitle={tr("Loading...", "جارٍ التحميل...")} icon={<Icon name={pageIcon} className="h-5 w-5" />} />
+        <PageHeader title={title} subtitle={t("loadingEllipsis")} icon={<Icon name={pageIcon} className="h-5 w-5" />} />
         <Card className="bg-card/70 backdrop-blur shadow-sm">
           <CardHeader>
-            <CardTitle className="text-base">{tr("Loading", "جارٍ التحميل")}</CardTitle>
-            <CardDescription>{tr("Please wait", "يرجى الانتظار")}</CardDescription>
+            <CardTitle className="text-base">{t("loading")}</CardTitle>
+            <CardDescription>{t("pleaseWait")}</CardDescription>
           </CardHeader>
           <CardContent />
         </Card>
@@ -407,7 +406,7 @@ export default function NodeTypePage() {
     <div className="space-y-8">
       <PageHeader
         title={title}
-        subtitle={tr("Manage and explore hierarchy.", "إدارة العناصر واستعراض التسلسل الهرمي.")}
+        subtitle={t("manageAndExploreHierarchy")}
         icon={<Icon name={pageIcon} className="h-5 w-5" />}
       />
 
@@ -422,30 +421,18 @@ export default function NodeTypePage() {
               <CardDescription>
                 {isAdmin
                   ? hasLowerType
-                    ? tr(
-                        `Create, edit, delete, and open ${title} items to see ${lowerTypeLabel} and KPIs.`,
-                        `أنشئ وحرّر واحذف وافتح عناصر ${title} لرؤية ${lowerTypeLabel} ومؤشرات الأداء الرئيسية.`,
-                      )
-                    : tr(
-                        `Create, edit, delete, and open ${title} items to see KPIs.`,
-                        `أنشئ وحرّر واحذف وافتح عناصر ${title} لرؤية مؤشرات الأداء الرئيسية.`,
-                      )
+                    ? t("adminOpenWithLowerTypeDesc", { type: title, lowerType: lowerTypeLabel })
+                    : t("adminOpenNoLowerTypeDesc", { type: title })
                   : hasLowerType
-                    ? tr(
-                        `Explore ${title} items to see ${lowerTypeLabel} and KPIs.`,
-                        `استعرض عناصر ${title} لرؤية ${lowerTypeLabel} ومؤشرات الأداء الرئيسية.`,
-                      )
-                    : tr(
-                        `Explore ${title} items to see KPIs.`,
-                        `استعرض عناصر ${title} لرؤية مؤشرات الأداء الرئيسية.`,
-                      )}
+                    ? t("exploreWithLowerTypeDesc", { type: title, lowerType: lowerTypeLabel })
+                    : t("exploreNoLowerTypeDesc", { type: title })}
               </CardDescription>
             </div>
             <div className="flex w-full flex-col gap-2 md:w-auto md:flex-row md:items-center">
               <div className="w-full max-w-xs">
                 <Input
                   value={searchDraft}
-                  placeholder={tr("Search", "بحث")}
+                  placeholder={t("search")}
                   onChange={(e) => setSearchDraft(e.target.value)}
                   onKeyDown={(e) => {
                     if (e.key === "Enter") applySearch(searchDraft);
@@ -458,12 +445,12 @@ export default function NodeTypePage() {
                   <DialogTrigger asChild>
                     <Button disabled={!effectiveCanCreate}>
                       <Plus className="h-4 w-4" />
-                      <span className="ms-2">{tr("New", "جديد")}</span>
+                      <span className="ms-2">{t("new")}</span>
                     </Button>
                   </DialogTrigger>
                   <DialogContent className="sm:max-w-[520px]">
                     <DialogHeader>
-                      <DialogTitle>{tr(`Create ${title}`, `إنشاء ${title}`)}</DialogTitle>
+                      <DialogTitle>{t("createItemTitle", { type: title })}</DialogTitle>
                       <DialogDescription>{title}</DialogDescription>
                     </DialogHeader>
 
@@ -473,11 +460,11 @@ export default function NodeTypePage() {
 
                   <div className="grid gap-4">
                     <div className="grid gap-2">
-                      <Label htmlFor="create-name">{tr("Name", "الاسم")}</Label>
+                      <Label htmlFor="create-name">{t("name")}</Label>
                       <Input id="create-name" value={createDraft.name} onChange={(e) => setCreateDraft((p) => ({ ...p, name: e.target.value }))} />
                     </div>
                     <div className="grid gap-2">
-                      <Label htmlFor="create-description">{tr("Description", "الوصف")}</Label>
+                      <Label htmlFor="create-description">{t("description")}</Label>
                       <Input
                         id="create-description"
                         value={createDraft.description}
@@ -494,7 +481,7 @@ export default function NodeTypePage() {
                           disabled={!createParentOptions.length}
                         >
                           <SelectTrigger>
-                            <SelectValue placeholder={tr(`Select ${higherNodeLabel}`, `اختر ${higherNodeLabel}`)} />
+                            <SelectValue placeholder={t("selectItemPlaceholder", { label: higherNodeLabel })} />
                           </SelectTrigger>
                           <SelectContent>
                             {createParentOptions.map((p) => (
@@ -511,7 +498,7 @@ export default function NodeTypePage() {
                     ) : null}
 
                     <div className="grid gap-2">
-                      <Label>{tr("Color", "اللون")}</Label>
+                      <Label>{t("color")}</Label>
                       <div className="flex flex-wrap gap-2">
                         {presetColors.map((c) => (
                           <button
@@ -527,20 +514,20 @@ export default function NodeTypePage() {
                           />
                         ))}
                       </div>
-                      <p className="text-xs text-muted-foreground">{tr("Pick a preset color.", "اختر لوناً جاهزاً.")}</p>
+                      <p className="text-xs text-muted-foreground">{t("pickPresetColor")}</p>
                     </div>
 
                     <div className="grid gap-2">
-                      <Label>{tr("Status", "الحالة")}</Label>
+                      <Label>{t("status")}</Label>
                       <Select value={createDraft.status} onValueChange={(v) => setCreateDraft((p) => ({ ...p, status: v as Status }))}>
                         <SelectTrigger>
                           <SelectValue />
                         </SelectTrigger>
                         <SelectContent>
-                          <SelectItem value="PLANNED">{tr("Planned", "مخطط")}</SelectItem>
-                          <SelectItem value="ACTIVE">{tr("Active", "نشط")}</SelectItem>
-                          <SelectItem value="AT_RISK">{tr("At risk", "معرض للخطر")}</SelectItem>
-                          <SelectItem value="COMPLETED">{tr("Completed", "مكتمل")}</SelectItem>
+                          <SelectItem value="PLANNED">{t("planned")}</SelectItem>
+                          <SelectItem value="ACTIVE">{t("active")}</SelectItem>
+                          <SelectItem value="AT_RISK">{t("atRisk")}</SelectItem>
+                          <SelectItem value="COMPLETED">{t("completed")}</SelectItem>
                         </SelectContent>
                       </Select>
                     </div>
@@ -548,10 +535,10 @@ export default function NodeTypePage() {
 
                   <DialogFooter>
                     <Button variant="outline" onClick={() => setCreateOpen(false)} disabled={submitting}>
-                      {tr("Cancel", "إلغاء")}
+                      {t("cancel")}
                     </Button>
                     <Button onClick={handleCreate} disabled={submitting || (requiresParent && createDraft.parentId === "__none__")}>
-                      {tr(`Create ${title}`, `إنشاء ${title}`)}
+                      {t("createItemTitle", { type: title })}
                     </Button>
                   </DialogFooter>
                   </DialogContent>
@@ -564,17 +551,17 @@ export default function NodeTypePage() {
         <CardContent>
           <div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
             <div className="text-xs text-muted-foreground">
-              {tr("Total", "الإجمالي")}: {total}
+              {t("total")}: {total}
             </div>
             <div className="flex items-center gap-2">
               <Button variant="outline" size="sm" onClick={() => goToPage(page - 1)} disabled={page <= 1}>
-                {tr("Prev", "السابق")}
+                {t("prev")}
               </Button>
               <span className="text-xs text-muted-foreground">
-                {tr("Page", "الصفحة")} {page} / {totalPages}
+                {t("page")} {page} / {totalPages}
               </span>
               <Button variant="outline" size="sm" onClick={() => goToPage(page + 1)} disabled={page >= totalPages}>
-                {tr("Next", "التالي")}
+                {t("next")}
               </Button>
             </div>
           </div>
@@ -589,10 +576,10 @@ export default function NodeTypePage() {
                         <CardTitle className="flex items-center gap-2 text-base">
                           <span className="inline-block h-2.5 w-2.5 rounded-full" style={{ backgroundColor: n.color }} />
                           <Link href={`/${locale}/nodes/${normalizedCode}/${n.id}`} className="hover:underline">
-                            {n.name}
+                            {df(n.name, n.nameAr)}
                           </Link>
                         </CardTitle>
-                        {n.description ? <CardDescription className="line-clamp-2">{n.description}</CardDescription> : null}
+                        {df(n.description, n.descriptionAr) ? <CardDescription className="line-clamp-2">{df(n.description, n.descriptionAr)}</CardDescription> : null}
                       </div>
                       {isAdmin ? (
                         <div className="flex items-center gap-2">
@@ -613,7 +600,7 @@ export default function NodeTypePage() {
                         </Badge>
                       ) : null}
                       <Badge variant="outline" className="border-white/10 bg-white/5">
-                        {tr("KPIs", "مؤشرات الأداء الرئيسية")}: {n._count.kpis}
+                        {t("kpis")}: {n._count.kpis}
                       </Badge>
                     </div>
                   </CardHeader>
@@ -622,7 +609,7 @@ export default function NodeTypePage() {
 
               {nodes.length === 0 ? (
                 <div className="col-span-full rounded-md border border-border bg-card/50 p-6 text-sm text-muted-foreground">
-                  {tr(`No ${title} yet.`, `لا توجد ${title} بعد.`)}
+                  {t("noItemsOfTypeYet", { type: title })}
                 </div>
               ) : null}
             </div>
@@ -631,12 +618,12 @@ export default function NodeTypePage() {
               <Table>
                 <TableHeader>
                   <TableRow className="hover:bg-transparent">
-                    <TableHead>{tr("Name", "الاسم")}</TableHead>
+                    <TableHead>{t("name")}</TableHead>
                     <TableHead>{higherNodeLabel}</TableHead>
-                    <TableHead>{tr("Status", "الحالة")}</TableHead>
+                    <TableHead>{t("status")}</TableHead>
                     {hasLowerType ? <TableHead>{lowerTypeLabel}</TableHead> : null}
-                    <TableHead>{tr("KPIs", "مؤشرات الأداء الرئيسية")}</TableHead>
-                    {isAdmin ? <TableHead className="text-right">{tr("Actions", "الإجراءات")}</TableHead> : null}
+                    <TableHead>{t("kpis")}</TableHead>
+                    {isAdmin ? <TableHead className="text-right">{t("actions")}</TableHead> : null}
                   </TableRow>
                 </TableHeader>
                 <TableBody>
@@ -646,12 +633,12 @@ export default function NodeTypePage() {
                         <div className="flex items-center gap-2">
                           <span className="inline-block h-2.5 w-2.5 rounded-full" style={{ backgroundColor: n.color }} />
                           <Link href={`/${locale}/nodes/${normalizedCode}/${n.id}`} className="hover:underline">
-                            {n.name}
+                            {df(n.name, n.nameAr)}
                           </Link>
                         </div>
-                        {n.description ? <p className="mt-1 text-xs text-muted-foreground line-clamp-1">{n.description}</p> : null}
+                        {df(n.description, n.descriptionAr) ? <p className="mt-1 text-xs text-muted-foreground line-clamp-1">{df(n.description, n.descriptionAr)}</p> : null}
                       </TableCell>
-                      <TableCell className="text-muted-foreground">{n.parent?.name ?? "—"}</TableCell>
+                      <TableCell className="text-muted-foreground">{df(n.parent?.name, n.parent?.nameAr) || "—"}</TableCell>
                       <TableCell>
                         <StatusBadge status={n.status as Status} />
                       </TableCell>
@@ -674,7 +661,7 @@ export default function NodeTypePage() {
                   {nodes.length === 0 ? (
                     <TableRow>
                       <TableCell colSpan={isAdmin ? (hasLowerType ? 6 : 5) : hasLowerType ? 5 : 4} className="py-8 text-center text-sm text-muted-foreground">
-                        {tr(`No ${title} yet.`, `لا توجد ${title} بعد.`)}
+                        {t("noItemsOfTypeYet", { type: title })}
                       </TableCell>
                     </TableRow>
                   ) : null}
@@ -693,8 +680,8 @@ export default function NodeTypePage() {
       <Dialog open={editOpen} onOpenChange={setEditOpen}>
         <DialogContent className="sm:max-w-[520px]">
           <DialogHeader>
-            <DialogTitle>{tr(`Edit ${title}`, `تعديل ${title}`)}</DialogTitle>
-            <DialogDescription>{editTarget?.name ?? ""}</DialogDescription>
+            <DialogTitle>{t("editItemTitle", { type: title })}</DialogTitle>
+            <DialogDescription>{df(editTarget?.name, editTarget?.nameAr)}</DialogDescription>
           </DialogHeader>
 
           {editError ? (
@@ -703,11 +690,11 @@ export default function NodeTypePage() {
 
           <div className="grid gap-4">
             <div className="grid gap-2">
-              <Label htmlFor="edit-name">{tr("Name", "الاسم")}</Label>
+              <Label htmlFor="edit-name">{t("name")}</Label>
               <Input id="edit-name" value={editDraft.name} onChange={(e) => setEditDraft((p) => ({ ...p, name: e.target.value }))} />
             </div>
             <div className="grid gap-2">
-              <Label htmlFor="edit-description">{tr("Description", "الوصف")}</Label>
+              <Label htmlFor="edit-description">{t("description")}</Label>
               <Input id="edit-description" value={editDraft.description} onChange={(e) => setEditDraft((p) => ({ ...p, description: e.target.value }))} />
             </div>
 
@@ -720,7 +707,7 @@ export default function NodeTypePage() {
                   disabled={!editParentOptions.length}
                 >
                   <SelectTrigger>
-                    <SelectValue placeholder={tr(`Select ${higherNodeLabel}`, `اختر ${higherNodeLabel}`)} />
+                    <SelectValue placeholder={t("selectItemPlaceholder", { label: higherNodeLabel })} />
                   </SelectTrigger>
                   <SelectContent>
                     {editParentOptions.map((p) => (
@@ -737,7 +724,7 @@ export default function NodeTypePage() {
             ) : null}
 
             <div className="grid gap-2">
-              <Label>{tr("Color", "اللون")}</Label>
+              <Label>{t("color")}</Label>
               <div className="flex flex-wrap gap-2">
                 {presetColors.map((c) => (
                   <button
@@ -753,20 +740,20 @@ export default function NodeTypePage() {
                   />
                 ))}
               </div>
-              <p className="text-xs text-muted-foreground">{tr("Pick a preset color.", "اختر لوناً جاهزاً.")}</p>
+              <p className="text-xs text-muted-foreground">{t("pickPresetColor")}</p>
             </div>
 
             <div className="grid gap-2">
-              <Label>{tr("Status", "الحالة")}</Label>
+              <Label>{t("status")}</Label>
               <Select value={editDraft.status} onValueChange={(v) => setEditDraft((p) => ({ ...p, status: v as Status }))}>
                 <SelectTrigger>
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="PLANNED">{tr("Planned", "مخطط")}</SelectItem>
-                  <SelectItem value="ACTIVE">{tr("Active", "نشط")}</SelectItem>
-                  <SelectItem value="AT_RISK">{tr("At risk", "معرض للخطر")}</SelectItem>
-                  <SelectItem value="COMPLETED">{tr("Completed", "مكتمل")}</SelectItem>
+                  <SelectItem value="PLANNED">{t("planned")}</SelectItem>
+                  <SelectItem value="ACTIVE">{t("active")}</SelectItem>
+                  <SelectItem value="AT_RISK">{t("atRisk")}</SelectItem>
+                  <SelectItem value="COMPLETED">{t("completed")}</SelectItem>
                 </SelectContent>
               </Select>
             </div>
@@ -774,10 +761,10 @@ export default function NodeTypePage() {
 
           <DialogFooter>
             <Button variant="outline" onClick={() => setEditOpen(false)} disabled={submitting}>
-              {tr("Cancel", "إلغاء")}
+              {t("cancel")}
             </Button>
             <Button onClick={handleUpdate} disabled={submitting || !editTarget || (requiresParent && editDraft.parentId === "__none__")}>
-              {tr("Save", "حفظ")}
+              {t("save")}
             </Button>
           </DialogFooter>
         </DialogContent>
@@ -789,8 +776,8 @@ export default function NodeTypePage() {
       <Dialog open={deleteOpen} onOpenChange={setDeleteOpen}>
         <DialogContent className="sm:max-w-[520px]">
           <DialogHeader>
-            <DialogTitle>{tr(`Delete ${title}`, `حذف ${title}`)}</DialogTitle>
-            <DialogDescription>{deleteTarget?.name ?? ""}</DialogDescription>
+            <DialogTitle>{t("deleteItemTitle", { type: title })}</DialogTitle>
+            <DialogDescription>{df(deleteTarget?.name, deleteTarget?.nameAr)}</DialogDescription>
           </DialogHeader>
 
           {deleteError ? (
@@ -798,15 +785,15 @@ export default function NodeTypePage() {
           ) : null}
 
           <p className="text-sm text-muted-foreground">
-            {tr("This will soft-delete the item.", "سيتم حذف العنصر (حذف منطقي).")}
+            {t("softDeleteWarning")}
           </p>
 
           <DialogFooter>
             <Button variant="outline" onClick={() => setDeleteOpen(false)} disabled={submitting}>
-              {tr("Cancel", "إلغاء")}
+              {t("cancel")}
             </Button>
             <Button variant="destructive" onClick={handleDelete} disabled={submitting || !deleteTarget}>
-              {tr("Delete", "حذف")}
+              {t("delete")}
             </Button>
           </DialogFooter>
         </DialogContent>

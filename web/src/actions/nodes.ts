@@ -234,12 +234,14 @@ export async function getOrgNodesByType(data: z.infer<typeof getNodesByTypeSchem
     prismaNode.findMany<{
       id: string;
       name: string;
+      nameAr: string | null;
       description: string | null;
+      descriptionAr: string | null;
       color: string;
       status: Status;
       parentId: string | null;
       createdAt: Date;
-      parent: { id: string; name: string } | null;
+      parent: { id: string; name: string; nameAr: string | null } | null;
       _count: { children: number; kpis: number };
     }>({
       where,
@@ -249,12 +251,14 @@ export async function getOrgNodesByType(data: z.infer<typeof getNodesByTypeSchem
       select: {
         id: true,
         name: true,
+        nameAr: true,
         description: true,
+        descriptionAr: true,
         color: true,
         status: true,
         parentId: true,
         createdAt: true,
-        parent: { select: { id: true, name: true } },
+        parent: { select: { id: true, name: true, nameAr: true } },
         _count: { select: { children: true, kpis: true } },
       },
     }),
@@ -307,25 +311,29 @@ export async function getOrgNodeDetail(data: z.infer<typeof getNodeDetailSchema>
   const node = await prismaNode.findFirst<{
     id: string;
     name: string;
+    nameAr: string | null;
     description: string | null;
+    descriptionAr: string | null;
     color: string;
     status: Status;
     parentId: string | null;
     createdAt: Date;
-    parent: { id: string; name: string; color: string; status: Status } | null;
-    nodeType: { id: string; code: unknown; displayName: string; levelOrder: number };
+    parent: { id: string; name: string; nameAr: string | null; color: string; status: Status } | null;
+    nodeType: { id: string; code: unknown; displayName: string; nameAr: string | null; levelOrder: number };
   }>({
     where: { id: parsed.data.nodeId, orgId: session.user.orgId, deletedAt: null, nodeTypeId: nodeType.id },
     select: {
       id: true,
       name: true,
+      nameAr: true,
       description: true,
+      descriptionAr: true,
       color: true,
       status: true,
       parentId: true,
       createdAt: true,
-      parent: { select: { id: true, name: true, color: true, status: true } },
-      nodeType: { select: { id: true, code: true, displayName: true, levelOrder: true } },
+      parent: { select: { id: true, name: true, nameAr: true, color: true, status: true } },
+      nodeType: { select: { id: true, code: true, displayName: true, nameAr: true, levelOrder: true } },
     },
   });
 
@@ -338,7 +346,9 @@ export async function getOrgNodeDetail(data: z.infer<typeof getNodeDetailSchema>
     ? await prismaNode.findMany<{
         id: string;
         name: string;
+        nameAr: string | null;
         description: string | null;
+        descriptionAr: string | null;
         color: string;
         status: Status;
         _count: { children: number; kpis: number };
@@ -354,7 +364,9 @@ export async function getOrgNodeDetail(data: z.infer<typeof getNodeDetailSchema>
         select: {
           id: true,
           name: true,
+          nameAr: true,
           description: true,
+          descriptionAr: true,
           color: true,
           status: true,
           _count: { select: { children: true, kpis: true } },
@@ -367,13 +379,16 @@ export async function getOrgNodeDetail(data: z.infer<typeof getNodeDetailSchema>
   const kpis = await prismaKpiDefinition.findMany<{
     id: string;
     name: string;
+    nameAr: string | null;
     description: string | null;
+    descriptionAr: string | null;
     status: unknown;
     unit: string | null;
+    unitAr: string | null;
     baselineValue: number | null;
     targetValue: number | null;
     primaryNodeId: string;
-    primaryNode: { id: string; name: string; nodeType: { code: unknown; displayName: string } };
+    primaryNode: { id: string; name: string; nameAr: string | null; nodeType: { code: unknown; displayName: string; nameAr: string | null } };
     ownerUser: { id: string; name: string; role: Role } | null;
   }>({
     where: {
@@ -391,13 +406,16 @@ export async function getOrgNodeDetail(data: z.infer<typeof getNodeDetailSchema>
     select: {
       id: true,
       name: true,
+      nameAr: true,
       description: true,
+      descriptionAr: true,
       status: true,
       unit: true,
+      unitAr: true,
       baselineValue: true,
       targetValue: true,
       primaryNodeId: true,
-      primaryNode: { select: { id: true, name: true, nodeType: { select: { code: true, displayName: true } } } },
+      primaryNode: { select: { id: true, name: true, nameAr: true, nodeType: { select: { code: true, displayName: true, nameAr: true } } } },
       ownerUser: { select: { id: true, name: true, role: true } },
     },
   });

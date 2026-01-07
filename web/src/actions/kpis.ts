@@ -208,13 +208,16 @@ export async function getOrgKpisGridPaged(input: z.infer<typeof getOrgKpisGridPa
     prismaKpiDefinition.findMany<{
       id: string;
       name: string;
+      nameAr: string | null;
       description: string | null;
+      descriptionAr: string | null;
       unit: string | null;
+      unitAr: string | null;
       targetValue: number | null;
       baselineValue: number | null;
       periodType: KpiPeriodType;
       status: unknown;
-      primaryNode: { id: string; name: string; nodeType: { displayName: string; code: string } };
+      primaryNode: { id: string; name: string; nameAr: string | null; nodeType: { displayName: string; nameAr: string | null; code: string } };
       values: Array<{ calculatedValue: number | null; periodEnd: Date; status: unknown }>;
     }>({
       where,
@@ -224,8 +227,11 @@ export async function getOrgKpisGridPaged(input: z.infer<typeof getOrgKpisGridPa
       select: {
         id: true,
         name: true,
+        nameAr: true,
         description: true,
+        descriptionAr: true,
         unit: true,
+        unitAr: true,
         targetValue: true,
         baselineValue: true,
         periodType: true,
@@ -234,7 +240,8 @@ export async function getOrgKpisGridPaged(input: z.infer<typeof getOrgKpisGridPa
           select: {
             id: true,
             name: true,
-            nodeType: { select: { displayName: true, code: true } },
+            nameAr: true,
+            nodeType: { select: { displayName: true, nameAr: true, code: true } },
           },
         },
         values: {
@@ -267,20 +274,24 @@ export async function getOrgKpiDetail(input: { kpiId: string }) {
   const kpi = await prismaKpiDefinition.findFirst<{
     id: string;
     name: string;
+    nameAr: string | null;
     description: string | null;
+    descriptionAr: string | null;
     formula: string | null;
     unit: string | null;
+    unitAr: string | null;
     direction: KpiDirection;
     aggregation: KpiAggregationMethod;
     periodType: KpiPeriodType;
     baselineValue: number | null;
     targetValue: number | null;
     status: unknown;
-    primaryNode: { id: string; name: string; nodeType: { displayName: string } };
+    primaryNode: { id: string; name: string; nameAr: string | null; nodeType: { displayName: string; nameAr: string | null } };
     variables: Array<{
       id: string;
       code: string;
       displayName: string;
+      nameAr: string | null;
       dataType: KpiVariableDataType;
       isRequired: boolean;
       isStatic: boolean;
@@ -307,9 +318,12 @@ export async function getOrgKpiDetail(input: { kpiId: string }) {
     select: {
       id: true,
       name: true,
+      nameAr: true,
       description: true,
+      descriptionAr: true,
       formula: true,
       unit: true,
+      unitAr: true,
       direction: true,
       aggregation: true,
       periodType: true,
@@ -320,7 +334,8 @@ export async function getOrgKpiDetail(input: { kpiId: string }) {
         select: {
           id: true,
           name: true,
-          nodeType: { select: { displayName: true } },
+          nameAr: true,
+          nodeType: { select: { displayName: true, nameAr: true } },
         },
       },
       variables: {
@@ -329,6 +344,7 @@ export async function getOrgKpiDetail(input: { kpiId: string }) {
           id: true,
           code: true,
           displayName: true,
+          nameAr: true,
           dataType: true,
           isRequired: true,
           isStatic: true,
@@ -903,7 +919,8 @@ export async function getOrgKpiApprovals(input?: { status?: "SUBMITTED" | "APPRO
     kpi: {
       id: string;
       name: string;
-      primaryNode: { name: string; nodeType: { displayName: string; code: string } } | null;
+      nameAr: string | null;
+      primaryNode: { name: string; nameAr: string | null; nodeType: { displayName: string; nameAr: string | null; code: string } } | null;
     };
   }>({
     where: {
@@ -927,7 +944,8 @@ export async function getOrgKpiApprovals(input?: { status?: "SUBMITTED" | "APPRO
         select: {
           id: true,
           name: true,
-          primaryNode: { select: { name: true, nodeType: { select: { displayName: true, code: true } } } },
+          nameAr: true,
+          primaryNode: { select: { name: true, nameAr: true, nodeType: { select: { displayName: true, nameAr: true, code: true } } } },
         },
       },
     },
@@ -941,22 +959,36 @@ export async function submitOrgKpiValues(data: z.infer<typeof kpiValuesInputSche
 export async function getOrgKpiPrimaryNodeOptions() {
   const session = await requireOrgAdmin();
 
-  return prisma.node.findMany({
+  const nodes = await (prisma.node as any).findMany({
     where: { orgId: session.user.orgId, deletedAt: null },
     orderBy: [{ name: "asc" }],
     select: {
       id: true,
       name: true,
+      nameAr: true,
       parentId: true,
-      nodeType: { select: { displayName: true, code: true } },
+      nodeType: { select: { displayName: true, nameAr: true, code: true } },
     },
   });
+
+  return nodes as Array<{
+    id: string;
+    name: string;
+    nameAr: string | null;
+    parentId: string | null;
+    nodeType: {
+      displayName: string;
+      nameAr: string | null;
+      code: string;
+    } | null;
+  }>;
 }
 
 const kpiVariableInputSchema = z.object({
   id: z.string().uuid().optional(),
   code: z.string().min(1),
   displayName: z.string().min(1),
+  nameAr: z.string().optional(),
   dataType: z.nativeEnum(KpiVariableDataType),
   isRequired: z.boolean().optional(),
   isStatic: z.boolean().optional(),
@@ -968,10 +1000,13 @@ const kpiVariableInputSchema = z.object({
 
 const createKpiSchema = z.object({
   name: z.string().min(2),
+  nameAr: z.string().optional(),
   description: z.string().optional(),
+  descriptionAr: z.string().optional(),
   primaryNodeId: z.string().uuid(),
   ownerUserId: z.string().min(1).optional(),
   unit: z.string().optional(),
+  unitAr: z.string().optional(),
   formula: z.string().optional(),
   direction: z.nativeEnum(KpiDirection).optional(),
   aggregation: z.nativeEnum(KpiAggregationMethod).optional(),
@@ -1013,9 +1048,12 @@ export async function createOrgAdminKpi(data: z.infer<typeof createKpiSchema>) {
     data: {
       orgId: session.user.orgId,
       name: parsed.name,
+      nameAr: parsed.nameAr || null,
       description: parsed.description || null,
+      descriptionAr: parsed.descriptionAr || null,
       formula: parsed.formula || null,
       unit: parsed.unit || null,
+      unitAr: parsed.unitAr || null,
       periodType: parsed.periodType,
       direction: parsed.direction ?? KpiDirection.INCREASE_IS_GOOD,
       aggregation: parsed.aggregation ?? KpiAggregationMethod.LAST_VALUE,
@@ -1027,6 +1065,7 @@ export async function createOrgAdminKpi(data: z.infer<typeof createKpiSchema>) {
         create: parsed.variables.map((v) => ({
           code: v.code.trim(),
           displayName: v.displayName.trim(),
+          nameAr: v.nameAr?.trim() || null,
           dataType: v.dataType,
           isRequired: Boolean(v.isRequired),
           isStatic: Boolean(v.isStatic),
@@ -1095,6 +1134,7 @@ export async function updateOrgAdminKpi(data: z.infer<typeof updateKpiSchema>) {
         data: {
           code: v.code.trim(),
           displayName: v.displayName.trim(),
+          nameAr: v.nameAr?.trim() || null,
           dataType: v.dataType,
           isRequired: Boolean(v.isRequired),
           isStatic: Boolean(v.isStatic),
@@ -1108,6 +1148,7 @@ export async function updateOrgAdminKpi(data: z.infer<typeof updateKpiSchema>) {
           kpiId: parsed.kpiId,
           code: v.code.trim(),
           displayName: v.displayName.trim(),
+          nameAr: v.nameAr?.trim() || null,
           dataType: v.dataType,
           isRequired: Boolean(v.isRequired),
           isStatic: Boolean(v.isStatic),
@@ -1122,9 +1163,12 @@ export async function updateOrgAdminKpi(data: z.infer<typeof updateKpiSchema>) {
     where: { id: parsed.kpiId },
     data: {
       name: parsed.name,
+      nameAr: parsed.nameAr || null,
       description: parsed.description || null,
+      descriptionAr: parsed.descriptionAr || null,
       formula: parsed.formula || null,
       unit: parsed.unit || null,
+      unitAr: parsed.unitAr || null,
       periodType: parsed.periodType,
       direction: parsed.direction ?? KpiDirection.INCREASE_IS_GOOD,
       aggregation: parsed.aggregation ?? KpiAggregationMethod.LAST_VALUE,
@@ -1166,9 +1210,12 @@ export async function getOrgAdminKpiEditData(input: { kpiId: string }) {
   const kpi = await prismaKpiDefinition.findFirst<{
     id: string;
     name: string;
+    nameAr: string | null;
     description: string | null;
+    descriptionAr: string | null;
     formula: string | null;
     unit: string | null;
+    unitAr: string | null;
     direction: KpiDirection;
     aggregation: KpiAggregationMethod;
     periodType: KpiPeriodType;
@@ -1180,6 +1227,7 @@ export async function getOrgAdminKpiEditData(input: { kpiId: string }) {
       id: string;
       code: string;
       displayName: string;
+      nameAr: string | null;
       dataType: KpiVariableDataType;
       isRequired: boolean;
       isStatic: boolean;
@@ -1190,9 +1238,12 @@ export async function getOrgAdminKpiEditData(input: { kpiId: string }) {
     select: {
       id: true,
       name: true,
+      nameAr: true,
       description: true,
+      descriptionAr: true,
       formula: true,
       unit: true,
+      unitAr: true,
       direction: true,
       aggregation: true,
       periodType: true,
@@ -1206,6 +1257,7 @@ export async function getOrgAdminKpiEditData(input: { kpiId: string }) {
           id: true,
           code: true,
           displayName: true,
+          nameAr: true,
           dataType: true,
           isRequired: true,
           isStatic: true,

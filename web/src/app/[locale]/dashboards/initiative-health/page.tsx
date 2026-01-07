@@ -11,35 +11,36 @@ import { pillars } from "@/lib/mock-data";
 import { useLocale } from "@/providers/locale-provider";
 
 export default function InitiativeHealthDashboardPage() {
-  const { locale, tr, isArabic } = useLocale();
+  const { locale, t, isArabic } = useLocale();
   const initiatives = pillars.flatMap((pillar) => pillar.initiatives);
   const atRisk = initiatives.filter((initiative) => initiative.health !== "GREEN");
 
   return (
     <div className="space-y-8">
       <PageHeader
-        title={tr("Initiative Health dashboard", "لوحة أداء المبادرات")}
-        subtitle={tr("System-calculated health drivers across KPIs, milestones, and risks (prototype).", "محركات الأداء المحسوبة للنظام عبر مؤشرات الأداء الرئيسية والمعالم والمخاطر (نموذج أولي).")}
+        title={t("initiativeHealthDashboard")}
+        subtitle={t("initiativeHealthDashboardSubtitle")}
+        icon={<Icon name="tabler:activity-heartbeat" className="h-5 w-5" />}
       />
 
       <section className="grid gap-6 lg:grid-cols-3">
         <Card className="border-white/10 bg-white/5 text-white shadow-lg shadow-black/20 lg:col-span-2">
           <CardHeader className="space-y-1">
             <div className="flex items-center justify-between">
-              <CardTitle className="text-base">{tr("Health drivers", "محركات الأداء")}</CardTitle>
+              <CardTitle className="text-base">{t("healthDrivers")}</CardTitle>
               <Icon name="tabler:activity-heartbeat" className="text-slate-200" />
             </div>
-            <CardDescription className="text-slate-200">{tr("Illustrative driver weights (demo).", "أوزان توضيحية للمحركات (عرض تجريبي).")}</CardDescription>
+            <CardDescription className="text-slate-200">{t("illustrativeDriverWeightsDesc")}</CardDescription>
           </CardHeader>
           <CardContent>
-            <Bar categories={["KPIs", "Milestones", "Risks", "Updates"]} values={[45, 25, 20, 10]} color="#60a5fa" />
+            <Bar categories={[t("kpis"), t("milestones"), t("risks"), t("updates")]} values={[45, 25, 20, 10]} color="#60a5fa" />
           </CardContent>
         </Card>
 
         <Card className="border-white/10 bg-white/5 text-white shadow-lg shadow-black/20">
           <CardHeader className="space-y-1">
-            <CardTitle className="text-base">{tr("KPI variance signals", "إشارات انحراف مؤشرات الأداء الرئيسية")}</CardTitle>
-            <CardDescription className="text-slate-200">{tr("Top negative deltas (demo).", "أعلى الانحرافات السلبية (عرض تجريبي).")}</CardDescription>
+            <CardTitle className="text-base">{t("kpiVarianceSignals")}</CardTitle>
+            <CardDescription className="text-slate-200">{t("topNegativeDeltasDesc")}</CardDescription>
           </CardHeader>
           <CardContent>
             <Bar
@@ -56,8 +57,8 @@ export default function InitiativeHealthDashboardPage() {
       <section>
         <Card className="border-white/10 bg-white/5 text-white shadow-lg shadow-black/20">
           <CardHeader className="space-y-1">
-            <CardTitle className="text-base">{tr("Initiatives requiring attention", "مبادرات تتطلب متابعة")}</CardTitle>
-            <CardDescription className="text-slate-200">{tr("Drill down to see projects, KPIs, risks, and updates.", "استعراض تفصيلي للمشاريع ومؤشرات الأداء الرئيسية والمخاطر والتحديثات.")}</CardDescription>
+            <CardTitle className="text-base">{t("initiativesRequiringAttention")}</CardTitle>
+            <CardDescription className="text-slate-200">{t("investigateHealthDriversDesc")}</CardDescription>
           </CardHeader>
           <CardContent className="grid gap-3 md:grid-cols-2 lg:grid-cols-3">
             {atRisk.map((initiative) => (
@@ -71,7 +72,7 @@ export default function InitiativeHealthDashboardPage() {
                     <p className="text-sm font-semibold text-white">{isArabic ? initiative.titleAr ?? initiative.title : initiative.title}</p>
                     <p className="text-xs text-slate-200">{initiative.owner}</p>
                     <p className="text-xs text-slate-300">
-                      {initiative.projects.length} {tr("projects", "مشاريع")} • {initiative.kpis.length} {tr("KPIs", "مؤشرات الأداء الرئيسية")} • {initiative.risks.length} {tr("risks", "مخاطر")}
+                      {initiative.projects.length} {t("projects")} • {initiative.kpis.length} {t("kpis")} • {initiative.risks.length} {t("risks")}
                     </p>
                   </div>
                   <RagBadge health={initiative.health} />

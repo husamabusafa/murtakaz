@@ -17,7 +17,7 @@ export async function getMyOrganizationNodeTypes() {
     return [];
   }
 
-  const rows = await prisma.organizationNodeType.findMany({
+  const rows = await (prisma as any).organizationNodeType.findMany({
     where: {
       orgId: session.user.orgId,
     },
@@ -30,11 +30,18 @@ export async function getMyOrganizationNodeTypes() {
           id: true,
           code: true,
           displayName: true,
+          nameAr: true,
           levelOrder: true,
         },
       },
     },
   });
 
-  return rows.map((r) => r.nodeType);
+  return (rows as any[]).map((r) => r.nodeType) as Array<{
+    id: string;
+    code: string;
+    displayName: string;
+    nameAr: string | null;
+    levelOrder: number;
+  }>;
 }

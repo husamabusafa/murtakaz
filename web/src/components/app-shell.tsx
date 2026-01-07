@@ -171,7 +171,7 @@ function useDelayedVisibility(isOpen: boolean, delayMs = 160) {
 export function AppShell({ children }: { children: React.ReactNode }) {
   const router = useRouter();
   const pathname = usePathname();
-  const { t, tr, locale, isArabic } = useLocale();
+  const { t, locale, isArabic } = useLocale();
   const { user, loading } = useAuth();
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const userRole = (user as any)?.role;
@@ -311,7 +311,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
             <div
               className={cn(
                 "absolute inset-y-0 w-80 max-w-[85vw] bg-background shadow-2xl transition-transform duration-300 ease-in-out",
-                isArabic ? "right-0 border-l border-border" : "left-0 border-r border-border",
+                "start-0 border-e border-border",
                 mobileNavOpen ? "translate-x-0" : isArabic ? "translate-x-full" : "-translate-x-full",
               )}
             >
@@ -393,9 +393,9 @@ export function AppShell({ children }: { children: React.ReactNode }) {
             onMouseEnter={() => setSidebarHovered(true)}
             onMouseLeave={() => setSidebarHovered(false)}
             className={cn(
-              "hidden lg:flex lg:flex-col lg:border-r lg:border-border lg:bg-card/80 lg:backdrop-blur-xl",
+              "hidden lg:flex lg:flex-col lg:border-e lg:border-border lg:bg-card/80 lg:backdrop-blur-xl",
               "fixed top-0 z-[60] h-screen",
-              isArabic ? "right-0 border-r-0 border-l" : "left-0",
+              "start-0",
               "transition-[width] duration-300 ease-in-out motion-reduce:transition-none",
               sidebarExpanded ? "w-72 shadow-2xl" : "w-20",
             )}
@@ -498,8 +498,8 @@ export function AppShell({ children }: { children: React.ReactNode }) {
                   <Link href={`/${locale}`} className="flex items-center gap-3">
                     <LogoMark text="M" />
                     <div className={cn("leading-tight", isArabic && "text-right")}>
-                      <p className="text-sm font-semibold text-white">{tr("Murtakaz", "مرتكز")}</p>
-                      <p className="text-xs text-slate-300">{tr("Strategy execution platform", "منصة تنفيذ الاستراتيجية")}</p>
+                      <p className="text-sm font-semibold text-white">{t("murtakaz")}</p>
+                      <p className="text-xs text-slate-300">{t("strategyExecutionPlatform")}</p>
                     </div>
                   </Link>
 
@@ -510,16 +510,16 @@ export function AppShell({ children }: { children: React.ReactNode }) {
                     )}
                   >
                     <Link href={`/${locale}#features`} className="hover:text-white">
-                      {tr("Features", "الميزات")}
+                      {t("features")}
                     </Link>
                     <Link href={`/${locale}/pricing`} className="hover:text-white">
-                      {tr("Pricing", "الأسعار")}
+                      {t("pricing")}
                     </Link>
                     <Link href={`/${locale}/faq`} className="hover:text-white">
-                      {tr("FAQ", "الأسئلة الشائعة")}
+                      {t("faq")}
                     </Link>
                     <Link href={`/${locale}/contact`} className="hover:text-white">
-                      {tr("Contact", "تواصل معنا")}
+                      {t("contact")}
                     </Link>
                   </nav>
                 </div>
@@ -547,7 +547,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
                 {isAuthRoute ? null : showAppNav ? null : loading ? null : user ? (
                   <>
                     <Button asChild variant="secondary">
-                      <Link href={`/${locale}/overview`}>{tr("Workspace", "مساحة العمل")}</Link>
+                      <Link href={`/${locale}/overview`}>{t("workspace")}</Link>
                     </Button>
                   </>
                 ) : isMarketingRoute ? (
@@ -557,15 +557,15 @@ export function AppShell({ children }: { children: React.ReactNode }) {
                       variant="outline"
                       className="hidden sm:inline-flex"
                     >
-                      <Link href={`/${locale}/contact`}>{tr("Request demo", "اطلب عرضًا توضيحيًا")}</Link>
+                      <Link href={`/${locale}/contact`}>{t("requestDemo")}</Link>
                     </Button>
                     <Button asChild variant="secondary">
-                      <Link href={withLocale(locale, "/auth/login")}>{tr("Sign in", "تسجيل الدخول")}</Link>
+                      <Link href={withLocale(locale, "/auth/login")}>{t("signIn")}</Link>
                     </Button>
                   </>
                 ) : (
                   <Button asChild variant="secondary">
-                    <Link href={withLocale(locale, "/auth/login")}>{tr("Sign in", "تسجيل الدخول")}</Link>
+                    <Link href={withLocale(locale, "/auth/login")}>{t("signIn")}</Link>
                   </Button>
                 )}
               </div>

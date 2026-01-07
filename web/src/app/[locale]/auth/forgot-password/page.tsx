@@ -8,7 +8,7 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 
 export default function ForgotPasswordPage() {
-  const { locale, tr } = useLocale();
+  const { locale, t } = useLocale();
   const [email, setEmail] = useState("");
   const [submitted, setSubmitted] = useState(false);
 
@@ -16,28 +16,22 @@ export default function ForgotPasswordPage() {
     <div className="mx-auto grid max-w-3xl place-items-center py-10">
       <Card className="w-full border-white/10 bg-white/5 text-white shadow-lg shadow-black/20">
         <CardHeader className="space-y-2">
-          <CardTitle className="text-2xl">{tr("Password reset", "إعادة تعيين كلمة المرور")}</CardTitle>
+          <CardTitle className="text-2xl">{t("passwordReset")}</CardTitle>
           <CardDescription className="text-slate-200">
-            {tr(
-              "Prototype screen. In production, this is handled by your SSO provider or NextAuth flow.",
-              "هذه شاشة تجريبية. في الإنتاج، تتم إدارة ذلك عبر مزود SSO أو تدفق NextAuth.",
-            )}
+            {t("forgotPasswordSubtitle")}
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
           {submitted ? (
             <div className="rounded-xl border border-white/10 bg-slate-950/40 px-4 py-3 text-sm text-slate-100">
-              {tr(
-                "If an account exists for",
-                "إذا كان هناك حساب مرتبط بـ",
-              )}{" "}
-              <span className="font-semibold text-white">{email || tr("your email", "بريدك الإلكتروني")}</span>
-              {tr(", a reset link would be sent.", " فسيتم إرسال رابط إعادة التعيين.")}
+              {t("resetLinkSentDesc")}{" "}
+              <span className="font-semibold text-white">{email || t("yourEmail")}</span>
+              {t("resetLinkSentEnd")}
             </div>
           ) : (
             <>
               <div className="space-y-2">
-                <p className="text-sm font-semibold text-white">{tr("Email", "البريد الإلكتروني")}</p>
+                <p className="text-sm font-semibold text-white">{t("email")}</p>
                 <Input
                   value={email}
                   onChange={(event) => setEmail(event.target.value)}
@@ -49,13 +43,13 @@ export default function ForgotPasswordPage() {
                 onClick={() => setSubmitted(true)}
                 className="bg-white text-slate-900 hover:bg-slate-100"
               >
-                {tr("Send reset link", "إرسال رابط إعادة التعيين")}
+                {t("sendResetLink")}
               </Button>
             </>
           )}
 
           <Link href={`/${locale}/auth/login`} className="inline-flex text-sm font-semibold text-indigo-200 hover:text-indigo-100">
-            {tr("Back to sign in", "العودة لتسجيل الدخول")}
+            {t("backToSignIn")}
           </Link>
         </CardContent>
       </Card>

@@ -8,7 +8,7 @@ import { ApprovalBadge } from "@/components/rag-badge";
 import { Icon } from "@/components/icon";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
-import { useLocale } from "@/providers/locale-provider";
+import { type TranslationKey, useLocale } from "@/providers/locale-provider";
 import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/providers/auth-provider";
@@ -24,7 +24,7 @@ import {
 
 export default function ApprovalDetailPage() {
   const params = useParams<{ requestId: string }>();
-  const { locale, tr } = useLocale();
+  const { locale, t, tr } = useLocale();
   const { user } = useAuth();
 
   const base = getBaseChangeRequest(params.requestId);
@@ -36,7 +36,7 @@ export default function ApprovalDetailPage() {
   if (!hydrated) {
     return (
       <div className="rounded-2xl border border-white/10 bg-white/5 p-8 text-white">
-        <p className="text-sm text-slate-200">{tr("Loading request…", "جارٍ تحميل الطلب…")}</p>
+        <p className="text-sm text-slate-200">{t("loadingRequest")}</p>
       </div>
     );
   }
@@ -44,9 +44,9 @@ export default function ApprovalDetailPage() {
   if (!request.entityType) {
     return (
       <div className="rounded-2xl border border-white/10 bg-white/5 p-8 text-white">
-        <p className="text-sm text-slate-200">{tr("Change request not found.", "طلب التغيير غير موجود.")}</p>
+        <p className="text-sm text-slate-200">{t("changeRequestNotFound")}</p>
         <Link href={`/${locale}/approvals`} className="mt-3 inline-flex text-sm font-semibold text-indigo-200 hover:text-indigo-100">
-          {tr("Back to approvals", "العودة للموافقات")}
+          {t("backToApprovals")}
         </Link>
       </div>
     );
@@ -56,8 +56,8 @@ export default function ApprovalDetailPage() {
     <div className="space-y-8">
       <PageHeader
         title={`${request.entityType}: ${request.entityName}`}
-        subtitle={`${tr("Requested by", "مقدم الطلب")} ${request.requestedBy} • ${
-          request.createdAt ? new Date(request.createdAt).toLocaleDateString() : `${request.ageDays}${tr("d", "ي")}`
+        subtitle={`${t("requestedBy")} ${request.requestedBy} • ${
+          request.createdAt ? new Date(request.createdAt).toLocaleDateString() : `${request.ageDays}${t("daysShort")}`
         }`}
         icon={<Icon name="tabler:gavel" className="h-5 w-5" />}
         actions={<ApprovalBadge status={request.status} />}
@@ -69,51 +69,48 @@ export default function ApprovalDetailPage() {
             <div className="space-y-1">
               <CardTitle className="flex items-center gap-2 text-base">
                 <Icon name="tabler:diff" className="h-4 w-4 text-slate-100" />
-                {tr("Change details (demo)", "تفاصيل التغيير (عرض تجريبي)")}
+                {t("changeDetailsDemo")}
               </CardTitle>
-              <CardDescription className="text-slate-200">{tr("Before/after diff, approvals log, and comments.", "مقارنة قبل/بعد، وسجل الموافقات، والتعليقات.")}</CardDescription>
+              <CardDescription className="text-slate-200">{t("changeDetailsDesc")}</CardDescription>
             </div>
           </CardHeader>
           <CardContent className="space-y-4 text-sm text-slate-100">
             <div className="rounded-xl border border-white/10 bg-slate-950/40 px-4 py-3">
-              <p className="text-xs font-semibold uppercase tracking-wide text-slate-200">{tr("Summary", "ملخص")}</p>
+              <p className="text-xs font-semibold uppercase tracking-wide text-slate-200">{t("summary")}</p>
               <p className="mt-1 text-slate-100">
-                {tr(
-                  "In Phase 1, changes to KPI targets/formulas and strategy items require PMO approval. This view displays the proposed payload and audit metadata.",
-                  "في المرحلة الأولى، تتطلب تغييرات مستهدفات/معادلات مؤشرات الأداء الرئيسية وعناصر الاستراتيجية موافقة مكتب إدارة المشاريع (PMO). تعرض هذه الصفحة تفاصيل الطلب وبيانات التدقيق.",
-                )}
+                {t("phase1ApprovalPolicyDesc")}
               </p>
             </div>
             <Separator className="bg-white/10" />
             <div className="rounded-xl border border-white/10 bg-slate-950/40 px-4 py-3">
-              <p className="text-xs font-semibold uppercase tracking-wide text-slate-200">{tr("Before", "قبل")}</p>
+              <p className="text-xs font-semibold uppercase tracking-wide text-slate-200">{t("before")}</p>
               <pre className="mt-2 overflow-auto rounded-lg bg-black/30 p-3 text-xs text-slate-100">
 {JSON.stringify(request.before ?? { example: "previous value" }, null, 2)}
               </pre>
             </div>
             <div className="rounded-xl border border-white/10 bg-slate-950/40 px-4 py-3">
-              <p className="text-xs font-semibold uppercase tracking-wide text-slate-200">{tr("After", "بعد")}</p>
+              <p className="text-xs font-semibold uppercase tracking-wide text-slate-200">{t("after")}</p>
               <pre className="mt-2 overflow-auto rounded-lg bg-black/30 p-3 text-xs text-slate-100">
 {JSON.stringify(request.after ?? { example: "requested value" }, null, 2)}
               </pre>
             </div>
             <div className="rounded-xl border border-white/10 bg-slate-950/40 px-4 py-3">
-              <p className="text-xs font-semibold uppercase tracking-wide text-slate-200">{tr("Comments", "التعليقات")}</p>
+              <p className="text-xs font-semibold uppercase tracking-wide text-slate-200">{t("comments")}</p>
               <div className="mt-3 space-y-3">
                 <ApprovalCommentBox
-                  tr={tr}
+                  t={t}
                   onSubmit={(message) =>
                     update({
                       ...request,
                       comments: [
-                        { id: `c-${Date.now()}`, at: new Date().toISOString(), author: user?.name ?? tr("User", "مستخدم"), message },
+                        { id: `c-${Date.now()}`, at: new Date().toISOString(), author: user?.name ?? t("user"), message },
                         ...(request.comments ?? []),
                       ],
                     })
                   }
                 />
                 {(request.comments ?? []).length === 0 ? (
-                  <p className="text-xs text-slate-300">{tr("No comments yet.", "لا توجد تعليقات بعد.")}</p>
+                  <p className="text-xs text-slate-300">{t("noCommentsYet")}</p>
                 ) : (
                   (request.comments ?? []).map((c) => (
                     <div key={c.id} className="rounded-xl border border-white/10 bg-black/20 px-4 py-3">
@@ -133,9 +130,9 @@ export default function ApprovalDetailPage() {
           <CardHeader>
             <CardTitle className="flex items-center gap-2 text-base">
               <Icon name="tabler:bolt" className="h-4 w-4 text-slate-100" />
-              {tr("Actions", "إجراءات")}
+              {t("actions")}
             </CardTitle>
-            <CardDescription className="text-slate-200">{tr("Approve/reject workflow (demo).", "تدفق الموافقة/الرفض (عرض تجريبي).")}</CardDescription>
+            <CardDescription className="text-slate-200">{t("approveRejectWorkflowDesc")}</CardDescription>
           </CardHeader>
           <CardContent className="space-y-2 text-sm text-slate-100">
             <Button
@@ -149,7 +146,7 @@ export default function ApprovalDetailPage() {
             >
               <span className="inline-flex items-center gap-2">
                 <Icon name="tabler:circle-check" className="h-4 w-4" />
-                {tr("Approve & apply", "موافقة وتطبيق")}
+                {t("approveAndApply")}
               </span>
             </Button>
             <Button
@@ -160,11 +157,11 @@ export default function ApprovalDetailPage() {
             >
               <span className="inline-flex items-center gap-2">
                 <Icon name="tabler:circle-x" className="h-4 w-4" />
-                {tr("Reject", "رفض")}
+                {t("reject")}
               </span>
             </Button>
             <Link href={`/${locale}/approvals`} className="mt-2 inline-flex text-sm font-semibold text-indigo-200 hover:text-indigo-100">
-              {tr("Back to approvals", "العودة للموافقات")}
+              {t("backToApprovals")}
             </Link>
           </CardContent>
         </Card>
@@ -173,14 +170,14 @@ export default function ApprovalDetailPage() {
   );
 }
 
-function ApprovalCommentBox({ onSubmit, tr }: { onSubmit: (message: string) => void; tr: (en: string, ar: string) => string }) {
+function ApprovalCommentBox({ onSubmit, t }: { onSubmit: (message: string) => void; t: (key: TranslationKey) => string }) {
   const [message, setMessage] = useState("");
   return (
     <div className="space-y-3">
       <Textarea
         value={message}
         onChange={(e) => setMessage(e.target.value)}
-        placeholder={tr("Add a comment for the approval trail…", "أضف تعليقًا لسجل الموافقة…")}
+        placeholder={t("addCommentPlaceholder")}
         className="border-white/10 bg-black/20 text-white placeholder:text-slate-400"
       />
       <Button
@@ -194,7 +191,7 @@ function ApprovalCommentBox({ onSubmit, tr }: { onSubmit: (message: string) => v
       >
         <span className="inline-flex items-center gap-2">
           <Icon name="tabler:message-plus" className="h-4 w-4" />
-          {tr("Add comment", "إضافة تعليق")}
+          {t("addComment")}
         </span>
       </Button>
     </div>

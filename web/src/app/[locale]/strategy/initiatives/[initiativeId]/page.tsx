@@ -27,7 +27,7 @@ import {
 
 export default function InitiativeDetailPage() {
   const params = useParams<{ initiativeId: string }>();
-  const { locale, tr, isArabic } = useLocale();
+  const { locale, t, isArabic } = useLocale();
   const { user } = useAuth();
 
   const base = getBaseInitiative(params.initiativeId);
@@ -53,7 +53,7 @@ export default function InitiativeDetailPage() {
   if (!hydrated) {
     return (
       <div className="rounded-2xl border border-white/10 bg-white/5 p-8 text-white">
-        <p className="text-sm text-slate-200">{tr("Loading initiative…", "جارٍ تحميل المبادرة…")}</p>
+        <p className="text-sm text-slate-200">{t("loadingInitiative")}</p>
       </div>
     );
   }
@@ -61,9 +61,9 @@ export default function InitiativeDetailPage() {
   if (!base && initiative.title === "Unknown initiative") {
     return (
       <div className="rounded-2xl border border-white/10 bg-white/5 p-8 text-white">
-        <p className="text-sm text-slate-200">{tr("Initiative not found.", "المبادرة غير موجودة.")}</p>
+        <p className="text-sm text-slate-200">{t("initiativeNotFound")}</p>
         <Link href={`/${locale}/strategy`} className="mt-3 inline-flex text-sm font-semibold text-indigo-200 hover:text-indigo-100">
-          {tr("Back to strategy", "العودة إلى الاستراتيجية")}
+          {t("backToStrategy")}
         </Link>
       </div>
     );
@@ -72,9 +72,9 @@ export default function InitiativeDetailPage() {
   const subtitleBits = [
     parentPillar ? (isArabic ? parentPillar.titleAr ?? parentPillar.title : parentPillar.title) : null,
     initiative.owner || null,
-    `${initiative.projects.length} ${tr("projects", "مشاريع")}`,
-    `${initiative.kpis.length} ${tr("KPIs", "مؤشرات الأداء الرئيسية")}`,
-    `${initiative.risks.length} ${tr("risks", "مخاطر")}`,
+    `${initiative.projects.length} ${t("projects")}`,
+    `${initiative.kpis.length} ${t("kpis")}`,
+    `${initiative.risks.length} ${t("risks")}`,
   ].filter(Boolean);
 
   return (
@@ -94,19 +94,19 @@ export default function InitiativeDetailPage() {
       <Tabs defaultValue="summary" className="space-y-6">
         <TabsList className="border border-white/10 bg-white/5">
           <TabsTrigger value="summary" className="data-[state=active]:bg-white/10 data-[state=active]:text-white">
-            {tr("Summary", "ملخص")}
+            {t("summary")}
           </TabsTrigger>
           <TabsTrigger value="projects" className="data-[state=active]:bg-white/10 data-[state=active]:text-white">
-            {tr("Projects", "المشاريع")}
+            {t("projects")}
           </TabsTrigger>
           <TabsTrigger value="kpis" className="data-[state=active]:bg-white/10 data-[state=active]:text-white">
-            {tr("KPIs", "مؤشرات الأداء الرئيسية")}
+            {t("kpis")}
           </TabsTrigger>
           <TabsTrigger value="risks" className="data-[state=active]:bg-white/10 data-[state=active]:text-white">
-            {tr("Risks", "المخاطر")}
+            {t("risks")}
           </TabsTrigger>
           <TabsTrigger value="updates" className="data-[state=active]:bg-white/10 data-[state=active]:text-white">
-            {tr("Updates", "التحديثات")}
+            {t("updates")}
           </TabsTrigger>
         </TabsList>
 
@@ -115,16 +115,16 @@ export default function InitiativeDetailPage() {
             <CardHeader>
               <CardTitle className="flex items-center gap-2 text-base">
                 <Icon name="tabler:clipboard-text" className="h-4 w-4 text-slate-100" />
-                {tr("Initiative summary", "ملخص المبادرة")}
+                {t("initiativeSummary")}
               </CardTitle>
               <CardDescription className="text-slate-200">
-                {tr("Drill-down across projects, KPIs, risks, and narrative updates.", "استعراض تفصيلي للمشاريع ومؤشرات الأداء الرئيسية والمخاطر والتحديثات.")}
+                {t("initiativeDrillDownDesc")}
               </CardDescription>
             </CardHeader>
             <CardContent className="space-y-3 text-sm text-slate-100">
               {parentPillar ? (
                 <div className="rounded-xl border border-white/10 bg-slate-950/40 px-4 py-3">
-                  <p className="text-xs font-semibold uppercase tracking-wide text-slate-200">{tr("Pillar", "الركيزة")}</p>
+                  <p className="text-xs font-semibold uppercase tracking-wide text-slate-200">{t("pillar")}</p>
                   <Link href={`/${locale}/strategy/${parentPillar.id}`} className="mt-1 inline-flex items-center gap-2 text-white hover:underline">
                     <Icon name="tabler:layers-subtract" className="h-4 w-4" />
                     {isArabic ? parentPillar.titleAr ?? parentPillar.title : parentPillar.title}
@@ -133,16 +133,16 @@ export default function InitiativeDetailPage() {
               ) : null}
               <div className="grid gap-3 md:grid-cols-2">
                 <div className="rounded-xl border border-white/10 bg-slate-950/40 px-4 py-3">
-                  <p className="text-xs font-semibold uppercase tracking-wide text-slate-200">{tr("Owner", "المسؤول")}</p>
+                  <p className="text-xs font-semibold uppercase tracking-wide text-slate-200">{t("owner")}</p>
                   <p className="mt-1 text-white">{initiative.owner || "—"}</p>
                 </div>
                 <div className="rounded-xl border border-white/10 bg-slate-950/40 px-4 py-3">
-                  <p className="text-xs font-semibold uppercase tracking-wide text-slate-200">{tr("Timeline", "المدة")}</p>
+                  <p className="text-xs font-semibold uppercase tracking-wide text-slate-200">{t("timeline")}</p>
                   <p className="mt-1 text-white">{initiative.start || "—"}</p>
                 </div>
               </div>
               <div className="rounded-xl border border-white/10 bg-slate-950/40 px-4 py-3">
-                <p className="text-xs font-semibold uppercase tracking-wide text-slate-200">{tr("Budget / notes", "الميزانية / ملاحظات")}</p>
+                <p className="text-xs font-semibold uppercase tracking-wide text-slate-200">{t("budgetNotes")}</p>
                 <p className="mt-1 text-white">{initiative.end || "—"}</p>
               </div>
             </CardContent>
@@ -152,13 +152,13 @@ export default function InitiativeDetailPage() {
             <CardHeader>
               <CardTitle className="flex items-center gap-2 text-base">
                 <Icon name="tabler:activity" className="h-4 w-4 text-slate-100" />
-                {tr("Latest update", "آخر تحديث")}
+                {t("latestUpdate")}
               </CardTitle>
-              <CardDescription className="text-slate-200">{tr("Most recent narrative update (prototype).", "آخر تحديث سردي (نموذج أولي).")}</CardDescription>
+              <CardDescription className="text-slate-200">{t("mostRecentUpdateDesc")}</CardDescription>
             </CardHeader>
             <CardContent className="text-sm text-slate-100">
               {initiative.updates.length === 0 ? (
-                <p className="text-slate-200">{tr("No updates posted yet.", "لا توجد تحديثات حتى الآن.")}</p>
+                <p className="text-slate-200">{t("noUpdatesPosted")}</p>
               ) : (
                 <div className="rounded-xl border border-white/10 bg-slate-950/40 px-4 py-3">
                   <p className="text-sm font-semibold text-white">{initiative.updates[0]?.summary}</p>
@@ -176,9 +176,9 @@ export default function InitiativeDetailPage() {
             <CardHeader>
               <CardTitle className="flex items-center gap-2 text-base">
                 <Icon name="tabler:timeline" className="h-4 w-4 text-slate-100" />
-                {tr("Projects", "المشاريع")}
+                {t("projects")}
               </CardTitle>
-              <CardDescription className="text-slate-200">{tr("Delivery projects under this initiative.", "مشاريع التنفيذ ضمن هذه المبادرة.")}</CardDescription>
+              <CardDescription className="text-slate-200">{t("deliveryProjectsDesc")}</CardDescription>
             </CardHeader>
             <CardContent className="grid gap-3 md:grid-cols-2 lg:grid-cols-3">
               {initiative.projects.map((project) => (
@@ -200,9 +200,9 @@ export default function InitiativeDetailPage() {
             <CardHeader>
               <CardTitle className="flex items-center gap-2 text-base">
                 <Icon name="tabler:chart-line" className="h-4 w-4 text-slate-100" />
-                {tr("KPIs", "مؤشرات الأداء الرئيسية")}
+                {t("kpis")}
               </CardTitle>
-              <CardDescription className="text-slate-200">{tr("KPIs linked to this initiative.", "مؤشرات الأداء الرئيسية المرتبطة بهذه المبادرة.")}</CardDescription>
+              <CardDescription className="text-slate-200">{t("kpisLinkedToInitiativeDesc")}</CardDescription>
             </CardHeader>
             <CardContent className="grid gap-3 md:grid-cols-2 lg:grid-cols-3">
               {kpis.map((kpi) => (
@@ -213,8 +213,8 @@ export default function InitiativeDetailPage() {
                 >
                   <p className="text-sm font-semibold text-white">{isArabic ? kpi.nameAr ?? kpi.name : kpi.name}</p>
                   <p className="mt-1 text-xs text-slate-200">
-                    {tr("Current", "الحالي")} {kpi.current}
-                    {kpi.unit} • {tr("Target", "المستهدف")} {kpi.target}
+                    {t("current")} {kpi.current}
+                    {kpi.unit} • {t("target")} {kpi.target}
                     {kpi.unit}
                   </p>
                 </Link>
@@ -228,9 +228,9 @@ export default function InitiativeDetailPage() {
             <CardHeader>
               <CardTitle className="flex items-center gap-2 text-base">
                 <Icon name="tabler:shield-exclamation" className="h-4 w-4 text-slate-100" />
-                {tr("Risks", "المخاطر")}
+                {t("risks")}
               </CardTitle>
-              <CardDescription className="text-slate-200">{tr("Risks linked to this initiative.", "المخاطر المرتبطة بهذه المبادرة.")}</CardDescription>
+              <CardDescription className="text-slate-200">{t("risksLinkedToInitiativeDesc")}</CardDescription>
             </CardHeader>
             <CardContent className="grid gap-3 md:grid-cols-2 lg:grid-cols-3">
               {risks.map((risk) => (
@@ -241,8 +241,8 @@ export default function InitiativeDetailPage() {
                 >
                   <p className="text-sm font-semibold text-white">{isArabic ? risk.titleAr ?? risk.title : risk.title}</p>
                   <p className="mt-1 text-xs text-slate-200">
-                    {risk.severity} • {risk.owner}
-                    {risk.escalated ? ` • ${tr("Escalated", "مصعّد")}` : ""}
+                    {risk.severity} • {risk.status}
+                    {risk.escalated ? ` • ${t("escalated")}` : ""}
                   </p>
                 </Link>
               ))}
@@ -255,23 +255,23 @@ export default function InitiativeDetailPage() {
             <CardHeader>
               <CardTitle className="flex items-center gap-2 text-base">
                 <Icon name="tabler:notes" className="h-4 w-4 text-slate-100" />
-                {tr("Updates", "التحديثات")}
+                {t("updates")}
               </CardTitle>
-              <CardDescription className="text-slate-200">{tr("Narrative updates stored locally for the demo.", "تحديثات سردية محفوظة محليًا للعرض.")}</CardDescription>
+              <CardDescription className="text-slate-200">{t("narrativeUpdatesDesc")}</CardDescription>
             </CardHeader>
             <CardContent className="space-y-3">
               <InitiativeUpdateEditor
                 onSubmit={(message) =>
                   update(
                     addInitiativeUpdate(initiative, {
-                      author: user?.name ?? tr("User", "مستخدم"),
+                      author: user?.name ?? t("user"),
                       summary: message,
                     }),
                   )
                 }
               />
               {initiative.updates.length === 0 ? (
-                <p className="text-sm text-slate-200">{tr("No updates posted yet.", "لا توجد تحديثات حتى الآن.")}</p>
+                <p className="text-sm text-slate-200">{t("noUpdatesPosted")}</p>
               ) : (
                 initiative.updates.map((entry) => (
                   <div key={entry.id} className="rounded-xl border border-white/10 bg-slate-950/40 px-4 py-3">
@@ -289,22 +289,22 @@ export default function InitiativeDetailPage() {
             <CardHeader>
               <CardTitle className="flex items-center gap-2 text-base">
                 <Icon name="tabler:info-circle" className="h-4 w-4 text-slate-100" />
-                {tr("Guidance", "إرشادات")}
+                {t("guidance")}
               </CardTitle>
-              <CardDescription className="text-slate-200">{tr("Suggested weekly update structure.", "هيكل مقترح لتحديث أسبوعي.")}</CardDescription>
+              <CardDescription className="text-slate-200">{t("suggestedWeeklyUpdateDesc")}</CardDescription>
             </CardHeader>
             <CardContent className="space-y-2 text-sm text-slate-100">
               <div className="rounded-xl border border-white/10 bg-slate-950/40 px-4 py-3">
-                <p className="font-semibold text-white">{tr("Progress", "التقدم")}</p>
-                <p className="mt-1 text-xs text-slate-200">{tr("What moved since last update?", "ما الذي تغيّر منذ آخر تحديث؟")}</p>
+                <p className="font-semibold text-white">{t("progress")}</p>
+                <p className="mt-1 text-xs text-slate-200">{t("whatMovedDesc")}</p>
               </div>
               <div className="rounded-xl border border-white/10 bg-slate-950/40 px-4 py-3">
-                <p className="font-semibold text-white">{tr("Risks & blockers", "المخاطر والعوائق")}</p>
-                <p className="mt-1 text-xs text-slate-200">{tr("What needs escalation or support?", "ما الذي يحتاج دعمًا أو تصعيدًا؟")}</p>
+                <p className="font-semibold text-white">{t("risksAndBlockers")}</p>
+                <p className="mt-1 text-xs text-slate-200">{t("needsEscalationDesc")}</p>
               </div>
               <div className="rounded-xl border border-white/10 bg-slate-950/40 px-4 py-3">
-                <p className="font-semibold text-white">{tr("Next actions", "الخطوات القادمة")}</p>
-                <p className="mt-1 text-xs text-slate-200">{tr("Top 1–3 priorities for the coming week.", "أهم 1-3 أولويات للأسبوع القادم.")}</p>
+                <p className="font-semibold text-white">{t("nextActions")}</p>
+                <p className="mt-1 text-xs text-slate-200">{t("topPrioritiesDesc")}</p>
               </div>
             </CardContent>
           </Card>
@@ -315,14 +315,14 @@ export default function InitiativeDetailPage() {
 }
 
 function InitiativeUpdateEditor({ onSubmit }: { onSubmit: (message: string) => void }) {
-  const { tr } = useLocale();
+  const { t } = useLocale();
   const [message, setMessage] = useState("");
   return (
     <div className="space-y-3">
       <Textarea
         value={message}
         onChange={(e) => setMessage(e.target.value)}
-        placeholder={tr("Post a status update for this initiative…", "أضف تحديثًا لهذه المبادرة…")}
+        placeholder={t("postUpdatePlaceholder")}
         className="border-white/10 bg-black/20 text-white placeholder:text-slate-400"
       />
       <Button
@@ -335,7 +335,7 @@ function InitiativeUpdateEditor({ onSubmit }: { onSubmit: (message: string) => v
       >
         <span className="inline-flex items-center gap-2">
           <Icon name="tabler:send" className="h-4 w-4" />
-          {tr("Post update", "نشر التحديث")}
+          {t("postUpdate")}
         </span>
       </Button>
     </div>

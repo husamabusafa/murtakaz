@@ -100,6 +100,7 @@ enum KpiAggregationMethod {
 model Organization {
   id        String    @id @default(uuid())
   name      String
+  nameAr    String?   @map("name_ar")
   domain    String?
   kpiApprovalLevel KpiApprovalLevel @default(MANAGER) @map("kpi_approval_level")
   createdAt DateTime  @default(now())
@@ -124,6 +125,7 @@ model Department {
   org       Organization @relation(fields: [orgId], references: [id], onDelete: Cascade)
 
   name      String
+  nameAr    String?      @map("name_ar")
   code      String?
   parentId  String?      @map("parent_id")
   parent    Department?  @relation("DeptTree", fields: [parentId], references: [id], onDelete: SetNull)
@@ -306,6 +308,7 @@ model NodeType {
   id          String       @id @default(uuid())
   code        NodeTypeCode @unique
   displayName String       @map("display_name")
+  nameAr      String?
   levelOrder  Int          @map("level_order")
   canHaveKpis Boolean      @default(false) @map("can_have_kpis")
 
@@ -344,7 +347,9 @@ model Node {
   children    Node[]   @relation("NodeHierarchy")
 
   name        String
+  nameAr      String?  @map("name_ar")
   description String?
+  descriptionAr String? @map("description_ar")
 
   color       String   @default("#64748b") @map("color")
 
@@ -483,11 +488,14 @@ model KpiDefinition {
   ownerUser     User?               @relation("KpiOwner", fields: [ownerUserId], references: [id], onDelete: SetNull)
 
   name          String
+  nameAr        String?             @map("name_ar")
   description   String?
+  descriptionAr String?             @map("description_ar")
   formula       String?
 
   // ✅ Make KPI meaning explicit:
   unit          String?             // "%", "USD", "days", "count", etc.
+  unitAr        String?             @map("unit_ar")
   direction     KpiDirection        @default(INCREASE_IS_GOOD)
   aggregation   KpiAggregationMethod @default(LAST_VALUE)
 
@@ -517,6 +525,7 @@ model KpiVariable {
 
   code        String
   displayName String              @map("display_name")
+  nameAr      String?             @map("name_ar")
   dataType    KpiVariableDataType @map("data_type")
   isRequired  Boolean             @default(false) @map("is_required")
 

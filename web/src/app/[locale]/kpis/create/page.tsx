@@ -26,6 +26,7 @@ type VariableDraft = {
   tempId: string;
   code: string;
   displayName: string;
+  nameAr: string;
   dataType: VariableDataType;
   isRequired: boolean;
   isStatic: boolean;
@@ -34,7 +35,7 @@ type VariableDraft = {
 
 export default function CreateKpiPage() {
   const router = useRouter();
-  const { locale, tr } = useLocale();
+  const { locale, t, tr, df } = useLocale();
   const { user, loading: sessionLoading } = useAuth();
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -51,8 +52,11 @@ export default function CreateKpiPage() {
 
   const [draft, setDraft] = useState(() => ({
     name: "",
+    nameAr: "",
     description: "",
+    descriptionAr: "",
     unit: "",
+    unitAr: "",
     periodType: "MONTHLY" as PeriodType,
     baselineValue: "",
     targetValue: "",
@@ -62,7 +66,8 @@ export default function CreateKpiPage() {
       {
         tempId: `var-${Date.now()}`,
         code: "A",
-        displayName: tr("Input A", "مدخل A"),
+        displayName: t("inputA"),
+        nameAr: "",
         dataType: "NUMBER" as const,
         isRequired: true,
         isStatic: false,
@@ -108,8 +113,9 @@ export default function CreateKpiPage() {
   const selectedPrimaryNodeLabel = useMemo(() => {
     const found = primaryNodes.find((n) => n.id === draft.primaryNodeId);
     if (!found) return "";
-    return `${found.nodeType?.displayName ?? tr("Type", "النوع")}: ${found.name}`;
-  }, [draft.primaryNodeId, primaryNodes, tr]);
+    const typeLabel = df(found.nodeType?.displayName, (found.nodeType as any)?.nameAr) || t("type");
+    return `${typeLabel}: ${df(found.name, (found as any).nameAr)}`;
+  }, [df, draft.primaryNodeId, primaryNodes, t]);
 
   async function handleCreate() {
     setError(null);
@@ -125,9 +131,12 @@ export default function CreateKpiPage() {
 
       const result = await createOrgAdminKpi({
         name: draft.name,
+        nameAr: draft.nameAr || undefined,
         description: draft.description || undefined,
+        descriptionAr: draft.descriptionAr || undefined,
         primaryNodeId: draft.primaryNodeId,
         unit: draft.unit || undefined,
+        unitAr: draft.unitAr || undefined,
         periodType: draft.periodType,
         baselineValue,
         targetValue,
@@ -135,6 +144,7 @@ export default function CreateKpiPage() {
         variables: draft.variables.map((v) => ({
           code: v.code,
           displayName: v.displayName,
+          nameAr: v.nameAr || undefined,
           dataType: v.dataType,
           isRequired: v.isRequired,
           isStatic: v.isStatic,
@@ -173,7 +183,7 @@ export default function CreateKpiPage() {
   if (sessionLoading || loading) {
     return (
       <div className="rounded-2xl border border-white/10 bg-white/5 p-8 text-white">
-        <p className="text-sm text-slate-200">{tr("Loading…", "جارٍ التحميل…")}</p>
+        <p className="text-sm text-slate-200">{t("loading")}</p>
       </div>
     );
   }
@@ -181,9 +191,9 @@ export default function CreateKpiPage() {
   if (!isAdmin) {
     return (
       <div className="rounded-2xl border border-white/10 bg-white/5 p-8 text-white">
-        <p className="text-sm text-slate-200">{tr("Unauthorized", "غير مصرح")}</p>
+        <p className="text-sm text-slate-200">{t("unauthorized")}</p>
         <Link href={`/${locale}/kpis`} className="mt-3 inline-flex text-sm font-semibold text-indigo-200 hover:text-indigo-100">
-          {tr("Back", "رجوع")}
+          {t("back")}
         </Link>
       </div>
     );
@@ -191,12 +201,12 @@ export default function CreateKpiPage() {
 
   return (
     <div className="space-y-8">
-      <PageHeader title={tr("Create KPI", "إنشاء مؤشر أداء رئيسي")} subtitle={tr("Admin only.", "للإدارة فقط.")} icon={<Icon name="tabler:plus" className="h-5 w-5" />} />
+      <PageHeader title={t("createKpi")} subtitle={t("adminOnly")} icon={<Icon name="tabler:plus" className="h-5 w-5" />} />
 
       <Card className="border-white/10 bg-white/5 text-white shadow-lg shadow-black/20">
         <CardHeader>
-          <CardTitle className="text-base">{tr("Definition", "التعريف")}</CardTitle>
-          <CardDescription className="text-slate-200">{tr("Configure KPI details and inputs.", "قم بضبط بيانات مؤشر الأداء الرئيسي والمدخلات.")}</CardDescription>
+          <CardTitle className="text-base">{t("definition")}</CardTitle>
+          <CardDescription className="text-slate-200">{t("configureKpiDesc")}</CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
           {error ? <div className="rounded-md border border-rose-500/30 bg-rose-500/10 p-3 text-sm text-rose-200 whitespace-pre-wrap">{error}</div> : null}
@@ -204,51 +214,74 @@ export default function CreateKpiPage() {
 
           <div className="grid gap-4 md:grid-cols-2">
             <div className="grid gap-2">
-              <Label>{tr("Name", "الاسم")}</Label>
+              <Label>{t("name")}</Label>
               <Input value={draft.name} onChange={(e) => setDraft((p) => ({ ...p, name: e.target.value }))} className="border-white/10 bg-black/20 text-white" />
             </div>
             <div className="grid gap-2">
-              <Label>{tr("Unit", "الوحدة")}</Label>
-              <Input
-                value={draft.unit}
-                onChange={(e) => setDraft((p) => ({ ...p, unit: e.target.value }))}
-                className="border-white/10 bg-black/20 text-white"
-                placeholder={tr("e.g. %", "مثل %")}
-              />
+              <Label>{t("nameAr")}</Label>
+              <Input value={draft.nameAr} onChange={(e) => setDraft((p) => ({ ...p, nameAr: e.target.value }))} className="border-white/10 bg-black/20 text-white" dir="rtl" />
             </div>
-          </div>
-
-          <div className="grid gap-2">
-            <Label>{tr("Description", "الوصف")}</Label>
-            <Textarea value={draft.description} onChange={(e) => setDraft((p) => ({ ...p, description: e.target.value }))} className="border-white/10 bg-black/20 text-white" />
           </div>
 
           <div className="grid gap-4 md:grid-cols-2">
             <div className="grid gap-2">
-              <Label>{tr("Period", "الدورية")}</Label>
+              <Label>{t("unit")}</Label>
+              <Input
+                value={draft.unit}
+                onChange={(e) => setDraft((p) => ({ ...p, unit: e.target.value }))}
+                className="border-white/10 bg-black/20 text-white"
+                placeholder={t("formulaExample")}
+              />
+            </div>
+            <div className="grid gap-2">
+              <Label>{t("unitAr")}</Label>
+              <Input
+                value={draft.unitAr}
+                onChange={(e) => setDraft((p) => ({ ...p, unitAr: e.target.value }))}
+                className="border-white/10 bg-black/20 text-white"
+                placeholder={t("formulaExample")}
+                dir="rtl"
+              />
+            </div>
+          </div>
+
+          <div className="grid gap-4 md:grid-cols-2">
+            <div className="grid gap-2">
+              <Label>{t("description")}</Label>
+              <Textarea value={draft.description} onChange={(e) => setDraft((p) => ({ ...p, description: e.target.value }))} className="border-white/10 bg-black/20 text-white" />
+            </div>
+            <div className="grid gap-2">
+              <Label>{t("descriptionAr")}</Label>
+              <Textarea value={draft.descriptionAr} onChange={(e) => setDraft((p) => ({ ...p, descriptionAr: e.target.value }))} className="border-white/10 bg-black/20 text-white" dir="rtl" />
+            </div>
+          </div>
+
+          <div className="grid gap-4 md:grid-cols-2">
+            <div className="grid gap-2">
+              <Label>{t("period")}</Label>
               <Select value={draft.periodType} onValueChange={(v) => setDraft((p) => ({ ...p, periodType: v as PeriodType }))}>
                 <SelectTrigger className="border-white/10 bg-black/20 text-white">
-                  <SelectValue placeholder={tr("Select", "اختر")} />
+                  <SelectValue placeholder={t("select")} />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="MONTHLY">{tr("Monthly", "شهري")}</SelectItem>
-                  <SelectItem value="QUARTERLY">{tr("Quarterly", "ربع سنوي")}</SelectItem>
-                  <SelectItem value="YEARLY">{tr("Yearly", "سنوي")}</SelectItem>
+                  <SelectItem value="MONTHLY">{t("monthly")}</SelectItem>
+                  <SelectItem value="QUARTERLY">{t("quarterly")}</SelectItem>
+                  <SelectItem value="YEARLY">{t("yearly")}</SelectItem>
                 </SelectContent>
               </Select>
             </div>
 
             <div className="grid gap-2">
-              <Label>{tr("Linked item", "العنصر المرتبط")}</Label>
+              <Label>{t("linkedItem")}</Label>
               <button
                 type="button"
                 onClick={() => setNodePickerOpen(true)}
                 className="flex h-10 w-full items-center justify-between rounded-md border border-white/10 bg-black/20 px-3 text-left text-sm text-white hover:bg-white/5"
               >
                 <span className={selectedPrimaryNodeLabel ? "truncate" : "text-slate-400"}>
-                  {selectedPrimaryNodeLabel || tr("Select linked item", "اختر العنصر المرتبط")}
+                  {selectedPrimaryNodeLabel || t("selectLinkedItem")}
                 </span>
-                <span className="text-slate-400">{tr("Change", "تغيير")}</span>
+                <span className="text-slate-400">{t("change")}</span>
               </button>
             </div>
           </div>
@@ -259,43 +292,43 @@ export default function CreateKpiPage() {
             nodes={primaryNodes}
             selectedId={draft.primaryNodeId || null}
             onSelect={(nodeId) => setDraft((p) => ({ ...p, primaryNodeId: nodeId }))}
-            title={tr("Select linked item", "اختر العنصر المرتبط")}
-            description={tr("Pick a node from the hierarchy.", "اختر عقدة من التسلسل الهرمي.")}
-            searchPlaceholder={tr("Search nodes…", "ابحث في العناصر…")}
-            clearLabel={tr("Clear", "مسح")}
-            typeFallbackLabel={tr("Type", "النوع")}
+            title={t("selectLinkedItem")}
+            description={t("pickNodeDesc")}
+            searchPlaceholder={t("searchNodesPlaceholder")}
+            clearLabel={t("clear")}
+            typeFallbackLabel={t("type")}
           />
 
           <div className="grid gap-4 md:grid-cols-2">
             <div className="grid gap-2">
-              <Label>{tr("Baseline", "الأساس")}</Label>
+              <Label>{t("baseline")}</Label>
               <Input value={draft.baselineValue} onChange={(e) => setDraft((p) => ({ ...p, baselineValue: e.target.value }))} className="border-white/10 bg-black/20 text-white" inputMode="decimal" />
             </div>
             <div className="grid gap-2">
-              <Label>{tr("Target", "المستهدف")}</Label>
+              <Label>{t("target")}</Label>
               <Input value={draft.targetValue} onChange={(e) => setDraft((p) => ({ ...p, targetValue: e.target.value }))} className="border-white/10 bg-black/20 text-white" inputMode="decimal" />
             </div>
           </div>
 
           <div className="grid gap-2">
-            <Label>{tr("Formula (optional)", "المعادلة (اختياري)")}</Label>
+            <Label>{t("formulaOptional")}</Label>
             <Input
               value={draft.formula}
               onChange={(e) => setDraft((p) => ({ ...p, formula: e.target.value }))}
               className="border-white/10 bg-black/20 text-white"
-              placeholder={tr("Example: A + B", "مثال: A + B")}
+              placeholder={t("formulaExample")}
             />
-            <p className="text-xs text-slate-300">{tr("If empty, the result is the sum of inputs.", "إذا كانت فارغة فالنتيجة هي مجموع المدخلات.")}</p>
+            <p className="text-xs text-slate-300">{t("formulaHelp")}</p>
           </div>
         </CardContent>
       </Card>
 
       <Card className="border-white/10 bg-white/5 text-white shadow-lg shadow-black/20">
-        <CardHeader className="space-y-2">
+        <CardHeader>
           <div className="flex items-center justify-between gap-3">
             <div>
-              <CardTitle className="text-base">{tr("Inputs", "المدخلات")}</CardTitle>
-              <CardDescription className="text-slate-200">{tr("At least one input is required.", "يجب إضافة مدخل واحد على الأقل.")}</CardDescription>
+              <CardTitle className="text-base">{t("inputs")}</CardTitle>
+              <CardDescription className="text-slate-200">{t("atLeastOneInputDesc")}</CardDescription>
             </div>
             <Button
               type="button"
@@ -309,7 +342,8 @@ export default function CreateKpiPage() {
                     {
                       tempId: `var-${Date.now()}-${Math.random().toString(16).slice(2)}`,
                       code: `V${p.variables.length + 1}`,
-                      displayName: tr("New input", "مدخل جديد"),
+                      displayName: t("newInput"),
+                      nameAr: "",
                       dataType: "NUMBER",
                       isRequired: false,
                       isStatic: false,
@@ -320,7 +354,7 @@ export default function CreateKpiPage() {
               }
             >
               <Plus className="h-4 w-4" />
-              <span className="ms-2">{tr("Add", "إضافة")}</span>
+              <span className="ms-2">{t("add")}</span>
             </Button>
           </div>
         </CardHeader>
@@ -329,7 +363,7 @@ export default function CreateKpiPage() {
             <div key={v.tempId} className="rounded-xl border border-white/10 bg-slate-950/40 p-4">
               <div className="flex items-start justify-between gap-3">
                 <p className="text-sm font-semibold text-white">
-                  {tr("Input", "مدخل")} #{idx + 1}
+                  {t("input")} #{idx + 1}
                 </p>
                 <Button
                   type="button"
@@ -344,7 +378,7 @@ export default function CreateKpiPage() {
 
               <div className="mt-3 grid gap-4 md:grid-cols-2">
                 <div className="grid gap-2">
-                  <Label>{tr("Code", "الرمز")}</Label>
+                  <Label>{t("code")}</Label>
                   <Input
                     value={v.code}
                     onChange={(e) =>
@@ -357,7 +391,7 @@ export default function CreateKpiPage() {
                   />
                 </div>
                 <div className="grid gap-2">
-                  <Label>{tr("Label", "الاسم")}</Label>
+                  <Label>{t("label")}</Label>
                   <Input
                     value={v.displayName}
                     onChange={(e) =>
@@ -371,9 +405,24 @@ export default function CreateKpiPage() {
                 </div>
               </div>
 
+              <div className="mt-3 grid gap-2">
+                <Label>{t("labelAr")}</Label>
+                <Input
+                  value={v.nameAr}
+                  onChange={(e) =>
+                    setDraft((p) => ({
+                      ...p,
+                      variables: p.variables.map((x) => (x.tempId === v.tempId ? { ...x, nameAr: e.target.value } : x)),
+                    }))
+                  }
+                  className="border-white/10 bg-black/20 text-white"
+                  dir="rtl"
+                />
+              </div>
+
               <div className="mt-3 grid gap-4 md:grid-cols-3">
                 <div className="grid gap-2">
-                  <Label>{tr("Type", "النوع")}</Label>
+                  <Label>{t("type")}</Label>
                   <Select
                     value={v.dataType}
                     onValueChange={(val) =>
@@ -384,17 +433,17 @@ export default function CreateKpiPage() {
                     }
                   >
                     <SelectTrigger className="border-white/10 bg-black/20 text-white">
-                      <SelectValue placeholder={tr("Select", "اختر")} />
+                      <SelectValue placeholder={t("select")} />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="NUMBER">{tr("Number", "رقم")}</SelectItem>
-                      <SelectItem value="PERCENTAGE">{tr("Percentage", "نسبة")}</SelectItem>
+                      <SelectItem value="NUMBER">{t("number")}</SelectItem>
+                      <SelectItem value="PERCENTAGE">{t("percentage")}</SelectItem>
                     </SelectContent>
                   </Select>
                 </div>
 
                 <div className="grid gap-2">
-                  <Label>{tr("Required", "مطلوب")}</Label>
+                  <Label>{t("required")}</Label>
                   <Select
                     value={v.isRequired ? "yes" : "no"}
                     onValueChange={(val) =>
@@ -405,17 +454,17 @@ export default function CreateKpiPage() {
                     }
                   >
                     <SelectTrigger className="border-white/10 bg-black/20 text-white">
-                      <SelectValue placeholder={tr("Select", "اختر")} />
+                      <SelectValue placeholder={t("select")} />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="yes">{tr("Yes", "نعم")}</SelectItem>
-                      <SelectItem value="no">{tr("No", "لا")}</SelectItem>
+                      <SelectItem value="yes">{t("yes")}</SelectItem>
+                      <SelectItem value="no">{t("no")}</SelectItem>
                     </SelectContent>
                   </Select>
                 </div>
 
                 <div className="grid gap-2">
-                  <Label>{tr("Static", "ثابت")}</Label>
+                  <Label>{t("static")}</Label>
                   <Select
                     value={v.isStatic ? "yes" : "no"}
                     onValueChange={(val) =>
@@ -426,11 +475,11 @@ export default function CreateKpiPage() {
                     }
                   >
                     <SelectTrigger className="border-white/10 bg-black/20 text-white">
-                      <SelectValue placeholder={tr("Select", "اختر")} />
+                      <SelectValue placeholder={t("select")} />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="yes">{tr("Yes", "نعم")}</SelectItem>
-                      <SelectItem value="no">{tr("No", "لا")}</SelectItem>
+                      <SelectItem value="yes">{t("yes")}</SelectItem>
+                      <SelectItem value="no">{t("no")}</SelectItem>
                     </SelectContent>
                   </Select>
                 </div>
@@ -438,7 +487,7 @@ export default function CreateKpiPage() {
 
               {v.isStatic ? (
                 <div className="mt-3 grid gap-2">
-                  <Label>{tr("Static value", "القيمة الثابتة")}</Label>
+                  <Label>{t("staticValue")}</Label>
                   <Input
                     value={v.staticValue}
                     onChange={(e) =>
@@ -457,16 +506,16 @@ export default function CreateKpiPage() {
 
           <div className="flex items-center justify-end gap-2">
             <Button variant="outline" asChild disabled={submitting}>
-              <Link href={`/${locale}/kpis`}>{tr("Cancel", "إلغاء")}</Link>
+              <Link href={`/${locale}/kpis`}>{t("cancel")}</Link>
             </Button>
             <Button className="bg-white text-slate-900 hover:bg-slate-100" onClick={handleCreate} disabled={!canSubmit || submitting}>
               {submitting ? (
                 <span className="inline-flex items-center gap-2">
                   <Loader2 className="h-4 w-4 animate-spin" />
-                  {tr("Creating…", "جارٍ الإنشاء…")}
+                  {t("creating")}…
                 </span>
               ) : (
-                tr("Create", "إنشاء")
+                t("create")
               )}
             </Button>
           </div>

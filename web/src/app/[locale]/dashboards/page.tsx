@@ -62,7 +62,7 @@ export default function DashboardsPage() {
       } catch (e: unknown) {
         if (!mounted) return;
         setData(null);
-        setError(e instanceof Error ? e.message : tr("Failed to load dashboard.", "فشل تحميل لوحة المعلومات."));
+        setError(e instanceof Error ? e.message : t("dashboardFailedToLoad"));
       } finally {
         if (mounted) setLoading(false);
       }
@@ -71,7 +71,7 @@ export default function DashboardsPage() {
     return () => {
       mounted = false;
     };
-  }, [sessionLoading, tr, user]);
+  }, [sessionLoading, t, user]);
 
   const canManageResponsibilities = useMemo(() => {
     const role = data?.user.role;
@@ -81,8 +81,8 @@ export default function DashboardsPage() {
   const isAdmin = useMemo(() => data?.user.role === "ADMIN", [data?.user.role]);
 
   const kpiStatusCategories = useMemo(
-    () => [tr("No data", "بلا بيانات"), tr("Draft", "مسودة"), tr("Submitted", "مرسل"), tr("Approved", "معتمد")],
-    [tr],
+    () => [t("statusNoData"), t("statusDraft"), t("statusSubmitted"), t("statusApproved")],
+    [t],
   );
 
   const kpiStatusValues = useMemo(() => {
@@ -117,10 +117,10 @@ export default function DashboardsPage() {
     const b = data.kpiCompletion?.buckets;
     if (!b) return [];
     return [
-      { name: tr("Off track", "خارج المسار"), value: b.LT_60 ?? 0, color: "#fb7185" },
-      { name: tr("At risk", "معرّض للخطر"), value: b.LT_90 ?? 0, color: "#fbbf24" },
-      { name: tr("On track", "ضمن المسار"), value: b.LT_110 ?? 0, color: "#60a5fa" },
-      { name: tr("Exceeded", "متجاوز"), value: b.GTE_110 ?? 0, color: "#34d399" },
+      { name: t("offTrack"), value: b.LT_60 ?? 0, color: "#fb7185" },
+      { name: t("atRisk"), value: b.LT_90 ?? 0, color: "#fbbf24" },
+      { name: t("onTrack"), value: b.LT_110 ?? 0, color: "#60a5fa" },
+      { name: t("exceeded"), value: b.GTE_110 ?? 0, color: "#34d399" },
     ].filter((x) => x.value > 0);
   }, [data, tr]);
 
@@ -147,19 +147,12 @@ export default function DashboardsPage() {
     <div className="space-y-8">
       <PageHeader
         title={t("dashboards")}
-        subtitle={tr(
-          isAdmin
-            ? "Organization-wide insights for KPI oversight and execution health."
-            : "Personalized insights based on what you own, what is assigned to you, and which KPIs you can access.",
-          isAdmin
-            ? "ملخص عام للجهة لمتابعة مؤشرات الأداء الرئيسية وأداء التنفيذ."
-            : "معلومات مخصصة بناءً على ما تملكه وما هو مُسند لك ومؤشرات الأداء الرئيسية التي يمكنك الوصول إليها.",
-        )}
+        subtitle={isAdmin ? t("overviewAdminSubtitle") : t("overviewUserSubtitle")}
         icon={<Icon name="tabler:layout-dashboard" className="h-5 w-5" />}
         actions={
           data?.canApprove ? (
             <Button asChild variant="secondary">
-              <Link href={`/${locale}/approvals`}>{tr("Open approvals", "فتح الموافقات")}</Link>
+              <Link href={`/${locale}/approvals`}>{t("openApprovals")}</Link>
             </Button>
           ) : null
         }
@@ -172,14 +165,14 @@ export default function DashboardsPage() {
       {sessionLoading || loading ? (
         <Card className="bg-card/70 backdrop-blur shadow-sm">
           <CardHeader>
-            <CardTitle className="text-base">{tr("Loading", "جارٍ التحميل")}</CardTitle>
-            <CardDescription>{tr("Please wait…", "يرجى الانتظار…")}</CardDescription>
+            <CardTitle className="text-base">{t("loading")}</CardTitle>
+            <CardDescription>{t("pleaseWait")}</CardDescription>
           </CardHeader>
           <CardContent />
         </Card>
       ) : !data ? (
         <Card className="bg-card/70 backdrop-blur shadow-sm">
-          <CardContent className="p-6 text-sm text-muted-foreground">{tr("No dashboard data.", "لا توجد بيانات للوحة المعلومات.")}</CardContent>
+          <CardContent className="p-6 text-sm text-muted-foreground">{t("noDashboardData")}</CardContent>
         </Card>
       ) : (
         <>
@@ -189,13 +182,13 @@ export default function DashboardsPage() {
                 <CardDescription className="flex items-center justify-between gap-2">
                   <span className="inline-flex items-center gap-2">
                     <Icon name="tabler:chart-line" className="h-4 w-4" />
-                    {tr("KPIs", "مؤشرات الأداء الرئيسية")}
+                    {t("kpis")}
                   </span>
                 </CardDescription>
                 <CardTitle className="text-3xl">{data.summary.kpisTotal}</CardTitle>
               </CardHeader>
               <CardContent className="text-xs text-muted-foreground">
-                {tr("Draft", "مسودة")}: {data.summary.kpisDraft} • {tr("Submitted", "مرسل")}: {data.summary.kpisSubmitted}
+                {t("statusDraft")}: {data.summary.kpisDraft} • {t("statusSubmitted")}: {data.summary.kpisSubmitted}
               </CardContent>
             </Card>
 
@@ -204,13 +197,13 @@ export default function DashboardsPage() {
                 <CardDescription className="flex items-center justify-between gap-2">
                   <span className="inline-flex items-center gap-2">
                     <Icon name="tabler:circle-check" className="h-4 w-4" />
-                    {tr("Approved", "معتمد")}
+                    {t("statusApproved")}
                   </span>
                 </CardDescription>
                 <CardTitle className="text-3xl">{data.summary.kpisApproved}</CardTitle>
               </CardHeader>
               <CardContent className="text-xs text-muted-foreground">
-                {tr("No data", "بلا بيانات")}: {data.summary.kpisNoData}
+                {t("statusNoData")}: {data.summary.kpisNoData}
               </CardContent>
             </Card>
 
@@ -219,12 +212,12 @@ export default function DashboardsPage() {
                 <CardDescription className="flex items-center justify-between gap-2">
                   <span className="inline-flex items-center gap-2">
                     <Icon name="tabler:user-check" className="h-4 w-4" />
-                    {tr("Responsibilities", "المسؤوليات")}
+                    {t("responsibilities")}
                   </span>
                 </CardDescription>
                 <CardTitle className="text-3xl">{data.summary.scopesTotal}</CardTitle>
               </CardHeader>
-              <CardContent className="text-xs text-muted-foreground">{tr("Cascading scopes", "نطاقات متسلسلة")}</CardContent>
+              <CardContent className="text-xs text-muted-foreground">{t("cascadingScopes")}</CardContent>
             </Card>
 
             {!isAdmin ? (
@@ -233,12 +226,12 @@ export default function DashboardsPage() {
                   <CardDescription className="flex items-center justify-between gap-2">
                     <span className="inline-flex items-center gap-2">
                       <Icon name="tabler:checklist" className="h-4 w-4" />
-                      {tr("Assigned", "مُسند")}
+                      {t("assigned")}
                     </span>
                   </CardDescription>
                   <CardTitle className="text-3xl">{data.summary.workTotal}</CardTitle>
                 </CardHeader>
-                <CardContent className="text-xs text-muted-foreground">{tr("Work items", "عناصر العمل")}</CardContent>
+                <CardContent className="text-xs text-muted-foreground">{t("workItems")}</CardContent>
               </Card>
             ) : (
               <Card className="bg-card/70 backdrop-blur shadow-sm">
@@ -246,13 +239,13 @@ export default function DashboardsPage() {
                   <CardDescription className="flex items-center justify-between gap-2">
                     <span className="inline-flex items-center gap-2">
                       <Icon name="tabler:percentage" className="h-4 w-4" />
-                      {tr("Avg completion", "متوسط الإنجاز")}
+                      {t("avgCompletion")}
                     </span>
                   </CardDescription>
                   <CardTitle className="text-3xl">{completionAvgLabel}</CardTitle>
                 </CardHeader>
                 <CardContent className="text-xs text-muted-foreground">
-                  {tr("KPIs with targets", "مؤشرات أداء رئيسية لها مستهدف")}: {data.kpiCompletion.totalWithTargets}
+                  {t("kpisWithTargets")}: {data.kpiCompletion.totalWithTargets}
                 </CardContent>
               </Card>
             )}
@@ -262,15 +255,15 @@ export default function DashboardsPage() {
                 <CardDescription className="flex items-center justify-between gap-2">
                   <span className="inline-flex items-center gap-2">
                     <Icon name="tabler:crown" className="h-4 w-4" />
-                    {tr("Owned", "مملوك")}
+                    {t("owned")}
                   </span>
                 </CardDescription>
                 <CardTitle className="text-3xl">{data.summary.ownedTotal}</CardTitle>
               </CardHeader>
               <CardContent className="text-xs text-muted-foreground">
                 {data.canApprove
-                  ? `${tr("Pending approvals", "موافقات معلّقة")}: ${data.summary.approvalsPending}`
-                  : `${tr("Approval level", "مستوى الاعتماد")}: ${data.org.approvalLevel}`}
+                  ? `${t("pendingApprovals")}: ${data.summary.approvalsPending}`
+                  : `${t("statusApproved")}: ${data.org.approvalLevel}`}
               </CardContent>
             </Card>
           </section>
@@ -279,11 +272,11 @@ export default function DashboardsPage() {
             <Card className="bg-card/70 backdrop-blur shadow-sm lg:col-span-3">
               <CardHeader className="flex flex-row items-start justify-between gap-3">
                 <div className="space-y-1">
-                  <CardTitle className="text-base">{tr("KPI pipeline", "حالة مؤشرات الأداء الرئيسية")}</CardTitle>
-                  <CardDescription>{tr("Distribution by latest status.", "توزيع حسب آخر حالة.")}</CardDescription>
+                  <CardTitle className="text-base">{t("kpiPipeline")}</CardTitle>
+                  <CardDescription>{t("kpiPipelineDesc")}</CardDescription>
                 </div>
                 <Button asChild variant="ghost" className="text-primary hover:text-primary">
-                  <Link href={`/${locale}/kpis`}>{tr("Open KPIs", "فتح مؤشرات الأداء الرئيسية")}</Link>
+                  <Link href={`/${locale}/kpis`}>{t("openKpis")}</Link>
                 </Button>
               </CardHeader>
               <CardContent>
@@ -293,28 +286,28 @@ export default function DashboardsPage() {
 
             <Card className="bg-card/70 backdrop-blur shadow-sm lg:col-span-1">
               <CardHeader className="space-y-1">
-                <CardTitle className="text-base">{tr("KPI completion", "إنجاز مؤشرات الأداء الرئيسية")}</CardTitle>
-                <CardDescription>{tr("Completion vs target across KPIs.", "نسبة الإنجاز مقارنة بالمستهدف عبر مؤشرات الأداء الرئيسية.")}</CardDescription>
+                <CardTitle className="text-base">{t("kpiCompletion")}</CardTitle>
+                <CardDescription>{t("kpiCompletionDesc")}</CardDescription>
               </CardHeader>
               <CardContent>
                 {kpiCompletionDonut.length ? (
                   <div className="space-y-3">
                     <div className="flex items-end justify-between">
                       <div>
-                        <p className="text-xs text-muted-foreground">{tr("Average", "المتوسط")}</p>
+                        <p className="text-xs text-muted-foreground">{t("average")}</p>
                         <p className="text-2xl font-semibold" dir="ltr">
                           {completionAvgLabel}
                         </p>
                       </div>
                       <Badge variant="outline" className="border-border bg-muted/30 text-muted-foreground">
-                        {tr("Tracked", "مُتتبّع")}: {data.kpiCompletion.totalWithTargets}
+                        {t("tracked")}: {data.kpiCompletion.totalWithTargets}
                       </Badge>
                     </div>
                     <Donut items={kpiCompletionDonut} height={280} />
                   </div>
                 ) : (
                   <div className="rounded-xl border border-border bg-muted/10 p-6 text-sm text-muted-foreground">
-                    {tr("No completion data (missing targets / values).", "لا توجد بيانات إنجاز (تأكد من وجود مستهدف وقيم).")}
+                    {t("noKpiCompletionData")}
                   </div>
                 )}
               </CardContent>
@@ -324,8 +317,8 @@ export default function DashboardsPage() {
           <section className="grid gap-6 lg:grid-cols-4">
             <Card className="bg-card/70 backdrop-blur shadow-sm lg:col-span-3">
               <CardHeader className="space-y-1">
-                <CardTitle className="text-base">{tr("KPI activity", "نشاط مؤشرات الأداء الرئيسية")}</CardTitle>
-                <CardDescription>{tr("Recent KPI updates over time.", "تحديثات مؤشرات الأداء الرئيسية خلال الفترة الأخيرة.")}</CardDescription>
+                <CardTitle className="text-base">{t("kpiActivity")}</CardTitle>
+                <CardDescription>{t("kpiActivityDesc")}</CardDescription>
               </CardHeader>
               <CardContent>
                 <AreaLine categories={data.kpiActivity.categories} values={data.kpiActivity.values} color="#a78bfa" />
@@ -334,15 +327,15 @@ export default function DashboardsPage() {
 
             <Card className="bg-card/70 backdrop-blur shadow-sm lg:col-span-1">
               <CardHeader className="space-y-1">
-                <CardTitle className="text-base">{tr("Owned items status", "حالة العناصر المملوكة")}</CardTitle>
-                <CardDescription>{tr("Overview of execution posture.", "نظرة عامة على وضع التنفيذ.")}</CardDescription>
+                <CardTitle className="text-base">{t("ownedItemsStatus")}</CardTitle>
+                <CardDescription>{t("ownedItemsStatusDesc")}</CardDescription>
               </CardHeader>
               <CardContent>
                 {ownedStatusDonut.length ? (
                   <Donut items={ownedStatusDonut} height={280} />
                 ) : (
                   <div className="rounded-xl border border-border bg-muted/10 p-6 text-sm text-muted-foreground">
-                    {tr("No owned items found.", "لا توجد عناصر مملوكة.")}
+                    {t("noOwnedItemsFound")}
                   </div>
                 )}
               </CardContent>
@@ -354,12 +347,12 @@ export default function DashboardsPage() {
               <Card className="bg-card/70 backdrop-blur shadow-sm">
                 <CardHeader className="flex flex-row items-start justify-between gap-3">
                   <div className="space-y-1">
-                    <CardTitle className="text-base">{tr("Assigned to you", "المُسند لك")}</CardTitle>
-                    <CardDescription>{tr("Upcoming work based on assignments.", "عناصر قادمة بناءً على الإسناد.")}</CardDescription>
+                    <CardTitle className="text-base">{t("assignedToYou")}</CardTitle>
+                    <CardDescription>{t("upcomingWorkDesc")}</CardDescription>
                   </div>
                   {canManageResponsibilities ? (
                     <Button asChild variant="ghost" className="text-primary hover:text-primary">
-                      <Link href={`/${locale}/responsibilities`}>{tr("Responsibilities", "المسؤوليات")}</Link>
+                      <Link href={`/${locale}/responsibilities`}>{t("responsibilities")}</Link>
                     </Button>
                   ) : null}
                 </CardHeader>
@@ -396,7 +389,7 @@ export default function DashboardsPage() {
                     ))
                   ) : (
                     <div className="rounded-xl border border-dashed border-border bg-muted/10 p-6 text-sm text-muted-foreground">
-                      {tr("No assigned items yet.", "لا توجد عناصر مُسندة بعد.")}
+                      {t("noAssignedItems")}
                     </div>
                   )}
                 </CardContent>
@@ -405,8 +398,8 @@ export default function DashboardsPage() {
               <Card className="bg-card/70 backdrop-blur shadow-sm">
                 <CardHeader className="flex flex-row items-start justify-between gap-3">
                   <div className="space-y-1">
-                    <CardTitle className="text-base">{tr("Organization structure", "هيكل الجهة")}</CardTitle>
-                    <CardDescription>{tr("Browse by type in the configured order.", "استعراض حسب النوع وبالترتيب المفعّل.")}</CardDescription>
+                    <CardTitle className="text-base">{t("organizationStructure")}</CardTitle>
+                    <CardDescription>{t("browseByTypeDesc")}</CardDescription>
                   </div>
                 </CardHeader>
                 <CardContent className="space-y-3">
@@ -423,7 +416,7 @@ export default function DashboardsPage() {
                             <div className="min-w-0">
                               <p className="truncate text-sm font-semibold">{nt.displayName}</p>
                               <p className="mt-1 text-xs text-muted-foreground" dir="ltr">
-                                {tr("Level", "المستوى")}: {nt.levelOrder}
+                                {t("level")}: {nt.levelOrder}
                               </p>
                             </div>
                             <Icon name={nodeTypeIconByCode[codeLower] ?? "tabler:layers-subtract"} className="h-5 w-5 text-muted-foreground" />
@@ -440,8 +433,8 @@ export default function DashboardsPage() {
               <Card className="bg-card/70 backdrop-blur shadow-sm">
                 <CardHeader className="flex flex-row items-start justify-between gap-3">
                   <div className="space-y-1">
-                    <CardTitle className="text-base">{tr("Organization structure", "هيكل الجهة")}</CardTitle>
-                    <CardDescription>{tr("Browse by type in the configured order.", "استعراض حسب النوع وبالترتيب المفعّل.")}</CardDescription>
+                    <CardTitle className="text-base">{t("organizationStructure")}</CardTitle>
+                    <CardDescription>{t("browseByTypeDesc")}</CardDescription>
                   </div>
                 </CardHeader>
                 <CardContent className="space-y-3">
@@ -458,7 +451,7 @@ export default function DashboardsPage() {
                             <div className="min-w-0">
                               <p className="truncate text-sm font-semibold">{nt.displayName}</p>
                               <p className="mt-1 text-xs text-muted-foreground" dir="ltr">
-                                {tr("Level", "المستوى")}: {nt.levelOrder}
+                                {t("level")}: {nt.levelOrder}
                               </p>
                             </div>
                             <Icon name={nodeTypeIconByCode[codeLower] ?? "tabler:layers-subtract"} className="h-5 w-5 text-muted-foreground" />
@@ -476,17 +469,17 @@ export default function DashboardsPage() {
             <Card className="bg-card/70 backdrop-blur shadow-sm lg:col-span-2">
               <CardHeader className="flex flex-row items-start justify-between gap-3">
                 <div className="space-y-1">
-                  <CardTitle className="text-base">{tr("KPIs you can access", "مؤشرات الأداء الرئيسية التي يمكنك الوصول إليها")}</CardTitle>
-                  <CardDescription>{tr("Latest values, targets, and linked structure.", "آخر القيم والمستهدف والارتباط بالتسلسل.")}</CardDescription>
+                  <CardTitle className="text-base">{t("kpisYouCanAccess")}</CardTitle>
+                  <CardDescription>{t("kpisYouCanAccessDesc")}</CardDescription>
                 </div>
                 <Button asChild variant="ghost" className="text-primary hover:text-primary">
-                  <Link href={`/${locale}/kpis`}>{tr("View all", "عرض الكل")}</Link>
+                  <Link href={`/${locale}/kpis`}>{t("viewAll")}</Link>
                 </Button>
               </CardHeader>
               <CardContent>
                 <Tabs defaultValue="all">
                   <TabsList className="w-full justify-start">
-                    <TabsTrigger value="all">{tr("All", "الكل")}</TabsTrigger>
+                    <TabsTrigger value="all">{t("all")}</TabsTrigger>
                     <TabsTrigger value="no-data">{kpiValueStatusLabel("NO_DATA")}</TabsTrigger>
                     <TabsTrigger value="draft">{kpiValueStatusLabel("DRAFT")}</TabsTrigger>
                     <TabsTrigger value="submitted">{kpiValueStatusLabel("SUBMITTED")}</TabsTrigger>
@@ -497,10 +490,10 @@ export default function DashboardsPage() {
                       <Table>
                         <TableHeader>
                           <TableRow className="hover:bg-transparent">
-                            <TableHead>{tr("KPI", "مؤشر أداء رئيسي")}</TableHead>
-                            <TableHead>{tr("Latest", "آخر قيمة")}</TableHead>
+                            <TableHead>{t("kpi")}</TableHead>
+                            <TableHead>{t("latest")}</TableHead>
                             <TableHead>{t("target")}</TableHead>
-                            <TableHead>{tr("Linked to", "مرتبط بـ")}</TableHead>
+                            <TableHead>{t("linkedTo")}</TableHead>
                             <TableHead className="text-right">{t("status")}</TableHead>
                           </TableRow>
                         </TableHeader>
@@ -535,7 +528,7 @@ export default function DashboardsPage() {
                           {topKpis.length === 0 ? (
                             <TableRow>
                               <TableCell colSpan={5} className="py-8 text-center text-sm text-muted-foreground">
-                                {tr("No KPIs found.", "لا توجد مؤشرات أداء رئيسية.")}
+                                {t("noKpisFound")}
                               </TableCell>
                             </TableRow>
                           ) : null}
@@ -578,7 +571,7 @@ export default function DashboardsPage() {
 
                         {(data.kpis ?? []).filter((k) => (k.latest?.status ?? "NO_DATA") === tab.status).length === 0 ? (
                           <div className="rounded-xl border border-dashed border-border bg-muted/10 p-6 text-sm text-muted-foreground">
-                            {tr("No items in this view.", "لا توجد عناصر في هذا العرض.")}
+                            {t("noItemsInView")}
                           </div>
                         ) : null}
                       </div>
@@ -591,8 +584,8 @@ export default function DashboardsPage() {
             <Card className="bg-card/70 backdrop-blur shadow-sm">
               <CardHeader className="flex flex-row items-start justify-between gap-3">
                 <div className="space-y-1">
-                  <CardTitle className="text-base">{tr("Owned by you", "مملوك بواسطةك")}</CardTitle>
-                  <CardDescription>{tr("Items where you are marked as the owner.", "عناصر تم تعيينك كمسؤول عنها.")}</CardDescription>
+                  <CardTitle className="text-base">{t("ownedByYou")}</CardTitle>
+                  <CardDescription>{t("ownedByYouDesc")}</CardDescription>
                 </div>
                 <Badge variant="outline" className="border-border bg-muted/30">{data.summary.ownedTotal}</Badge>
               </CardHeader>
@@ -629,7 +622,7 @@ export default function DashboardsPage() {
                   ))
                 ) : (
                   <div className="rounded-xl border border-dashed border-border bg-muted/10 p-6 text-sm text-muted-foreground">
-                    {tr("No owned items yet.", "لا توجد عناصر مملوكة بعد.")}
+                    {t("noItemsYet")}
                   </div>
                 )}
               </CardContent>
@@ -638,10 +631,10 @@ export default function DashboardsPage() {
 
           <section className="space-y-4">
             <div className="flex items-center justify-between">
-              <h2 className="text-lg font-semibold">{tr("Your cascading responsibilities", "مسؤولياتك المتسلسلة")}</h2>
+              <h2 className="text-lg font-semibold">{t("cascadingResponsibilities")}</h2>
               {canManageResponsibilities ? (
                 <Button asChild variant="outline">
-                  <Link href={`/${locale}/responsibilities`}>{tr("Review", "مراجعة")}</Link>
+                  <Link href={`/${locale}/responsibilities`}>{t("review")}</Link>
                 </Button>
               ) : null}
             </div>
@@ -660,14 +653,14 @@ export default function DashboardsPage() {
                             </Link>
                           </CardTitle>
                           <CardDescription className="truncate">
-                            {s.root.type.displayName} • {tr("KPIs", "مؤشرات الأداء الرئيسية")}: {s.kpisCount}
+                            {s.root.type.displayName} • {t("kpis")}: {s.kpisCount}
                           </CardDescription>
                         </div>
                         <StatusBadge status={s.root.status as unknown as UiStatus} />
                       </div>
                       <div className="flex items-center gap-2">
                         <Badge variant="outline" className="border-border bg-muted/30">
-                          {tr("In scope", "ضمن النطاق")}: {s.counts.total}
+                          {t("inScope")}: {s.counts.total}
                         </Badge>
                         {s.counts.atRisk ? (
                           <Badge variant="outline" className="border-rose-500/25 bg-rose-500/10 text-rose-100">
@@ -680,7 +673,7 @@ export default function DashboardsPage() {
                       <Progress value={s.root.progress} />
                       {s.atRiskPreview.length ? (
                         <div className="space-y-2">
-                          <p className="text-xs font-semibold text-muted-foreground">{tr("At-risk preview", "لمحة عن المعرض للخطر")}</p>
+                          <p className="text-xs font-semibold text-muted-foreground">{t("atRiskPreview")}</p>
                           <div className="space-y-2">
                             {s.atRiskPreview.map((x) => (
                               <Link
@@ -693,7 +686,7 @@ export default function DashboardsPage() {
                                   {x.name}
                                 </p>
                                 <p className="mt-1 truncate text-xs text-muted-foreground">
-                                  {x.type.displayName} • {tr("Progress", "التقدم")}: {x.progress}%
+                                  {x.type.displayName} • {t("progress")}: {x.progress}%
                                 </p>
                               </Link>
                             ))}
@@ -701,7 +694,7 @@ export default function DashboardsPage() {
                         </div>
                       ) : (
                         <div className="rounded-xl border border-dashed border-border bg-muted/10 p-4 text-sm text-muted-foreground">
-                          {tr("No at-risk items in this scope.", "لا توجد عناصر معرضة للخطر ضمن هذا النطاق.")}
+                          {t("noAtRiskItemsInScope")}
                         </div>
                       )}
                     </CardContent>
@@ -710,10 +703,7 @@ export default function DashboardsPage() {
               </div>
             ) : (
               <div className="rounded-xl border border-dashed border-border bg-muted/10 p-8 text-sm text-muted-foreground">
-                {tr(
-                  "No responsibilities found for your account yet. KPIs you own and items you own will still appear above.",
-                  "لا توجد مسؤوليات لهذا الحساب بعد. مؤشرات الأداء الرئيسية التي تملكها والعناصر التي تملكها ستظهر أعلاه.",
-                )}
+                {t("noResponsibilitiesFound")}
               </div>
             )}
           </section>

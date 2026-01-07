@@ -42,7 +42,7 @@ function formatIssues(issues: unknown): string | null {
 export default function DepartmentsPage() {
   const router = useRouter();
   const { user, loading } = useAuth();
-  const { locale, tr } = useLocale();
+  const { locale, t } = useLocale();
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const userRole = (user as any)?.role as string | undefined;
@@ -97,7 +97,7 @@ export default function DepartmentsPage() {
       const result = await createOrgAdminDepartment({ name: newDepartment.name });
       if (!result.success) {
         const issuesText = formatIssues((result as unknown as { issues?: unknown }).issues);
-        setCreateError(issuesText || result.error || tr("Failed to create department", "فشل إنشاء الإدارة"));
+        setCreateError(issuesText || result.error || t("failedToCreateDepartment"));
         return;
       }
 
@@ -106,7 +106,7 @@ export default function DepartmentsPage() {
       await loadData();
       router.refresh();
     } catch (error: unknown) {
-      const message = error instanceof Error ? error.message : tr("Failed to create department", "فشل إنشاء الإدارة");
+      const message = error instanceof Error ? error.message : t("failedToCreateDepartment");
       setCreateError(message);
     } finally {
       setSubmitting(false);
@@ -121,7 +121,7 @@ export default function DepartmentsPage() {
       const result = await updateOrgAdminDepartment({ departmentId: editDepartment.departmentId, name: editDepartment.name });
       if (!result.success) {
         const issuesText = formatIssues((result as unknown as { issues?: unknown }).issues);
-        setEditError(issuesText || result.error || tr("Failed to update department", "فشل تحديث الإدارة"));
+        setEditError(issuesText || result.error || t("failedToUpdateDepartment"));
         return;
       }
 
@@ -130,7 +130,7 @@ export default function DepartmentsPage() {
       await loadData();
       router.refresh();
     } catch (error: unknown) {
-      const message = error instanceof Error ? error.message : tr("Failed to update department", "فشل تحديث الإدارة");
+      const message = error instanceof Error ? error.message : t("failedToUpdateDepartment");
       setEditError(message);
     } finally {
       setSubmitting(false);
@@ -145,7 +145,7 @@ export default function DepartmentsPage() {
       const result = await deleteOrgAdminDepartment({ departmentId: selectedDepartment.id });
       if (!result.success) {
         const issuesText = formatIssues((result as unknown as { issues?: unknown }).issues);
-        setDeleteError(issuesText || result.error || tr("Failed to delete department", "فشل حذف الإدارة"));
+        setDeleteError(issuesText || result.error || t("failedToDeleteDepartment"));
         return;
       }
 
@@ -154,7 +154,7 @@ export default function DepartmentsPage() {
       await loadData();
       router.refresh();
     } catch (error: unknown) {
-      const message = error instanceof Error ? error.message : tr("Failed to delete department", "فشل حذف الإدارة");
+      const message = error instanceof Error ? error.message : t("failedToDeleteDepartment");
       setDeleteError(message);
     } finally {
       setSubmitting(false);
@@ -164,7 +164,7 @@ export default function DepartmentsPage() {
   if (loading) {
     return (
       <div className="rounded-2xl border border-border bg-card p-8">
-        <p className="text-sm text-muted-foreground">{tr("Loading…", "جارٍ التحميل…")}</p>
+        <p className="text-sm text-muted-foreground">{t("loading")}</p>
       </div>
     );
   }
@@ -172,9 +172,9 @@ export default function DepartmentsPage() {
   if (!user) {
     return (
       <div className="rounded-2xl border border-border bg-card p-8">
-        <p className="text-sm text-muted-foreground">{tr("No active session.", "لا توجد جلسة نشطة.")}</p>
+        <p className="text-sm text-muted-foreground">{t("noActiveSession")}</p>
         <Link href={`/${locale}/auth/login`} className="mt-3 inline-flex text-sm font-semibold text-primary hover:opacity-90">
-          {tr("Go to sign in", "الذهاب لتسجيل الدخول")}
+          {t("goToSignIn")}
         </Link>
       </div>
     );
@@ -183,9 +183,9 @@ export default function DepartmentsPage() {
   if (userRole !== "ADMIN") {
     return (
       <div className="rounded-2xl border border-border bg-card p-8">
-        <p className="text-sm text-muted-foreground">{tr("Unauthorized.", "غير مصرح.")}</p>
+        <p className="text-sm text-muted-foreground">{t("unauthorized")}</p>
         <Link href={`/${locale}/overview`} className="mt-3 inline-flex text-sm font-semibold text-primary hover:opacity-90">
-          {tr("Back", "رجوع")}
+          {t("back")}
         </Link>
       </div>
     );
@@ -194,7 +194,7 @@ export default function DepartmentsPage() {
   return (
     <div className="space-y-8">
       <div className="flex items-center justify-between gap-3">
-        <PageHeader title={tr("Departments", "الإدارات")} subtitle={tr("Manage departments in your organization.", "إدارة الإدارات داخل مؤسستك.")} />
+        <PageHeader title={t("departments")} subtitle={t("departmentsSubtitle")} />
 
         <Dialog
           open={createOpen}
@@ -206,14 +206,14 @@ export default function DepartmentsPage() {
           <DialogTrigger asChild>
             <Button>
               <Plus className="me-2 h-4 w-4" />
-              {tr("New Department", "إدارة جديدة")}
+              {t("newDepartment")}
             </Button>
           </DialogTrigger>
           <DialogContent className="border-border bg-card text-foreground">
             <DialogHeader>
-              <DialogTitle>{tr("Create Department", "إنشاء إدارة")}</DialogTitle>
+              <DialogTitle>{t("createDepartment")}</DialogTitle>
               <DialogDescription className="text-muted-foreground">
-                {tr("Add a department to your organization.", "إضافة إدارة إلى مؤسستك.")}
+                {t("addDepartmentDesc")}
               </DialogDescription>
             </DialogHeader>
 
@@ -225,7 +225,7 @@ export default function DepartmentsPage() {
               ) : null}
 
               <div className="space-y-2">
-                <Label htmlFor="dept-name">{tr("Name", "الاسم")}</Label>
+                <Label htmlFor="dept-name">{t("name")}</Label>
                 <Input
                   id="dept-name"
                   value={newDepartment.name}
@@ -237,10 +237,10 @@ export default function DepartmentsPage() {
 
               <DialogFooter>
                 <Button type="button" variant="ghost" onClick={() => setCreateOpen(false)}>
-                  {tr("Cancel", "إلغاء")}
+                  {t("cancel")}
                 </Button>
                 <Button type="submit" disabled={submitting}>
-                  {submitting ? tr("Creating...", "جارٍ الإنشاء...") : tr("Create", "إنشاء")}
+                  {submitting ? t("creating") : t("create")}
                 </Button>
               </DialogFooter>
             </form>
@@ -250,31 +250,31 @@ export default function DepartmentsPage() {
 
       <Card className="bg-card/70 backdrop-blur shadow-sm">
         <CardHeader>
-          <CardTitle className="text-base">{tr("Departments", "الإدارات")}</CardTitle>
-          <CardDescription>{tr("Create, update, and remove departments.", "إنشاء وتحديث وحذف الإدارات.")}</CardDescription>
+          <CardTitle className="text-base">{t("departments")}</CardTitle>
+          <CardDescription>{t("departmentsDirectoryDesc")}</CardDescription>
         </CardHeader>
         <CardContent>
           <div className="overflow-hidden rounded-xl border border-border">
             <Table>
               <TableHeader>
                 <TableRow>
-                  <TableHead>{tr("Name", "الاسم")}</TableHead>
-                  <TableHead>{tr("Users", "المستخدمون")}</TableHead>
-                  <TableHead>{tr("Created", "تاريخ الإنشاء")}</TableHead>
-                  <TableHead className="text-right">{tr("Actions", "الإجراءات")}</TableHead>
+                  <TableHead>{t("name")}</TableHead>
+                  <TableHead>{t("users")}</TableHead>
+                  <TableHead>{t("created")}</TableHead>
+                  <TableHead className="text-right">{t("actions")}</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
                 {loadingData ? (
                   <TableRow>
                     <TableCell colSpan={4} className="py-8 text-center text-muted-foreground">
-                      {tr("Loading...", "جارٍ التحميل...")}
+                      {t("loading")}
                     </TableCell>
                   </TableRow>
                 ) : departments.length === 0 ? (
                   <TableRow>
                     <TableCell colSpan={4} className="py-8 text-center text-muted-foreground">
-                      {tr("No departments found.", "لا توجد إدارات.")}
+                      {t("noDepartmentsFound")}
                     </TableCell>
                   </TableRow>
                 ) : (
@@ -335,9 +335,9 @@ export default function DepartmentsPage() {
       >
         <DialogContent className="border-border bg-card text-foreground">
           <DialogHeader>
-            <DialogTitle>{tr("Edit Department", "تعديل الإدارة")}</DialogTitle>
+            <DialogTitle>{t("editDepartment")}</DialogTitle>
             <DialogDescription className="text-muted-foreground">
-              {tr("Update department details.", "تحديث بيانات الإدارة.")}
+              {t("updateDepartmentDetailsDesc")}
             </DialogDescription>
           </DialogHeader>
 
@@ -349,7 +349,7 @@ export default function DepartmentsPage() {
             ) : null}
 
             <div className="space-y-2">
-              <Label htmlFor="edit-dept-name">{tr("Name", "الاسم")}</Label>
+              <Label htmlFor="edit-dept-name">{t("name")}</Label>
               <Input
                 id="edit-dept-name"
                 value={editDepartment.name}
@@ -361,10 +361,10 @@ export default function DepartmentsPage() {
 
             <DialogFooter>
               <Button type="button" variant="ghost" onClick={() => setEditOpen(false)}>
-                {tr("Cancel", "إلغاء")}
+                {t("cancel")}
               </Button>
               <Button type="submit" disabled={submitting}>
-                {submitting ? tr("Saving...", "جارٍ الحفظ...") : tr("Save", "حفظ")}
+                {submitting ? t("saving") : t("save")}
               </Button>
             </DialogFooter>
           </form>
@@ -381,9 +381,9 @@ export default function DepartmentsPage() {
       >
         <DialogContent className="border-border bg-card text-foreground">
           <DialogHeader>
-            <DialogTitle>{tr("Delete department?", "حذف الإدارة؟")}</DialogTitle>
+            <DialogTitle>{t("deleteDepartmentConfirm")}</DialogTitle>
             <DialogDescription className="text-muted-foreground">
-              {tr("This will remove the department.", "سيتم حذف الإدارة.")}
+              {t("removeDepartmentDesc")}
             </DialogDescription>
           </DialogHeader>
 
@@ -399,10 +399,10 @@ export default function DepartmentsPage() {
 
           <DialogFooter>
             <Button type="button" variant="ghost" onClick={() => setDeleteOpen(false)}>
-              {tr("Cancel", "إلغاء")}
+              {t("cancel")}
             </Button>
             <Button type="button" variant="destructive" onClick={() => void handleDelete()} disabled={submitting}>
-              {submitting ? tr("Deleting...", "جارٍ الحذف...") : tr("Delete", "حذف")}
+              {submitting ? t("deleting") : t("delete")}
             </Button>
           </DialogFooter>
         </DialogContent>

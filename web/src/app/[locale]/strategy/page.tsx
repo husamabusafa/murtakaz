@@ -10,16 +10,13 @@ import { pillars } from "@/lib/mock-data";
 import { useLocale } from "@/providers/locale-provider";
 
 export default function StrategyPage() {
-  const { t, locale, tr, isArabic } = useLocale();
+  const { t, locale, isArabic } = useLocale();
 
   return (
     <div className="space-y-8">
       <PageHeader
         title={t("strategy")}
-        subtitle={tr(
-          "Pillars, goals, and initiatives with drill-down into projects, KPIs, risks, and updates.",
-          "الركائز والأهداف والمبادرات مع استعراض تفصيلي للمشاريع ومؤشرات الأداء الرئيسية والمخاطر والتحديثات.",
-        )}
+        subtitle={t("strategySubtitle")}
         icon={<Icon name="tabler:target-arrow" className="h-5 w-5" />}
       />
 
@@ -44,13 +41,13 @@ export default function StrategyPage() {
                 <StatusBadge status={pillar.status} />
                 <p className="flex items-center gap-2 text-xs text-slate-200">
                   <Icon name="tabler:activity-heartbeat" className="h-4 w-4" />
-                  {pillar.initiatives.length} {tr("initiatives", "مبادرات")}
+                  {pillar.initiatives.length} {t("initiative")}
                 </p>
               </div>
             </CardHeader>
             <CardContent className="space-y-4">
               <div className="space-y-2">
-                <p className="text-xs font-semibold uppercase tracking-wide text-slate-200">{tr("Goals", "الأهداف")}</p>
+                <p className="text-xs font-semibold uppercase tracking-wide text-slate-200">{t("goals")}</p>
                 <Separator className="bg-white/10" />
                 <ul className="space-y-1 text-sm text-slate-100">
                   {(isArabic ? pillar.goalsAr ?? pillar.goals : pillar.goals).map((goal) => (
@@ -68,7 +65,7 @@ export default function StrategyPage() {
               >
                 <span className="inline-flex items-center gap-2">
                   <Icon name="tabler:arrow-right" className="h-4 w-4" />
-                  {tr("Open pillar", "فتح الركيزة")}
+                  {t("openPillar")}
                 </span>
               </Link>
             </CardContent>

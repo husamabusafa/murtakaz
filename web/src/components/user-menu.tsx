@@ -22,20 +22,20 @@ function roleLabel(role: string, t: (key: TranslationKey) => string) {
   return role;
 }
 
-function departmentLabel(department: string, locale: "en" | "ar") {
-  if (locale !== "ar") return department;
-  const map: Record<string, string> = {
-    IT: "تقنية المعلومات",
-    Investment: "الاستثمار",
-    Finance: "المالية",
-    Executive: "الإدارة التنفيذية",
-    "Strategy & Excellence": "الاستراتيجية والتميز",
-    "Internal Audit & Risk": "التدقيق الداخلي وإدارة المخاطر",
-    HR: "الموارد البشرية",
-    "Marketing & Corp Comm": "التسويق والاتصال المؤسسي",
-    Delivery: "التنفيذ",
+function departmentLabel(department: string, t: (key: TranslationKey) => string) {
+  const map: Record<string, TranslationKey> = {
+    IT: "deptIT",
+    Investment: "deptInvestment",
+    Finance: "deptFinance",
+    Executive: "deptExecutive",
+    "Strategy & Excellence": "deptStrategyExcellence",
+    "Internal Audit & Risk": "deptInternalAuditRisk",
+    HR: "deptHR",
+    "Marketing & Corp Comm": "deptMarketingCorpComm",
+    Delivery: "deptDelivery",
   };
-  return map[department] ?? department;
+  const key = map[department];
+  return key ? t(key) : department;
 }
 
 export function UserMenu() {
@@ -68,7 +68,7 @@ export function UserMenu() {
           <p className="text-sm font-semibold">{user.name}</p>
           <p className="text-xs font-normal text-slate-300">
             {roleLabel(userRole ?? "", t)}
-            {userDepartment ? ` • ${departmentLabel(userDepartment, locale)}` : ""}
+            {userDepartment ? ` • ${departmentLabel(userDepartment, t)}` : ""}
           </p>
         </DropdownMenuLabel>
         <DropdownMenuSeparator className="bg-white/10" />

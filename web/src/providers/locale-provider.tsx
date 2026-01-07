@@ -10,10 +10,13 @@ interface LocaleContextValue {
   locale: Locale;
   dir: "ltr" | "rtl";
   isArabic: boolean;
-  t: (key: TranslationKey) => string;
+  t: (key: TranslationKey, params?: Record<string, string | number>) => string;
   tr: (en: string, ar: string) => string;
+  df: (en: string | null | undefined, ar: string | null | undefined) => string;
   nodeTypeLabel: (code?: string | null, fallback?: string) => string;
   kpiValueStatusLabel: (status?: string | null) => string;
+  formatDate: (date: Date | string | number, options?: Intl.DateTimeFormatOptions) => string;
+  formatNumber: (value: number | null | undefined, options?: Intl.NumberFormatOptions) => string;
 }
 
 const LocaleContext = createContext<LocaleContextValue | null>(null);
@@ -68,8 +71,20 @@ export function LocaleProvider({ children, locale }: { children: React.ReactNode
       locale: activeLocale,
       dir,
       isArabic: activeLocale === "ar",
-      t: (key) => dictionary[activeLocale][key],
+      t: (key, params) => {
+        let msg = dictionary[activeLocale][key] || key;
+        if (params) {
+          Object.entries(params).forEach(([k, v]) => {
+            msg = msg.replace(`{${k}}`, String(v));
+          });
+        }
+        return msg;
+      },
       tr: (en, ar) => (activeLocale === "ar" ? ar : en),
+      df: (en, ar) => {
+        if (activeLocale === "ar") return ar || en || "";
+        return en || ar || "";
+      },
       nodeTypeLabel: (code, fallback) => {
         const key = code ? nodeTypeKeyMap[code.toLowerCase()] : undefined;
         if (key) return dictionary[activeLocale][key];
@@ -79,6 +94,14 @@ export function LocaleProvider({ children, locale }: { children: React.ReactNode
         const key = status ? kpiStatusKeyMap[status.toUpperCase()] : undefined;
         if (key) return dictionary[activeLocale][key];
         return status ?? "—";
+      },
+      formatDate: (date, options) => {
+        const d = typeof date === "string" || typeof date === "number" ? new Date(date) : date;
+        return new Intl.DateTimeFormat(activeLocale, options ?? { dateStyle: "medium" }).format(d);
+      },
+      formatNumber: (value, options) => {
+        if (typeof value !== "number" || !Number.isFinite(value)) return "—";
+        return new Intl.NumberFormat(activeLocale, options).format(value);
       },
     }),
     [activeLocale, dir],

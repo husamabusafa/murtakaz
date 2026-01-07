@@ -18,8 +18,7 @@ import {
 import Link from "next/link";
 
 export default function OrganizationPage() {
-  const { tr } = useLocale();
-  const { locale } = useLocale();
+  const { t, locale, formatDate } = useLocale();
   const { user, loading: sessionLoading } = useAuth();
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -80,7 +79,7 @@ export default function OrganizationPage() {
         await reload();
       } catch (e: unknown) {
         if (!mounted) return;
-        setError(e instanceof Error ? e.message : tr("Failed to load", "فشل التحميل"));
+        setError(e instanceof Error ? e.message : t("failedToLoad"));
       } finally {
         if (mounted) setLoading(false);
       }
@@ -90,7 +89,7 @@ export default function OrganizationPage() {
       mounted = false;
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [isAdmin, sessionLoading]);
+  }, [isAdmin, sessionLoading, t]);
 
   const enabledNodeTypeIdSet = useMemo(() => new Set(selectedNodeTypeIds), [selectedNodeTypeIds]);
 
@@ -109,7 +108,7 @@ export default function OrganizationPage() {
       }
       await reload();
     } catch (e: unknown) {
-      setError(e instanceof Error ? e.message : tr("Failed to save", "فشل الحفظ"));
+      setError(e instanceof Error ? e.message : t("failedToSave"));
     } finally {
       setSubmittingOrg(false);
     }
@@ -117,7 +116,7 @@ export default function OrganizationPage() {
 
   async function saveNodeTypes() {
     if (selectedNodeTypeIds.length === 0) {
-      setError(tr("Select at least one node type.", "اختر نوع عقدة واحدًا على الأقل."));
+      setError(t("selectAtLeastOneNodeType"));
       return;
     }
 
@@ -131,7 +130,7 @@ export default function OrganizationPage() {
       }
       await reload();
     } catch (e: unknown) {
-      setError(e instanceof Error ? e.message : tr("Failed to save", "فشل الحفظ"));
+      setError(e instanceof Error ? e.message : t("failedToSave"));
     } finally {
       setSubmittingNodeTypes(false);
     }
@@ -140,34 +139,34 @@ export default function OrganizationPage() {
   return (
     <div className="space-y-8">
       <PageHeader
-        title={tr("Organization", "الجهة")}
-        subtitle={tr("Organization settings and configuration (Admin only).", "إعدادات الجهة والتهيئة (للمسؤول فقط).")}
+        title={t("organization")}
+        subtitle={t("organizationSubtitle")}
         icon={<Icon name="tabler:building" className="h-5 w-5" />}
       />
 
       {sessionLoading || loading ? (
         <Card className="bg-card/70 backdrop-blur shadow-sm">
           <CardHeader>
-            <CardTitle className="text-base">{tr("Loading…", "جارٍ التحميل…")}</CardTitle>
+            <CardTitle className="text-base">{t("loadingEllipsis")}</CardTitle>
           </CardHeader>
           <CardContent />
         </Card>
       ) : !isAdmin ? (
         <Card className="bg-card/70 backdrop-blur shadow-sm">
           <CardHeader>
-            <CardTitle className="text-base">{tr("Unauthorized", "غير مصرح")}</CardTitle>
-            <CardDescription>{tr("This page is available to organization admins only.", "هذه الصفحة متاحة لمسؤولي الجهة فقط.")}</CardDescription>
+            <CardTitle className="text-base">{t("unauthorized")}</CardTitle>
+            <CardDescription>{t("availableToAdminsOnlyDesc")}</CardDescription>
           </CardHeader>
           <CardContent>
             <Link href={`/${locale}/overview`} className="text-sm font-semibold text-primary hover:opacity-90">
-              {tr("Back", "رجوع")}
+              {t("back")}
             </Link>
           </CardContent>
         </Card>
       ) : !org ? (
         <Card className="bg-card/70 backdrop-blur shadow-sm">
           <CardHeader>
-            <CardTitle className="text-base">{tr("Organization not found", "الجهة غير موجودة")}</CardTitle>
+            <CardTitle className="text-base">{t("organizationNotFound")}</CardTitle>
           </CardHeader>
           <CardContent />
         </Card>
@@ -176,15 +175,15 @@ export default function OrganizationPage() {
           <Card className="bg-card/70 backdrop-blur shadow-sm lg:col-span-2">
             <CardHeader>
               <div className="flex items-center justify-between gap-3">
-                <CardTitle className="text-base">{tr("Organization", "الجهة")}</CardTitle>
+                <CardTitle className="text-base">{t("organization")}</CardTitle>
                 {!editingOrg ? (
                   <Button type="button" variant="outline" size="sm" onClick={() => setEditingOrg(true)}>
-                    {tr("Edit", "تعديل")}
+                    {t("edit")}
                   </Button>
                 ) : null}
               </div>
               <CardDescription>
-                {tr("Basic details and governance settings.", "البيانات الأساسية وإعدادات الحوكمة.")}
+                {t("basicDetailsAndGovernanceDesc")}
               </CardDescription>
             </CardHeader>
             <CardContent className="space-y-5">
@@ -195,18 +194,18 @@ export default function OrganizationPage() {
               {!editingOrg ? (
                 <div className="space-y-3 text-sm">
                   <div className="rounded-xl border border-border bg-muted/30 px-4 py-3">
-                    <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">{tr("Name", "الاسم")}</p>
+                    <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">{t("name")}</p>
                     <p className="mt-1 font-semibold">{org.name}</p>
                   </div>
                   <div className="rounded-xl border border-border bg-muted/30 px-4 py-3">
-                    <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">{tr("Domain", "النطاق")}</p>
+                    <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">{t("domain")}</p>
                     <p className="mt-1">{org.domain || "—"}</p>
                   </div>
                   <div className="rounded-xl border border-border bg-muted/30 px-4 py-3">
-                    <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">{tr("KPI Approval Level", "مستوى اعتماد مؤشرات الأداء الرئيسية")}</p>
+                    <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">{t("kpiApprovalLevel")}</p>
                     <p className="mt-1">{String(org.kpiApprovalLevel ?? "MANAGER")}</p>
                     <p className="mt-2 text-xs text-muted-foreground">
-                      {tr("Minimum role required to approve KPI values.", "أقل مستوى دور مطلوب لاعتماد قيم مؤشرات الأداء الرئيسية.")}
+                      {t("minRoleRequiredToApproveKpiDesc")}
                     </p>
                   </div>
                 </div>
@@ -214,26 +213,26 @@ export default function OrganizationPage() {
                 <div className="space-y-5">
                   <div className="grid gap-4 md:grid-cols-2">
                     <div className="space-y-2">
-                      <Label>{tr("Name", "الاسم")}</Label>
+                      <Label>{t("name")}</Label>
                       <Input value={nameDraft} onChange={(e) => setNameDraft(e.target.value)} className="bg-card" />
                     </div>
                     <div className="space-y-2">
-                      <Label>{tr("Domain", "النطاق")}</Label>
+                      <Label>{t("domain")}</Label>
                       <Input value={domainDraft} onChange={(e) => setDomainDraft(e.target.value)} className="bg-card" placeholder="example.com" />
                     </div>
                   </div>
 
                   <div className="space-y-2">
-                    <Label>{tr("KPI Approval Level", "مستوى اعتماد مؤشرات الأداء الرئيسية")}</Label>
+                    <Label>{t("kpiApprovalLevel")}</Label>
                     <Select value={kpiApprovalDraft} onValueChange={(v) => setKpiApprovalDraft(v as typeof kpiApprovalDraft)}>
                       <SelectTrigger className="bg-card">
-                        <SelectValue placeholder={tr("Select", "اختر")} />
+                        <SelectValue placeholder={t("select")} />
                       </SelectTrigger>
                       <SelectContent>
-                        <SelectItem value="MANAGER">{tr("Manager", "مدير")}</SelectItem>
-                        <SelectItem value="PMO">{tr("PMO", "مكتب إدارة المشاريع")}</SelectItem>
-                        <SelectItem value="EXECUTIVE">{tr("Executive", "تنفيذي")}</SelectItem>
-                        <SelectItem value="ADMIN">{tr("Admin", "مسؤول")}</SelectItem>
+                        <SelectItem value="MANAGER">{t("roleManager")}</SelectItem>
+                        <SelectItem value="PMO">{t("rolePMO")}</SelectItem>
+                        <SelectItem value="EXECUTIVE">{t("roleExecutive")}</SelectItem>
+                        <SelectItem value="ADMIN">{t("roleAdmin")}</SelectItem>
                       </SelectContent>
                     </Select>
                   </div>
@@ -251,10 +250,10 @@ export default function OrganizationPage() {
                       }}
                       disabled={submittingOrg}
                     >
-                      {tr("Cancel", "إلغاء")}
+                      {t("cancel")}
                     </Button>
                     <Button type="button" onClick={saveOrg} disabled={submittingOrg || !nameDraft.trim()}>
-                      {submittingOrg ? tr("Saving…", "جارٍ الحفظ…") : tr("Save", "حفظ")}
+                      {submittingOrg ? t("saving") : t("save")}
                     </Button>
                   </div>
                 </div>
@@ -264,41 +263,41 @@ export default function OrganizationPage() {
 
           <Card className="bg-card/70 backdrop-blur shadow-sm">
             <CardHeader>
-              <CardTitle className="text-base">{tr("Overview", "نظرة عامة")}</CardTitle>
-              <CardDescription>{tr("Tenant metrics", "مؤشرات الجهة")}</CardDescription>
+              <CardTitle className="text-base">{t("overview")}</CardTitle>
+              <CardDescription>{t("tenantMetrics")}</CardDescription>
             </CardHeader>
             <CardContent className="space-y-3 text-sm">
               <div className="rounded-xl border border-border bg-muted/30 px-4 py-3">
-                <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">{tr("Users", "المستخدمون")}</p>
+                <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">{t("users")}</p>
                 <p className="mt-1 text-lg font-semibold">{org._count?.users ?? 0}</p>
               </div>
               <div className="rounded-xl border border-border bg-muted/30 px-4 py-3">
-                <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">{tr("Departments", "الإدارات")}</p>
+                <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">{t("departments")}</p>
                 <p className="mt-1 text-lg font-semibold">{org._count?.departments ?? 0}</p>
               </div>
 
               <div className="rounded-xl border border-border bg-muted/30 px-4 py-3">
-                <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">{tr("Items", "العناصر")}</p>
+                <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">{t("items")}</p>
                 <div className="mt-2 grid gap-2">
                   {enabledNodeTypeCounts.length ? (
-                    enabledNodeTypeCounts.map((r) => (
-                      <div key={r.nodeTypeId} className="flex items-center justify-between gap-3">
-                        <span className="text-xs text-muted-foreground">{r.displayName}</span>
-                        <span className="text-sm font-semibold">{r.count}</span>
+                    enabledNodeTypeCounts.map((it) => (
+                      <div key={it.nodeTypeId} className="flex items-center justify-between gap-3">
+                        <span className="text-xs text-muted-foreground">{it.displayName}</span>
+                        <span className="text-sm font-semibold">{it.count}</span>
                       </div>
                     ))
                   ) : (
-                    <p className="text-xs text-muted-foreground">{tr("No item types enabled.", "لا توجد أنواع عناصر مفعلة.")}</p>
+                    <p className="text-xs text-muted-foreground">{t("noItemTypesEnabled")}</p>
                   )}
                 </div>
               </div>
               <div className="rounded-xl border border-border bg-muted/30 px-4 py-3">
-                <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">{tr("KPIs", "مؤشرات الأداء الرئيسية")}</p>
+                <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">{t("kpis")}</p>
                 <p className="mt-1 text-lg font-semibold">{org._count?.kpis ?? 0}</p>
               </div>
               <div className="rounded-xl border border-border bg-muted/30 px-4 py-3">
-                <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">{tr("Created", "تاريخ الإنشاء")}</p>
-                <p className="mt-1">{new Date(org.createdAt).toLocaleDateString()}</p>
+                <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">{t("created")}</p>
+                <p className="mt-1">{formatDate(org.createdAt)}</p>
               </div>
             </CardContent>
           </Card>
@@ -306,22 +305,22 @@ export default function OrganizationPage() {
           <Card className="bg-card/70 backdrop-blur shadow-sm lg:col-span-3">
             <CardHeader>
               <div className="flex items-center justify-between gap-3">
-                <CardTitle className="text-base">{tr("Node types", "أنواع العقد")}</CardTitle>
+                <CardTitle className="text-base">{t("nodeTypes")}</CardTitle>
                 {!editingNodeTypes ? (
                   <Button type="button" variant="outline" size="sm" onClick={() => setEditingNodeTypes(true)}>
-                    {tr("Edit", "تعديل")}
+                    {t("edit")}
                   </Button>
                 ) : null}
               </div>
               <CardDescription>
-                {tr("Enable the node types available in this organization.", "قم بتفعيل أنواع العقد المتاحة في هذه الجهة.")}
+                {t("enableNodeTypesDesc")}
               </CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">
               {!editingNodeTypes ? (
                 enabledNodeTypes.length === 0 ? (
                   <div className="rounded-xl border border-dashed border-border bg-muted/10 p-6 text-sm text-muted-foreground">
-                    {tr("No node types enabled.", "لا توجد أنواع عقد مفعلة.")}
+                    {t("noNodeTypesEnabled")}
                   </div>
                 ) : (
                   <div className="flex flex-wrap gap-2">
@@ -353,11 +352,11 @@ export default function OrganizationPage() {
                           <div className="min-w-0">
                             <p className="truncate text-sm font-semibold">{nt.displayName}</p>
                             <p className="truncate text-xs text-muted-foreground">
-                              {tr("Level", "المستوى")}: {nt.levelOrder} · {String(nt.code)}
+                              {t("level")}: {nt.levelOrder} · {String(nt.code)}
                             </p>
                           </div>
                           <span className={active ? "text-xs font-semibold text-primary" : "text-xs text-muted-foreground"}>
-                            {active ? tr("Enabled", "مفعل") : tr("Disabled", "غير مفعل")}
+                            {active ? t("enabled") : t("disabled")}
                           </span>
                         </button>
                       );
@@ -375,10 +374,10 @@ export default function OrganizationPage() {
                       }}
                       disabled={submittingNodeTypes}
                     >
-                      {tr("Cancel", "إلغاء")}
+                      {t("cancel")}
                     </Button>
                     <Button type="button" onClick={saveNodeTypes} disabled={submittingNodeTypes || selectedNodeTypeIds.length === 0}>
-                      {submittingNodeTypes ? tr("Saving…", "جارٍ الحفظ…") : tr("Save", "حفظ")}
+                      {submittingNodeTypes ? t("saving") : t("save")}
                     </Button>
                   </div>
                 </div>

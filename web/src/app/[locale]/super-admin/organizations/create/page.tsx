@@ -25,16 +25,8 @@ type PendingUser = {
   role: "ADMIN" | "EXECUTIVE" | "PMO" | "MANAGER" | "EMPLOYEE";
 };
 
-const roleOptions: Array<{ value: PendingUser["role"]; label: string; labelAr: string }> = [
-  { value: "ADMIN", label: "Admin", labelAr: "مسؤول" },
-  { value: "EXECUTIVE", label: "Executive", labelAr: "تنفيذي" },
-  { value: "PMO", label: "PMO", labelAr: "مكتب إدارة المشاريع" },
-  { value: "MANAGER", label: "Manager", labelAr: "مدير" },
-  { value: "EMPLOYEE", label: "Employee", labelAr: "موظف" },
-];
-
 export default function CreateOrganizationPage() {
-  const { tr, locale, isArabic } = useLocale();
+  const { t, locale, isArabic } = useLocale();
   const router = useRouter();
 
   const [submitting, setSubmitting] = useState(false);
@@ -52,6 +44,14 @@ export default function CreateOrganizationPage() {
 
   const [error, setError] = useState<string | null>(null);
   const [issues, setIssues] = useState<ActionValidationIssue[]>([]);
+
+  const roleOptions = useMemo(() => [
+    { value: "ADMIN" as const, label: t("roleAdmin") },
+    { value: "EXECUTIVE" as const, label: t("roleExecutive") },
+    { value: "PMO" as const, label: t("rolePMO") },
+    { value: "MANAGER" as const, label: t("roleManager") },
+    { value: "EMPLOYEE" as const, label: t("roleEmployee") },
+  ], [t]);
 
   function getFieldIssues(pathPrefix: Array<string | number>) {
     return issues.filter((i) => {
@@ -119,15 +119,15 @@ export default function CreateOrganizationPage() {
     const localIssues: ActionValidationIssue[] = [];
 
     if (!orgName.trim()) {
-      localIssues.push({ path: ["name"], message: tr("Organization name is required.", "اسم الجهة مطلوب.") });
+      localIssues.push({ path: ["name"], message: t("organizationNameRequired") });
     }
 
     if (selectedNodeTypeIds.length === 0) {
-      localIssues.push({ path: ["nodeTypeIds"], message: tr("Select at least one node type.", "اختر نوع عقدة واحدًا على الأقل.") });
+      localIssues.push({ path: ["nodeTypeIds"], message: t("selectAtLeastOneNodeType") });
     }
 
     if (!hasAdminUser) {
-      localIssues.push({ path: ["users"], message: tr("At least one ADMIN user is required.", "يجب إضافة مستخدم مسؤول واحد على الأقل.") });
+      localIssues.push({ path: ["users"], message: t("atLeastOneAdminUserRequired") });
     }
 
     const normalizedUsers = users.map((u) => ({
@@ -138,14 +138,14 @@ export default function CreateOrganizationPage() {
     }));
 
     normalizedUsers.forEach((u, idx) => {
-      if (!u.name) localIssues.push({ path: ["users", idx, "name"], message: tr("Name is required.", "الاسم مطلوب.") });
-      if (!u.email) localIssues.push({ path: ["users", idx, "email"], message: tr("Email is required.", "البريد مطلوب.") });
-      if (!u.password) localIssues.push({ path: ["users", idx, "password"], message: tr("Password is required.", "كلمة المرور مطلوبة.") });
+      if (!u.name) localIssues.push({ path: ["users", idx, "name"], message: t("nameIsRequired") });
+      if (!u.email) localIssues.push({ path: ["users", idx, "email"], message: t("emailIsRequired") });
+      if (!u.password) localIssues.push({ path: ["users", idx, "password"], message: t("passwordIsRequired") });
     });
 
     if (localIssues.length) {
       setIssues(localIssues);
-      setError(tr("Please fix the highlighted fields.", "يرجى تصحيح الحقول المظللة."));
+      setError(t("fixHighlightedFields"));
       return;
     }
 
@@ -162,7 +162,7 @@ export default function CreateOrganizationPage() {
       if (!result.success) {
         const serverIssues = (result as { issues?: ActionValidationIssue[] }).issues ?? [];
         setIssues(serverIssues);
-        setError(result.error || tr("Failed to create organization.", "فشل إنشاء الجهة."));
+        setError(result.error || t("failedToCreateOrganization"));
         return;
       }
 
@@ -170,7 +170,7 @@ export default function CreateOrganizationPage() {
       router.refresh();
     } catch (e) {
       console.error(e);
-      setError(tr("An unexpected error occurred.", "حدث خطأ غير متوقع."));
+      setError(t("unexpectedError"));
     } finally {
       setSubmitting(false);
     }
@@ -179,14 +179,11 @@ export default function CreateOrganizationPage() {
   return (
     <div className="space-y-8">
       <PageHeader
-        title={tr("Create organization", "إنشاء جهة")}
-        subtitle={tr(
-          "Create a tenant, configure node types, and bootstrap users.",
-          "أنشئ جهة، حدّد أنواع العقد، وأنشئ المستخدمين المبدئيين.",
-        )}
+        title={t("createOrganization")}
+        subtitle={t("createOrganizationSubtitle")}
         actions={
           <Button asChild variant="ghost">
-            <Link href={`/${locale}/super-admin/organizations`}>{tr("Back", "رجوع")}</Link>
+            <Link href={`/${locale}/super-admin/organizations`}>{t("back")}</Link>
           </Button>
         }
       />
@@ -195,20 +192,20 @@ export default function CreateOrganizationPage() {
         <div className="grid gap-6 lg:grid-cols-3">
           <Card className="bg-card/70 backdrop-blur shadow-sm lg:col-span-2">
             <CardHeader>
-              <CardTitle className="text-base">{tr("Organization", "الجهة")}</CardTitle>
+              <CardTitle className="text-base">{t("organization")}</CardTitle>
               <CardDescription>
-                {tr("Basic details for the tenant.", "البيانات الأساسية للجهة.")}
+                {t("basicDetailsTenantDesc")}
               </CardDescription>
             </CardHeader>
             <CardContent className="space-y-5">
               <div className="grid gap-4 md:grid-cols-2">
                 <div className="space-y-2">
-                  <Label htmlFor="org-name">{tr("Name", "الاسم")}</Label>
+                  <Label htmlFor="org-name">{t("name")}</Label>
                   <Input
                     id="org-name"
                     value={orgName}
                     onChange={(e) => setOrgName(e.target.value)}
-                    placeholder={tr("Acme Corp", "شركة أكمي")}
+                    placeholder={t("acmeCorpPlaceholder")}
                     required
                     className={cn("bg-background", getFieldIssues(["name"]).length && "border-destructive focus-visible:ring-destructive")}
                   />
@@ -218,7 +215,7 @@ export default function CreateOrganizationPage() {
                 </div>
 
                 <div className="space-y-2">
-                  <Label htmlFor="org-domain">{tr("Domain (optional)", "النطاق (اختياري)")}</Label>
+                  <Label htmlFor="org-domain">{t("domainOptional")}</Label>
                   <Input
                     id="org-domain"
                     value={orgDomain}
@@ -230,39 +227,33 @@ export default function CreateOrganizationPage() {
               </div>
 
               <div className="space-y-2">
-                <Label>{tr("KPI Approval Level", "مستوى اعتماد مؤشرات الأداء الرئيسية")}</Label>
+                <Label>{t("kpiApprovalLevel")}</Label>
                 <Select value={kpiApprovalLevel} onValueChange={(v) => setKpiApprovalLevel(v as typeof kpiApprovalLevel)}>
                   <SelectTrigger className="bg-background">
-                    <SelectValue placeholder={tr("Select level", "اختر المستوى")} />
+                    <SelectValue placeholder={t("selectLevel")} />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="MANAGER">{tr("Manager", "مدير")}</SelectItem>
-                    <SelectItem value="PMO">{tr("PMO", "مكتب إدارة المشاريع")}</SelectItem>
-                    <SelectItem value="EXECUTIVE">{tr("Executive", "تنفيذي")}</SelectItem>
-                    <SelectItem value="ADMIN">{tr("Admin", "مسؤول")}</SelectItem>
+                    <SelectItem value="MANAGER">{t("roleManager")}</SelectItem>
+                    <SelectItem value="PMO">{t("rolePMO")}</SelectItem>
+                    <SelectItem value="EXECUTIVE">{t("roleExecutive")}</SelectItem>
+                    <SelectItem value="ADMIN">{t("roleAdmin")}</SelectItem>
                   </SelectContent>
                 </Select>
                 <p className={cn("text-xs text-muted-foreground", isArabic && "text-right")}>
-                  {tr(
-                    "Minimum role level allowed to approve KPI values.",
-                    "أقل مستوى دور مسموح له باعتماد قيم مؤشرات الأداء الرئيسية.",
-                  )}
+                  {t("minRoleLevelApprovalHelp")}
                 </p>
               </div>
 
               <div className="rounded-2xl border border-border bg-muted/30 p-4">
                 <div className={cn("flex items-start justify-between gap-4", isArabic && "flex-row-reverse")}> 
                   <div className={cn("space-y-1", isArabic && "text-right")}>
-                    <p className="text-sm font-semibold">{tr("Node types", "أنواع العقد")}</p>
+                    <p className="text-sm font-semibold">{t("nodeTypes")}</p>
                     <p className="text-sm text-muted-foreground">
-                      {tr(
-                        "Pick which node types this organization can use.",
-                        "حدّد أنواع العقد المتاحة لهذه الجهة.",
-                      )}
+                      {t("pickOrgNodeTypesDesc")}
                     </p>
                   </div>
                   <Badge variant={selectedNodeTypeCount === 0 ? "destructive" : "secondary"}>
-                    {tr("Selected", "المحدد")}: {selectedNodeTypeCount}
+                    {t("selected")}: {selectedNodeTypeCount}
                   </Badge>
                 </div>
 
@@ -272,13 +263,10 @@ export default function CreateOrganizationPage() {
 
                 <div className="mt-4">
                   {loadingNodeTypes ? (
-                    <div className="text-sm text-muted-foreground">{tr("Loading…", "جارٍ التحميل…")}</div>
+                    <div className="text-sm text-muted-foreground">{t("loadingEllipsis")}</div>
                   ) : nodeTypes.length === 0 ? (
                     <div className="text-sm text-muted-foreground">
-                      {tr(
-                        "No node types found. Make sure you seeded NodeType rows.",
-                        "لا توجد أنواع عقد. تأكد من تهيئة بيانات NodeType.",
-                      )}
+                      {t("noNodeTypesFoundDesc")}
                     </div>
                   ) : (
                     <div className={cn("grid gap-2 sm:grid-cols-2", isArabic && "text-right")}>
@@ -299,10 +287,10 @@ export default function CreateOrganizationPage() {
                             <div className="min-w-0">
                               <p className="truncate text-sm font-semibold">{nt.displayName}</p>
                               <p className="truncate text-xs text-muted-foreground">
-                                {tr("Level", "المستوى")}: {nt.levelOrder} · {nt.code}
+                                {t("level")}: {nt.levelOrder} · {nt.code}
                               </p>
                             </div>
-                            <Badge variant={active ? "default" : "outline"}>{active ? tr("Enabled", "مفعل") : tr("Disabled", "غير مفعل")}</Badge>
+                            <Badge variant={active ? "default" : "outline"}>{active ? t("enabled") : t("disabled")}</Badge>
                           </button>
                         );
                       })}
@@ -315,19 +303,19 @@ export default function CreateOrganizationPage() {
 
           <Card className="bg-card/70 backdrop-blur shadow-sm">
             <CardHeader>
-              <CardTitle className="text-base">{tr("Validation", "التحقق")}</CardTitle>
+              <CardTitle className="text-base">{t("validation")}</CardTitle>
               <CardDescription>
-                {tr("Rules enforced before creation.", "القواعد المطلوبة قبل الإنشاء.")}
+                {t("rulesEnforcedDesc")}
               </CardDescription>
             </CardHeader>
             <CardContent className="space-y-3 text-sm">
               <div className="flex items-center justify-between gap-2 rounded-xl border border-border bg-muted/30 px-4 py-3">
-                <span className="text-muted-foreground">{tr("At least 1 admin user", "مستخدم مسؤول واحد على الأقل")}</span>
-                <Badge variant={hasAdminUser ? "secondary" : "destructive"}>{hasAdminUser ? tr("OK", "تم") : tr("Required", "مطلوب")}</Badge>
+                <span className="text-muted-foreground">{t("atLeast1AdminUser")}</span>
+                <Badge variant={hasAdminUser ? "secondary" : "destructive"}>{hasAdminUser ? t("ok") : t("required")}</Badge>
               </div>
               <div className="flex items-center justify-between gap-2 rounded-xl border border-border bg-muted/30 px-4 py-3">
-                <span className="text-muted-foreground">{tr("At least 1 node type selected", "نوع عقدة واحد على الأقل")}</span>
-                <Badge variant={selectedNodeTypeCount > 0 ? "secondary" : "destructive"}>{selectedNodeTypeCount > 0 ? tr("OK", "تم") : tr("Required", "مطلوب")}</Badge>
+                <span className="text-muted-foreground">{t("atLeast1NodeTypeSelected")}</span>
+                <Badge variant={selectedNodeTypeCount > 0 ? "secondary" : "destructive"}>{selectedNodeTypeCount > 0 ? t("ok") : t("required")}</Badge>
               </div>
             </CardContent>
           </Card>
@@ -337,14 +325,14 @@ export default function CreateOrganizationPage() {
           <CardHeader>
             <div className={cn("flex items-start justify-between gap-4", isArabic && "flex-row-reverse")}>
               <div className={cn("space-y-1", isArabic && "text-right")}>
-                <CardTitle className="text-base">{tr("Users", "المستخدمون")}</CardTitle>
+                <CardTitle className="text-base">{t("users")}</CardTitle>
                 <CardDescription>
-                  {tr("Create initial users for this organization.", "أنشئ المستخدمين المبدئيين لهذه الجهة.")}
+                  {t("createInitialUsersDesc")}
                 </CardDescription>
               </div>
               <Button type="button" onClick={addUser} className={cn(isArabic && "flex-row-reverse")}> 
                 <Plus className={cn("h-4 w-4", isArabic ? "ms-2" : "me-2")} />
-                {tr("Add user", "إضافة مستخدم")}
+                {t("addUser")}
               </Button>
             </div>
           </CardHeader>
@@ -353,11 +341,11 @@ export default function CreateOrganizationPage() {
               <Table>
                 <TableHeader>
                   <TableRow>
-                    <TableHead>{tr("Name", "الاسم")}</TableHead>
-                    <TableHead>{tr("Email", "البريد")}</TableHead>
-                    <TableHead>{tr("Role", "الدور")}</TableHead>
-                    <TableHead>{tr("Password", "كلمة المرور")}</TableHead>
-                    <TableHead className="text-right">{tr("Actions", "إجراءات")}</TableHead>
+                    <TableHead>{t("name")}</TableHead>
+                    <TableHead>{t("email")}</TableHead>
+                    <TableHead>{t("role")}</TableHead>
+                    <TableHead>{t("password")}</TableHead>
+                    <TableHead className="text-right">{t("actions")}</TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
@@ -368,7 +356,7 @@ export default function CreateOrganizationPage() {
                           <Input
                             value={u.name}
                             onChange={(e) => updateUser(idx, { name: e.target.value })}
-                            placeholder={tr("Full name", "الاسم الكامل")}
+                            placeholder={t("fullName")}
                             className={cn(
                               "bg-background",
                               getFieldIssues(["users", idx, "name"]).length && "border-destructive focus-visible:ring-destructive",
@@ -398,12 +386,12 @@ export default function CreateOrganizationPage() {
                       <TableCell className="align-top">
                         <Select value={u.role} onValueChange={(value) => updateUser(idx, { role: value as PendingUser["role"] })}>
                           <SelectTrigger className="bg-background">
-                            <SelectValue placeholder={tr("Select role", "اختر الدور")} />
+                            <SelectValue placeholder={t("selectRole")} />
                           </SelectTrigger>
                           <SelectContent>
                             {roleOptions.map((opt) => (
                               <SelectItem key={opt.value} value={opt.value}>
-                                {tr(opt.label, opt.labelAr)}
+                                {opt.label}
                               </SelectItem>
                             ))}
                           </SelectContent>
@@ -414,7 +402,7 @@ export default function CreateOrganizationPage() {
                           <Input
                             value={u.password}
                             onChange={(e) => updateUser(idx, { password: e.target.value })}
-                            placeholder={tr("Minimum 6 characters", "6 أحرف على الأقل")}
+                            placeholder={t("minimum6Characters")}
                             className={cn(
                               "bg-background",
                               getFieldIssues(["users", idx, "password"]).length && "border-destructive focus-visible:ring-destructive",
@@ -432,7 +420,7 @@ export default function CreateOrganizationPage() {
                           className="h-9 w-9 px-0"
                           onClick={() => removeUser(idx)}
                           disabled={users.length <= 1}
-                          aria-label={tr("Remove user", "حذف المستخدم")}
+                          aria-label={t("removeUser")}
                         >
                           <Trash2 className="h-4 w-4" />
                         </Button>
@@ -450,7 +438,7 @@ export default function CreateOrganizationPage() {
             ) : null}
 
             {error ? (
-              <div className="mt-4 rounded-xl border border-destructive/30 bg-destructive/10 px-4 py-3 text-sm text-destructive">
+              <div className="mt-4 rounded-xl border border-destructive/40 bg-destructive/10 px-4 py-3 text-sm text-destructive">
                 {error}
               </div>
             ) : null}
@@ -459,10 +447,10 @@ export default function CreateOrganizationPage() {
 
         <div className={cn("flex items-center justify-end gap-2", isArabic && "flex-row-reverse")}> 
           <Button type="button" variant="ghost" asChild>
-            <Link href={`/${locale}/super-admin/organizations`}>{tr("Cancel", "إلغاء")}</Link>
+            <Link href={`/${locale}/super-admin/organizations`}>{t("cancel")}</Link>
           </Button>
           <Button type="submit" disabled={submitting}>
-            {submitting ? tr("Creating…", "جارٍ الإنشاء…") : tr("Create organization", "إنشاء الجهة")}
+            {submitting ? t("creating") : t("createOrganization")}
           </Button>
         </div>
       </form>

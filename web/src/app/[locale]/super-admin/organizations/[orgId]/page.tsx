@@ -15,6 +15,7 @@ import { useLocale } from "@/providers/locale-provider";
 import { createUser, deleteOrganization, getNodeTypes, getOrganizationDetails, updateOrganization, updateOrganizationNodeTypes } from "@/actions/admin";
 import { Pencil, Plus, Trash2 } from "lucide-react";
 import type { Role } from "@prisma/client";
+import { Badge } from "@/components/ui/badge";
 
 type OrgDetails = Awaited<ReturnType<typeof getOrganizationDetails>>;
 
@@ -25,7 +26,7 @@ type NodeTypeOption = Awaited<ReturnType<typeof getNodeTypes>>[number];
 export default function OrganizationDetailsPage() {
   const params = useParams<{ orgId: string }>();
   const router = useRouter();
-  const { locale, tr } = useLocale();
+  const { t, locale, formatDate } = useLocale();
 
   const [org, setOrg] = useState<OrgDetails>(null);
   const [loading, setLoading] = useState(true);
@@ -121,7 +122,7 @@ export default function OrganizationDetailsPage() {
         router.push(`/${locale}/super-admin/organizations`);
         router.refresh();
       } else {
-        alert(result.error || tr("Failed to delete organization", "فشل حذف الجهة"));
+        alert(result.error || t("failedToDeleteOrganization"));
       }
     } finally {
       setDeletingOrg(false);
@@ -139,7 +140,7 @@ export default function OrganizationDetailsPage() {
         setNodeTypesOpen(false);
         router.refresh();
       } else {
-        alert(result.error || tr("Failed to update node types", "فشل تحديث أنواع العقد"));
+        alert(result.error || t("failedToUpdateNodeTypes"));
       }
     } finally {
       setSavingNodeTypes(false);
@@ -157,7 +158,7 @@ export default function OrganizationDetailsPage() {
         setEditNameOpen(false);
         router.refresh();
       } else {
-        alert(result.error || tr("Failed to update organization", "فشل تحديث الجهة"));
+        alert(result.error || t("failedToUpdateOrganization"));
       }
     } finally {
       setSavingOrg(false);
@@ -175,7 +176,7 @@ export default function OrganizationDetailsPage() {
         setEditKpiApprovalOpen(false);
         router.refresh();
       } else {
-        alert(result.error || tr("Failed to update organization", "فشل تحديث الجهة"));
+        alert(result.error || t("failedToUpdateOrganization"));
       }
     } finally {
       setSavingOrg(false);
@@ -193,7 +194,7 @@ export default function OrganizationDetailsPage() {
         setEditDomainOpen(false);
         router.refresh();
       } else {
-        alert(result.error || tr("Failed to update organization", "فشل تحديث الجهة"));
+        alert(result.error || t("failedToUpdateOrganization"));
       }
     } finally {
       setSavingOrg(false);
@@ -221,7 +222,7 @@ export default function OrganizationDetailsPage() {
         setOrg(data);
         router.refresh();
       } else {
-        alert(result.error || tr("Failed to create user", "فشل إنشاء المستخدم"));
+        alert(result.error || t("failedToCreateUser"));
       }
     } finally {
       setCreatingUser(false);
@@ -231,7 +232,7 @@ export default function OrganizationDetailsPage() {
   if (loading) {
     return (
       <div className="rounded-2xl border border-border bg-card p-8">
-        <p className="text-sm text-muted-foreground">{tr("Loading…", "جارٍ التحميل…")}</p>
+        <p className="text-sm text-muted-foreground">{t("loadingEllipsis")}</p>
       </div>
     );
   }
@@ -239,12 +240,12 @@ export default function OrganizationDetailsPage() {
   if (!org) {
     return (
       <div className="rounded-2xl border border-border bg-card p-8">
-        <p className="text-sm text-muted-foreground">{tr("Organization not found.", "الجهة غير موجودة.")}</p>
+        <p className="text-sm text-muted-foreground">{t("organizationNotFound")}</p>
         <Link
           href={`/${locale}/super-admin/organizations`}
           className="mt-3 inline-flex text-sm font-semibold text-primary hover:opacity-90"
         >
-          {tr("Back to organizations", "العودة للمؤسسات")}
+          {t("backToOrganizations")}
         </Link>
       </div>
     );
@@ -263,27 +264,24 @@ export default function OrganizationDetailsPage() {
                 setNameDraft(org.name ?? "");
                 setEditNameOpen(true);
               }}
-              aria-label={tr("Edit organization name", "تعديل اسم الجهة")}
+              aria-label={t("editOrgName")}
             >
               <Pencil className="h-3.5 w-3.5" />
             </button>
           </span>
         }
-        subtitle={tr(
-          "Organization details and user directory.",
-          "تفاصيل الجهة ودليل المستخدمين.",
-        )}
+        subtitle={t("organizationDetailsSubtitle")}
         actions={
           <div className="flex items-center gap-2">
             <Button variant="destructive" size="sm" onClick={() => setDeleteOrgOpen(true)}>
               <Trash2 className="me-2 h-4 w-4" />
-              {tr("Delete", "حذف")}
+              {t("delete")}
             </Button>
             <Link
               href={`/${locale}/super-admin/organizations`}
               className="inline-flex text-sm font-semibold text-primary hover:opacity-90"
             >
-              {tr("Back", "رجوع")}
+              {t("back")}
             </Link>
           </div>
         }
@@ -292,13 +290,13 @@ export default function OrganizationDetailsPage() {
       <div className="grid gap-6 lg:grid-cols-3">
         <Card className="bg-card/70 backdrop-blur shadow-sm">
           <CardHeader>
-            <CardTitle className="text-base">{tr("Overview", "نظرة عامة")}</CardTitle>
-            <CardDescription>{tr("Tenant metadata", "بيانات الجهة")}</CardDescription>
+            <CardTitle className="text-base">{t("overview")}</CardTitle>
+            <CardDescription>{t("tenantMetadata")}</CardDescription>
           </CardHeader>
           <CardContent className="space-y-3 text-sm">
             <div className="rounded-xl border border-border bg-muted/30 px-4 py-3">
               <div className="flex items-start justify-between gap-3">
-                <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">{tr("Domain", "النطاق")}</p>
+                <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">{t("domain")}</p>
                 <button
                   type="button"
                   className="inline-flex h-7 w-7 items-center justify-center rounded-md border border-border bg-card text-muted-foreground hover:text-foreground"
@@ -306,7 +304,7 @@ export default function OrganizationDetailsPage() {
                     setDomainDraft(org.domain ?? "");
                     setEditDomainOpen(true);
                   }}
-                  aria-label={tr("Edit organization domain", "تعديل نطاق الجهة")}
+                  aria-label={t("editOrgDomain")}
                 >
                   <Pencil className="h-3.5 w-3.5" />
                 </button>
@@ -316,7 +314,7 @@ export default function OrganizationDetailsPage() {
 
             <div className="rounded-xl border border-border bg-muted/30 px-4 py-3">
               <div className="flex items-start justify-between gap-3">
-                <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">{tr("KPI Approval Level", "مستوى اعتماد مؤشرات الأداء الرئيسية")}</p>
+                <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">{t("kpiApprovalLevel")}</p>
                 <button
                   type="button"
                   className="inline-flex h-7 w-7 items-center justify-center rounded-md border border-border bg-card text-muted-foreground hover:text-foreground"
@@ -324,7 +322,7 @@ export default function OrganizationDetailsPage() {
                     setKpiApprovalDraft((org.kpiApprovalLevel as typeof kpiApprovalDraft) ?? "MANAGER");
                     setEditKpiApprovalOpen(true);
                   }}
-                  aria-label={tr("Edit KPI approval level", "تعديل مستوى اعتماد مؤشرات الأداء الرئيسية")}
+                  aria-label={t("editKpiApprovalLevel")}
                 >
                   <Pencil className="h-3.5 w-3.5" />
                 </button>
@@ -333,24 +331,24 @@ export default function OrganizationDetailsPage() {
             </div>
 
             <div className="rounded-xl border border-border bg-muted/30 px-4 py-3">
-              <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">{tr("Users", "المستخدمون")}</p>
+              <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">{t("users")}</p>
               <p className="mt-1">{org._count?.users ?? users.length}</p>
             </div>
 
             <div className="rounded-xl border border-border bg-muted/30 px-4 py-3">
               <div className="flex items-start justify-between gap-3">
-                <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">{tr("Node Types", "أنواع العقد")}</p>
+                <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">{t("nodeTypes")}</p>
                 <button
                   type="button"
                   className="inline-flex h-7 w-7 items-center justify-center rounded-md border border-border bg-card text-muted-foreground hover:text-foreground"
                   onClick={() => setNodeTypesOpen(true)}
-                  aria-label={tr("Edit node types", "تعديل أنواع العقد")}
+                  aria-label={t("editNodeTypes")}
                 >
                   <Pencil className="h-3.5 w-3.5" />
                 </button>
               </div>
               {enabledNodeTypes.length === 0 ? (
-                <p className="mt-2 text-xs text-muted-foreground">{tr("No node types selected.", "لم يتم اختيار أنواع عقد.")}</p>
+                <p className="mt-2 text-xs text-muted-foreground">{t("noNodeTypesSelected")}</p>
               ) : (
                 <div className="mt-2 flex flex-wrap gap-2">
                   {enabledNodeTypes.map((nt) => (
@@ -362,8 +360,8 @@ export default function OrganizationDetailsPage() {
               )}
             </div>
             <div className="rounded-xl border border-border bg-muted/30 px-4 py-3">
-              <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">{tr("Created", "تاريخ الإنشاء")}</p>
-              <p className="mt-1">{new Date(org.createdAt).toLocaleDateString()}</p>
+              <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">{t("created")}</p>
+              <p className="mt-1">{formatDate(org.createdAt)}</p>
             </div>
           </CardContent>
         </Card>
@@ -371,14 +369,14 @@ export default function OrganizationDetailsPage() {
         <Card className="bg-card/70 backdrop-blur shadow-sm lg:col-span-2">
           <CardHeader>
             <div className="flex items-center justify-between gap-3">
-              <CardTitle className="text-base">{tr("Users", "المستخدمون")}</CardTitle>
+              <CardTitle className="text-base">{t("users")}</CardTitle>
               <Button size="sm" onClick={() => setCreateUserOpen(true)}>
                 <Plus className="me-2 h-4 w-4" />
-                {tr("Create", "إنشاء")}
+                {t("create")}
               </Button>
             </div>
             <CardDescription>
-              {tr("All users assigned to this organization.", "جميع المستخدمين في هذه الجهة.")}
+              {t("userDirectoryAllOrgsDesc")}
             </CardDescription>
           </CardHeader>
           <CardContent>
@@ -386,17 +384,17 @@ export default function OrganizationDetailsPage() {
               <Table>
                 <TableHeader>
                   <TableRow>
-                    <TableHead>{tr("Name", "الاسم")}</TableHead>
-                    <TableHead>{tr("Email", "البريد")}</TableHead>
-                    <TableHead>{tr("Role", "الدور")}</TableHead>
-                    <TableHead className="text-right">{tr("Joined", "تاريخ الانضمام")}</TableHead>
+                    <TableHead>{t("name")}</TableHead>
+                    <TableHead>{t("email")}</TableHead>
+                    <TableHead>{t("role")}</TableHead>
+                    <TableHead className="text-right">{t("joined")}</TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
                   {users.length === 0 ? (
                     <TableRow>
                       <TableCell colSpan={4} className="text-center text-muted-foreground py-8">
-                        {tr("No users found.", "لا يوجد مستخدمين.")}
+                        {t("noUsersFound")}
                       </TableCell>
                     </TableRow>
                   ) : (
@@ -409,7 +407,7 @@ export default function OrganizationDetailsPage() {
                         <TableCell className="font-medium">{user.name}</TableCell>
                         <TableCell className="text-muted-foreground">{user.email}</TableCell>
                         <TableCell className="text-muted-foreground">{user.role}</TableCell>
-                        <TableCell className="text-right text-muted-foreground">{new Date(user.createdAt).toLocaleDateString()}</TableCell>
+                        <TableCell className="text-right text-muted-foreground">{formatDate(user.createdAt)}</TableCell>
                       </TableRow>
                     ))
                   )}
@@ -423,14 +421,14 @@ export default function OrganizationDetailsPage() {
       <Dialog open={editNameOpen} onOpenChange={setEditNameOpen}>
         <DialogContent>
           <DialogHeader>
-            <DialogTitle>{tr("Edit organization name", "تعديل اسم الجهة")}</DialogTitle>
+            <DialogTitle>{t("editOrgName")}</DialogTitle>
             <DialogDescription className="text-muted-foreground">
-              {tr("Update the organization name.", "قم بتحديث اسم الجهة.")}
+              {t("updateOrgNameDesc")}
             </DialogDescription>
           </DialogHeader>
 
           <div className="space-y-2">
-            <Label htmlFor="org-name">{tr("Name", "الاسم")}</Label>
+            <Label htmlFor="org-name">{t("name")}</Label>
             <Input
               id="org-name"
               value={nameDraft}
@@ -448,10 +446,10 @@ export default function OrganizationDetailsPage() {
                 setEditNameOpen(false);
               }}
             >
-              {tr("Cancel", "إلغاء")}
+              {t("cancel")}
             </Button>
             <Button type="button" onClick={handleSaveName} disabled={savingOrg}>
-              {savingOrg ? tr("Saving...", "جارٍ الحفظ...") : tr("Save", "حفظ")}
+              {savingOrg ? t("saving") : t("save")}
             </Button>
           </DialogFooter>
         </DialogContent>
@@ -460,23 +458,23 @@ export default function OrganizationDetailsPage() {
       <Dialog open={editKpiApprovalOpen} onOpenChange={setEditKpiApprovalOpen}>
         <DialogContent>
           <DialogHeader>
-            <DialogTitle>{tr("Edit KPI Approval Level", "تعديل مستوى اعتماد مؤشرات الأداء الرئيسية")}</DialogTitle>
+            <DialogTitle>{t("editKpiApprovalLevel")}</DialogTitle>
             <DialogDescription className="text-muted-foreground">
-              {tr("Choose the minimum role level allowed to approve KPI values.", "اختر أقل مستوى دور يمكنه اعتماد قيم مؤشرات الأداء الرئيسية.")}
+              {t("chooseMinRoleApprovalDesc")}
             </DialogDescription>
           </DialogHeader>
 
           <div className="space-y-2">
-            <Label>{tr("KPI Approval Level", "مستوى اعتماد مؤشرات الأداء الرئيسية")}</Label>
+            <Label>{t("kpiApprovalLevel")}</Label>
             <Select value={kpiApprovalDraft} onValueChange={(v) => setKpiApprovalDraft(v as typeof kpiApprovalDraft)}>
               <SelectTrigger className="bg-card">
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="MANAGER">{tr("Manager", "مدير")}</SelectItem>
-                <SelectItem value="PMO">{tr("PMO", "مكتب إدارة المشاريع")}</SelectItem>
-                <SelectItem value="EXECUTIVE">{tr("Executive", "تنفيذي")}</SelectItem>
-                <SelectItem value="ADMIN">{tr("Admin", "مسؤول")}</SelectItem>
+                <SelectItem value="MANAGER">{t("roleManager")}</SelectItem>
+                <SelectItem value="PMO">{t("rolePMO")}</SelectItem>
+                <SelectItem value="EXECUTIVE">{t("roleExecutive")}</SelectItem>
+                <SelectItem value="ADMIN">{t("roleAdmin")}</SelectItem>
               </SelectContent>
             </Select>
           </div>
@@ -490,10 +488,10 @@ export default function OrganizationDetailsPage() {
                 setEditKpiApprovalOpen(false);
               }}
             >
-              {tr("Cancel", "إلغاء")}
+              {t("cancel")}
             </Button>
             <Button type="button" onClick={handleSaveKpiApprovalLevel} disabled={savingOrg}>
-              {savingOrg ? tr("Saving...", "جارٍ الحفظ...") : tr("Save", "حفظ")}
+              {savingOrg ? t("saving") : t("save")}
             </Button>
           </DialogFooter>
         </DialogContent>
@@ -502,9 +500,9 @@ export default function OrganizationDetailsPage() {
       <Dialog open={nodeTypesOpen} onOpenChange={setNodeTypesOpen}>
         <DialogContent className="max-h-[90vh] overflow-y-auto">
           <DialogHeader>
-            <DialogTitle>{tr("Edit Node Types", "تعديل أنواع العقد")}</DialogTitle>
+            <DialogTitle>{t("editNodeTypes")}</DialogTitle>
             <DialogDescription className="text-muted-foreground">
-              {tr("Choose which node types are enabled for this organization.", "اختر أنواع العقد المفعلة لهذه الجهة.")}
+              {t("chooseEnabledNodeTypesDesc")}
             </DialogDescription>
           </DialogHeader>
 
@@ -543,10 +541,10 @@ export default function OrganizationDetailsPage() {
                 setNodeTypesOpen(false);
               }}
             >
-              {tr("Cancel", "إلغاء")}
+              {t("cancel")}
             </Button>
             <Button type="button" onClick={handleSaveNodeTypes} disabled={savingNodeTypes || selectedNodeTypeIds.length === 0}>
-              {savingNodeTypes ? tr("Saving...", "جارٍ الحفظ...") : tr("Save", "حفظ")}
+              {savingNodeTypes ? t("saving") : t("save")}
             </Button>
           </DialogFooter>
         </DialogContent>
@@ -555,19 +553,19 @@ export default function OrganizationDetailsPage() {
       <Dialog open={editDomainOpen} onOpenChange={setEditDomainOpen}>
         <DialogContent>
           <DialogHeader>
-            <DialogTitle>{tr("Edit organization domain", "تعديل نطاق الجهة")}</DialogTitle>
+            <DialogTitle>{t("editOrgDomain")}</DialogTitle>
             <DialogDescription className="text-muted-foreground">
-              {tr("Set the domain (optional).", "قم بتحديد النطاق (اختياري).")}
+              {t("setDomainOptionalDesc")}
             </DialogDescription>
           </DialogHeader>
 
           <div className="space-y-2">
-            <Label htmlFor="org-domain">{tr("Domain", "النطاق")}</Label>
+            <Label htmlFor="org-domain">{t("domain")}</Label>
             <Input
               id="org-domain"
               value={domainDraft}
               onChange={(e) => setDomainDraft(e.target.value)}
-              placeholder={tr("example.com", "example.com")}
+              placeholder="example.com"
               className="bg-card"
             />
           </div>
@@ -581,10 +579,10 @@ export default function OrganizationDetailsPage() {
                 setEditDomainOpen(false);
               }}
             >
-              {tr("Cancel", "إلغاء")}
+              {t("cancel")}
             </Button>
             <Button type="button" onClick={handleSaveDomain} disabled={savingOrg}>
-              {savingOrg ? tr("Saving...", "جارٍ الحفظ...") : tr("Save", "حفظ")}
+              {savingOrg ? t("saving") : t("save")}
             </Button>
           </DialogFooter>
         </DialogContent>
@@ -593,15 +591,15 @@ export default function OrganizationDetailsPage() {
       <Dialog open={createUserOpen} onOpenChange={setCreateUserOpen}>
         <DialogContent className="max-h-[90vh] overflow-y-auto">
           <DialogHeader>
-            <DialogTitle>{tr("Create User", "إنشاء مستخدم")}</DialogTitle>
+            <DialogTitle>{t("createUser")}</DialogTitle>
             <DialogDescription className="text-muted-foreground">
-              {tr("Add a new user to this organization.", "إضافة مستخدم جديد إلى هذه الجهة.")}
+              {t("addUserToOrg")}
             </DialogDescription>
           </DialogHeader>
 
           <form onSubmit={handleCreateUser} className="space-y-4">
             <div className="space-y-2">
-              <Label htmlFor="user-name">{tr("Full Name", "الاسم الكامل")}</Label>
+              <Label htmlFor="user-name">{t("fullName")}</Label>
               <Input
                 id="user-name"
                 value={newUser.name}
@@ -612,7 +610,7 @@ export default function OrganizationDetailsPage() {
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="user-email">{tr("Email", "البريد الإلكتروني")}</Label>
+              <Label htmlFor="user-email">{t("email")}</Label>
               <Input
                 id="user-email"
                 type="email"
@@ -624,7 +622,7 @@ export default function OrganizationDetailsPage() {
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="user-password">{tr("Password", "كلمة المرور")}</Label>
+              <Label htmlFor="user-password">{t("password")}</Label>
               <Input
                 id="user-password"
                 type="password"
@@ -637,10 +635,10 @@ export default function OrganizationDetailsPage() {
             </div>
 
             <div className="space-y-2">
-              <Label>{tr("Role", "الدور")}</Label>
+              <Label>{t("role")}</Label>
               <Select value={newUser.role} onValueChange={(val) => setNewUser({ ...newUser, role: val as Role })}>
                 <SelectTrigger className="bg-card">
-                  <SelectValue placeholder={tr("Select Role", "اختر الدور")} />
+                  <SelectValue placeholder={t("selectRole")} />
                 </SelectTrigger>
                 <SelectContent>
                   {(["ADMIN", "EXECUTIVE", "PMO", "MANAGER", "EMPLOYEE"] as Role[]).map((role) => (
@@ -654,10 +652,10 @@ export default function OrganizationDetailsPage() {
 
             <DialogFooter>
               <Button type="button" variant="ghost" onClick={() => setCreateUserOpen(false)}>
-                {tr("Cancel", "إلغاء")}
+                {t("cancel")}
               </Button>
               <Button type="submit" disabled={creatingUser}>
-                {creatingUser ? tr("Creating...", "جارٍ الإنشاء...") : tr("Create", "إنشاء")}
+                {creatingUser ? t("creating") : t("create")}
               </Button>
             </DialogFooter>
           </form>
@@ -667,21 +665,18 @@ export default function OrganizationDetailsPage() {
       <Dialog open={deleteOrgOpen} onOpenChange={setDeleteOrgOpen}>
         <DialogContent>
           <DialogHeader>
-            <DialogTitle>{tr("Delete Organization", "حذف الجهة")}</DialogTitle>
+            <DialogTitle>{t("deleteOrganization")}</DialogTitle>
             <DialogDescription className="text-muted-foreground">
-              {tr(
-                "This will soft-delete the organization and its users.",
-                "سيتم حذف الجهة ومستخدميها (حذف منطقي).",
-              )}
+              {t("softDeleteOrgWarning")}
             </DialogDescription>
           </DialogHeader>
 
           <DialogFooter>
             <Button type="button" variant="ghost" onClick={() => setDeleteOrgOpen(false)}>
-              {tr("Cancel", "إلغاء")}
+              {t("cancel")}
             </Button>
             <Button type="button" variant="destructive" onClick={handleDeleteOrg} disabled={deletingOrg}>
-              {deletingOrg ? tr("Deleting...", "جارٍ الحذف...") : tr("Delete", "حذف")}
+              {deletingOrg ? t("deleting") : t("delete")}
             </Button>
           </DialogFooter>
         </DialogContent>

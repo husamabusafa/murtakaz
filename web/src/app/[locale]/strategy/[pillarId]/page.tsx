@@ -11,18 +11,19 @@ import { pillars } from "@/lib/mock-data";
 import { useLocale } from "@/providers/locale-provider";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { getEffectiveKpi, getEffectiveRisk } from "@/lib/prototype-store";
+import { Badge } from "@/components/ui/badge";
 
 export default function PillarDetailPage() {
   const params = useParams<{ pillarId: string }>();
-  const { locale, tr, isArabic, t } = useLocale();
+  const { locale, isArabic, t, nodeTypeLabel } = useLocale();
   const pillar = pillars.find((p) => p.id === params.pillarId);
 
   if (!pillar) {
     return (
       <div className="rounded-2xl border border-white/10 bg-white/5 p-8 text-white">
-        <p className="text-sm text-slate-200">{tr("Pillar not found.", "الركيزة غير موجودة.")}</p>
+        <p className="text-sm text-slate-200">{t("pillarNotFound")}</p>
         <Link href={`/${locale}/strategy`} className="mt-3 inline-flex text-sm font-semibold text-indigo-200 hover:text-indigo-100">
-          {tr("Back to strategy", "العودة إلى الاستراتيجية")}
+          {t("backToStrategy")}
         </Link>
       </div>
     );
@@ -41,7 +42,7 @@ export default function PillarDetailPage() {
     <div className="space-y-8">
       <PageHeader
         title={isArabic ? pillar.titleAr ?? pillar.title : pillar.title}
-        subtitle={`${pillar.owner} • ${initiatives.length} ${tr("initiatives", "مبادرات")} • ${projects.length} ${tr("projects", "مشاريع")}`}
+        subtitle={`${pillar.owner} • ${initiatives.length} ${t("initiative")} • ${projects.length} ${t("projects")}`}
         icon={<Icon name="tabler:layers-subtract" className="h-5 w-5" />}
         actions={
           <div className="flex items-center gap-2">
@@ -54,19 +55,19 @@ export default function PillarDetailPage() {
       <Tabs defaultValue="summary" className="space-y-6">
         <TabsList className="border border-white/10 bg-white/5">
           <TabsTrigger value="summary" className="data-[state=active]:bg-white/10 data-[state=active]:text-white">
-            {tr("Summary", "ملخص")}
+            {t("summary")}
           </TabsTrigger>
           <TabsTrigger value="initiatives" className="data-[state=active]:bg-white/10 data-[state=active]:text-white">
-            {tr("Initiatives", "المبادرات")}
+            {t("initiative")}
           </TabsTrigger>
           <TabsTrigger value="projects" className="data-[state=active]:bg-white/10 data-[state=active]:text-white">
-            {tr("Projects", "المشاريع")}
+            {t("projects")}
           </TabsTrigger>
           <TabsTrigger value="kpis" className="data-[state=active]:bg-white/10 data-[state=active]:text-white">
-            {tr("KPIs", "مؤشرات الأداء الرئيسية")}
+            {t("kpis")}
           </TabsTrigger>
           <TabsTrigger value="risks" className="data-[state=active]:bg-white/10 data-[state=active]:text-white">
-            {tr("Risks", "المخاطر")}
+            {t("risks")}
           </TabsTrigger>
         </TabsList>
 
@@ -75,9 +76,9 @@ export default function PillarDetailPage() {
             <CardHeader className="space-y-1">
               <CardTitle className="flex items-center gap-2 text-base">
                 <Icon name="tabler:activity-heartbeat" className="h-4 w-4 text-slate-100" />
-                {tr("Initiatives", "المبادرات")}
+                {t("initiative")}
               </CardTitle>
-              <CardDescription className="text-slate-200">{tr("Total initiatives under this pillar.", "إجمالي المبادرات ضمن هذه الركيزة.")}</CardDescription>
+              <CardDescription className="text-slate-200">{t("totalInitiativesUnderPillar")}</CardDescription>
             </CardHeader>
             <CardContent className="text-3xl font-semibold text-white">{initiatives.length}</CardContent>
           </Card>
@@ -85,9 +86,9 @@ export default function PillarDetailPage() {
             <CardHeader className="space-y-1">
               <CardTitle className="flex items-center gap-2 text-base">
                 <Icon name="tabler:timeline" className="h-4 w-4 text-slate-100" />
-                {tr("Projects", "المشاريع")}
+                {t("projects")}
               </CardTitle>
-              <CardDescription className="text-slate-200">{tr("Total projects linked to this pillar.", "إجمالي المشاريع المرتبطة بهذه الركيزة.")}</CardDescription>
+              <CardDescription className="text-slate-200">{t("totalProjectsLinkedToPillar")}</CardDescription>
             </CardHeader>
             <CardContent className="text-3xl font-semibold text-white">{projects.length}</CardContent>
           </Card>
@@ -95,9 +96,9 @@ export default function PillarDetailPage() {
             <CardHeader className="space-y-1">
               <CardTitle className="flex items-center gap-2 text-base">
                 <Icon name="tabler:shield-exclamation" className="h-4 w-4 text-slate-100" />
-                {tr("Risks", "المخاطر")}
+                {t("risks")}
               </CardTitle>
-              <CardDescription className="text-slate-200">{tr("Open risks and escalations.", "المخاطر المفتوحة والتصعيدات.")}</CardDescription>
+              <CardDescription className="text-slate-200">{t("openRisksAndEscalations")}</CardDescription>
             </CardHeader>
             <CardContent className="text-3xl font-semibold text-white">{risks.length}</CardContent>
           </Card>
@@ -108,9 +109,9 @@ export default function PillarDetailPage() {
             <CardHeader>
               <CardTitle className="flex items-center gap-2 text-base">
                 <Icon name="tabler:activity-heartbeat" className="h-4 w-4 text-slate-100" />
-                {tr("Initiatives", "المبادرات")}
+                {t("initiative")}
               </CardTitle>
-              <CardDescription className="text-slate-200">{tr("Current health and ownership.", "الحالة الحالية والملكية.")}</CardDescription>
+              <CardDescription className="text-slate-200">{t("currentHealthAndOwnership")}</CardDescription>
             </CardHeader>
             <CardContent className="grid gap-3 md:grid-cols-2">
               {initiatives.map((initiative) => (
@@ -129,7 +130,7 @@ export default function PillarDetailPage() {
                   <div className="mt-2 flex items-center justify-between">
                     <StatusBadge status={initiative.status} />
                     <p className="text-xs text-slate-200">
-                      {initiative.projects.length} {tr("projects", "مشاريع")} • {initiative.kpis.length} {tr("KPIs", "مؤشرات الأداء الرئيسية")}
+                      {initiative.projects.length} {t("projects")} • {initiative.kpis.length} {t("kpis")}
                     </p>
                   </div>
                 </Link>
@@ -146,7 +147,7 @@ export default function PillarDetailPage() {
                 {t("projects")}
               </CardTitle>
               <CardDescription className="text-slate-200">
-                {tr("Execution progress and milestone completion.", "تقدم التنفيذ واكتمال المعالم.")}
+                {t("executionProgressAndMilestoneCompletion")}
               </CardDescription>
             </CardHeader>
             <CardContent className="grid gap-3 md:grid-cols-2">
@@ -160,7 +161,7 @@ export default function PillarDetailPage() {
                       <div className="space-y-1">
                       <p className="text-sm font-semibold text-white">{isArabic ? project.titleAr ?? project.title : project.title}</p>
                       <p className="text-xs text-slate-200">
-                        {project.owner} • {project.milestonesComplete}/{project.milestonesTotal} {tr("milestones", "معالم")}
+                        {project.owner} • {project.milestonesComplete}/{project.milestonesTotal} {t("milestones")}
                       </p>
                     </div>
                     <RagBadge health={project.health} />
@@ -180,10 +181,10 @@ export default function PillarDetailPage() {
             <CardHeader>
               <CardTitle className="flex items-center gap-2 text-base">
                 <Icon name="tabler:chart-line" className="h-4 w-4 text-slate-100" />
-                {tr("KPI performance", "أداء مؤشرات الأداء الرئيسية")}
+                {t("kpiPerformance")}
               </CardTitle>
               <CardDescription className="text-slate-200">
-                {tr("Latest readings linked to this pillar.", "آخر القراءات المرتبطة بهذه الركيزة.")}
+                {t("latestReadingsDesc")}
               </CardDescription>
             </CardHeader>
             <CardContent>
@@ -230,9 +231,9 @@ export default function PillarDetailPage() {
             <CardHeader>
               <CardTitle className="flex items-center gap-2 text-base">
                 <Icon name="tabler:shield-exclamation" className="h-4 w-4 text-slate-100" />
-                Risks
+                {t("risks")}
               </CardTitle>
-              <CardDescription className="text-slate-200">Open risks and escalations.</CardDescription>
+              <CardDescription className="text-slate-200">{t("openRisksAndEscalations")}</CardDescription>
             </CardHeader>
             <CardContent className="grid gap-3 md:grid-cols-2">
               {risks.map((risk) => (
@@ -244,7 +245,7 @@ export default function PillarDetailPage() {
                   <p className="text-sm font-semibold text-white">{isArabic ? risk.titleAr ?? risk.title : risk.title}</p>
                   <p className="mt-1 text-xs text-slate-200">
                     {risk.severity} • {risk.owner}
-                    {risk.escalated ? ` • ${tr("Escalated", "مصعّد")}` : ""}
+                    {risk.escalated ? ` • ${t("escalated")}` : ""}
                   </p>
                 </Link>
               ))}
