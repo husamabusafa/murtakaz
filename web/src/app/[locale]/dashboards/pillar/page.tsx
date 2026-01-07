@@ -22,26 +22,26 @@ export default function PillarDashboardPage() {
       />
 
       <section className="grid gap-6 lg:grid-cols-3">
-        <Card className="border-white/10 bg-white/5 text-white shadow-lg shadow-black/20 lg:col-span-2">
+        <Card className="border-border bg-card/50 shadow-sm lg:col-span-2">
           <CardHeader className="space-y-1">
             <div className="flex items-center justify-between">
               <CardTitle className="text-base">{t("pillarPosture")}</CardTitle>
-              <Icon name="tabler:layers-subtract" className="text-slate-200" />
+              <Icon name="tabler:layers-subtract" className="text-muted-foreground" />
             </div>
-            <CardDescription className="text-slate-200">{t("ragHealthByPillarDesc")}</CardDescription>
+            <CardDescription className="text-muted-foreground">{t("ragHealthByPillarDesc")}</CardDescription>
           </CardHeader>
           <CardContent className="grid gap-3 md:grid-cols-2">
             {pillars.map((pillar) => (
               <Link
                 key={pillar.id}
                 href={`/${locale}/strategy/${pillar.id}`}
-                className="block rounded-xl border border-white/10 bg-slate-950/40 px-4 py-3 transition hover:bg-white/5"
+                className="block rounded-xl border border-border bg-muted/30 px-4 py-3 transition hover:bg-card/50"
               >
                 <div className="flex items-start justify-between gap-3">
                   <div className="space-y-1">
-                    <p className="text-sm font-semibold text-white">{isArabic ? pillar.titleAr ?? pillar.title : pillar.title}</p>
-                    <p className="text-xs text-slate-200">{pillar.owner}</p>
-                    <p className="text-xs text-slate-300">
+                    <p className="text-sm font-semibold text-foreground">{isArabic ? pillar.titleAr ?? pillar.title : pillar.title}</p>
+                    <p className="text-xs text-muted-foreground">{pillar.owner}</p>
+                    <p className="text-xs text-muted-foreground">
                       {pillar.initiatives.length} {t("initiative")}
                     </p>
                   </div>
@@ -52,10 +52,10 @@ export default function PillarDashboardPage() {
           </CardContent>
         </Card>
 
-        <Card className="border-white/10 bg-white/5 text-white shadow-lg shadow-black/20">
+        <Card className="border-border bg-card/50 shadow-sm">
           <CardHeader className="space-y-1">
             <CardTitle className="text-base">{t("riskConcentration")}</CardTitle>
-            <CardDescription className="text-slate-200">{t("severityDistributionDesc")}</CardDescription>
+            <CardDescription className="text-muted-foreground">{t("severityDistributionDesc")}</CardDescription>
           </CardHeader>
           <CardContent>
             <Donut items={riskSeverityBreakdown} />

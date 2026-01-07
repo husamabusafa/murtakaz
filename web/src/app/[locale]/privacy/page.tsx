@@ -17,12 +17,12 @@ export default function PrivacyPage() {
         icon={<Icon name="tabler:lock" className="h-5 w-5" />}
       />
 
-      <Card className="border-white/10 bg-white/5 text-white shadow-lg shadow-black/20">
+      <Card className="border-border bg-card/50 shadow-sm">
         <CardHeader>
           <CardTitle className="text-base">{t("privacySummaryTitle")}</CardTitle>
-          <CardDescription className="text-slate-200">{t("privacySummaryDesc")}</CardDescription>
+          <CardDescription className="text-muted-foreground">{t("privacySummaryDesc")}</CardDescription>
         </CardHeader>
-        <CardContent className="space-y-3 text-sm text-slate-200">
+        <CardContent className="space-y-3 text-sm text-muted-foreground">
           <p>{t("privacyBulletMinCollection")}</p>
           <p>{t("privacyBulletRbac")}</p>
           <p>{t("privacyBulletAudit")}</p>

@@ -21,27 +21,27 @@ export default function ContactPage() {
       />
 
       <div className="grid gap-6 lg:grid-cols-3">
-        <Card className="border-white/10 bg-white/5 text-white shadow-lg shadow-black/20 lg:col-span-2">
+        <Card className="border-border bg-card/50 shadow-sm lg:col-span-2">
           <CardHeader>
             <CardTitle className="text-base">{t("contactForm")}</CardTitle>
-            <CardDescription className="text-slate-200">{t("prototypeFormNoSubmission")} </CardDescription>
+            <CardDescription className="text-muted-foreground">{t("prototypeFormNoSubmission")} </CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">
             <div className="grid gap-3 md:grid-cols-2">
               <div className="space-y-2">
-                <p className="text-sm font-semibold text-white">{t("name")}</p>
-                <Input className="border-white/10 bg-slate-950/40 text-white placeholder:text-slate-400" placeholder={t("fullName")} />
+                <p className="text-sm font-semibold text-foreground">{t("name")}</p>
+                <Input className="border-border bg-muted/30 text-foreground placeholder:text-muted-foreground" placeholder={t("fullName")} />
               </div>
               <div className="space-y-2">
-                <p className="text-sm font-semibold text-white">{t("email")}</p>
-                <Input className="border-white/10 bg-slate-950/40 text-white placeholder:text-slate-400" placeholder="name@company.com" />
+                <p className="text-sm font-semibold text-foreground">{t("email")}</p>
+                <Input className="border-border bg-muted/30 text-foreground placeholder:text-muted-foreground" placeholder="name@company.com" />
               </div>
             </div>
             <div className="space-y-2">
-              <p className="text-sm font-semibold text-white">{t("message")}</p>
-              <Textarea className="border-white/10 bg-slate-950/40 text-white placeholder:text-slate-400" placeholder={t("describeNeeds")} />
+              <p className="text-sm font-semibold text-foreground">{t("message")}</p>
+              <Textarea className="border-border bg-muted/30 text-foreground placeholder:text-muted-foreground" placeholder={t("describeNeeds")} />
             </div>
-            <Button className="bg-white text-slate-900 hover:bg-slate-100">
+            <Button className="variant="secondary"">
               <span className="inline-flex items-center gap-2">
                 <Icon name="tabler:send" className="h-4 w-4" />
                 {t("send")}
@@ -50,19 +50,19 @@ export default function ContactPage() {
           </CardContent>
         </Card>
 
-        <Card className="border-white/10 bg-white/5 text-white shadow-lg shadow-black/20">
+        <Card className="border-border bg-card/50 shadow-sm">
           <CardHeader>
             <CardTitle className="text-base">{t("alternatives")}</CardTitle>
-            <CardDescription className="text-slate-200">{t("quickDemoLinks")}</CardDescription>
+            <CardDescription className="text-muted-foreground">{t("quickDemoLinks")}</CardDescription>
           </CardHeader>
-          <CardContent className="space-y-3 text-sm text-slate-100">
-            <Link href={`/${locale}/dashboards/executive`} className="block rounded-xl border border-white/10 bg-slate-950/40 px-4 py-3 hover:bg-white/5">
-              <p className="font-semibold text-white">{t("executiveDashboard")}</p>
-              <p className="mt-1 text-xs text-slate-200">{t("quickPostureSnapshot")}</p>
+          <CardContent className="space-y-3 text-sm text-foreground">
+            <Link href={`/${locale}/dashboards/executive`} className="block rounded-xl border border-border bg-muted/30 px-4 py-3 hover:bg-card/50">
+              <p className="font-semibold text-foreground">{t("executiveDashboard")}</p>
+              <p className="mt-1 text-xs text-muted-foreground">{t("quickPostureSnapshot")}</p>
             </Link>
-            <Link href={`/${locale}/auth/login?next=/${locale}/overview`} className="block rounded-xl border border-white/10 bg-slate-950/40 px-4 py-3 hover:bg-white/5">
-              <p className="font-semibold text-white">{t("startTheDemo")}</p>
-              <p className="mt-1 text-xs text-slate-200">{t("signInWithDemoPersonas")}</p>
+            <Link href={`/${locale}/auth/login?next=/${locale}/overview`} className="block rounded-xl border border-border bg-muted/30 px-4 py-3 hover:bg-card/50">
+              <p className="font-semibold text-foreground">{t("startTheDemo")}</p>
+              <p className="mt-1 text-xs text-muted-foreground">{t("signInWithDemoPersonas")}</p>
             </Link>
           </CardContent>
         </Card>

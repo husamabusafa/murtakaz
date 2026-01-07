@@ -22,15 +22,15 @@ export default function FAQPage() {
         {faqs.map((item) => (
           <details
             key={item.id}
-            className="group rounded-2xl border border-white/10 bg-white/5 px-5 py-4 text-white shadow-lg shadow-black/20 open:bg-white/10"
+            className="group rounded-2xl border border-border bg-card/50 px-5 py-4 shadow-sm open:bg-muted/30"
           >
             <summary className="flex cursor-pointer list-none items-center justify-between gap-4">
-              <span className="text-sm font-semibold text-white">{isArabic ? item.questionAr : item.question}</span>
-              <span className="flex h-8 w-8 items-center justify-center rounded-xl border border-white/10 bg-slate-950/40 text-slate-100 transition group-open:rotate-45">
+              <span className="text-sm font-semibold text-foreground">{isArabic ? item.questionAr : item.question}</span>
+              <span className="flex h-8 w-8 items-center justify-center rounded-xl border border-border bg-muted/30 text-foreground transition group-open:rotate-45">
                 <Icon name="tabler:plus" className="h-4 w-4" />
               </span>
             </summary>
-            <p className="mt-3 text-sm leading-relaxed text-slate-200">{isArabic ? item.answerAr : item.answer}</p>
+            <p className="mt-3 text-sm leading-relaxed text-muted-foreground">{isArabic ? item.answerAr : item.answer}</p>
           </details>
         ))}
       </div>
@@ -39,7 +39,7 @@ export default function FAQPage() {
         <Link href={`/${locale}`} className="text-sm font-semibold text-indigo-200 hover:text-indigo-100">
           {t("backToHome")}
         </Link>
-        <span className="text-slate-400">•</span>
+        <span className="text-muted-foreground">•</span>
         <Link href={`/${locale}/auth/login?next=/${locale}/overview`} className="text-sm font-semibold text-indigo-200 hover:text-indigo-100">
           {t("startTheDemo")}
         </Link>

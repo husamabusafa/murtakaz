@@ -24,53 +24,53 @@ export default function ExecutiveDashboardPage() {
       />
 
       <section className="grid gap-6 lg:grid-cols-3">
-        <Card className="border-white/10 bg-white/5 text-white shadow-lg shadow-black/20">
+        <Card className="border-border bg-card/50 shadow-sm">
           <CardHeader className="space-y-1">
             <div className="flex items-center justify-between">
               <CardTitle className="text-base">{t("deliveryConfidence")}</CardTitle>
-              <Icon name="tabler:trend-up" className="text-slate-200" />
+              <Icon name="tabler:trend-up" className="text-muted-foreground" />
             </div>
-            <CardDescription className="text-slate-200">{t("last12PeriodsIndexDesc")}</CardDescription>
+            <CardDescription className="text-muted-foreground">{t("last12PeriodsIndexDesc")}</CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">
             <div className="flex items-center justify-between">
-              <p className="text-sm font-semibold text-white">{t("confidenceIndex")}</p>
-              <p className="text-sm text-slate-200">{executiveTrend.at(-1)} / 100</p>
+              <p className="text-sm font-semibold text-foreground">{t("confidenceIndex")}</p>
+              <p className="text-sm text-muted-foreground">{executiveTrend.at(-1)} / 100</p>
             </div>
             <SparkLine values={executiveTrend} />
             <div className="grid grid-cols-2 gap-3">
-              <div className="rounded-xl border border-white/10 bg-slate-950/40 px-4 py-3">
-                <p className="text-xs text-slate-200">{t("atRiskInitiatives")}</p>
-                <p className="mt-1 text-xl font-semibold text-white">{atRisk.length}</p>
+              <div className="rounded-xl border border-border bg-muted/30 px-4 py-3">
+                <p className="text-xs text-muted-foreground">{t("atRiskInitiatives")}</p>
+                <p className="mt-1 text-xl font-semibold text-foreground">{atRisk.length}</p>
               </div>
-              <div className="rounded-xl border border-white/10 bg-slate-950/40 px-4 py-3">
-                <p className="text-xs text-slate-200">{t("pillarsActive")}</p>
-                <p className="mt-1 text-xl font-semibold text-white">{pillars.length}</p>
+              <div className="rounded-xl border border-border bg-muted/30 px-4 py-3">
+                <p className="text-xs text-muted-foreground">{t("pillarsActive")}</p>
+                <p className="mt-1 text-xl font-semibold text-foreground">{pillars.length}</p>
               </div>
             </div>
           </CardContent>
         </Card>
 
-        <Card className="border-white/10 bg-white/5 text-white shadow-lg shadow-black/20">
+        <Card className="border-border bg-card/50 shadow-sm">
           <CardHeader className="space-y-1">
             <div className="flex items-center justify-between">
               <CardTitle className="text-base">{t("riskMix")}</CardTitle>
-              <Icon name="tabler:shield-exclamation" className="text-slate-200" />
+              <Icon name="tabler:shield-exclamation" className="text-muted-foreground" />
             </div>
-            <CardDescription className="text-slate-200">{t("severityDistributionDesc")}</CardDescription>
+            <CardDescription className="text-muted-foreground">{t("severityDistributionDesc")}</CardDescription>
           </CardHeader>
           <CardContent>
             <Donut items={riskSeverityBreakdown} />
           </CardContent>
         </Card>
 
-        <Card className="border-white/10 bg-white/5 text-white shadow-lg shadow-black/20">
+        <Card className="border-border bg-card/50 shadow-sm">
           <CardHeader className="space-y-1">
             <div className="flex items-center justify-between">
               <CardTitle className="text-base">{t("governanceAging")}</CardTitle>
-              <Icon name="tabler:gavel" className="text-slate-200" />
+              <Icon name="tabler:gavel" className="text-muted-foreground" />
             </div>
-            <CardDescription className="text-slate-200">{t("approvalQueueAgingDesc")}</CardDescription>
+            <CardDescription className="text-muted-foreground">{t("approvalQueueAgingDesc")}</CardDescription>
           </CardHeader>
           <CardContent>
             <Bar categories={approvalsAging.categories} values={approvalsAging.values} color="#a78bfa" />
@@ -79,11 +79,11 @@ export default function ExecutiveDashboardPage() {
       </section>
 
       <section className="grid gap-6 lg:grid-cols-3">
-        <Card className="border-white/10 bg-white/5 text-white shadow-lg shadow-black/20 lg:col-span-2">
+        <Card className="border-border bg-card/50 shadow-sm lg:col-span-2">
           <CardHeader className="flex flex-row items-start justify-between gap-3">
             <div className="space-y-1">
               <CardTitle className="text-base">{t("initiativesRequiringIntervention")}</CardTitle>
-              <CardDescription className="text-slate-200">{t("investigateHealthDriversDesc")}</CardDescription>
+              <CardDescription className="text-muted-foreground">{t("investigateHealthDriversDesc")}</CardDescription>
             </div>
             <Link href={`/${locale}/dashboards/initiative-health`} className="text-sm font-medium text-indigo-200 hover:text-indigo-100">
               {t("openInitiativeHealth")}
@@ -94,12 +94,12 @@ export default function ExecutiveDashboardPage() {
               <Link
                 key={initiative.id}
                 href={`/${locale}/strategy/initiatives/${initiative.id}`}
-                className="block rounded-xl border border-white/10 bg-slate-950/40 px-4 py-3 transition hover:bg-white/5"
+                className="block rounded-xl border border-border bg-muted/30 px-4 py-3 transition hover:bg-card/50"
               >
                 <div className="flex items-start justify-between gap-3">
                   <div className="space-y-1">
-                    <p className="text-sm font-semibold text-white">{isArabic ? initiative.titleAr ?? initiative.title : initiative.title}</p>
-                    <p className="text-xs text-slate-200">{initiative.owner}</p>
+                    <p className="text-sm font-semibold text-foreground">{isArabic ? initiative.titleAr ?? initiative.title : initiative.title}</p>
+                    <p className="text-xs text-muted-foreground">{initiative.owner}</p>
                   </div>
                   <RagBadge health={initiative.health} />
                 </div>
@@ -108,20 +108,20 @@ export default function ExecutiveDashboardPage() {
           </CardContent>
         </Card>
 
-        <Card className="border-white/10 bg-white/5 text-white shadow-lg shadow-black/20">
+        <Card className="border-border bg-card/50 shadow-sm">
           <CardHeader className="space-y-1">
             <CardTitle className="text-base">{t("topKpis")}</CardTitle>
-            <CardDescription className="text-slate-200">{t("quickLinksKpiDrillDownDesc")}</CardDescription>
+            <CardDescription className="text-muted-foreground">{t("quickLinksKpiDrillDownDesc")}</CardDescription>
           </CardHeader>
           <CardContent className="space-y-3">
             {kpis.map((kpi) => (
               <Link
                 key={kpi.id}
                 href={`/${locale}/kpis/${kpi.id}`}
-                className="block rounded-xl border border-white/10 bg-slate-950/40 px-4 py-3 transition hover:bg-white/5"
+                className="block rounded-xl border border-border bg-muted/30 px-4 py-3 transition hover:bg-card/50"
               >
-                <p className="text-sm font-semibold text-white">{isArabic ? kpi.nameAr ?? kpi.name : kpi.name}</p>
-                  <p className="mt-1 text-xs text-slate-200">
+                <p className="text-sm font-semibold text-foreground">{isArabic ? kpi.nameAr ?? kpi.name : kpi.name}</p>
+                  <p className="mt-1 text-xs text-muted-foreground">
                     {t("current")} {kpi.current}
                     {kpi.unit} • {t("target")} {kpi.target}
                     {kpi.unit}

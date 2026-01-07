@@ -52,16 +52,16 @@ export default function InitiativeDetailPage() {
 
   if (!hydrated) {
     return (
-      <div className="rounded-2xl border border-white/10 bg-white/5 p-8 text-white">
-        <p className="text-sm text-slate-200">{t("loadingInitiative")}</p>
+      <div className="rounded-2xl border border-border bg-card/50 p-8 text-foreground">
+        <p className="text-sm text-muted-foreground">{t("loadingInitiative")}</p>
       </div>
     );
   }
 
   if (!base && initiative.title === "Unknown initiative") {
     return (
-      <div className="rounded-2xl border border-white/10 bg-white/5 p-8 text-white">
-        <p className="text-sm text-slate-200">{t("initiativeNotFound")}</p>
+      <div className="rounded-2xl border border-border bg-card/50 p-8 text-foreground">
+        <p className="text-sm text-muted-foreground">{t("initiativeNotFound")}</p>
         <Link href={`/${locale}/strategy`} className="mt-3 inline-flex text-sm font-semibold text-indigo-200 hover:text-indigo-100">
           {t("backToStrategy")}
         </Link>
@@ -92,77 +92,77 @@ export default function InitiativeDetailPage() {
       />
 
       <Tabs defaultValue="summary" className="space-y-6">
-        <TabsList className="border border-white/10 bg-white/5">
-          <TabsTrigger value="summary" className="data-[state=active]:bg-white/10 data-[state=active]:text-white">
+        <TabsList className="border border-border bg-card/50">
+          <TabsTrigger value="summary" className="data-[state=active]:bg-muted/30 data-[state=active]:text-foreground">
             {t("summary")}
           </TabsTrigger>
-          <TabsTrigger value="projects" className="data-[state=active]:bg-white/10 data-[state=active]:text-white">
+          <TabsTrigger value="projects" className="data-[state=active]:bg-muted/30 data-[state=active]:text-foreground">
             {t("projects")}
           </TabsTrigger>
-          <TabsTrigger value="kpis" className="data-[state=active]:bg-white/10 data-[state=active]:text-white">
+          <TabsTrigger value="kpis" className="data-[state=active]:bg-muted/30 data-[state=active]:text-foreground">
             {t("kpis")}
           </TabsTrigger>
-          <TabsTrigger value="risks" className="data-[state=active]:bg-white/10 data-[state=active]:text-white">
+          <TabsTrigger value="risks" className="data-[state=active]:bg-muted/30 data-[state=active]:text-foreground">
             {t("risks")}
           </TabsTrigger>
-          <TabsTrigger value="updates" className="data-[state=active]:bg-white/10 data-[state=active]:text-white">
+          <TabsTrigger value="updates" className="data-[state=active]:bg-muted/30 data-[state=active]:text-foreground">
             {t("updates")}
           </TabsTrigger>
         </TabsList>
 
         <TabsContent value="summary" className="grid gap-6 lg:grid-cols-3">
-          <Card className="border-white/10 bg-white/5 text-white shadow-lg shadow-black/20 lg:col-span-2">
+          <Card className="border-border bg-card/50 shadow-sm lg:col-span-2">
             <CardHeader>
               <CardTitle className="flex items-center gap-2 text-base">
-                <Icon name="tabler:clipboard-text" className="h-4 w-4 text-slate-100" />
+                <Icon name="tabler:clipboard-text" className="h-4 w-4 text-foreground" />
                 {t("initiativeSummary")}
               </CardTitle>
-              <CardDescription className="text-slate-200">
+              <CardDescription className="text-muted-foreground">
                 {t("initiativeDrillDownDesc")}
               </CardDescription>
             </CardHeader>
-            <CardContent className="space-y-3 text-sm text-slate-100">
+            <CardContent className="space-y-3 text-sm text-foreground">
               {parentPillar ? (
-                <div className="rounded-xl border border-white/10 bg-slate-950/40 px-4 py-3">
-                  <p className="text-xs font-semibold uppercase tracking-wide text-slate-200">{t("pillar")}</p>
-                  <Link href={`/${locale}/strategy/${parentPillar.id}`} className="mt-1 inline-flex items-center gap-2 text-white hover:underline">
+                <div className="rounded-xl border border-border bg-muted/30 px-4 py-3">
+                  <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">{t("pillar")}</p>
+                  <Link href={`/${locale}/strategy/${parentPillar.id}`} className="mt-1 inline-flex items-center gap-2 text-foreground hover:underline">
                     <Icon name="tabler:layers-subtract" className="h-4 w-4" />
                     {isArabic ? parentPillar.titleAr ?? parentPillar.title : parentPillar.title}
                   </Link>
                 </div>
               ) : null}
               <div className="grid gap-3 md:grid-cols-2">
-                <div className="rounded-xl border border-white/10 bg-slate-950/40 px-4 py-3">
-                  <p className="text-xs font-semibold uppercase tracking-wide text-slate-200">{t("owner")}</p>
-                  <p className="mt-1 text-white">{initiative.owner || "—"}</p>
+                <div className="rounded-xl border border-border bg-muted/30 px-4 py-3">
+                  <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">{t("owner")}</p>
+                  <p className="mt-1 text-foreground">{initiative.owner || "—"}</p>
                 </div>
-                <div className="rounded-xl border border-white/10 bg-slate-950/40 px-4 py-3">
-                  <p className="text-xs font-semibold uppercase tracking-wide text-slate-200">{t("timeline")}</p>
-                  <p className="mt-1 text-white">{initiative.start || "—"}</p>
+                <div className="rounded-xl border border-border bg-muted/30 px-4 py-3">
+                  <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">{t("timeline")}</p>
+                  <p className="mt-1 text-foreground">{initiative.start || "—"}</p>
                 </div>
               </div>
-              <div className="rounded-xl border border-white/10 bg-slate-950/40 px-4 py-3">
-                <p className="text-xs font-semibold uppercase tracking-wide text-slate-200">{t("budgetNotes")}</p>
-                <p className="mt-1 text-white">{initiative.end || "—"}</p>
+              <div className="rounded-xl border border-border bg-muted/30 px-4 py-3">
+                <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">{t("budgetNotes")}</p>
+                <p className="mt-1 text-foreground">{initiative.end || "—"}</p>
               </div>
             </CardContent>
           </Card>
 
-          <Card className="border-white/10 bg-white/5 text-white shadow-lg shadow-black/20">
+          <Card className="border-border bg-card/50 shadow-sm">
             <CardHeader>
               <CardTitle className="flex items-center gap-2 text-base">
-                <Icon name="tabler:activity" className="h-4 w-4 text-slate-100" />
+                <Icon name="tabler:activity" className="h-4 w-4 text-foreground" />
                 {t("latestUpdate")}
               </CardTitle>
-              <CardDescription className="text-slate-200">{t("mostRecentUpdateDesc")}</CardDescription>
+              <CardDescription className="text-muted-foreground">{t("mostRecentUpdateDesc")}</CardDescription>
             </CardHeader>
-            <CardContent className="text-sm text-slate-100">
+            <CardContent className="text-sm text-foreground">
               {initiative.updates.length === 0 ? (
-                <p className="text-slate-200">{t("noUpdatesPosted")}</p>
+                <p className="text-muted-foreground">{t("noUpdatesPosted")}</p>
               ) : (
-                <div className="rounded-xl border border-white/10 bg-slate-950/40 px-4 py-3">
-                  <p className="text-sm font-semibold text-white">{initiative.updates[0]?.summary}</p>
-                  <p className="mt-1 text-xs text-slate-200">
+                <div className="rounded-xl border border-border bg-muted/30 px-4 py-3">
+                  <p className="text-sm font-semibold text-foreground">{initiative.updates[0]?.summary}</p>
+                  <p className="mt-1 text-xs text-muted-foreground">
                     {initiative.updates[0]?.author} • {new Date(initiative.updates[0]?.at ?? "").toLocaleString()}
                   </p>
                 </div>
@@ -172,23 +172,23 @@ export default function InitiativeDetailPage() {
         </TabsContent>
 
         <TabsContent value="projects">
-          <Card className="border-white/10 bg-white/5 text-white shadow-lg shadow-black/20">
+          <Card className="border-border bg-card/50 shadow-sm">
             <CardHeader>
               <CardTitle className="flex items-center gap-2 text-base">
-                <Icon name="tabler:timeline" className="h-4 w-4 text-slate-100" />
+                <Icon name="tabler:timeline" className="h-4 w-4 text-foreground" />
                 {t("projects")}
               </CardTitle>
-              <CardDescription className="text-slate-200">{t("deliveryProjectsDesc")}</CardDescription>
+              <CardDescription className="text-muted-foreground">{t("deliveryProjectsDesc")}</CardDescription>
             </CardHeader>
             <CardContent className="grid gap-3 md:grid-cols-2 lg:grid-cols-3">
               {initiative.projects.map((project) => (
                 <Link
                   key={project.id}
                   href={`/${locale}/projects/${project.id}`}
-                  className="block rounded-xl border border-white/10 bg-slate-950/40 px-4 py-3 transition hover:bg-white/5"
+                  className="block rounded-xl border border-border bg-muted/30 px-4 py-3 transition hover:bg-card/50"
                 >
-                  <p className="text-sm font-semibold text-white">{isArabic ? project.titleAr ?? project.title : project.title}</p>
-                  <p className="mt-1 text-xs text-slate-200">{project.owner}</p>
+                  <p className="text-sm font-semibold text-foreground">{isArabic ? project.titleAr ?? project.title : project.title}</p>
+                  <p className="mt-1 text-xs text-muted-foreground">{project.owner}</p>
                 </Link>
               ))}
             </CardContent>
@@ -196,23 +196,23 @@ export default function InitiativeDetailPage() {
         </TabsContent>
 
         <TabsContent value="kpis">
-          <Card className="border-white/10 bg-white/5 text-white shadow-lg shadow-black/20">
+          <Card className="border-border bg-card/50 shadow-sm">
             <CardHeader>
               <CardTitle className="flex items-center gap-2 text-base">
-                <Icon name="tabler:chart-line" className="h-4 w-4 text-slate-100" />
+                <Icon name="tabler:chart-line" className="h-4 w-4 text-foreground" />
                 {t("kpis")}
               </CardTitle>
-              <CardDescription className="text-slate-200">{t("kpisLinkedToInitiativeDesc")}</CardDescription>
+              <CardDescription className="text-muted-foreground">{t("kpisLinkedToInitiativeDesc")}</CardDescription>
             </CardHeader>
             <CardContent className="grid gap-3 md:grid-cols-2 lg:grid-cols-3">
               {kpis.map((kpi) => (
                 <Link
                   key={kpi.id}
                   href={`/${locale}/kpis/${kpi.id}`}
-                  className="block rounded-xl border border-white/10 bg-slate-950/40 px-4 py-3 transition hover:bg-white/5"
+                  className="block rounded-xl border border-border bg-muted/30 px-4 py-3 transition hover:bg-card/50"
                 >
-                  <p className="text-sm font-semibold text-white">{isArabic ? kpi.nameAr ?? kpi.name : kpi.name}</p>
-                  <p className="mt-1 text-xs text-slate-200">
+                  <p className="text-sm font-semibold text-foreground">{isArabic ? kpi.nameAr ?? kpi.name : kpi.name}</p>
+                  <p className="mt-1 text-xs text-muted-foreground">
                     {t("current")} {kpi.current}
                     {kpi.unit} • {t("target")} {kpi.target}
                     {kpi.unit}
@@ -224,23 +224,23 @@ export default function InitiativeDetailPage() {
         </TabsContent>
 
         <TabsContent value="risks">
-          <Card className="border-white/10 bg-white/5 text-white shadow-lg shadow-black/20">
+          <Card className="border-border bg-card/50 shadow-sm">
             <CardHeader>
               <CardTitle className="flex items-center gap-2 text-base">
-                <Icon name="tabler:shield-exclamation" className="h-4 w-4 text-slate-100" />
+                <Icon name="tabler:shield-exclamation" className="h-4 w-4 text-foreground" />
                 {t("risks")}
               </CardTitle>
-              <CardDescription className="text-slate-200">{t("risksLinkedToInitiativeDesc")}</CardDescription>
+              <CardDescription className="text-muted-foreground">{t("risksLinkedToInitiativeDesc")}</CardDescription>
             </CardHeader>
             <CardContent className="grid gap-3 md:grid-cols-2 lg:grid-cols-3">
               {risks.map((risk) => (
                 <Link
                   key={risk.id}
                   href={`/${locale}/risks/${risk.id}`}
-                  className="block rounded-xl border border-white/10 bg-slate-950/40 px-4 py-3 transition hover:bg-white/5"
+                  className="block rounded-xl border border-border bg-muted/30 px-4 py-3 transition hover:bg-card/50"
                 >
-                  <p className="text-sm font-semibold text-white">{isArabic ? risk.titleAr ?? risk.title : risk.title}</p>
-                  <p className="mt-1 text-xs text-slate-200">
+                  <p className="text-sm font-semibold text-foreground">{isArabic ? risk.titleAr ?? risk.title : risk.title}</p>
+                  <p className="mt-1 text-xs text-muted-foreground">
                     {risk.severity} • {risk.status}
                     {risk.escalated ? ` • ${t("escalated")}` : ""}
                   </p>
@@ -251,13 +251,13 @@ export default function InitiativeDetailPage() {
         </TabsContent>
 
         <TabsContent value="updates" className="grid gap-6 lg:grid-cols-3">
-          <Card className="border-white/10 bg-white/5 text-white shadow-lg shadow-black/20 lg:col-span-2">
+          <Card className="border-border bg-card/50 shadow-sm lg:col-span-2">
             <CardHeader>
               <CardTitle className="flex items-center gap-2 text-base">
-                <Icon name="tabler:notes" className="h-4 w-4 text-slate-100" />
+                <Icon name="tabler:notes" className="h-4 w-4 text-foreground" />
                 {t("updates")}
               </CardTitle>
-              <CardDescription className="text-slate-200">{t("narrativeUpdatesDesc")}</CardDescription>
+              <CardDescription className="text-muted-foreground">{t("narrativeUpdatesDesc")}</CardDescription>
             </CardHeader>
             <CardContent className="space-y-3">
               <InitiativeUpdateEditor
@@ -271,12 +271,12 @@ export default function InitiativeDetailPage() {
                 }
               />
               {initiative.updates.length === 0 ? (
-                <p className="text-sm text-slate-200">{t("noUpdatesPosted")}</p>
+                <p className="text-sm text-muted-foreground">{t("noUpdatesPosted")}</p>
               ) : (
                 initiative.updates.map((entry) => (
-                  <div key={entry.id} className="rounded-xl border border-white/10 bg-slate-950/40 px-4 py-3">
-                    <p className="text-sm font-semibold text-white">{entry.summary}</p>
-                    <p className="mt-1 text-xs text-slate-200">
+                  <div key={entry.id} className="rounded-xl border border-border bg-muted/30 px-4 py-3">
+                    <p className="text-sm font-semibold text-foreground">{entry.summary}</p>
+                    <p className="mt-1 text-xs text-muted-foreground">
                       {entry.author} • {new Date(entry.at).toLocaleString()}
                     </p>
                   </div>
@@ -285,26 +285,26 @@ export default function InitiativeDetailPage() {
             </CardContent>
           </Card>
 
-          <Card className="border-white/10 bg-white/5 text-white shadow-lg shadow-black/20">
+          <Card className="border-border bg-card/50 shadow-sm">
             <CardHeader>
               <CardTitle className="flex items-center gap-2 text-base">
-                <Icon name="tabler:info-circle" className="h-4 w-4 text-slate-100" />
+                <Icon name="tabler:info-circle" className="h-4 w-4 text-foreground" />
                 {t("guidance")}
               </CardTitle>
-              <CardDescription className="text-slate-200">{t("suggestedWeeklyUpdateDesc")}</CardDescription>
+              <CardDescription className="text-muted-foreground">{t("suggestedWeeklyUpdateDesc")}</CardDescription>
             </CardHeader>
-            <CardContent className="space-y-2 text-sm text-slate-100">
-              <div className="rounded-xl border border-white/10 bg-slate-950/40 px-4 py-3">
-                <p className="font-semibold text-white">{t("progress")}</p>
-                <p className="mt-1 text-xs text-slate-200">{t("whatMovedDesc")}</p>
+            <CardContent className="space-y-2 text-sm text-foreground">
+              <div className="rounded-xl border border-border bg-muted/30 px-4 py-3">
+                <p className="font-semibold text-foreground">{t("progress")}</p>
+                <p className="mt-1 text-xs text-muted-foreground">{t("whatMovedDesc")}</p>
               </div>
-              <div className="rounded-xl border border-white/10 bg-slate-950/40 px-4 py-3">
-                <p className="font-semibold text-white">{t("risksAndBlockers")}</p>
-                <p className="mt-1 text-xs text-slate-200">{t("needsEscalationDesc")}</p>
+              <div className="rounded-xl border border-border bg-muted/30 px-4 py-3">
+                <p className="font-semibold text-foreground">{t("risksAndBlockers")}</p>
+                <p className="mt-1 text-xs text-muted-foreground">{t("needsEscalationDesc")}</p>
               </div>
-              <div className="rounded-xl border border-white/10 bg-slate-950/40 px-4 py-3">
-                <p className="font-semibold text-white">{t("nextActions")}</p>
-                <p className="mt-1 text-xs text-slate-200">{t("topPrioritiesDesc")}</p>
+              <div className="rounded-xl border border-border bg-muted/30 px-4 py-3">
+                <p className="font-semibold text-foreground">{t("nextActions")}</p>
+                <p className="mt-1 text-xs text-muted-foreground">{t("topPrioritiesDesc")}</p>
               </div>
             </CardContent>
           </Card>
@@ -323,10 +323,10 @@ function InitiativeUpdateEditor({ onSubmit }: { onSubmit: (message: string) => v
         value={message}
         onChange={(e) => setMessage(e.target.value)}
         placeholder={t("postUpdatePlaceholder")}
-        className="border-white/10 bg-black/20 text-white placeholder:text-slate-400"
+        className="border-border bg-muted/20 text-foreground placeholder:text-muted-foreground"
       />
       <Button
-        className="bg-white text-slate-900 hover:bg-slate-100"
+        className="variant="secondary""
         disabled={message.trim().length === 0}
         onClick={() => {
           onSubmit(message.trim());

@@ -14,15 +14,15 @@ export default function UsersManagementPage() {
         subtitle={t("adminUsersSubtitle")}
       />
 
-      <Card className="border-white/10 bg-white/5 text-white shadow-lg shadow-black/20">
+      <Card className="border-border bg-card/50 shadow-sm">
         <CardHeader>
           <CardTitle className="text-base">{t("userManagement")}</CardTitle>
-          <CardDescription className="text-slate-200">
+          <CardDescription className="text-muted-foreground">
             {t("userManagementSectionDesc")}
           </CardDescription>
         </CardHeader>
         <CardContent>
-          <div className="rounded-xl border border-white/10 bg-slate-950/40 px-4 py-6 text-sm text-slate-200">
+          <div className="rounded-xl border border-border bg-muted/30 px-4 py-6 text-sm text-muted-foreground">
             {t("adminUserManagementNotice")}
           </div>
         </CardContent>

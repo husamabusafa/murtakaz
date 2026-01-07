@@ -24,13 +24,13 @@ export default function PricingPage() {
           { title: t("strategyOffice"), desc: t("initiativesAndKpiGovernance"), highlight: false },
           { title: t("enterprise"), desc: t("ssoIntegrationsMultiOrg"), highlight: false },
         ].map((tier) => (
-          <Card key={tier.title} className={`border-white/10 bg-white/5 text-white shadow-lg shadow-black/20 ${tier.highlight ? "ring-1 ring-indigo-500/40" : ""}`}>
+          <Card key={tier.title} className={`border-border bg-card/50 shadow-sm ${tier.highlight ? "ring-1 ring-indigo-500/40" : ""}`}>
             <CardHeader className="space-y-2">
               <CardTitle className="text-base">{tier.title}</CardTitle>
-              <CardDescription className="text-slate-200">{tier.desc}</CardDescription>
+              <CardDescription className="text-muted-foreground">{tier.desc}</CardDescription>
             </CardHeader>
-            <CardContent className="space-y-4 text-sm text-slate-100">
-              <ul className="space-y-2 text-slate-200">
+            <CardContent className="space-y-4 text-sm text-foreground">
+              <ul className="space-y-2 text-muted-foreground">
                 <li className="flex items-center gap-2">
                   <Icon name="tabler:circle-check" className="h-4 w-4 text-emerald-200" />
                   {t("roleBasedDashboards")}
@@ -44,7 +44,7 @@ export default function PricingPage() {
                   {t("exportsAndReporting")}
                 </li>
               </ul>
-              <Button asChild className="w-full bg-white text-slate-900 hover:bg-slate-100">
+              <Button asChild className="w-full variant="secondary"">
                 <Link href={`/${locale}/auth/login?next=/${locale}/dashboards/executive`}>
                   <span className="inline-flex items-center gap-2">
                     <Icon name="tabler:message-circle" className="h-4 w-4" />

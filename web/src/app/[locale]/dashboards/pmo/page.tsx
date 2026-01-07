@@ -24,39 +24,39 @@ export default function PMODashboardPage() {
       />
 
       <section className="grid gap-6 lg:grid-cols-3">
-        <Card className="border-white/10 bg-white/5 text-white shadow-lg shadow-black/20">
+        <Card className="border-border bg-card/50 shadow-sm">
           <CardHeader className="space-y-1">
             <div className="flex items-center justify-between">
               <CardTitle className="text-base">{t("coverageSnapshot")}</CardTitle>
-              <Icon name="tabler:layers-subtract" className="text-slate-200" />
+              <Icon name="tabler:layers-subtract" className="text-muted-foreground" />
             </div>
-            <CardDescription className="text-slate-200">{t("alignmentCompletenessDesc")}</CardDescription>
+            <CardDescription className="text-muted-foreground">{t("alignmentCompletenessDesc")}</CardDescription>
           </CardHeader>
           <CardContent className="grid grid-cols-2 gap-3">
-            <div className="rounded-xl border border-white/10 bg-slate-950/40 px-4 py-3">
-              <p className="text-xs text-slate-200">{t("pillar")}</p>
-              <p className="mt-1 text-xl font-semibold text-white">{pillars.length}</p>
+            <div className="rounded-xl border border-border bg-muted/30 px-4 py-3">
+              <p className="text-xs text-muted-foreground">{t("pillar")}</p>
+              <p className="mt-1 text-xl font-semibold text-foreground">{pillars.length}</p>
             </div>
-            <div className="rounded-xl border border-white/10 bg-slate-950/40 px-4 py-3">
-              <p className="text-xs text-slate-200">{t("initiative")}</p>
-              <p className="mt-1 text-xl font-semibold text-white">{initiatives.length}</p>
+            <div className="rounded-xl border border-border bg-muted/30 px-4 py-3">
+              <p className="text-xs text-muted-foreground">{t("initiative")}</p>
+              <p className="mt-1 text-xl font-semibold text-foreground">{initiatives.length}</p>
             </div>
-            <div className="rounded-xl border border-white/10 bg-slate-950/40 px-4 py-3">
-              <p className="text-xs text-slate-200">{t("projects")}</p>
-              <p className="mt-1 text-xl font-semibold text-white">{totalProjects}</p>
+            <div className="rounded-xl border border-border bg-muted/30 px-4 py-3">
+              <p className="text-xs text-muted-foreground">{t("projects")}</p>
+              <p className="mt-1 text-xl font-semibold text-foreground">{totalProjects}</p>
             </div>
-            <div className="rounded-xl border border-white/10 bg-slate-950/40 px-4 py-3">
-              <p className="text-xs text-slate-200">{t("pendingApprovals")}</p>
-              <p className="mt-1 text-xl font-semibold text-white">{pending.length}</p>
+            <div className="rounded-xl border border-border bg-muted/30 px-4 py-3">
+              <p className="text-xs text-muted-foreground">{t("pendingApprovals")}</p>
+              <p className="mt-1 text-xl font-semibold text-foreground">{pending.length}</p>
             </div>
           </CardContent>
         </Card>
 
-        <Card className="border-white/10 bg-white/5 text-white shadow-lg shadow-black/20 lg:col-span-2">
+        <Card className="border-border bg-card/50 shadow-sm lg:col-span-2">
           <CardHeader className="flex flex-row items-start justify-between gap-3">
             <div className="space-y-1">
               <CardTitle className="text-base">{t("approvalAgingSla")}</CardTitle>
-              <CardDescription className="text-slate-200">{t("queueDistributionDesc")}</CardDescription>
+              <CardDescription className="text-muted-foreground">{t("queueDistributionDesc")}</CardDescription>
             </div>
             <Link href={`/${locale}/approvals`} className="text-sm font-medium text-indigo-200 hover:text-indigo-100">
               {t("openApprovals")}
@@ -69,11 +69,11 @@ export default function PMODashboardPage() {
       </section>
 
       <section className="grid gap-6 lg:grid-cols-3">
-        <Card className="border-white/10 bg-white/5 text-white shadow-lg shadow-black/20 lg:col-span-2">
+        <Card className="border-border bg-card/50 shadow-sm lg:col-span-2">
           <CardHeader className="flex flex-row items-start justify-between gap-3">
             <div className="space-y-1">
               <CardTitle className="text-base">{t("governanceQueue")}</CardTitle>
-              <CardDescription className="text-slate-200">{t("changeRequestsReviewDesc")}</CardDescription>
+              <CardDescription className="text-muted-foreground">{t("changeRequestsReviewDesc")}</CardDescription>
             </div>
             <Link href={`/${locale}/approvals`} className="text-sm font-medium text-indigo-200 hover:text-indigo-100">
               {t("viewAll")}
@@ -84,12 +84,12 @@ export default function PMODashboardPage() {
               <Link
                 key={cr.id}
                 href={`/${locale}/approvals/${cr.id}`}
-                className="block rounded-xl border border-white/10 bg-slate-950/40 px-4 py-3 transition hover:bg-white/5"
+                className="block rounded-xl border border-border bg-muted/30 px-4 py-3 transition hover:bg-card/50"
               >
-                <p className="text-sm font-semibold text-white">
+                <p className="text-sm font-semibold text-foreground">
                   {cr.entityType}: {cr.entityName}
                 </p>
-                <p className="mt-1 text-xs text-slate-200">
+                <p className="mt-1 text-xs text-muted-foreground">
                   {t("requestedBy")} {cr.requestedBy} • {cr.ageDays}{t("daysShort")}
                 </p>
               </Link>
@@ -97,23 +97,23 @@ export default function PMODashboardPage() {
           </CardContent>
         </Card>
 
-        <Card className="border-white/10 bg-white/5 text-white shadow-lg shadow-black/20">
+        <Card className="border-border bg-card/50 shadow-sm">
           <CardHeader className="space-y-1">
             <CardTitle className="text-base">{t("complianceHighlights")}</CardTitle>
-            <CardDescription className="text-slate-200">{t("prdAcceptanceChecksDesc")}</CardDescription>
+            <CardDescription className="text-muted-foreground">{t("prdAcceptanceChecksDesc")}</CardDescription>
           </CardHeader>
-          <CardContent className="space-y-2 text-sm text-slate-100">
-            <div className="rounded-xl border border-white/10 bg-slate-950/40 px-4 py-3">
-              <p className="font-semibold text-white">{t("kpisWithoutOwners")}</p>
-              <p className="mt-1 text-xs text-slate-200">{t("flagMissingOwnersDesc")}</p>
+          <CardContent className="space-y-2 text-sm text-foreground">
+            <div className="rounded-xl border border-border bg-muted/30 px-4 py-3">
+              <p className="font-semibold text-foreground">{t("kpisWithoutOwners")}</p>
+              <p className="mt-1 text-xs text-muted-foreground">{t("flagMissingOwnersDesc")}</p>
             </div>
-            <div className="rounded-xl border border-white/10 bg-slate-950/40 px-4 py-3">
-              <p className="font-semibold text-white">{t("orphanedProjects")}</p>
-              <p className="mt-1 text-xs text-slate-200">{t("preventOrphanedProjectsDesc")}</p>
+            <div className="rounded-xl border border-border bg-muted/30 px-4 py-3">
+              <p className="font-semibold text-foreground">{t("orphanedProjects")}</p>
+              <p className="mt-1 text-xs text-muted-foreground">{t("preventOrphanedProjectsDesc")}</p>
             </div>
-            <div className="rounded-xl border border-white/10 bg-slate-950/40 px-4 py-3">
-              <p className="font-semibold text-white">{t("overdueKpiUpdates")}</p>
-              <p className="mt-1 text-xs text-slate-200">{t("remindFreshnessThresholdDesc")}</p>
+            <div className="rounded-xl border border-border bg-muted/30 px-4 py-3">
+              <p className="font-semibold text-foreground">{t("overdueKpiUpdates")}</p>
+              <p className="mt-1 text-xs text-muted-foreground">{t("remindFreshnessThresholdDesc")}</p>
             </div>
           </CardContent>
         </Card>

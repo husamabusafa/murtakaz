@@ -113,15 +113,15 @@ export default function KPIsPage() {
         icon={<Icon name="tabler:chart-line" className="h-5 w-5" />}
       />
 
-      <Card className="border-white/10 bg-white/5 text-white shadow-lg shadow-black/20">
+      <Card className="border-border bg-card/50 text-foreground shadow-lg shadow-black/5 dark:shadow-sm">
         <CardHeader className="space-y-3">
           <div className="flex flex-col gap-2 md:flex-row md:items-center md:justify-between">
             <div>
               <CardTitle className="flex items-center gap-2 text-base">
-                <Icon name="tabler:report-analytics" className="h-4 w-4 text-slate-100" />
+                <Icon name="tabler:report-analytics" className="h-4 w-4 text-primary" />
                 {t("kpiCatalog")}
               </CardTitle>
-              <CardDescription className="text-slate-200">{t("trackTargetVsActualDesc")}</CardDescription>
+              <CardDescription>{t("trackTargetVsActualDesc")}</CardDescription>
             </div>
             <div className="flex w-full flex-col gap-2 md:w-auto md:flex-row md:items-center">
               <div className="w-full max-w-xs">
@@ -132,11 +132,11 @@ export default function KPIsPage() {
                   onKeyDown={(e) => {
                     if (e.key === "Enter") applySearch(searchDraft);
                   }}
-                  className="border-white/10 bg-slate-950/40 text-white placeholder:text-slate-400"
+                  className="bg-background"
                 />
               </div>
               {isAdmin ? (
-                <Button asChild className="bg-white/10 text-white hover:bg-white/15">
+                <Button asChild variant="secondary">
                   <Link href={`/${locale}/kpis/create`}>
                     <Plus className="h-4 w-4" />
                     <span className="ms-2">{t("createKpi")}</span>
@@ -148,14 +148,14 @@ export default function KPIsPage() {
         </CardHeader>
         <CardContent>
           <div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
-            <div className="text-xs text-slate-200">
+            <div className="text-xs text-muted-foreground">
               {t("total")}: {total}
             </div>
             <div className="flex items-center gap-2">
               <Button variant="outline" size="sm" onClick={() => goToPage(page - 1)} disabled={page <= 1}>
                 {t("prev")}
               </Button>
-              <span className="text-xs text-slate-200">
+              <span className="text-xs text-muted-foreground">
                 {t("page")} {page} / {totalPages}
               </span>
               <Button variant="outline" size="sm" onClick={() => goToPage(page + 1)} disabled={page >= totalPages}>
@@ -165,19 +165,19 @@ export default function KPIsPage() {
           </div>
 
           {loading ? (
-            <div className="rounded-xl border border-white/10 bg-slate-950/40 p-6 text-sm text-slate-200">{t("loadingEllipsis")}</div>
+            <div className="rounded-xl border border-border bg-muted/30 p-6 text-sm text-muted-foreground">{t("loadingEllipsis")}</div>
           ) : items.length ? (
             <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
               {items.map((kpi) => (
                 <Link
                   key={kpi.id}
                   href={`/${locale}/kpis/${kpi.id}`}
-                  className="block rounded-2xl border border-white/10 bg-slate-950/35 p-4 text-white transition hover:bg-white/5"
+                  className="block rounded-2xl border border-border bg-card p-4 text-card-foreground transition hover:bg-muted/50"
                 >
                   <div className="flex items-start justify-between gap-3">
                     <div>
-                      <p className="text-sm font-semibold text-white">{df(kpi.name, kpi.nameAr)}</p>
-                      <p className="mt-1 text-xs text-slate-200">
+                      <p className="text-sm font-semibold">{df(kpi.name, kpi.nameAr)}</p>
+                      <p className="mt-1 text-xs text-muted-foreground">
                         {(kpi.primaryNode?.nodeType
                           ? nodeTypeLabel(kpi.primaryNode.nodeType.code, df(kpi.primaryNode.nodeType.displayName, kpi.primaryNode.nodeType.nameAr))
                           : t("type"))}: {df(kpi.primaryNode?.name, kpi.primaryNode?.nameAr) || "—"}
@@ -185,21 +185,21 @@ export default function KPIsPage() {
                     </div>
                   </div>
 
-                  <div className="mt-3 rounded-xl border border-white/10 bg-slate-950/40 px-3 py-3">
+                  <div className="mt-3 rounded-xl border border-border bg-muted/20 px-3 py-3">
                     <KpiGauge value={kpi.currentValue} target={kpi.targetValue} unit={df(kpi.unit, kpi.unitAr) || undefined} height={160} />
                   </div>
 
                   <div className="mt-3 grid grid-cols-2 gap-3">
-                    <div className="rounded-xl border border-white/10 bg-slate-950/40 px-3 py-2">
-                      <p className="text-[11px] text-slate-200">{t("current")}</p>
-                      <p className="text-sm font-semibold text-white" dir="ltr">
+                    <div className="rounded-xl border border-border bg-muted/20 px-3 py-2">
+                      <p className="text-[11px] text-muted-foreground">{t("current")}</p>
+                      <p className="text-sm font-semibold" dir="ltr">
                         {formatNumber(kpi.currentValue)}
                         {df(kpi.unit, kpi.unitAr)}
                       </p>
                     </div>
-                    <div className="rounded-xl border border-white/10 bg-slate-950/40 px-3 py-2">
-                      <p className="text-[11px] text-slate-200">{t("target")}</p>
-                      <p className="text-sm font-semibold text-white" dir="ltr">
+                    <div className="rounded-xl border border-border bg-muted/20 px-3 py-2">
+                      <p className="text-[11px] text-muted-foreground">{t("target")}</p>
+                      <p className="text-sm font-semibold" dir="ltr">
                         {formatNumber(kpi.targetValue)}
                         {df(kpi.unit, kpi.unitAr)}
                       </p>
@@ -209,7 +209,7 @@ export default function KPIsPage() {
               ))}
             </div>
           ) : (
-            <div className="rounded-xl border border-white/10 bg-slate-950/40 p-6 text-sm text-slate-200">{t("noKpisYet")}</div>
+            <div className="rounded-xl border border-border bg-muted/30 p-6 text-sm text-muted-foreground">{t("noKpisYet")}</div>
           )}
         </CardContent>
       </Card>

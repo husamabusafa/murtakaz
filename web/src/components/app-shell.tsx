@@ -74,7 +74,7 @@ function getAppHomeHref(userRole: unknown) {
 
 function LogoMark({ text }: { text: string }) {
   return (
-    <div className="flex h-10 w-10 items-center justify-center rounded-2xl bg-gradient-to-br from-indigo-500 via-emerald-400 to-sky-500 text-white shadow-lg shadow-indigo-500/25">
+    <div className="flex h-10 w-10 items-center justify-center rounded-2xl bg-gradient-to-br from-indigo-500 via-emerald-400 to-sky-500 shadow-sm shadow-none">
       <span className="text-lg font-semibold">{text}</span>
     </div>
   );
@@ -117,7 +117,7 @@ function NavItemLink({
         <span
           className={cn(
             "whitespace-nowrap transition-all duration-200",
-            mobileContentVisible ? "opacity-100 translate-x-0" : "opacity-0 translate-x-2",
+            mobileContentVisible ? "opacity-100 translate-x-0" : "opacity-0 ltr:translate-x-2 rtl:-translate-x-2",
           )}
         >
           {label}
@@ -144,7 +144,7 @@ function NavItemLink({
         className={cn(
           "overflow-hidden whitespace-nowrap transition-all duration-300 motion-reduce:transition-none",
           sidebarExpanded ? "max-w-[220px]" : "max-w-0",
-          sidebarContentVisible ? "opacity-100 translate-x-0" : "opacity-0 -translate-x-2",
+          sidebarContentVisible ? "opacity-100 translate-x-0" : "opacity-0 ltr:-translate-x-2 rtl:translate-x-2",
         )}
       >
         {label}
@@ -297,7 +297,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
     <div className="relative min-h-screen bg-background text-foreground">
       <div className="absolute inset-0 pointer-events-none dark:bg-[radial-gradient(circle_at_top,_rgba(99,102,241,0.14),transparent_35%),radial-gradient(circle_at_20%_40%,_rgba(16,185,129,0.12),transparent_25%)]" />
 
-      <div className={cn("relative flex min-h-screen", showAppNav && isArabic && "lg:flex-row-reverse")}>
+      <div className={cn("relative flex min-h-screen")}>
         {showAppNav ? (
           <div className={cn("fixed inset-0 z-[60] lg:hidden", mobileNavOpen ? "pointer-events-auto" : "pointer-events-none")}>
             <div
@@ -312,7 +312,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
               className={cn(
                 "absolute inset-y-0 w-80 max-w-[85vw] bg-background shadow-2xl transition-transform duration-300 ease-in-out",
                 "start-0 border-e border-border",
-                mobileNavOpen ? "translate-x-0" : isArabic ? "translate-x-full" : "-translate-x-full",
+                mobileNavOpen ? "translate-x-0" : "ltr:-translate-x-full rtl:translate-x-full",
               )}
             >
               <div className="flex items-center justify-between gap-3 px-4 py-4">
@@ -410,7 +410,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
                   className={cn(
                     "leading-tight overflow-hidden transition-all duration-300 motion-reduce:transition-none",
                     sidebarExpanded ? "max-w-[220px]" : "max-w-0",
-                    sidebarContentVisible ? "opacity-100 translate-x-0" : "opacity-0 -translate-x-2",
+                    sidebarContentVisible ? "opacity-100 translate-x-0" : "opacity-0 ltr:-translate-x-2 rtl:translate-x-2",
                   )}
                 >
                   <p className="text-sm font-semibold text-foreground">{t("appShortTitle")}</p>
@@ -465,7 +465,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
                   className={cn(
                     "min-w-0 overflow-hidden transition-all duration-300 motion-reduce:transition-none",
                     sidebarExpanded ? "max-w-[240px] mx-2" : "max-w-0",
-                    sidebarFooterVisible ? "opacity-100 translate-x-0" : "opacity-0 -translate-x-2",
+                    sidebarFooterVisible ? "opacity-100 translate-x-0" : "opacity-0 ltr:-translate-x-2 rtl:translate-x-2",
                   )}
                 >
                   <p className="truncate text-sm font-semibold text-foreground">{user?.name}</p>
@@ -497,28 +497,27 @@ export function AppShell({ children }: { children: React.ReactNode }) {
                 <div className="flex items-center gap-6">
                   <Link href={`/${locale}`} className="flex items-center gap-3">
                     <LogoMark text="M" />
-                    <div className={cn("leading-tight", isArabic && "text-right")}>
-                      <p className="text-sm font-semibold text-white">{t("murtakaz")}</p>
-                      <p className="text-xs text-slate-300">{t("strategyExecutionPlatform")}</p>
+                    <div className={cn("leading-tight")}>
+                      <p className="text-sm font-semibold text-foreground">{t("murtakaz")}</p>
+                      <p className="text-xs text-muted-foreground">{t("strategyExecutionPlatform")}</p>
                     </div>
                   </Link>
 
                   <nav
                     className={cn(
-                      "hidden items-center gap-5 text-sm text-slate-200 lg:flex",
-                      isArabic && "flex-row-reverse",
+                      "hidden items-center gap-5 text-sm text-muted-foreground lg:flex",
                     )}
                   >
-                    <Link href={`/${locale}#features`} className="hover:text-white">
+                    <Link href={`/${locale}#features`} className="hover:text-foreground">
                       {t("features")}
                     </Link>
-                    <Link href={`/${locale}/pricing`} className="hover:text-white">
+                    <Link href={`/${locale}/pricing`} className="hover:text-foreground">
                       {t("pricing")}
                     </Link>
-                    <Link href={`/${locale}/faq`} className="hover:text-white">
+                    <Link href={`/${locale}/faq`} className="hover:text-foreground">
                       {t("faq")}
                     </Link>
-                    <Link href={`/${locale}/contact`} className="hover:text-white">
+                    <Link href={`/${locale}/contact`} className="hover:text-foreground">
                       {t("contact")}
                     </Link>
                   </nav>
@@ -527,8 +526,8 @@ export function AppShell({ children }: { children: React.ReactNode }) {
                 <Link href={`/${locale}`} className="flex items-center gap-3">
                   <LogoMark text="SE" />
                   <div className="leading-tight">
-                    <p className="text-xs uppercase tracking-[0.24em] text-slate-300">{t("appTitle")}</p>
-                    <p className="text-sm font-semibold text-white">{t("appTagline")}</p>
+                    <p className="text-xs uppercase tracking-[0.24em] text-muted-foreground">{t("appTitle")}</p>
+                    <p className="text-sm font-semibold text-foreground">{t("appTagline")}</p>
                   </div>
                 </Link>
               )}

@@ -220,16 +220,16 @@ export default function EditKpiPage() {
 
   if (sessionLoading || loading) {
     return (
-      <div className="rounded-2xl border border-white/10 bg-white/5 p-8 text-white">
-        <p className="text-sm text-slate-200">{t("loading")}</p>
+      <div className="rounded-2xl border border-border bg-card/50 p-8 text-foreground">
+        <p className="text-sm text-muted-foreground">{t("loading")}</p>
       </div>
     );
   }
 
   if (!isAdmin) {
     return (
-      <div className="rounded-2xl border border-white/10 bg-white/5 p-8 text-white">
-        <p className="text-sm text-slate-200">{t("unauthorized")}</p>
+      <div className="rounded-2xl border border-border bg-card/50 p-8 text-foreground">
+        <p className="text-sm text-muted-foreground">{t("unauthorized")}</p>
         <Link href={`/${locale}/kpis`} className="mt-3 inline-flex text-sm font-semibold text-indigo-200 hover:text-indigo-100">
           {t("back")}
         </Link>
@@ -239,8 +239,8 @@ export default function EditKpiPage() {
 
   if (!draft) {
     return (
-      <div className="rounded-2xl border border-white/10 bg-white/5 p-8 text-white">
-        <p className="text-sm text-slate-200">{t("kpiNotFound")}</p>
+      <div className="rounded-2xl border border-border bg-card/50 p-8 text-foreground">
+        <p className="text-sm text-muted-foreground">{t("kpiNotFound")}</p>
         <Link href={`/${locale}/kpis`} className="mt-3 inline-flex text-sm font-semibold text-indigo-200 hover:text-indigo-100">
           {t("back")}
         </Link>
@@ -252,10 +252,10 @@ export default function EditKpiPage() {
     <div className="space-y-8">
       <PageHeader title={t("editKpi")} subtitle={draft.name} icon={<Icon name="tabler:edit" className="h-5 w-5" />} />
 
-      <Card className="border-white/10 bg-white/5 text-white shadow-lg shadow-black/20">
+      <Card className="border-border bg-card/50 shadow-sm">
         <CardHeader>
           <CardTitle className="text-base">{t("definition")}</CardTitle>
-          <CardDescription className="text-slate-200">{t("updateKpiDesc")}</CardDescription>
+          <CardDescription className="text-muted-foreground">{t("updateKpiDesc")}</CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
           {error ? <div className="rounded-md border border-rose-500/30 bg-rose-500/10 p-3 text-sm text-rose-200 whitespace-pre-wrap">{error}</div> : null}
@@ -264,33 +264,33 @@ export default function EditKpiPage() {
           <div className="grid gap-4 md:grid-cols-2">
             <div className="grid gap-2">
               <Label>{t("name")}</Label>
-              <Input value={draft.name} onChange={(e) => setDraft((p) => (p ? { ...p, name: e.target.value } : p))} className="border-white/10 bg-black/20 text-white" />
+              <Input value={draft.name} onChange={(e) => setDraft((p) => (p ? { ...p, name: e.target.value } : p))} className="border-border bg-muted/20 text-foreground" />
             </div>
             <div className="grid gap-2">
               <Label>{t("nameAr")}</Label>
-              <Input value={draft.nameAr} onChange={(e) => setDraft((p) => (p ? { ...p, nameAr: e.target.value } : p))} className="border-white/10 bg-black/20 text-white" dir="rtl" />
+              <Input value={draft.nameAr} onChange={(e) => setDraft((p) => (p ? { ...p, nameAr: e.target.value } : p))} className="border-border bg-muted/20 text-foreground" dir="rtl" />
             </div>
           </div>
 
           <div className="grid gap-4 md:grid-cols-2">
             <div className="grid gap-2">
               <Label>{t("unit")}</Label>
-              <Input value={draft.unit} onChange={(e) => setDraft((p) => (p ? { ...p, unit: e.target.value } : p))} className="border-white/10 bg-black/20 text-white" placeholder={t("formulaExample")} />
+              <Input value={draft.unit} onChange={(e) => setDraft((p) => (p ? { ...p, unit: e.target.value } : p))} className="border-border bg-muted/20 text-foreground" placeholder={t("formulaExample")} />
             </div>
             <div className="grid gap-2">
               <Label>{t("unitAr")}</Label>
-              <Input value={draft.unitAr} onChange={(e) => setDraft((p) => (p ? { ...p, unitAr: e.target.value } : p))} className="border-white/10 bg-black/20 text-white" placeholder={t("formulaExample")} dir="rtl" />
+              <Input value={draft.unitAr} onChange={(e) => setDraft((p) => (p ? { ...p, unitAr: e.target.value } : p))} className="border-border bg-muted/20 text-foreground" placeholder={t("formulaExample")} dir="rtl" />
             </div>
           </div>
 
           <div className="grid gap-4 md:grid-cols-2">
             <div className="grid gap-2">
               <Label>{t("description")}</Label>
-              <Textarea value={draft.description} onChange={(e) => setDraft((p) => (p ? { ...p, description: e.target.value } : p))} className="border-white/10 bg-black/20 text-white" />
+              <Textarea value={draft.description} onChange={(e) => setDraft((p) => (p ? { ...p, description: e.target.value } : p))} className="border-border bg-muted/20 text-foreground" />
             </div>
             <div className="grid gap-2">
               <Label>{t("descriptionAr")}</Label>
-              <Textarea value={draft.descriptionAr} onChange={(e) => setDraft((p) => (p ? { ...p, descriptionAr: e.target.value } : p))} className="border-white/10 bg-black/20 text-white" dir="rtl" />
+              <Textarea value={draft.descriptionAr} onChange={(e) => setDraft((p) => (p ? { ...p, descriptionAr: e.target.value } : p))} className="border-border bg-muted/20 text-foreground" dir="rtl" />
             </div>
           </div>
 
@@ -298,7 +298,7 @@ export default function EditKpiPage() {
             <div className="grid gap-2">
               <Label>{t("period")}</Label>
               <Select value={draft.periodType} onValueChange={(v) => setDraft((p) => (p ? { ...p, periodType: v as PeriodType } : p))}>
-                <SelectTrigger className="border-white/10 bg-black/20 text-white">
+                <SelectTrigger className="border-border bg-muted/20 text-foreground">
                   <SelectValue placeholder={t("select")} />
                 </SelectTrigger>
                 <SelectContent>
@@ -314,12 +314,12 @@ export default function EditKpiPage() {
               <button
                 type="button"
                 onClick={() => setNodePickerOpen(true)}
-                className="flex h-10 w-full items-center justify-between rounded-md border border-white/10 bg-black/20 px-3 text-left text-sm text-white hover:bg-white/5"
+                className="flex h-10 w-full items-center justify-between rounded-md border border-border bg-muted/20 px-3 text-left text-sm text-foreground hover:bg-card/50"
               >
-                <span className={selectedPrimaryNodeLabel ? "truncate" : "text-slate-400"}>
+                <span className={selectedPrimaryNodeLabel ? "truncate" : "text-muted-foreground"}>
                   {selectedPrimaryNodeLabel || t("selectLinkedItem")}
                 </span>
-                <span className="text-slate-400">{t("change")}</span>
+                <span className="text-muted-foreground">{t("change")}</span>
               </button>
             </div>
           </div>
@@ -340,11 +340,11 @@ export default function EditKpiPage() {
           <div className="grid gap-4 md:grid-cols-2">
             <div className="grid gap-2">
               <Label>{t("baseline")}</Label>
-              <Input value={draft.baselineValue} onChange={(e) => setDraft((p) => (p ? { ...p, baselineValue: e.target.value } : p))} className="border-white/10 bg-black/20 text-white" inputMode="decimal" />
+              <Input value={draft.baselineValue} onChange={(e) => setDraft((p) => (p ? { ...p, baselineValue: e.target.value } : p))} className="border-border bg-muted/20 text-foreground" inputMode="decimal" />
             </div>
             <div className="grid gap-2">
               <Label>{t("target")}</Label>
-              <Input value={draft.targetValue} onChange={(e) => setDraft((p) => (p ? { ...p, targetValue: e.target.value } : p))} className="border-white/10 bg-black/20 text-white" inputMode="decimal" />
+              <Input value={draft.targetValue} onChange={(e) => setDraft((p) => (p ? { ...p, targetValue: e.target.value } : p))} className="border-border bg-muted/20 text-foreground" inputMode="decimal" />
             </div>
           </div>
 
@@ -353,24 +353,24 @@ export default function EditKpiPage() {
             <Input
               value={draft.formula}
               onChange={(e) => setDraft((p) => (p ? { ...p, formula: e.target.value } : p))}
-              className="border-white/10 bg-black/20 text-white"
+              className="border-border bg-muted/20 text-foreground"
               placeholder={t("formulaExample")}
             />
-            <p className="text-xs text-slate-300">{t("formulaHelp")}</p>
+            <p className="text-xs text-muted-foreground">{t("formulaHelp")}</p>
           </div>
         </CardContent>
       </Card>
 
-      <Card className="border-white/10 bg-white/5 text-white shadow-lg shadow-black/20">
+      <Card className="border-border bg-card/50 shadow-sm">
         <CardHeader>
           <div className="flex items-center justify-between gap-3">
             <div>
               <CardTitle className="text-base">{t("inputs")}</CardTitle>
-              <CardDescription className="text-slate-200">{t("atLeastOneInputDesc")}</CardDescription>
+              <CardDescription className="text-muted-foreground">{t("atLeastOneInputDesc")}</CardDescription>
             </div>
             <Button
               type="button"
-              className="bg-white/10 text-white hover:bg-white/15"
+              className="variant="secondary""
               disabled={submitting}
               onClick={() =>
                 setDraft((p) =>
@@ -402,9 +402,9 @@ export default function EditKpiPage() {
         </CardHeader>
         <CardContent className="space-y-4">
           {draft.variables.map((v, idx) => (
-            <div key={v.tempId} className="rounded-xl border border-white/10 bg-slate-950/40 p-4">
+            <div key={v.tempId} className="rounded-xl border border-border bg-muted/30 p-4">
               <div className="flex items-start justify-between gap-3">
-                <p className="text-sm font-semibold text-white">
+                <p className="text-sm font-semibold text-foreground">
                   {t("input")} #{idx + 1}
                 </p>
                 <Button
@@ -433,7 +433,7 @@ export default function EditKpiPage() {
                           : p,
                       )
                     }
-                    className="border-white/10 bg-black/20 text-white"
+                    className="border-border bg-muted/20 text-foreground"
                   />
                 </div>
                 <div className="grid gap-2">
@@ -450,7 +450,7 @@ export default function EditKpiPage() {
                           : p,
                       )
                     }
-                    className="border-white/10 bg-black/20 text-white"
+                    className="border-border bg-muted/20 text-foreground"
                   />
                 </div>
               </div>
@@ -469,7 +469,7 @@ export default function EditKpiPage() {
                         : p,
                     )
                   }
-                  className="border-white/10 bg-black/20 text-white"
+                  className="border-border bg-muted/20 text-foreground"
                   dir="rtl"
                 />
               </div>
@@ -490,7 +490,7 @@ export default function EditKpiPage() {
                       )
                     }
                   >
-                    <SelectTrigger className="border-white/10 bg-black/20 text-white">
+                    <SelectTrigger className="border-border bg-muted/20 text-foreground">
                       <SelectValue placeholder={t("select")} />
                     </SelectTrigger>
                     <SelectContent>
@@ -515,7 +515,7 @@ export default function EditKpiPage() {
                       )
                     }
                   >
-                    <SelectTrigger className="border-white/10 bg-black/20 text-white">
+                    <SelectTrigger className="border-border bg-muted/20 text-foreground">
                       <SelectValue placeholder={t("select")} />
                     </SelectTrigger>
                     <SelectContent>
@@ -540,7 +540,7 @@ export default function EditKpiPage() {
                       )
                     }
                   >
-                    <SelectTrigger className="border-white/10 bg-black/20 text-white">
+                    <SelectTrigger className="border-border bg-muted/20 text-foreground">
                       <SelectValue placeholder={t("select")} />
                     </SelectTrigger>
                     <SelectContent>
@@ -567,7 +567,7 @@ export default function EditKpiPage() {
                       )
                     }
                     inputMode="decimal"
-                    className="border-white/10 bg-black/20 text-white"
+                    className="border-border bg-muted/20 text-foreground"
                   />
                 </div>
               ) : null}
@@ -578,7 +578,7 @@ export default function EditKpiPage() {
             <Button variant="outline" asChild disabled={submitting}>
               <Link href={`/${locale}/kpis/${params.kpiId}`}>{t("cancel")}</Link>
             </Button>
-            <Button className="bg-white text-slate-900 hover:bg-slate-100" onClick={handleSave} disabled={!canSubmit || submitting}>
+            <Button className="variant="secondary"" onClick={handleSave} disabled={!canSubmit || submitting}>
               {submitting ? (
                 <span className="inline-flex items-center gap-2">
                   <Loader2 className="h-4 w-4 animate-spin" />

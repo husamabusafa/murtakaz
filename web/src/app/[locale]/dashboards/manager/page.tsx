@@ -25,39 +25,39 @@ export default function ManagerDashboardPage() {
       />
 
       <section className="grid gap-6 lg:grid-cols-3">
-        <Card className="border-white/10 bg-white/5 text-white shadow-lg shadow-black/20">
+        <Card className="border-border bg-card/50 shadow-sm">
           <CardHeader className="space-y-1">
             <div className="flex items-center justify-between">
               <CardTitle className="text-base">{t("teamVelocity")}</CardTitle>
-              <Icon name="tabler:users-group" className="text-slate-200" />
+              <Icon name="tabler:users-group" className="text-muted-foreground" />
             </div>
-            <CardDescription className="text-slate-200">{t("contributionTrendDesc")}</CardDescription>
+            <CardDescription className="text-muted-foreground">{t("contributionTrendDesc")}</CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">
             <SparkLine values={contributionTrend} color="#34d399" />
-            <div className="rounded-xl border border-white/10 bg-slate-950/40 px-4 py-3">
-              <p className="text-xs text-slate-200">{t("pendingApprovals")}</p>
-              <p className="mt-1 text-xl font-semibold text-white">{pendingApprovals.length}</p>
+            <div className="rounded-xl border border-border bg-muted/30 px-4 py-3">
+              <p className="text-xs text-muted-foreground">{t("pendingApprovals")}</p>
+              <p className="mt-1 text-xl font-semibold text-foreground">{pendingApprovals.length}</p>
             </div>
           </CardContent>
         </Card>
 
-        <Card className="border-white/10 bg-white/5 text-white shadow-lg shadow-black/20 lg:col-span-2">
+        <Card className="border-border bg-card/50 shadow-sm lg:col-span-2">
           <CardHeader className="space-y-1">
             <CardTitle className="text-base">{t("ownedInitiativesDemo")}</CardTitle>
-            <CardDescription className="text-slate-200">{t("managerOwnershipFilterDesc")}</CardDescription>
+            <CardDescription className="text-muted-foreground">{t("managerOwnershipFilterDesc")}</CardDescription>
           </CardHeader>
           <CardContent className="space-y-3">
             {atRisk.map((initiative) => (
               <Link
                 key={initiative.id}
                 href={`/${locale}/strategy/initiatives/${initiative.id}`}
-                className="block rounded-xl border border-white/10 bg-slate-950/40 px-4 py-3 transition hover:bg-white/5"
+                className="block rounded-xl border border-border bg-muted/30 px-4 py-3 transition hover:bg-card/50"
               >
                 <div className="flex items-start justify-between gap-3">
                   <div className="space-y-1">
-                    <p className="text-sm font-semibold text-white">{isArabic ? initiative.titleAr ?? initiative.title : initiative.title}</p>
-                    <p className="text-xs text-slate-200">{initiative.owner}</p>
+                    <p className="text-sm font-semibold text-foreground">{isArabic ? initiative.titleAr ?? initiative.title : initiative.title}</p>
+                    <p className="text-xs text-muted-foreground">{initiative.owner}</p>
                   </div>
                   <RagBadge health={initiative.health} />
                 </div>

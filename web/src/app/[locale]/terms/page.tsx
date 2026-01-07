@@ -17,12 +17,12 @@ export default function TermsPage() {
         icon={<Icon name="tabler:shield-check" className="h-5 w-5" />}
       />
 
-      <Card className="border-white/10 bg-white/5 text-white shadow-lg shadow-black/20">
+      <Card className="border-border bg-card/50 shadow-sm">
         <CardHeader>
           <CardTitle className="text-base">{t("termsGeneralTitle")}</CardTitle>
-          <CardDescription className="text-slate-200">{t("termsGeneralDesc")}</CardDescription>
+          <CardDescription className="text-muted-foreground">{t("termsGeneralDesc")}</CardDescription>
         </CardHeader>
-        <CardContent className="space-y-3 text-sm text-slate-200">
+        <CardContent className="space-y-3 text-sm text-muted-foreground">
           <p>{t("termsBulletAuthorizedUse")}</p>
           <p>{t("termsBulletRbac")}</p>
           <p>{t("termsBulletAudit")}</p>

@@ -23,13 +23,13 @@ export default function AboutPage() {
           { title: t("approach"), icon: "tabler:route", body: t("hierarchyDesc") },
           { title: t("governance"), icon: "tabler:gavel", body: t("auditableDecisions") },
         ].map((item) => (
-          <Card key={item.title} className="border-white/10 bg-white/5 text-white shadow-lg shadow-black/20">
+          <Card key={item.title} className="border-border bg-card/50 shadow-sm">
             <CardHeader className="space-y-2">
-              <div className="flex h-10 w-10 items-center justify-center rounded-2xl border border-white/10 bg-slate-950/40">
-                <Icon name={item.icon} className="h-5 w-5 text-slate-100" />
+              <div className="flex h-10 w-10 items-center justify-center rounded-2xl border border-border bg-muted/30">
+                <Icon name={item.icon} className="h-5 w-5 text-foreground" />
               </div>
               <CardTitle className="text-base">{item.title}</CardTitle>
-              <CardDescription className="text-slate-200">{item.body}</CardDescription>
+              <CardDescription className="text-muted-foreground">{item.body}</CardDescription>
             </CardHeader>
             <CardContent />
           </Card>

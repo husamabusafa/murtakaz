@@ -14,34 +14,34 @@ export default function ForgotPasswordPage() {
 
   return (
     <div className="mx-auto grid max-w-3xl place-items-center py-10">
-      <Card className="w-full border-white/10 bg-white/5 text-white shadow-lg shadow-black/20">
+      <Card className="w-full border-border bg-card/50 shadow-sm">
         <CardHeader className="space-y-2">
           <CardTitle className="text-2xl">{t("passwordReset")}</CardTitle>
-          <CardDescription className="text-slate-200">
+          <CardDescription className="text-muted-foreground">
             {t("forgotPasswordSubtitle")}
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
           {submitted ? (
-            <div className="rounded-xl border border-white/10 bg-slate-950/40 px-4 py-3 text-sm text-slate-100">
+            <div className="rounded-xl border border-border bg-muted/30 px-4 py-3 text-sm text-foreground">
               {t("resetLinkSentDesc")}{" "}
-              <span className="font-semibold text-white">{email || t("yourEmail")}</span>
+              <span className="font-semibold text-foreground">{email || t("yourEmail")}</span>
               {t("resetLinkSentEnd")}
             </div>
           ) : (
             <>
               <div className="space-y-2">
-                <p className="text-sm font-semibold text-white">{t("email")}</p>
+                <p className="text-sm font-semibold text-foreground">{t("email")}</p>
                 <Input
                   value={email}
                   onChange={(event) => setEmail(event.target.value)}
                   placeholder="name@company.com"
-                  className="border-white/10 bg-slate-950/40 text-white placeholder:text-slate-400"
+                  className="border-border bg-muted/30 text-foreground placeholder:text-muted-foreground"
                 />
               </div>
               <Button
                 onClick={() => setSubmitted(true)}
-                className="bg-white text-slate-900 hover:bg-slate-100"
+                className="variant="secondary""
               >
                 {t("sendResetLink")}
               </Button>

@@ -23,37 +23,37 @@ export default function EmployeeContributionDashboardPage() {
       />
 
       <section className="grid gap-6 lg:grid-cols-3">
-        <Card className="border-white/10 bg-white/5 text-white shadow-lg shadow-black/20">
+        <Card className="border-border bg-card/50 shadow-sm">
           <CardHeader className="space-y-1">
             <div className="flex items-center justify-between">
               <CardTitle className="text-base">{t("contributionVelocity")}</CardTitle>
-              <Icon name="tabler:bolt" className="text-slate-200" />
+              <Icon name="tabler:bolt" className="text-muted-foreground" />
             </div>
-            <CardDescription className="text-slate-200">{t("updatesPerPeriodDesc")}</CardDescription>
+            <CardDescription className="text-muted-foreground">{t("updatesPerPeriodDesc")}</CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">
             <SparkLine values={contributionTrend} color="#60a5fa" />
-            <div className="rounded-xl border border-white/10 bg-slate-950/40 px-4 py-3">
-              <p className="text-xs text-slate-200">{t("assignedProjects")}</p>
-              <p className="mt-1 text-xl font-semibold text-white">{projects.length}</p>
+            <div className="rounded-xl border border-border bg-muted/30 px-4 py-3">
+              <p className="text-xs text-muted-foreground">{t("assignedProjects")}</p>
+              <p className="mt-1 text-xl font-semibold text-foreground">{projects.length}</p>
             </div>
           </CardContent>
         </Card>
 
-        <Card className="border-white/10 bg-white/5 text-white shadow-lg shadow-black/20 lg:col-span-2">
+        <Card className="border-border bg-card/50 shadow-sm lg:col-span-2">
           <CardHeader className="space-y-1">
             <CardTitle className="text-base">{t("assignedWorkDemo")}</CardTitle>
-            <CardDescription className="text-slate-200">{t("teamAssignmentsFilterDesc")}</CardDescription>
+            <CardDescription className="text-muted-foreground">{t("teamAssignmentsFilterDesc")}</CardDescription>
           </CardHeader>
           <CardContent className="grid gap-3 md:grid-cols-2">
             {projects.map((project) => (
               <Link
                 key={project.id}
                 href={`/${locale}/projects/${project.id}`}
-                className="block rounded-xl border border-white/10 bg-slate-950/40 px-4 py-3 transition hover:bg-white/5"
+                className="block rounded-xl border border-border bg-muted/30 px-4 py-3 transition hover:bg-card/50"
               >
-                <p className="text-sm font-semibold text-white">{isArabic ? project.titleAr ?? project.title : project.title}</p>
-                <p className="mt-1 text-xs text-slate-200">{project.owner}</p>
+                <p className="text-sm font-semibold text-foreground">{isArabic ? project.titleAr ?? project.title : project.title}</p>
+                <p className="mt-1 text-xs text-muted-foreground">{project.owner}</p>
               </Link>
             ))}
           </CardContent>

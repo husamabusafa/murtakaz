@@ -28,9 +28,9 @@ type InboxItem = {
 
 function pillForKpiStatus(status: string) {
   if (status === "NO_DATA") return "border-border bg-muted/30 text-muted-foreground";
-  if (status === "DRAFT") return "border-amber-500/25 bg-amber-500/10 text-amber-100";
-  if (status === "SUBMITTED") return "border-indigo-500/25 bg-indigo-500/10 text-indigo-100";
-  if (status === "APPROVED" || status === "LOCKED") return "border-emerald-500/25 bg-emerald-500/10 text-emerald-100";
+  if (status === "DRAFT") return "border-amber-500/25 bg-amber-500/10 text-amber-700 dark:text-amber-100";
+  if (status === "SUBMITTED") return "border-indigo-500/25 bg-indigo-500/10 text-indigo-700 dark:text-indigo-100";
+  if (status === "APPROVED" || status === "LOCKED") return "border-emerald-500/25 bg-emerald-500/10 text-emerald-700 dark:text-emerald-100";
   return "border-border bg-muted/30 text-muted-foreground";
 }
 

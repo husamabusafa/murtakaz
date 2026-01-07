@@ -159,15 +159,15 @@ export function NodePickerTree(props: {
   const variant = props.variant ?? "light";
   const inputClassName =
     variant === "dark"
-      ? "border-white/10 bg-black/20 text-white placeholder:text-slate-400"
+      ? "border-border bg-muted/20 text-foreground placeholder:text-muted-foreground"
       : "border-border bg-card text-foreground placeholder:text-muted-foreground";
   const scrollClassName =
     variant === "dark"
-      ? "rounded-xl border border-white/10 bg-slate-950/40"
+      ? "rounded-xl border border-border bg-muted/30"
       : "rounded-xl border border-border bg-card";
-  const rowHoverClassName = variant === "dark" ? "hover:bg-white/5" : "hover:bg-accent";
-  const labelMutedClassName = variant === "dark" ? "text-slate-200" : "text-muted-foreground";
-  const checkClassName = variant === "dark" ? "bg-white/10 text-white" : "bg-muted text-foreground";
+  const rowHoverClassName = variant === "dark" ? "hover:bg-card/50" : "hover:bg-accent";
+  const labelMutedClassName = variant === "dark" ? "text-muted-foreground" : "text-muted-foreground";
+  const checkClassName = variant === "dark" ? "bg-muted/30 text-foreground" : "bg-muted text-foreground";
 
   const showSelectedIndicator = props.showSelectedIndicator ?? true;
   const showClear = props.showClear ?? true;
@@ -232,7 +232,7 @@ export function NodePickerTree(props: {
   return (
     <div className="grid gap-3">
       <div className="relative">
-        <Search className="pointer-events-none absolute start-3 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" />
+        <Search className="pointer-events-none absolute start-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
         <Input value={query} onChange={(e) => setQuery(e.target.value)} placeholder={props.searchPlaceholder} className={`ps-9 ${inputClassName}`} />
       </div>
 

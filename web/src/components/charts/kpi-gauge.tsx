@@ -4,13 +4,13 @@ import { graphic, type EChartsOption } from "echarts";
 import { useMemo } from "react";
 import { EChart } from "@/components/charts/echart";
 import { useLocale } from "@/providers/locale-provider";
+import { useTheme } from "@/providers/theme-provider";
 
 type KpiGaugeProps = {
   value: number | null | undefined;
   target: number | null | undefined;
   unit?: string | null;
   height?: number;
-  theme?: "dark" | "light";
   withCard?: boolean;
   label?: string; // optional subtitle under the number
 };
@@ -20,11 +20,11 @@ export function KpiGauge({
   target,
   unit,
   height = 200,
-  theme = "dark",
   withCard = true,
   label,
 }: KpiGaugeProps) {
   const { t } = useLocale();
+  const { theme } = useTheme();
   const effectiveLabel = label ?? t("current");
   const option = useMemo<EChartsOption>(() => {
     const safeValue = typeof value === "number" && Number.isFinite(value) ? value : 0;
@@ -90,8 +90,8 @@ export function KpiGauge({
           "border-radius: 14px; box-shadow: 0 18px 60px rgba(0,0,0,0.28); padding: 10px 12px;",
         formatter: () => {
           const v = safeValue;
-          const t = safeTarget;
-          const pct = t ? `${Math.round((v / t) * 100)}%` : "—";
+          const targetVal = safeTarget;
+          const pct = targetVal ? `${Math.round((v / targetVal) * 100)}%` : "—";
           return `
             <div style="display:flex; flex-direction:column; gap:6px;">
               <div style="display:flex; justify-content:space-between; gap:14px;">
@@ -99,10 +99,10 @@ export function KpiGauge({
                 <b>${fmt(v)}${unit ?? ""}</b>
               </div>
               ${
-                t
+                targetVal
                   ? `<div style="display:flex; justify-content:space-between; gap:14px;">
                        <span style="opacity:.75;">${t("target")}</span>
-                       <b>${fmt(t)}${unit ?? ""}</b>
+                       <b>${fmt(targetVal)}${unit ?? ""}</b>
                      </div>
                      <div style="display:flex; justify-content:space-between; gap:14px;">
                        <span style="opacity:.75;">${t("progress")}</span>
@@ -283,9 +283,9 @@ export function KpiGauge({
   if (!withCard) return Chart;
 
   return (
-    <div className="relative overflow-hidden rounded-2xl border border-white/10 bg-gradient-to-b from-white/5 to-white/[0.02] p-3 shadow-[0_20px_70px_rgba(0,0,0,0.35)]">
+    <div className="relative overflow-hidden rounded-2xl border border-border bg-card/30 p-3 shadow-lg dark:shadow-black/40">
       {/* soft glow */}
-      <div className="pointer-events-none absolute -top-10 left-1/2 h-40 w-40 -translate-x-1/2 rounded-full bg-white/10 blur-3xl" />
+      <div className="pointer-events-none absolute -top-10 left-1/2 h-40 w-40 -translate-x-1/2 rounded-full bg-primary/5 blur-3xl" />
       {Chart}
     </div>
   );

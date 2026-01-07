@@ -321,17 +321,17 @@ export default function KPIDetailPage() {
 
   if (loading) {
     return (
-      <div className="rounded-2xl border border-white/10 bg-white/5 p-8 text-white">
-        <p className="text-sm text-slate-200">{t("loadingEllipsis")}</p>
+      <div className="rounded-2xl border border-border bg-card p-8 text-foreground">
+        <p className="text-sm text-muted-foreground">{t("loadingEllipsis")}</p>
       </div>
     );
   }
 
   if (!kpi) {
     return (
-      <div className="rounded-2xl border border-white/10 bg-white/5 p-8 text-white">
-        <p className="text-sm text-slate-200">{t("kpiNotFound")}</p>
-        <Link href={`/${locale}/kpis`} className="mt-3 inline-flex text-sm font-semibold text-indigo-200 hover:text-indigo-100">
+      <div className="rounded-2xl border border-border bg-card p-8 text-foreground">
+        <p className="text-sm text-muted-foreground">{t("kpiNotFound")}</p>
+        <Link href={`/${locale}/kpis`} className="mt-3 inline-flex text-sm font-semibold text-primary hover:underline">
           {t("backToKpis")}
         </Link>
       </div>
@@ -347,27 +347,24 @@ export default function KPIDetailPage() {
       />
 
       <div className="grid gap-6 lg:grid-cols-3">
-        <Card className="border-white/10 bg-white/5 text-white shadow-lg shadow-black/20">
+        <Card>
           <CardHeader className="space-y-3">
             <div className="flex items-start justify-between gap-3">
               <div>
                 <CardTitle className="flex items-center gap-2 text-base">
-                  <Icon name="tabler:target-arrow" className="h-4 w-4 text-slate-100" />
+                  <Icon name="tabler:target-arrow" className="h-4 w-4 text-primary" />
                   {t("currentVsTarget")}
                 </CardTitle>
-                <CardDescription className="text-slate-200">{t("atAGlanceKpiPerformanceDesc")}</CardDescription>
+                <CardDescription>{t("atAGlanceKpiPerformanceDesc")}</CardDescription>
               </div>
               {canAdmin ? (
                 <div className="flex items-center gap-2">
-                  <Button asChild className="bg-white/10 text-white hover:bg-white/15">
+                  <Button asChild variant="secondary" size="sm">
                     <Link href={`/${locale}/kpis/${kpi.id}/edit`}>{t("edit")}</Link>
                   </Button>
-                  <Button variant="destructive" onClick={() => setDeleteOpen(true)} disabled={submitting}>
+                  <Button variant="destructive" size="sm" onClick={() => setDeleteOpen(true)} disabled={submitting}>
                     {submitting ? (
-                      <span className="inline-flex items-center gap-2">
-                        <Loader2 className="h-4 w-4 animate-spin" />
-                        {t("working")}
-                      </span>
+                      <Loader2 className="h-4 w-4 animate-spin" />
                     ) : (
                       t("delete")
                     )}
@@ -377,21 +374,21 @@ export default function KPIDetailPage() {
             </div>
           </CardHeader>
           <CardContent className="space-y-4">
-            <div className="rounded-xl border border-white/10 bg-slate-950/40 px-3 py-3">
+            <div className="rounded-xl border border-border bg-muted/20 px-3 py-3">
               <KpiGauge value={currentValue} target={kpi.targetValue} unit={df(kpi.unit, kpi.unitAr) || undefined} height={190} />
             </div>
 
             <div className="grid gap-3">
-              <div className="rounded-xl border border-white/10 bg-slate-950/40 px-4 py-3">
-                <p className="text-xs text-slate-200">{t("current")}</p>
-                <p className="text-2xl font-semibold text-white" dir="ltr">
+              <div className="rounded-xl border border-border bg-muted/30 px-4 py-3">
+                <p className="text-xs text-muted-foreground">{t("current")}</p>
+                <p className="text-2xl font-semibold text-foreground" dir="ltr">
                   {formatNumber(currentValue)}
                   {df(kpi.unit, kpi.unitAr)}
                 </p>
               </div>
-              <div className="rounded-xl border border-white/10 bg-slate-950/40 px-4 py-3">
-                <p className="text-xs text-slate-200">{t("target")}</p>
-                <p className="text-2xl font-semibold text-white" dir="ltr">
+              <div className="rounded-xl border border-border bg-muted/30 px-4 py-3">
+                <p className="text-xs text-muted-foreground">{t("target")}</p>
+                <p className="text-2xl font-semibold text-foreground" dir="ltr">
                   {formatNumber(kpi.targetValue)}
                   {df(kpi.unit, kpi.unitAr)}
                 </p>
@@ -400,74 +397,74 @@ export default function KPIDetailPage() {
           </CardContent>
         </Card>
 
-        <Card className="border-white/10 bg-white/5 text-white shadow-lg shadow-black/20 lg:col-span-2">
+        <Card className="lg:col-span-2">
           <CardHeader>
             <CardTitle className="flex items-center gap-2 text-base">
-              <Icon name="tabler:chart-line" className="h-4 w-4 text-slate-100" />
+              <Icon name="tabler:chart-line" className="h-4 w-4 text-primary" />
               {t("trend")}
             </CardTitle>
-            <CardDescription className="text-slate-200">{t("latestPeriods")}</CardDescription>
+            <CardDescription>{t("latestPeriods")}</CardDescription>
           </CardHeader>
           <CardContent>
-            <div className="rounded-xl border border-white/10 bg-slate-950/40 px-4 py-4">
+            <div className="rounded-xl border border-border bg-muted/20 px-4 py-4">
               <EChart option={trendOption} height={280} />
             </div>
           </CardContent>
         </Card>
       </div>
 
-      <Card className="border-white/10 bg-white/5 text-white shadow-lg shadow-black/20">
+      <Card>
         <CardHeader>
           <CardTitle className="flex items-center gap-2 text-base">
-            <Icon name="tabler:edit" className="h-4 w-4 text-slate-100" />
+            <Icon name="tabler:edit" className="h-4 w-4 text-primary" />
             {t("updateInputs")}
           </CardTitle>
-          <CardDescription className="text-slate-200">
+          <CardDescription>
             {kpi.formula ? t("calculatedUsingFormulaDesc") : t("formulaEmptyDesc")}
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
-          <div className="rounded-xl border border-white/10 bg-slate-950/40 px-4 py-3 text-sm text-slate-100">
-            <p className="text-xs font-semibold uppercase tracking-wide text-slate-200">{t("status")}</p>
+          <div className="rounded-xl border border-border bg-muted/30 px-4 py-3 text-sm text-foreground">
+            <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">{t("status")}</p>
             <p className="mt-1">{kpiValueStatusLabel(periodStatus)}</p>
             {data?.currentPeriod?.changesRequestedMessage ? (
               <div className="mt-3 rounded-lg border border-orange-500/30 bg-orange-500/10 px-3 py-2">
-                <p className="text-xs font-semibold text-orange-100">{t("requestedChanges")}</p>
-                <p className="mt-1 text-sm text-orange-50 whitespace-pre-wrap">{data.currentPeriod.changesRequestedMessage}</p>
-                <p className="mt-1 text-xs text-orange-100/80">
+                <p className="text-xs font-semibold text-orange-600 dark:text-orange-100">{t("requestedChanges")}</p>
+                <p className="mt-1 text-sm text-orange-700 dark:text-orange-50 whitespace-pre-wrap">{data.currentPeriod.changesRequestedMessage}</p>
+                <p className="mt-1 text-xs text-orange-600/80 dark:text-orange-100/80">
                   {(data.currentPeriod.changesRequestedByUser?.name ?? "—")}{" "}
                   {data.currentPeriod.changesRequestedAt ? `• ${formatDate(data.currentPeriod.changesRequestedAt, { dateStyle: "medium", timeStyle: "short" })}` : ""}
                 </p>
               </div>
             ) : null}
             {data?.currentPeriod?.submittedAt ? (
-              <p className="mt-1 text-xs text-slate-200">
+              <p className="mt-1 text-xs text-muted-foreground">
                 {t("statusSubmitted")} • {formatDate(data.currentPeriod.submittedAt, { dateStyle: "medium", timeStyle: "short" })} • {data.currentPeriod.submittedByUser?.name ?? "—"}
               </p>
             ) : null}
             {data?.currentPeriod?.approvedAt ? (
-              <p className="mt-1 text-xs text-slate-200">
+              <p className="mt-1 text-xs text-muted-foreground">
                 {t("statusApproved")} • {formatDate(data.currentPeriod.approvedAt, { dateStyle: "medium", timeStyle: "short" })} • {data.currentPeriod.approvedByUser?.name ?? "—"}
               </p>
             ) : null}
             {lockedForUser ? (
-              <p className="mt-2 text-xs text-slate-200">
+              <p className="mt-2 text-xs text-muted-foreground">
                 {t("periodSubmittedForApprovalDesc")}
               </p>
             ) : null}
           </div>
 
-          {error ? <div className="rounded-md border border-rose-500/30 bg-rose-500/10 p-3 text-sm text-rose-200 whitespace-pre-wrap">{error}</div> : null}
-          {issues ? <div className="rounded-md border border-rose-500/30 bg-rose-500/10 p-3 text-sm text-rose-200 whitespace-pre-wrap">{issues}</div> : null}
+          {error ? <div className="rounded-md border border-destructive/30 bg-destructive/10 p-3 text-sm text-destructive whitespace-pre-wrap">{error}</div> : null}
+          {issues ? <div className="rounded-md border border-destructive/30 bg-destructive/10 p-3 text-sm text-destructive whitespace-pre-wrap">{issues}</div> : null}
 
           {staticVariables.length ? (
-            <div className="rounded-xl border border-white/10 bg-slate-950/40 px-4 py-3">
-              <p className="text-xs font-semibold uppercase tracking-wide text-slate-200">{t("staticInputs")}</p>
+            <div className="rounded-xl border border-border bg-muted/20 px-4 py-3">
+              <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">{t("staticInputs")}</p>
               <div className="mt-2 grid gap-2 md:grid-cols-2">
                 {staticVariables.map((v) => (
-                  <div key={v.id} className="rounded-lg border border-white/10 bg-black/20 px-3 py-2">
-                    <p className="text-xs text-slate-200">{df(v.displayName, v.nameAr)}</p>
-                    <p className="text-sm text-white" dir="ltr">
+                  <div key={v.id} className="rounded-lg border border-border bg-background px-3 py-2">
+                    <p className="text-xs text-muted-foreground">{df(v.displayName, v.nameAr)}</p>
+                    <p className="text-sm font-medium" dir="ltr">
                       {formatNumber(v.staticValue)}
                     </p>
                   </div>
@@ -489,9 +486,9 @@ export default function KPIDetailPage() {
                     onChange={(e) => setValuesByVariableId((p) => ({ ...p, [v.id]: e.target.value }))}
                     inputMode="decimal"
                     disabled={lockedForUser}
-                    className="border-white/10 bg-black/20 text-white placeholder:text-slate-400"
+                    className="bg-background"
                   />
-                  <p className="text-xs text-slate-300" dir="ltr">
+                  <p className="text-[10px] text-muted-foreground opacity-70" dir="ltr">
                     {v.code}
                   </p>
                 </div>
@@ -505,7 +502,7 @@ export default function KPIDetailPage() {
                 onChange={(e) => setManualValue(e.target.value)}
                 inputMode="decimal"
                 disabled={lockedForUser}
-                className="border-white/10 bg-black/20 text-white placeholder:text-slate-400"
+                className="bg-background"
               />
             </div>
           )}
@@ -516,13 +513,13 @@ export default function KPIDetailPage() {
               value={note}
               onChange={(e) => setNote(e.target.value)}
               disabled={lockedForUser}
-              className="border-white/10 bg-black/20 text-white placeholder:text-slate-400"
+              className="bg-background"
               placeholder={t("addContextPlaceholder")}
             />
           </div>
 
           <div className="flex flex-wrap items-center gap-2">
-            <Button className="bg-white text-slate-900 hover:bg-slate-100" onClick={handleSaveDraft} disabled={submitting || lockedForUser}>
+            <Button onClick={handleSaveDraft} disabled={submitting || lockedForUser}>
               {submitting ? (
                 <span className="inline-flex items-center gap-2">
                   <Loader2 className="h-4 w-4 animate-spin" />
@@ -538,7 +535,7 @@ export default function KPIDetailPage() {
                 {periodStatus === "SUBMITTED" ? (
                   <Button
                     variant="outline"
-                    className="border-orange-500/40 bg-white/5 text-orange-200 hover:bg-orange-500/15 hover:text-orange-100"
+                    className="border-orange-500/40 text-orange-600 hover:bg-orange-500/10 dark:text-orange-200 dark:hover:bg-orange-500/15"
                     onClick={() => {
                       setRequestChangesMessage("");
                       setRequestChangesOpen(true);
@@ -548,12 +545,12 @@ export default function KPIDetailPage() {
                     {t("requestChanges")}
                   </Button>
                 ) : null}
-                <Button className="bg-emerald-500 text-white hover:bg-emerald-600" onClick={handleApprove} disabled={submitting}>
+                <Button className="bg-emerald-600 text-foreground hover:bg-emerald-700 dark:bg-emerald-500 dark:hover:bg-emerald-600" onClick={handleApprove} disabled={submitting}>
                   {t("approve")}
                 </Button>
               </>
             ) : (
-              <Button className="bg-orange-500 text-white hover:bg-orange-600" onClick={handleSubmitForApproval} disabled={submitting || lockedForUser}>
+              <Button variant="secondary" onClick={handleSubmitForApproval} disabled={submitting || lockedForUser}>
                 {t("sendForApproval")}
               </Button>
             )}
@@ -565,7 +562,7 @@ export default function KPIDetailPage() {
         <DialogContent className="sm:max-w-[520px]">
           <DialogHeader>
             <DialogTitle>{t("requestChanges")}</DialogTitle>
-            <DialogDescription className="text-slate-200">
+            <DialogDescription>
               {t("requestChangesExplainDesc")}
             </DialogDescription>
           </DialogHeader>
@@ -575,7 +572,7 @@ export default function KPIDetailPage() {
             <Textarea
               value={requestChangesMessage}
               onChange={(e) => setRequestChangesMessage(e.target.value)}
-              className="border-white/10 bg-black/20 text-white placeholder:text-slate-400"
+              className="bg-background"
               placeholder={t("requestChangesExamplePlaceholder")}
             />
           </div>
@@ -584,7 +581,6 @@ export default function KPIDetailPage() {
             <Button
               type="button"
               variant="outline"
-              className="border-white/15 bg-white/5 text-white hover:bg-white/10 hover:text-white"
               onClick={() => {
                 setRequestChangesOpen(false);
                 setRequestChangesMessage("");
@@ -595,7 +591,7 @@ export default function KPIDetailPage() {
             </Button>
             <Button
               type="button"
-              className="bg-orange-500 text-white hover:bg-orange-600"
+              variant="secondary"
               onClick={handleRequestChanges}
               disabled={submitting || requestChangesMessage.trim().length < 2}
             >
@@ -620,10 +616,10 @@ export default function KPIDetailPage() {
           </DialogHeader>
 
           {deleteError ? (
-            <div className="rounded-md border border-rose-500/30 bg-rose-500/10 p-3 text-sm text-rose-200 whitespace-pre-wrap">{deleteError}</div>
+            <div className="rounded-md border border-destructive/30 bg-destructive/10 p-3 text-sm text-destructive whitespace-pre-wrap">{deleteError}</div>
           ) : null}
 
-          <p className="text-sm text-slate-200">{t("permanentDeleteKpiDesc")}</p>
+          <p className="text-sm text-muted-foreground">{t("permanentDeleteKpiDesc")}</p>
 
           <DialogFooter>
             <Button variant="outline" onClick={() => setDeleteOpen(false)} disabled={submitting}>

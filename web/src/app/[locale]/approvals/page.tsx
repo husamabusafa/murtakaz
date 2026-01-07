@@ -54,13 +54,13 @@ export default function ApprovalsPage() {
         icon={<Icon name="tabler:gavel" className="h-5 w-5" />}
       />
 
-      <Card className="border-white/10 bg-white/5 text-white shadow-lg shadow-black/20">
+      <Card className="border-border bg-card/50 shadow-sm">
         <CardHeader>
           <CardTitle className="flex items-center gap-2 text-base">
-            <Icon name="tabler:checks" className="h-4 w-4 text-slate-100" />
+            <Icon name="tabler:checks" className="h-4 w-4 text-foreground" />
             {t("kpiApprovals")}
           </CardTitle>
-          <CardDescription className="text-slate-200">
+          <CardDescription className="text-muted-foreground">
             {t("submittedKpiValuesDesc")}
           </CardDescription>
         </CardHeader>
@@ -69,7 +69,7 @@ export default function ApprovalsPage() {
             <Button
               size="sm"
               variant={filter === "PENDING" ? "default" : "outline"}
-              className={filter === "PENDING" ? "" : "border-white/15 bg-white/5 text-white hover:bg-white/10 hover:text-white"}
+              className={filter === "PENDING" ? "" : "border-border bg-card/50 text-foreground hover:bg-muted/30 hover:text-foreground"}
               onClick={() => setFilter("PENDING")}
             >
               {t("pending")}
@@ -77,7 +77,7 @@ export default function ApprovalsPage() {
             <Button
               size="sm"
               variant={filter === "APPROVED" ? "default" : "outline"}
-              className={filter === "APPROVED" ? "" : "border-white/15 bg-white/5 text-white hover:bg-white/10 hover:text-white"}
+              className={filter === "APPROVED" ? "" : "border-border bg-card/50 text-foreground hover:bg-muted/30 hover:text-foreground"}
               onClick={() => setFilter("APPROVED")}
             >
               {t("approved")}
@@ -85,7 +85,7 @@ export default function ApprovalsPage() {
             <Button
               size="sm"
               variant={filter === "ALL" ? "default" : "outline"}
-              className={filter === "ALL" ? "" : "border-white/15 bg-white/5 text-white hover:bg-white/10 hover:text-white"}
+              className={filter === "ALL" ? "" : "border-border bg-card/50 text-foreground hover:bg-muted/30 hover:text-foreground"}
               onClick={() => setFilter("ALL")}
             >
               {t("all")}
@@ -98,56 +98,56 @@ export default function ApprovalsPage() {
             </div>
           ) : null}
 
-          <div className="overflow-hidden rounded-xl border border-white/10">
+          <div className="overflow-hidden rounded-xl border border-border">
             <Table>
               <TableHeader>
-                <TableRow className="border-white/10 hover:bg-white/0">
-                  <TableHead className="text-slate-200">{t("kpi")}</TableHead>
-                  <TableHead className="text-slate-200">{t("period")}</TableHead>
-                  <TableHead className="text-slate-200">{t("value")}</TableHead>
-                  <TableHead className="text-slate-200">{t("submittedBy")}</TableHead>
-                  <TableHead className="text-slate-200">{t("submittedAt")}</TableHead>
-                  <TableHead className="text-right text-slate-200">{t("status")}</TableHead>
+                <TableRow className="border-border hover:bg-white/0">
+                  <TableHead className="text-muted-foreground">{t("kpi")}</TableHead>
+                  <TableHead className="text-muted-foreground">{t("period")}</TableHead>
+                  <TableHead className="text-muted-foreground">{t("value")}</TableHead>
+                  <TableHead className="text-muted-foreground">{t("submittedBy")}</TableHead>
+                  <TableHead className="text-muted-foreground">{t("submittedAt")}</TableHead>
+                  <TableHead className="text-right text-muted-foreground">{t("status")}</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
                 {loading ? (
-                  <TableRow className="border-white/10">
-                    <TableCell colSpan={6} className="py-8 text-center text-slate-200">
+                  <TableRow className="border-border">
+                    <TableCell colSpan={6} className="py-8 text-center text-muted-foreground">
                       {t("loading")}…
                     </TableCell>
                   </TableRow>
                 ) : rows.length === 0 ? (
-                  <TableRow className="border-white/10">
-                    <TableCell colSpan={6} className="py-8 text-center text-slate-200">
+                  <TableRow className="border-border">
+                    <TableCell colSpan={6} className="py-8 text-center text-muted-foreground">
                       {t("noApprovalsFound")}
                     </TableCell>
                   </TableRow>
                 ) : (
                   rows.map((row) => (
-                    <TableRow key={row.id} className="border-white/10 hover:bg-white/5">
-                      <TableCell className="font-medium text-white">
+                    <TableRow key={row.id} className="border-border hover:bg-card/50">
+                      <TableCell className="font-medium text-foreground">
                         <Link href={`/${locale}/kpis/${row.kpiId}`} className="hover:underline">
                           {row.kpi.name}
                         </Link>
-                        <p className="mt-1 text-xs text-slate-200">
+                        <p className="mt-1 text-xs text-muted-foreground">
                           {(row.kpi.primaryNode?.nodeType
                             ? nodeTypeLabel(row.kpi.primaryNode.nodeType.code, row.kpi.primaryNode.nodeType.displayName)
                             : t("type"))}{" "}
                           • {row.kpi.primaryNode?.name ?? "—"}
                         </p>
                       </TableCell>
-                      <TableCell className="text-slate-200" dir="ltr">
+                      <TableCell className="text-muted-foreground" dir="ltr">
                         {formatDate(row.periodEnd)}
                       </TableCell>
-                      <TableCell className="text-slate-200" dir="ltr">
+                      <TableCell className="text-muted-foreground" dir="ltr">
                         {formatNumber(row.calculatedValue)}
                       </TableCell>
-                      <TableCell className="text-slate-200">{row.submittedByUser?.name ?? "—"}</TableCell>
-                      <TableCell className="text-slate-200" dir="ltr">
+                      <TableCell className="text-muted-foreground">{row.submittedByUser?.name ?? "—"}</TableCell>
+                      <TableCell className="text-muted-foreground" dir="ltr">
                         {row.submittedAt ? formatDate(row.submittedAt, { dateStyle: "medium", timeStyle: "short" }) : "—"}
                       </TableCell>
-                      <TableCell className="text-right text-slate-200">{kpiValueStatusLabel(String(row.status))}</TableCell>
+                      <TableCell className="text-right text-muted-foreground">{kpiValueStatusLabel(String(row.status))}</TableCell>
                     </TableRow>
                   ))
                 )}

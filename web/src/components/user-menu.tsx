@@ -59,34 +59,34 @@ export function UserMenu() {
   return (
     <DropdownMenu>
       <DropdownMenuTrigger className="rounded-full outline-none ring-offset-background focus-visible:ring-2 focus-visible:ring-white/20 focus-visible:ring-offset-2">
-        <Avatar className="h-9 w-9 border border-white/10 bg-white/5">
-          <AvatarFallback className="bg-white/10 text-xs font-semibold text-white">{initials}</AvatarFallback>
+        <Avatar className="h-9 w-9 border border-border bg-card/50">
+          <AvatarFallback className="bg-muted/30 text-xs font-semibold text-foreground">{initials}</AvatarFallback>
         </Avatar>
       </DropdownMenuTrigger>
-      <DropdownMenuContent align={dir === "rtl" ? "start" : "end"} className="w-64 border-white/10 bg-slate-950 text-white">
+      <DropdownMenuContent align={dir === "rtl" ? "start" : "end"} className="w-64 border-border bg-popover text-foreground">
         <DropdownMenuLabel className="space-y-1">
           <p className="text-sm font-semibold">{user.name}</p>
-          <p className="text-xs font-normal text-slate-300">
+          <p className="text-xs font-normal text-muted-foreground">
             {roleLabel(userRole ?? "", t)}
             {userDepartment ? ` • ${departmentLabel(userDepartment, t)}` : ""}
           </p>
         </DropdownMenuLabel>
-        <DropdownMenuSeparator className="bg-white/10" />
-        <DropdownMenuItem asChild className="focus:bg-white/10 focus:text-white">
+        <DropdownMenuSeparator className="bg-muted/30" />
+        <DropdownMenuItem asChild className="focus:bg-muted/30 focus:text-foreground">
           <Link href={`/${locale}/profile`}>{t("profile")}</Link>
         </DropdownMenuItem>
         {userRole === "ADMIN" ? (
-          <DropdownMenuItem asChild className="focus:bg-white/10 focus:text-white">
+          <DropdownMenuItem asChild className="focus:bg-muted/30 focus:text-foreground">
             <Link href={`/${locale}/admin`}>{t("admin")}</Link>
           </DropdownMenuItem>
         ) : null}
         {userRole === "SUPER_ADMIN" ? (
-          <DropdownMenuItem asChild className="focus:bg-white/10 focus:text-white">
+          <DropdownMenuItem asChild className="focus:bg-muted/30 focus:text-foreground">
             <Link href={`/${locale}/super-admin`}>{t("superAdmin")}</Link>
           </DropdownMenuItem>
         ) : null}
-        <DropdownMenuSeparator className="bg-white/10" />
-        <DropdownMenuItem className="focus:bg-white/10 focus:text-white" onClick={() => void signOut()}>
+        <DropdownMenuSeparator className="bg-muted/30" />
+        <DropdownMenuItem className="focus:bg-muted/30 focus:text-foreground" onClick={() => void signOut()}>
           {t("signOut")}
         </DropdownMenuItem>
       </DropdownMenuContent>

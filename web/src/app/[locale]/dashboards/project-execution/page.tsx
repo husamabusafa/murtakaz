@@ -27,13 +27,13 @@ export default function ProjectExecutionDashboardPage() {
       />
 
       <section className="grid gap-6 lg:grid-cols-3">
-        <Card className="border-white/10 bg-white/5 text-white shadow-lg shadow-black/20 lg:col-span-2">
+        <Card className="border-border bg-card/50 shadow-sm lg:col-span-2">
           <CardHeader className="space-y-1">
             <div className="flex items-center justify-between">
               <CardTitle className="text-base">{t("milestoneCompletion")}</CardTitle>
-              <Icon name="tabler:timeline" className="text-slate-200" />
+              <Icon name="tabler:timeline" className="text-muted-foreground" />
             </div>
-            <CardDescription className="text-slate-200">{t("completionByProjectDesc")}</CardDescription>
+            <CardDescription className="text-muted-foreground">{t("completionByProjectDesc")}</CardDescription>
           </CardHeader>
           <CardContent>
             <Bar
@@ -45,10 +45,10 @@ export default function ProjectExecutionDashboardPage() {
           </CardContent>
         </Card>
 
-        <Card className="border-white/10 bg-white/5 text-white shadow-lg shadow-black/20">
+        <Card className="border-border bg-card/50 shadow-sm">
           <CardHeader className="space-y-1">
             <CardTitle className="text-base">{t("dependencyWatch")}</CardTitle>
-            <CardDescription className="text-slate-200">{t("projectsWithDependenciesDesc")}</CardDescription>
+            <CardDescription className="text-muted-foreground">{t("projectsWithDependenciesDesc")}</CardDescription>
           </CardHeader>
           <CardContent className="space-y-3">
             {projects
@@ -57,10 +57,10 @@ export default function ProjectExecutionDashboardPage() {
                 <Link
                   key={project.id}
                   href={`/${locale}/projects/${project.id}`}
-                  className="block rounded-xl border border-white/10 bg-slate-950/40 px-4 py-3 transition hover:bg-white/5"
+                  className="block rounded-xl border border-border bg-muted/30 px-4 py-3 transition hover:bg-card/50"
                 >
-                  <p className="text-sm font-semibold text-white">{isArabic ? project.titleAr ?? project.title : project.title}</p>
-                  <p className="mt-1 text-xs text-slate-200">{project.dependencies?.join(" • ")}</p>
+                  <p className="text-sm font-semibold text-foreground">{isArabic ? project.titleAr ?? project.title : project.title}</p>
+                  <p className="mt-1 text-xs text-muted-foreground">{project.dependencies?.join(" • ")}</p>
                 </Link>
               ))}
           </CardContent>
@@ -68,25 +68,25 @@ export default function ProjectExecutionDashboardPage() {
       </section>
 
       <section>
-        <Card className="border-white/10 bg-white/5 text-white shadow-lg shadow-black/20">
+        <Card className="border-border bg-card/50 shadow-sm">
           <CardHeader className="space-y-1">
             <CardTitle className="text-base">{t("projectPortfolio")}</CardTitle>
-            <CardDescription className="text-slate-200">{t("healthStatusDrilldownDesc")}</CardDescription>
+            <CardDescription className="text-muted-foreground">{t("healthStatusDrilldownDesc")}</CardDescription>
           </CardHeader>
           <CardContent className="grid gap-3 md:grid-cols-2 lg:grid-cols-3">
             {projects.map((project) => (
               <Link
                 key={project.id}
                 href={`/${locale}/projects/${project.id}`}
-                className="block rounded-xl border border-white/10 bg-slate-950/40 px-4 py-3 transition hover:bg-white/5"
+                className="block rounded-xl border border-border bg-muted/30 px-4 py-3 transition hover:bg-card/50"
               >
                 <div className="flex items-start justify-between gap-3">
                   <div className="space-y-1">
-                    <p className="text-sm font-semibold text-white">{isArabic ? project.titleAr ?? project.title : project.title}</p>
-                    <p className="text-xs text-slate-200">{project.owner}</p>
+                    <p className="text-sm font-semibold text-foreground">{isArabic ? project.titleAr ?? project.title : project.title}</p>
+                    <p className="text-xs text-muted-foreground">{project.owner}</p>
                     <div className="flex items-center gap-2 pt-1">
                       <StatusBadge status={project.status} />
-                      <p className="text-xs text-slate-300">
+                      <p className="text-xs text-muted-foreground">
                         {project.milestonesComplete}/{project.milestonesTotal}
                       </p>
                     </div>

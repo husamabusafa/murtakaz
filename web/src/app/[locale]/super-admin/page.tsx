@@ -43,10 +43,10 @@ export default function SuperAdminPage() {
       />
 
       <div className="grid gap-6 lg:grid-cols-3">
-        <Card className="border-white/10 bg-white/5 text-white shadow-lg shadow-black/20">
+        <Card className="border-border bg-card/50 shadow-sm">
           <CardHeader>
             <CardTitle className="text-base">{t("organizations")}</CardTitle>
-            <CardDescription className="text-slate-200">{t("totalOrganizations")}</CardDescription>
+            <CardDescription className="text-muted-foreground">{t("totalOrganizations")}</CardDescription>
           </CardHeader>
           <CardContent className="text-3xl font-semibold">
             {loading ? "—" : (stats?.organizations ?? 0)}
@@ -61,10 +61,10 @@ export default function SuperAdminPage() {
           </CardContent>
         </Card>
 
-        <Card className="border-white/10 bg-white/5 text-white shadow-lg shadow-black/20">
+        <Card className="border-border bg-card/50 shadow-sm">
           <CardHeader>
             <CardTitle className="text-base">{t("users")}</CardTitle>
-            <CardDescription className="text-slate-200">{t("totalUsers")}</CardDescription>
+            <CardDescription className="text-muted-foreground">{t("totalUsers")}</CardDescription>
           </CardHeader>
           <CardContent className="text-3xl font-semibold">
             {loading ? "—" : (stats?.users ?? 0)}
@@ -79,19 +79,19 @@ export default function SuperAdminPage() {
           </CardContent>
         </Card>
 
-        <Card className="border-white/10 bg-white/5 text-white shadow-lg shadow-black/20">
+        <Card className="border-border bg-card/50 shadow-sm">
           <CardHeader>
             <CardTitle className="text-base">{t("overview")}</CardTitle>
-            <CardDescription className="text-slate-200">{t("quickNavigation")}</CardDescription>
+            <CardDescription className="text-muted-foreground">{t("quickNavigation")}</CardDescription>
           </CardHeader>
-          <CardContent className="space-y-3 text-sm text-slate-100">
-            <div className="rounded-xl border border-white/10 bg-slate-950/40 px-4 py-3">
-              <p className="font-semibold text-white">{t("organizations")}</p>
-              <p className="mt-1 text-xs text-slate-200">{t("reviewTenantsDesc")}</p>
+          <CardContent className="space-y-3 text-sm text-foreground">
+            <div className="rounded-xl border border-border bg-muted/30 px-4 py-3">
+              <p className="font-semibold text-foreground">{t("organizations")}</p>
+              <p className="mt-1 text-xs text-muted-foreground">{t("reviewTenantsDesc")}</p>
             </div>
-            <div className="rounded-xl border border-white/10 bg-slate-950/40 px-4 py-3">
-              <p className="font-semibold text-white">{t("users")}</p>
-              <p className="mt-1 text-xs text-slate-200">{t("searchAndManageUsersDesc")}</p>
+            <div className="rounded-xl border border-border bg-muted/30 px-4 py-3">
+              <p className="font-semibold text-foreground">{t("users")}</p>
+              <p className="mt-1 text-xs text-muted-foreground">{t("searchAndManageUsersDesc")}</p>
             </div>
           </CardContent>
         </Card>

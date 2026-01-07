@@ -34,8 +34,8 @@ export default function RiskDetailPage() {
 
   if (!baseRisk) {
     return (
-      <div className="rounded-2xl border border-white/10 bg-white/5 p-8 text-white">
-        <p className="text-sm text-slate-200">{t("riskNotFound")}</p>
+      <div className="rounded-2xl border border-border bg-card/50 p-8 text-foreground">
+        <p className="text-sm text-muted-foreground">{t("riskNotFound")}</p>
         <Link href={`/${locale}/risks`} className="mt-3 inline-flex text-sm font-semibold text-indigo-200 hover:text-indigo-100">
           {t("backToRisks")}
         </Link>
@@ -45,8 +45,8 @@ export default function RiskDetailPage() {
 
   if (!hydrated) {
     return (
-      <div className="rounded-2xl border border-white/10 bg-white/5 p-8 text-white">
-        <p className="text-sm text-slate-200">{t("loadingRisk")}</p>
+      <div className="rounded-2xl border border-border bg-card/50 p-8 text-foreground">
+        <p className="text-sm text-muted-foreground">{t("loadingRisk")}</p>
       </div>
     );
   }
@@ -67,7 +67,7 @@ export default function RiskDetailPage() {
           <div className="flex items-center gap-2">
             <Button
               variant="secondary"
-              className="bg-white text-slate-900 hover:bg-slate-100"
+              className="variant="secondary""
               onClick={() =>
                 update({
                   ...risk,
@@ -93,7 +93,7 @@ export default function RiskDetailPage() {
             </Button>
             <Button
               variant="outline"
-              className="border-white/15 bg-white/5 text-white hover:bg-white/10 hover:text-white"
+              className="border-border bg-card/50 text-foreground hover:bg-muted/30 hover:text-foreground"
               onClick={() =>
                 update({
                   ...risk,
@@ -120,45 +120,45 @@ export default function RiskDetailPage() {
       />
 
       <Tabs defaultValue="summary" className="space-y-6">
-        <TabsList className="border border-white/10 bg-white/5">
-          <TabsTrigger value="summary" className="data-[state=active]:bg-white/10 data-[state=active]:text-white">
+        <TabsList className="border border-border bg-card/50">
+          <TabsTrigger value="summary" className="data-[state=active]:bg-muted/30 data-[state=active]:text-foreground">
             {t("summary")}
           </TabsTrigger>
-          <TabsTrigger value="mitigation" className="data-[state=active]:bg-white/10 data-[state=active]:text-white">
+          <TabsTrigger value="mitigation" className="data-[state=active]:bg-muted/30 data-[state=active]:text-foreground">
             {t("mitigation")}
           </TabsTrigger>
-          <TabsTrigger value="history" className="data-[state=active]:bg-white/10 data-[state=active]:text-white">
+          <TabsTrigger value="history" className="data-[state=active]:bg-muted/30 data-[state=active]:text-foreground">
             {t("history")}
           </TabsTrigger>
         </TabsList>
 
         <TabsContent value="summary" className="grid gap-6 lg:grid-cols-3">
-          <Card className="border-white/10 bg-white/5 text-white shadow-lg shadow-black/20 lg:col-span-2">
+          <Card className="border-border bg-card/50 shadow-sm lg:col-span-2">
             <CardHeader>
               <CardTitle className="flex items-center gap-2 text-base">
-                <Icon name="tabler:info-circle" className="h-4 w-4 text-slate-100" />
+                <Icon name="tabler:info-circle" className="h-4 w-4 text-foreground" />
                 {t("riskSummary")}
               </CardTitle>
-              <CardDescription className="text-slate-200">{t("riskSummaryDesc")}</CardDescription>
+              <CardDescription className="text-muted-foreground">{t("riskSummaryDesc")}</CardDescription>
             </CardHeader>
-            <CardContent className="space-y-4 text-sm text-slate-100">
+            <CardContent className="space-y-4 text-sm text-foreground">
               <div className="grid gap-3 md:grid-cols-2">
-                <div className="rounded-xl border border-white/10 bg-slate-950/40 px-4 py-3">
-                  <p className="text-xs font-semibold uppercase tracking-wide text-slate-200">{t("status")}</p>
-                  <p className="mt-1 text-white">{risk.status}</p>
+                <div className="rounded-xl border border-border bg-muted/30 px-4 py-3">
+                  <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">{t("status")}</p>
+                  <p className="mt-1 text-foreground">{risk.status}</p>
                 </div>
-                <div className="rounded-xl border border-white/10 bg-slate-950/40 px-4 py-3">
-                  <p className="text-xs font-semibold uppercase tracking-wide text-slate-200">{t("escalation")}</p>
-                  <p className="mt-1 text-white">{risk.escalated ? t("escalated") : t("notEscalated")}</p>
+                <div className="rounded-xl border border-border bg-muted/30 px-4 py-3">
+                  <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">{t("escalation")}</p>
+                  <p className="mt-1 text-foreground">{risk.escalated ? t("escalated") : t("notEscalated")}</p>
                 </div>
               </div>
-              <div className="rounded-xl border border-white/10 bg-slate-950/40 px-4 py-3">
-                <p className="text-xs font-semibold uppercase tracking-wide text-slate-200">{t("context")}</p>
-                <p className="mt-1 text-white">{context}</p>
+              <div className="rounded-xl border border-border bg-muted/30 px-4 py-3">
+                <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">{t("context")}</p>
+                <p className="mt-1 text-foreground">{context}</p>
               </div>
-              <Separator className="bg-white/10" />
-              <div className="rounded-xl border border-white/10 bg-slate-950/40 px-4 py-3">
-                <p className="text-xs font-semibold uppercase tracking-wide text-slate-200">{t("addNote")}</p>
+              <Separator className="bg-muted/30" />
+              <div className="rounded-xl border border-border bg-muted/30 px-4 py-3">
+                <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">{t("addNote")}</p>
                 <RiskNoteEditor
                   onSubmit={(message) =>
                     update({
@@ -174,47 +174,47 @@ export default function RiskDetailPage() {
             </CardContent>
           </Card>
 
-          <Card className="border-white/10 bg-white/5 text-white shadow-lg shadow-black/20">
+          <Card className="border-border bg-card/50 shadow-sm">
             <CardHeader>
               <CardTitle className="flex items-center gap-2 text-base">
-                <Icon name="tabler:clipboard-list" className="h-4 w-4 text-slate-100" />
+                <Icon name="tabler:clipboard-list" className="h-4 w-4 text-foreground" />
                 {t("quickLinks")}
               </CardTitle>
-              <CardDescription className="text-slate-200">{t("relatedDashboardsDesc")}</CardDescription>
+              <CardDescription className="text-muted-foreground">{t("relatedDashboardsDesc")}</CardDescription>
             </CardHeader>
-            <CardContent className="space-y-2 text-sm text-slate-100">
+            <CardContent className="space-y-2 text-sm text-foreground">
               <Link
                 href={`/${locale}/dashboards/risk-escalation`}
-                className="block rounded-xl border border-white/10 bg-slate-950/40 px-4 py-3 transition hover:bg-white/5"
+                className="block rounded-xl border border-border bg-muted/30 px-4 py-3 transition hover:bg-card/50"
               >
-                <p className="flex items-center gap-2 font-semibold text-white">
-                  <Icon name="tabler:shield-exclamation" className="h-4 w-4 text-slate-100" />
+                <p className="flex items-center gap-2 font-semibold text-foreground">
+                  <Icon name="tabler:shield-exclamation" className="h-4 w-4 text-foreground" />
                   {t("riskDashboard")}
                 </p>
-                <p className="mt-1 text-xs text-slate-200">{t("severityDistributionDesc")}</p>
+                <p className="mt-1 text-xs text-muted-foreground">{t("severityDistributionDesc")}</p>
               </Link>
               <Link
                 href={`/${locale}/approvals`}
-                className="block rounded-xl border border-white/10 bg-slate-950/40 px-4 py-3 transition hover:bg-white/5"
+                className="block rounded-xl border border-border bg-muted/30 px-4 py-3 transition hover:bg-card/50"
               >
-                <p className="flex items-center gap-2 font-semibold text-white">
-                  <Icon name="tabler:gavel" className="h-4 w-4 text-slate-100" />
+                <p className="flex items-center gap-2 font-semibold text-foreground">
+                  <Icon name="tabler:gavel" className="h-4 w-4 text-foreground" />
                   {t("governanceQueue")}
                 </p>
-                <p className="mt-1 text-xs text-slate-200">{t("reviewApprovalsDesc")}</p>
+                <p className="mt-1 text-xs text-muted-foreground">{t("reviewApprovalsDesc")}</p>
               </Link>
             </CardContent>
           </Card>
         </TabsContent>
 
         <TabsContent value="mitigation" className="grid gap-6 lg:grid-cols-3">
-          <Card className="border-white/10 bg-white/5 text-white shadow-lg shadow-black/20 lg:col-span-2">
+          <Card className="border-border bg-card/50 shadow-sm lg:col-span-2">
             <CardHeader>
               <CardTitle className="flex items-center gap-2 text-base">
-                <Icon name="tabler:clipboard-text" className="h-4 w-4 text-slate-100" />
+                <Icon name="tabler:clipboard-text" className="h-4 w-4 text-foreground" />
                 {t("mitigationPlan")}
               </CardTitle>
-              <CardDescription className="text-slate-200">{t("addMitigationStepsDesc")}</CardDescription>
+              <CardDescription className="text-muted-foreground">{t("addMitigationStepsDesc")}</CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">
               <MitigationEditor
@@ -230,25 +230,25 @@ export default function RiskDetailPage() {
                 }
               />
 
-              <Separator className="bg-white/10" />
+              <Separator className="bg-muted/30" />
 
               <div className="space-y-2">
                 {risk.mitigation.length === 0 ? (
-                  <p className="text-sm text-slate-200">{t("noMitigationStepsYet")}</p>
+                  <p className="text-sm text-muted-foreground">{t("noMitigationStepsYet")}</p>
                 ) : (
                   risk.mitigation.map((step) => (
-                    <div key={step.id} className="rounded-xl border border-white/10 bg-slate-950/40 px-4 py-3">
+                    <div key={step.id} className="rounded-xl border border-border bg-muted/30 px-4 py-3">
                       <div className="flex items-start justify-between gap-3">
                         <div className="space-y-1">
-                          <p className="text-sm font-semibold text-white">{step.text}</p>
-                          <p className="text-xs text-slate-200">
+                          <p className="text-sm font-semibold text-foreground">{step.text}</p>
+                          <p className="text-xs text-muted-foreground">
                             {step.owner ? `${t("owner")}: ${step.owner}` : `${t("owner")}: —`}
                             {step.due ? ` • ${t("due")}: ${step.due}` : ""}
                           </p>
                         </div>
                         <Button
                           variant="ghost"
-                          className="h-9 w-9 px-0 text-slate-200 hover:bg-white/5 hover:text-white"
+                          className="h-9 w-9 px-0 text-muted-foreground hover:bg-card/50 hover:text-foreground"
                           onClick={() =>
                             update({
                               ...risk,
@@ -270,48 +270,48 @@ export default function RiskDetailPage() {
             </CardContent>
           </Card>
 
-          <Card className="border-white/10 bg-white/5 text-white shadow-lg shadow-black/20">
+          <Card className="border-border bg-card/50 shadow-sm">
             <CardHeader>
               <CardTitle className="flex items-center gap-2 text-base">
                 <Icon name="tabler:alert-triangle" className="h-4 w-4 text-amber-200" />
                 {t("guidance")}
               </CardTitle>
-              <CardDescription className="text-slate-200">{t("recommendedGovernanceWorkflowDesc")}</CardDescription>
+              <CardDescription className="text-muted-foreground">{t("recommendedGovernanceWorkflowDesc")}</CardDescription>
             </CardHeader>
-            <CardContent className="space-y-2 text-sm text-slate-100">
-              <div className="rounded-xl border border-white/10 bg-slate-950/40 px-4 py-3">
-                <p className="font-semibold text-white">{t("assignOwners")}</p>
-                <p className="mt-1 text-xs text-slate-200">{t("defineAccountabilityDesc")}</p>
+            <CardContent className="space-y-2 text-sm text-foreground">
+              <div className="rounded-xl border border-border bg-muted/30 px-4 py-3">
+                <p className="font-semibold text-foreground">{t("assignOwners")}</p>
+                <p className="mt-1 text-xs text-muted-foreground">{t("defineAccountabilityDesc")}</p>
               </div>
-              <div className="rounded-xl border border-white/10 bg-slate-950/40 px-4 py-3">
-                <p className="font-semibold text-white">{t("escalateCriticalRisks")}</p>
-                <p className="mt-1 text-xs text-slate-200">{t("flagForExecutiveDesc")}</p>
+              <div className="rounded-xl border border-border bg-muted/30 px-4 py-3">
+                <p className="font-semibold text-foreground">{t("escalateCriticalRisks")}</p>
+                <p className="mt-1 text-xs text-muted-foreground">{t("flagForExecutiveDesc")}</p>
               </div>
-              <div className="rounded-xl border border-white/10 bg-slate-950/40 px-4 py-3">
-                <p className="font-semibold text-white">{t("closeWithNote")}</p>
-                <p className="mt-1 text-xs text-slate-200">{t("ensureAuditabilityDesc")}</p>
+              <div className="rounded-xl border border-border bg-muted/30 px-4 py-3">
+                <p className="font-semibold text-foreground">{t("closeWithNote")}</p>
+                <p className="mt-1 text-xs text-muted-foreground">{t("ensureAuditabilityDesc")}</p>
               </div>
             </CardContent>
           </Card>
         </TabsContent>
 
         <TabsContent value="history">
-          <Card className="border-white/10 bg-white/5 text-white shadow-lg shadow-black/20">
+          <Card className="border-border bg-card/50 shadow-sm">
             <CardHeader>
               <CardTitle className="flex items-center gap-2 text-base">
-                <Icon name="tabler:history" className="h-4 w-4 text-slate-100" />
+                <Icon name="tabler:history" className="h-4 w-4 text-foreground" />
                 {t("activityLog")}
               </CardTitle>
-              <CardDescription className="text-slate-200">{t("timelineRiskUpdatesDesc")}</CardDescription>
+              <CardDescription className="text-muted-foreground">{t("timelineRiskUpdatesDesc")}</CardDescription>
             </CardHeader>
             <CardContent className="space-y-3">
               {risk.notes.length === 0 ? (
-                <p className="text-sm text-slate-200">{t("noActivityRecorded")}</p>
+                <p className="text-sm text-muted-foreground">{t("noActivityRecorded")}</p>
               ) : (
                 risk.notes.map((note) => (
-                  <div key={note.id} className="rounded-xl border border-white/10 bg-slate-950/40 px-4 py-3">
-                    <p className="text-sm font-semibold text-white">{note.message}</p>
-                    <p className="mt-1 text-xs text-slate-200">
+                  <div key={note.id} className="rounded-xl border border-border bg-muted/30 px-4 py-3">
+                    <p className="text-sm font-semibold text-foreground">{note.message}</p>
+                    <p className="mt-1 text-xs text-muted-foreground">
                       {note.author} • {new Date(note.at).toLocaleString()}
                     </p>
                   </div>
@@ -334,10 +334,10 @@ function RiskNoteEditor({ onSubmit }: { onSubmit: (message: string) => void }) {
         value={message}
         onChange={(e) => setMessage(e.target.value)}
         placeholder={t("addRiskNotePlaceholder")}
-        className="border-white/10 bg-black/20 text-white placeholder:text-slate-400"
+        className="border-border bg-muted/20 text-foreground placeholder:text-muted-foreground"
       />
       <Button
-        className="bg-white text-slate-900 hover:bg-slate-100"
+        className="variant="secondary""
         disabled={message.trim().length === 0}
         onClick={() => {
           onSubmit(message.trim());
@@ -366,30 +366,30 @@ function MitigationEditor({
   return (
     <div className="grid gap-3 md:grid-cols-3">
       <div className="space-y-2 md:col-span-3">
-        <p className="text-sm font-semibold text-white">{t("newMitigationStep")}</p>
+        <p className="text-sm font-semibold text-foreground">{t("newMitigationStep")}</p>
         <Input
           value={text}
           onChange={(e) => setText(e.target.value)}
           placeholder={t("describeMitigationActionPlaceholder")}
-          className="border-white/10 bg-black/20 text-white placeholder:text-slate-400"
+          className="border-border bg-muted/20 text-foreground placeholder:text-muted-foreground"
         />
       </div>
       <div className="space-y-2">
-        <p className="text-sm font-semibold text-white">{t("owner")}</p>
+        <p className="text-sm font-semibold text-foreground">{t("owner")}</p>
         <Input
           value={owner}
           onChange={(e) => setOwner(e.target.value)}
           placeholder={t("teamPersonPlaceholder")}
-          className="border-white/10 bg-black/20 text-white placeholder:text-slate-400"
+          className="border-border bg-muted/20 text-foreground placeholder:text-muted-foreground"
         />
       </div>
       <div className="space-y-2">
-        <p className="text-sm font-semibold text-white">{t("dueDate")}</p>
-        <Input value={due} onChange={(e) => setDue(e.target.value)} type="date" className="border-white/10 bg-black/20 text-white" />
+        <p className="text-sm font-semibold text-foreground">{t("dueDate")}</p>
+        <Input value={due} onChange={(e) => setDue(e.target.value)} type="date" className="border-border bg-muted/20 text-foreground" />
       </div>
       <div className="flex items-end">
         <Button
-          className="w-full bg-white text-slate-900 hover:bg-slate-100"
+          className="w-full variant="secondary""
           disabled={text.trim().length === 0}
           onClick={() => {
             onAdd({ text: text.trim(), owner: owner.trim() || undefined, due: due || undefined, done: false });

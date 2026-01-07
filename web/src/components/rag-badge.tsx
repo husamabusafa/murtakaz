@@ -25,7 +25,7 @@ export function StatusBadge({ status, className }: { status: Status; className?:
   const { t } = useLocale();
   const label = status === "PLANNED" ? t("planned") : status === "ACTIVE" ? t("active") : status === "AT_RISK" ? t("atRisk") : t("completed");
   return (
-    <Badge variant="outline" className={cn("border border-white/10 bg-white/5 text-xs text-slate-100", className)}>
+    <Badge variant="outline" className={cn("border border-border bg-card/50 text-xs text-foreground", className)}>
       {label}
     </Badge>
   );

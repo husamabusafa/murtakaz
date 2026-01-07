@@ -148,7 +148,7 @@ export default function NodeDetailPage() {
             </div>
             <div className="flex items-center gap-2">
               <StatusBadge status={data.node.status as Status} />
-              <Badge variant="outline" className="border-white/10 bg-white/5">
+              <Badge variant="outline" className="border-border bg-card/50">
                 {t("kpis")}: {data.kpis.length}
               </Badge>
             </div>
@@ -178,11 +178,11 @@ export default function NodeDetailPage() {
                       <div className="flex items-center gap-2">
                         <StatusBadge status={c.status as Status} />
                         {grandChildTypeLabel ? (
-                          <Badge variant="outline" className="border-white/10 bg-white/5">
+                          <Badge variant="outline" className="border-border bg-card/50">
                             {grandChildTypeLabel}: {c._count.children}
                           </Badge>
                         ) : null}
-                        <Badge variant="outline" className="border-white/10 bg-white/5">
+                        <Badge variant="outline" className="border-border bg-card/50">
                           {t("kpis")}: {c._count.kpis}
                         </Badge>
                       </div>

@@ -22,45 +22,45 @@ export default function GovernanceDashboardPage() {
       />
 
       <section className="grid gap-6 lg:grid-cols-3">
-        <Card className="border-white/10 bg-white/5 text-white shadow-lg shadow-black/20 lg:col-span-2">
+        <Card className="border-border bg-card/50 shadow-sm lg:col-span-2">
           <CardHeader className="space-y-1">
             <div className="flex items-center justify-between">
               <CardTitle className="text-base">{t("approvalCycleTime")}</CardTitle>
-              <Icon name="tabler:clock" className="text-slate-200" />
+              <Icon name="tabler:clock" className="text-muted-foreground" />
             </div>
-            <CardDescription className="text-slate-200">{t("agingDistributionDesc")}</CardDescription>
+            <CardDescription className="text-muted-foreground">{t("agingDistributionDesc")}</CardDescription>
           </CardHeader>
           <CardContent>
             <Bar categories={approvalsAging.categories} values={approvalsAging.values} color="#a78bfa" />
           </CardContent>
         </Card>
 
-        <Card className="border-white/10 bg-white/5 text-white shadow-lg shadow-black/20">
+        <Card className="border-border bg-card/50 shadow-sm">
           <CardHeader className="space-y-1">
             <CardTitle className="text-base">{t("publishControls")}</CardTitle>
-            <CardDescription className="text-slate-200">{t("guardrailsDesc")}</CardDescription>
+            <CardDescription className="text-muted-foreground">{t("guardrailsDesc")}</CardDescription>
           </CardHeader>
-          <CardContent className="space-y-2 text-sm text-slate-100">
-            <div className="rounded-xl border border-white/10 bg-slate-950/40 px-4 py-3">
-              <p className="font-semibold text-white">{t("pendingChanges")}</p>
-              <p className="mt-1 text-xs text-slate-200">
+          <CardContent className="space-y-2 text-sm text-foreground">
+            <div className="rounded-xl border border-border bg-muted/30 px-4 py-3">
+              <p className="font-semibold text-foreground">{t("pendingChanges")}</p>
+              <p className="mt-1 text-xs text-muted-foreground">
                 {pending.length} {t("itemsAwaitingApprovalDesc")}
               </p>
             </div>
-            <div className="rounded-xl border border-white/10 bg-slate-950/40 px-4 py-3">
-              <p className="font-semibold text-white">{t("auditTrail")}</p>
-              <p className="mt-1 text-xs text-slate-200">{t("auditTrailDesc")}</p>
+            <div className="rounded-xl border border-border bg-muted/30 px-4 py-3">
+              <p className="font-semibold text-foreground">{t("auditTrail")}</p>
+              <p className="mt-1 text-xs text-muted-foreground">{t("auditTrailDesc")}</p>
             </div>
           </CardContent>
         </Card>
       </section>
 
       <section>
-        <Card className="border-white/10 bg-white/5 text-white shadow-lg shadow-black/20">
+        <Card className="border-border bg-card/50 shadow-sm">
           <CardHeader className="flex flex-row items-start justify-between gap-3">
             <div className="space-y-1">
               <CardTitle className="text-base">{t("changeRequests")}</CardTitle>
-              <CardDescription className="text-slate-200">{t("reviewQueueDrilldownDesc")}</CardDescription>
+              <CardDescription className="text-muted-foreground">{t("reviewQueueDrilldownDesc")}</CardDescription>
             </div>
             <Link href={`/${locale}/approvals`} className="text-sm font-medium text-indigo-200 hover:text-indigo-100">
               {t("openApprovals")}
@@ -71,12 +71,12 @@ export default function GovernanceDashboardPage() {
               <Link
                 key={cr.id}
                 href={`/${locale}/approvals/${cr.id}`}
-                className="block rounded-xl border border-white/10 bg-slate-950/40 px-4 py-3 transition hover:bg-white/5"
+                className="block rounded-xl border border-border bg-muted/30 px-4 py-3 transition hover:bg-card/50"
               >
-                <p className="text-sm font-semibold text-white">
+                <p className="text-sm font-semibold text-foreground">
                   {cr.entityType}: {cr.entityName}
                 </p>
-                <p className="mt-1 text-xs text-slate-200">
+                <p className="mt-1 text-xs text-muted-foreground">
                   {t("requestedBy")} {cr.requestedBy} • {cr.ageDays}{t("daysShort")}
                 </p>
               </Link>

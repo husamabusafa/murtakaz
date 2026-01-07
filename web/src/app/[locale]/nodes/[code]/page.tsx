@@ -595,11 +595,11 @@ export default function NodeTypePage() {
                     <div className="flex items-center gap-2">
                       <StatusBadge status={n.status as Status} />
                       {hasLowerType ? (
-                        <Badge variant="outline" className="border-white/10 bg-white/5">
+                        <Badge variant="outline" className="border-border bg-card/50">
                           {lowerTypeLabel}: {n._count.children}
                         </Badge>
                       ) : null}
-                      <Badge variant="outline" className="border-white/10 bg-white/5">
+                      <Badge variant="outline" className="border-border bg-card/50">
                         {t("kpis")}: {n._count.kpis}
                       </Badge>
                     </div>

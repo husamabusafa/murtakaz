@@ -48,10 +48,10 @@ export default function LoginPage() {
 
   return (
     <div className="mx-auto grid max-w-md place-items-center py-10">
-      <Card className="w-full border-white/10 bg-white/5 text-white shadow-lg shadow-black/20">
+      <Card className="w-full border-border bg-card/50 shadow-sm">
         <CardHeader className="space-y-2">
           <CardTitle className="text-2xl">{t("signIn")}</CardTitle>
-          <CardDescription className="text-slate-200">
+          <CardDescription className="text-muted-foreground">
             {t("signInSubtitle")}
           </CardDescription>
         </CardHeader>
@@ -66,7 +66,7 @@ export default function LoginPage() {
                 onChange={(e) => setEmail(e.target.value)}
                 placeholder="name@example.com"
                 required
-                className="border-white/10 bg-slate-950/40 text-white placeholder:text-slate-400"
+                className="border-border bg-muted/30 text-foreground placeholder:text-muted-foreground"
               />
             </div>
             <div className="space-y-2">
@@ -85,7 +85,7 @@ export default function LoginPage() {
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 required
-                className="border-white/10 bg-slate-950/40 text-white"
+                className="border-border bg-muted/30 text-foreground"
               />
             </div>
 
@@ -96,7 +96,7 @@ export default function LoginPage() {
             <Button
               type="submit"
               disabled={loading}
-              className="w-full bg-white text-slate-900 hover:bg-slate-100"
+              className="w-full variant="secondary""
             >
               {loading ? t("signingIn") : t("signIn")}
             </Button>

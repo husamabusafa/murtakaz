@@ -24,23 +24,23 @@ export default function InitiativeHealthDashboardPage() {
       />
 
       <section className="grid gap-6 lg:grid-cols-3">
-        <Card className="border-white/10 bg-white/5 text-white shadow-lg shadow-black/20 lg:col-span-2">
+        <Card className="border-border bg-card/50 shadow-sm lg:col-span-2">
           <CardHeader className="space-y-1">
             <div className="flex items-center justify-between">
               <CardTitle className="text-base">{t("healthDrivers")}</CardTitle>
-              <Icon name="tabler:activity-heartbeat" className="text-slate-200" />
+              <Icon name="tabler:activity-heartbeat" className="text-muted-foreground" />
             </div>
-            <CardDescription className="text-slate-200">{t("illustrativeDriverWeightsDesc")}</CardDescription>
+            <CardDescription className="text-muted-foreground">{t("illustrativeDriverWeightsDesc")}</CardDescription>
           </CardHeader>
           <CardContent>
             <Bar categories={[t("kpis"), t("milestones"), t("risks"), t("updates")]} values={[45, 25, 20, 10]} color="#60a5fa" />
           </CardContent>
         </Card>
 
-        <Card className="border-white/10 bg-white/5 text-white shadow-lg shadow-black/20">
+        <Card className="border-border bg-card/50 shadow-sm">
           <CardHeader className="space-y-1">
             <CardTitle className="text-base">{t("kpiVarianceSignals")}</CardTitle>
-            <CardDescription className="text-slate-200">{t("topNegativeDeltasDesc")}</CardDescription>
+            <CardDescription className="text-muted-foreground">{t("topNegativeDeltasDesc")}</CardDescription>
           </CardHeader>
           <CardContent>
             <Bar
@@ -55,23 +55,23 @@ export default function InitiativeHealthDashboardPage() {
       </section>
 
       <section>
-        <Card className="border-white/10 bg-white/5 text-white shadow-lg shadow-black/20">
+        <Card className="border-border bg-card/50 shadow-sm">
           <CardHeader className="space-y-1">
             <CardTitle className="text-base">{t("initiativesRequiringAttention")}</CardTitle>
-            <CardDescription className="text-slate-200">{t("investigateHealthDriversDesc")}</CardDescription>
+            <CardDescription className="text-muted-foreground">{t("investigateHealthDriversDesc")}</CardDescription>
           </CardHeader>
           <CardContent className="grid gap-3 md:grid-cols-2 lg:grid-cols-3">
             {atRisk.map((initiative) => (
               <Link
                 key={initiative.id}
                 href={`/${locale}/strategy/initiatives/${initiative.id}`}
-                className="block rounded-xl border border-white/10 bg-slate-950/40 px-4 py-3 transition hover:bg-white/5"
+                className="block rounded-xl border border-border bg-muted/30 px-4 py-3 transition hover:bg-card/50"
               >
                 <div className="flex items-start justify-between gap-3">
                   <div className="space-y-1">
-                    <p className="text-sm font-semibold text-white">{isArabic ? initiative.titleAr ?? initiative.title : initiative.title}</p>
-                    <p className="text-xs text-slate-200">{initiative.owner}</p>
-                    <p className="text-xs text-slate-300">
+                    <p className="text-sm font-semibold text-foreground">{isArabic ? initiative.titleAr ?? initiative.title : initiative.title}</p>
+                    <p className="text-xs text-muted-foreground">{initiative.owner}</p>
+                    <p className="text-xs text-muted-foreground">
                       {initiative.projects.length} {t("projects")} • {initiative.kpis.length} {t("kpis")} • {initiative.risks.length} {t("risks")}
                     </p>
                   </div>

@@ -24,13 +24,13 @@ export default function CareersPage() {
           { title: isArabic ? "مهندس منصة" : "Platform Engineer", icon: "tabler:server", body: isArabic ? "Next.js / Prisma / Postgres وخبرة بالحوكمة." : "Next.js / Prisma / Postgres with governance mindset." },
           { title: isArabic ? "مدير منتج" : "Product Manager", icon: "tabler:clipboard-check", body: isArabic ? "ترجمة احتياج الجهات إلى منتج قابل للتنفيذ." : "Translate enterprise needs into build-ready specs." },
         ].map((role) => (
-          <Card key={role.title} className="border-white/10 bg-white/5 text-white shadow-lg shadow-black/20">
+          <Card key={role.title} className="border-border bg-card/50 shadow-sm">
             <CardHeader className="space-y-2">
-              <div className="flex h-10 w-10 items-center justify-center rounded-2xl border border-white/10 bg-slate-950/40">
-                <Icon name={role.icon} className="h-5 w-5 text-slate-100" />
+              <div className="flex h-10 w-10 items-center justify-center rounded-2xl border border-border bg-muted/30">
+                <Icon name={role.icon} className="h-5 w-5 text-foreground" />
               </div>
               <CardTitle className="text-base">{role.title}</CardTitle>
-              <CardDescription className="text-slate-200">{role.body}</CardDescription>
+              <CardDescription className="text-muted-foreground">{role.body}</CardDescription>
             </CardHeader>
             <CardContent />
           </Card>

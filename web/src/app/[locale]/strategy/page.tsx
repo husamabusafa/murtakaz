@@ -22,15 +22,15 @@ export default function StrategyPage() {
 
       <div className="grid gap-6 lg:grid-cols-3">
         {pillars.map((pillar) => (
-          <Card key={pillar.id} className="border-white/10 bg-white/5 text-white shadow-lg shadow-black/20">
+          <Card key={pillar.id} className="border-border bg-card/50 shadow-sm">
             <CardHeader className="space-y-3">
               <div className="flex items-start justify-between gap-3">
                 <div className="space-y-1">
                   <CardTitle className="flex items-center gap-2 text-lg">
-                    <Icon name="tabler:layers-subtract" className="h-4 w-4 text-slate-100" />
+                    <Icon name="tabler:layers-subtract" className="h-4 w-4 text-foreground" />
                     {isArabic ? pillar.titleAr ?? pillar.title : pillar.title}
                   </CardTitle>
-                  <CardDescription className="flex items-center gap-2 text-slate-200">
+                  <CardDescription className="flex items-center gap-2 text-muted-foreground">
                     <Icon name="tabler:user" className="h-4 w-4" />
                     {pillar.owner}
                   </CardDescription>
@@ -39,7 +39,7 @@ export default function StrategyPage() {
               </div>
               <div className="flex items-center gap-2">
                 <StatusBadge status={pillar.status} />
-                <p className="flex items-center gap-2 text-xs text-slate-200">
+                <p className="flex items-center gap-2 text-xs text-muted-foreground">
                   <Icon name="tabler:activity-heartbeat" className="h-4 w-4" />
                   {pillar.initiatives.length} {t("initiative")}
                 </p>
@@ -47,9 +47,9 @@ export default function StrategyPage() {
             </CardHeader>
             <CardContent className="space-y-4">
               <div className="space-y-2">
-                <p className="text-xs font-semibold uppercase tracking-wide text-slate-200">{t("goals")}</p>
-                <Separator className="bg-white/10" />
-                <ul className="space-y-1 text-sm text-slate-100">
+                <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">{t("goals")}</p>
+                <Separator className="bg-muted/30" />
+                <ul className="space-y-1 text-sm text-foreground">
                   {(isArabic ? pillar.goalsAr ?? pillar.goals : pillar.goals).map((goal) => (
                     <li key={goal} className="flex items-start gap-2">
                       <Icon name="tabler:circle-check" className="mt-0.5 h-4 w-4 text-indigo-200" />

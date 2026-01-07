@@ -22,50 +22,50 @@ export default function ProjectsPage() {
         icon={<Icon name="tabler:timeline" className="h-5 w-5" />}
       />
 
-      <Card className="border-white/10 bg-white/5 text-white shadow-lg shadow-black/20">
+      <Card className="border-border bg-card/50 shadow-sm">
         <CardHeader className="space-y-3">
           <div className="flex flex-col gap-2 md:flex-row md:items-center md:justify-between">
             <div>
               <CardTitle className="flex items-center gap-2 text-base">
-                <Icon name="tabler:briefcase" className="h-4 w-4 text-slate-100" />
+                <Icon name="tabler:briefcase" className="h-4 w-4 text-foreground" />
                 {t("projectPortfolio")}
               </CardTitle>
-              <CardDescription className="text-slate-200">{t("projectPortfolioDesc")}</CardDescription>
+              <CardDescription className="text-muted-foreground">{t("projectPortfolioDesc")}</CardDescription>
             </div>
             <div className="w-full max-w-xs">
-              <Input placeholder={t("searchDemoPlaceholder")} className="border-white/10 bg-slate-950/40 text-white placeholder:text-slate-400" />
+              <Input placeholder={t("searchDemoPlaceholder")} className="border-border bg-muted/30 text-foreground placeholder:text-muted-foreground" />
             </div>
           </div>
         </CardHeader>
         <CardContent>
-          <div className="overflow-hidden rounded-xl border border-white/10">
+          <div className="overflow-hidden rounded-xl border border-border">
             <Table>
               <TableHeader>
-                <TableRow className="border-white/10 hover:bg-white/0">
-                  <TableHead className="text-slate-200">{t("project")}</TableHead>
-                  <TableHead className="text-slate-200">{t("owner")}</TableHead>
-                  <TableHead className="text-slate-200">{t("status")}</TableHead>
-                  <TableHead className="text-slate-200">{t("health")}</TableHead>
-                  <TableHead className="text-right text-slate-200">{t("milestones")}</TableHead>
+                <TableRow className="border-border hover:bg-white/0">
+                  <TableHead className="text-muted-foreground">{t("project")}</TableHead>
+                  <TableHead className="text-muted-foreground">{t("owner")}</TableHead>
+                  <TableHead className="text-muted-foreground">{t("status")}</TableHead>
+                  <TableHead className="text-muted-foreground">{t("health")}</TableHead>
+                  <TableHead className="text-right text-muted-foreground">{t("milestones")}</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
                 {projects.map((project) => (
-                  <TableRow key={project.id} className="border-white/10 hover:bg-white/5">
-                    <TableCell className="font-medium text-white">
+                  <TableRow key={project.id} className="border-border hover:bg-card/50">
+                    <TableCell className="font-medium text-foreground">
                       <Link href={`/${locale}/projects/${project.id}`} className="hover:underline">
                         {isArabic ? project.titleAr ?? project.title : project.title}
                       </Link>
-                      <p className="mt-1 text-xs text-slate-200">{project.tags?.join(" • ")}</p>
+                      <p className="mt-1 text-xs text-muted-foreground">{project.tags?.join(" • ")}</p>
                     </TableCell>
-                    <TableCell className="text-slate-200">{project.owner}</TableCell>
+                    <TableCell className="text-muted-foreground">{project.owner}</TableCell>
                     <TableCell>
                       <StatusBadge status={project.status} />
                     </TableCell>
                     <TableCell>
                       <RagBadge health={project.health} />
                     </TableCell>
-                    <TableCell className="text-right text-slate-200">
+                    <TableCell className="text-right text-muted-foreground">
                       {project.milestonesComplete}/{project.milestonesTotal}
                     </TableCell>
                   </TableRow>

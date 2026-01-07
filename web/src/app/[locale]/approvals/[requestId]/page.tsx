@@ -35,16 +35,16 @@ export default function ApprovalDetailPage() {
 
   if (!hydrated) {
     return (
-      <div className="rounded-2xl border border-white/10 bg-white/5 p-8 text-white">
-        <p className="text-sm text-slate-200">{t("loadingRequest")}</p>
+      <div className="rounded-2xl border border-border bg-card/50 p-8 text-foreground">
+        <p className="text-sm text-muted-foreground">{t("loadingRequest")}</p>
       </div>
     );
   }
 
   if (!request.entityType) {
     return (
-      <div className="rounded-2xl border border-white/10 bg-white/5 p-8 text-white">
-        <p className="text-sm text-slate-200">{t("changeRequestNotFound")}</p>
+      <div className="rounded-2xl border border-border bg-card/50 p-8 text-foreground">
+        <p className="text-sm text-muted-foreground">{t("changeRequestNotFound")}</p>
         <Link href={`/${locale}/approvals`} className="mt-3 inline-flex text-sm font-semibold text-indigo-200 hover:text-indigo-100">
           {t("backToApprovals")}
         </Link>
@@ -64,38 +64,38 @@ export default function ApprovalDetailPage() {
       />
 
       <div className="grid gap-6 lg:grid-cols-3">
-        <Card className="border-white/10 bg-white/5 text-white shadow-lg shadow-black/20 lg:col-span-2">
+        <Card className="border-border bg-card/50 shadow-sm lg:col-span-2">
           <CardHeader className="flex flex-row items-start justify-between gap-3">
             <div className="space-y-1">
               <CardTitle className="flex items-center gap-2 text-base">
-                <Icon name="tabler:diff" className="h-4 w-4 text-slate-100" />
+                <Icon name="tabler:diff" className="h-4 w-4 text-foreground" />
                 {t("changeDetailsDemo")}
               </CardTitle>
-              <CardDescription className="text-slate-200">{t("changeDetailsDesc")}</CardDescription>
+              <CardDescription className="text-muted-foreground">{t("changeDetailsDesc")}</CardDescription>
             </div>
           </CardHeader>
-          <CardContent className="space-y-4 text-sm text-slate-100">
-            <div className="rounded-xl border border-white/10 bg-slate-950/40 px-4 py-3">
-              <p className="text-xs font-semibold uppercase tracking-wide text-slate-200">{t("summary")}</p>
-              <p className="mt-1 text-slate-100">
+          <CardContent className="space-y-4 text-sm text-foreground">
+            <div className="rounded-xl border border-border bg-muted/30 px-4 py-3">
+              <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">{t("summary")}</p>
+              <p className="mt-1 text-foreground">
                 {t("phase1ApprovalPolicyDesc")}
               </p>
             </div>
-            <Separator className="bg-white/10" />
-            <div className="rounded-xl border border-white/10 bg-slate-950/40 px-4 py-3">
-              <p className="text-xs font-semibold uppercase tracking-wide text-slate-200">{t("before")}</p>
-              <pre className="mt-2 overflow-auto rounded-lg bg-black/30 p-3 text-xs text-slate-100">
+            <Separator className="bg-muted/30" />
+            <div className="rounded-xl border border-border bg-muted/30 px-4 py-3">
+              <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">{t("before")}</p>
+              <pre className="mt-2 overflow-auto rounded-lg bg-black/30 p-3 text-xs text-foreground">
 {JSON.stringify(request.before ?? { example: "previous value" }, null, 2)}
               </pre>
             </div>
-            <div className="rounded-xl border border-white/10 bg-slate-950/40 px-4 py-3">
-              <p className="text-xs font-semibold uppercase tracking-wide text-slate-200">{t("after")}</p>
-              <pre className="mt-2 overflow-auto rounded-lg bg-black/30 p-3 text-xs text-slate-100">
+            <div className="rounded-xl border border-border bg-muted/30 px-4 py-3">
+              <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">{t("after")}</p>
+              <pre className="mt-2 overflow-auto rounded-lg bg-black/30 p-3 text-xs text-foreground">
 {JSON.stringify(request.after ?? { example: "requested value" }, null, 2)}
               </pre>
             </div>
-            <div className="rounded-xl border border-white/10 bg-slate-950/40 px-4 py-3">
-              <p className="text-xs font-semibold uppercase tracking-wide text-slate-200">{t("comments")}</p>
+            <div className="rounded-xl border border-border bg-muted/30 px-4 py-3">
+              <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">{t("comments")}</p>
               <div className="mt-3 space-y-3">
                 <ApprovalCommentBox
                   t={t}
@@ -110,12 +110,12 @@ export default function ApprovalDetailPage() {
                   }
                 />
                 {(request.comments ?? []).length === 0 ? (
-                  <p className="text-xs text-slate-300">{t("noCommentsYet")}</p>
+                  <p className="text-xs text-muted-foreground">{t("noCommentsYet")}</p>
                 ) : (
                   (request.comments ?? []).map((c) => (
-                    <div key={c.id} className="rounded-xl border border-white/10 bg-black/20 px-4 py-3">
-                      <p className="text-sm font-semibold text-white">{c.message}</p>
-                      <p className="mt-1 text-xs text-slate-200">
+                    <div key={c.id} className="rounded-xl border border-border bg-muted/20 px-4 py-3">
+                      <p className="text-sm font-semibold text-foreground">{c.message}</p>
+                      <p className="mt-1 text-xs text-muted-foreground">
                         {c.author} • {new Date(c.at).toLocaleString()}
                       </p>
                     </div>
@@ -126,17 +126,17 @@ export default function ApprovalDetailPage() {
           </CardContent>
         </Card>
 
-        <Card className="border-white/10 bg-white/5 text-white shadow-lg shadow-black/20">
+        <Card className="border-border bg-card/50 shadow-sm">
           <CardHeader>
             <CardTitle className="flex items-center gap-2 text-base">
-              <Icon name="tabler:bolt" className="h-4 w-4 text-slate-100" />
+              <Icon name="tabler:bolt" className="h-4 w-4 text-foreground" />
               {t("actions")}
             </CardTitle>
-            <CardDescription className="text-slate-200">{t("approveRejectWorkflowDesc")}</CardDescription>
+            <CardDescription className="text-muted-foreground">{t("approveRejectWorkflowDesc")}</CardDescription>
           </CardHeader>
-          <CardContent className="space-y-2 text-sm text-slate-100">
+          <CardContent className="space-y-2 text-sm text-foreground">
             <Button
-              className="w-full bg-white text-slate-900 hover:bg-slate-100"
+              className="w-full variant="secondary""
               disabled={request.status !== "PENDING"}
               onClick={() => {
                 const next = { ...request, status: "APPROVED" as const };
@@ -151,7 +151,7 @@ export default function ApprovalDetailPage() {
             </Button>
             <Button
               variant="outline"
-              className="w-full border-white/15 bg-white/5 text-white hover:bg-white/10 hover:text-white"
+              className="w-full border-border bg-card/50 text-foreground hover:bg-muted/30 hover:text-foreground"
               disabled={request.status !== "PENDING"}
               onClick={() => update({ ...request, status: "REJECTED" })}
             >
@@ -178,11 +178,11 @@ function ApprovalCommentBox({ onSubmit, t }: { onSubmit: (message: string) => vo
         value={message}
         onChange={(e) => setMessage(e.target.value)}
         placeholder={t("addCommentPlaceholder")}
-        className="border-white/10 bg-black/20 text-white placeholder:text-slate-400"
+        className="border-border bg-muted/20 text-foreground placeholder:text-muted-foreground"
       />
       <Button
         variant="outline"
-        className="border-white/15 bg-white/5 text-white hover:bg-white/10 hover:text-white"
+        className="border-border bg-card/50 text-foreground hover:bg-muted/30 hover:text-foreground"
         disabled={message.trim().length === 0}
         onClick={() => {
           onSubmit(message.trim());
