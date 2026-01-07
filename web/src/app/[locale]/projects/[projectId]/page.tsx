@@ -100,7 +100,7 @@ export default function ProjectDetailPage() {
             {tr("Updates", "التحديثات")}
           </TabsTrigger>
           <TabsTrigger value="linked" className="data-[state=active]:bg-white/10 data-[state=active]:text-white">
-            {tr("KPIs & risks", "المؤشرات والمخاطر")}
+            {tr("KPIs & risks", "مؤشرات الأداء الرئيسية والمخاطر")}
           </TabsTrigger>
         </TabsList>
 
@@ -146,7 +146,7 @@ export default function ProjectDetailPage() {
                   </ul>
                 </div>
                 <div className="rounded-xl border border-white/10 bg-slate-950/40 p-4">
-                  <p className="text-xs font-semibold uppercase tracking-wide text-slate-200">{tr("Delivery health", "صحة التنفيذ")}</p>
+                  <p className="text-xs font-semibold uppercase tracking-wide text-slate-200">{tr("Delivery health", "أداء التنفيذ")}</p>
                   <p className="mt-2 text-sm text-slate-100">
                     {tr(
                       "Prototype roll-up based on milestone completion and posted updates. Governance integrations (Jira/Planner) are Phase 1.",
@@ -250,13 +250,13 @@ export default function ProjectDetailPage() {
             <CardHeader>
               <CardTitle className="flex items-center gap-2 text-base">
                 <Icon name="tabler:chart-line" className="h-4 w-4 text-slate-100" />
-                {tr("KPIs", "المؤشرات")}
+                {tr("KPIs", "مؤشرات الأداء الرئيسية")}
               </CardTitle>
-              <CardDescription className="text-slate-200">{tr("KPIs assigned to this initiative (prototype mapping).", "المؤشرات المرتبطة بهذه المبادرة (ربط تجريبي).")}</CardDescription>
+              <CardDescription className="text-slate-200">{tr("KPIs assigned to this initiative (prototype mapping).", "مؤشرات الأداء الرئيسية المرتبطة بهذه المبادرة (ربط تجريبي).")}</CardDescription>
             </CardHeader>
             <CardContent className="space-y-3">
               {relatedKpis.length === 0 ? (
-                <p className="text-sm text-slate-200">{tr("No KPIs mapped.", "لا توجد مؤشرات مرتبطة.")}</p>
+                <p className="text-sm text-slate-200">{tr("No KPIs mapped.", "لا توجد مؤشرات أداء رئيسية مرتبطة.")}</p>
               ) : (
                 relatedKpis.map((kpi) => (
                   <div key={kpi.id} className="rounded-xl border border-white/10 bg-slate-950/40 px-4 py-3">
@@ -268,7 +268,7 @@ export default function ProjectDetailPage() {
                     <p className="mt-1 text-xs text-slate-200">
                       {kpi.current}
                       {kpi.unit} • {tr("Target", "المستهدف")} {kpi.target}
-                      {kpi.unit} • {tr("Owner", "المالك")} {kpi.owner}
+                      {kpi.unit} • {tr("Owner", "المسؤول")} {kpi.owner}
                     </p>
                   </div>
                 ))
@@ -296,7 +296,7 @@ export default function ProjectDetailPage() {
                       </Link>
                     </p>
                     <p className="mt-1 text-xs text-slate-200">
-                      {risk.severity} • {risk.status} • {tr("Owner", "المالك")} {risk.owner}
+                      {risk.severity} • {risk.status} • {tr("Owner", "المسؤول")} {risk.owner}
                     </p>
                   </div>
                 ))
@@ -450,7 +450,7 @@ function ProjectUpdateComposer({
             value={details}
             onChange={(e) => setDetails(e.target.value)}
             className="border-white/10 bg-black/20 text-white placeholder:text-slate-400"
-            placeholder={tr("Include metrics, links, and key decisions…", "أضف مؤشرات وروابط وقرارات رئيسية…")}
+            placeholder={tr("Include metrics, links, and key decisions…", "أضف مؤشرات أداء رئيسية وروابط وقرارات رئيسية…")}
           />
         </div>
         <div className="space-y-2">

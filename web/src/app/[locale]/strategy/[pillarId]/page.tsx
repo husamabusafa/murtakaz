@@ -14,7 +14,7 @@ import { getEffectiveKpi, getEffectiveRisk } from "@/lib/prototype-store";
 
 export default function PillarDetailPage() {
   const params = useParams<{ pillarId: string }>();
-  const { locale, tr, isArabic } = useLocale();
+  const { locale, tr, isArabic, t } = useLocale();
   const pillar = pillars.find((p) => p.id === params.pillarId);
 
   if (!pillar) {
@@ -63,7 +63,7 @@ export default function PillarDetailPage() {
             {tr("Projects", "المشاريع")}
           </TabsTrigger>
           <TabsTrigger value="kpis" className="data-[state=active]:bg-white/10 data-[state=active]:text-white">
-            {tr("KPIs", "المؤشرات")}
+            {tr("KPIs", "مؤشرات الأداء الرئيسية")}
           </TabsTrigger>
           <TabsTrigger value="risks" className="data-[state=active]:bg-white/10 data-[state=active]:text-white">
             {tr("Risks", "المخاطر")}
@@ -129,7 +129,7 @@ export default function PillarDetailPage() {
                   <div className="mt-2 flex items-center justify-between">
                     <StatusBadge status={initiative.status} />
                     <p className="text-xs text-slate-200">
-                      {initiative.projects.length} {tr("projects", "مشاريع")} • {initiative.kpis.length} {tr("KPIs", "مؤشرات")}
+                      {initiative.projects.length} {tr("projects", "مشاريع")} • {initiative.kpis.length} {tr("KPIs", "مؤشرات الأداء الرئيسية")}
                     </p>
                   </div>
                 </Link>
@@ -143,9 +143,11 @@ export default function PillarDetailPage() {
             <CardHeader>
               <CardTitle className="flex items-center gap-2 text-base">
                 <Icon name="tabler:timeline" className="h-4 w-4 text-slate-100" />
-                Projects
+                {t("projects")}
               </CardTitle>
-              <CardDescription className="text-slate-200">Execution progress and milestone completion.</CardDescription>
+              <CardDescription className="text-slate-200">
+                {tr("Execution progress and milestone completion.", "تقدم التنفيذ واكتمال المعالم.")}
+              </CardDescription>
             </CardHeader>
             <CardContent className="grid gap-3 md:grid-cols-2">
               {projects.map((project) => (
@@ -178,20 +180,22 @@ export default function PillarDetailPage() {
             <CardHeader>
               <CardTitle className="flex items-center gap-2 text-base">
                 <Icon name="tabler:chart-line" className="h-4 w-4 text-slate-100" />
-                KPI performance
+                {tr("KPI performance", "أداء مؤشرات الأداء الرئيسية")}
               </CardTitle>
-              <CardDescription className="text-slate-200">Latest readings linked to this pillar.</CardDescription>
+              <CardDescription className="text-slate-200">
+                {tr("Latest readings linked to this pillar.", "آخر القراءات المرتبطة بهذه الركيزة.")}
+              </CardDescription>
             </CardHeader>
             <CardContent>
               <div className="overflow-hidden rounded-xl border border-white/10">
                 <Table>
                   <TableHeader>
                     <TableRow className="border-white/10 hover:bg-white/0">
-                      <TableHead className="text-slate-200">KPI</TableHead>
-                      <TableHead className="text-slate-200">Initiative</TableHead>
-                      <TableHead className="text-slate-200">Current</TableHead>
-                      <TableHead className="text-slate-200">Target</TableHead>
-                      <TableHead className="text-right text-slate-200">Freshness</TableHead>
+                      <TableHead className="text-slate-200">{t("kpi")}</TableHead>
+                      <TableHead className="text-slate-200">{t("initiative")}</TableHead>
+                      <TableHead className="text-slate-200">{t("current")}</TableHead>
+                      <TableHead className="text-slate-200">{t("target")}</TableHead>
+                      <TableHead className="text-right text-slate-200">{t("freshness")}</TableHead>
                     </TableRow>
                   </TableHeader>
                   <TableBody>

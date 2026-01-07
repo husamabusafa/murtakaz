@@ -382,7 +382,7 @@ export async function getMyDashboardData() {
           startDate: true,
           endDate: true,
           nodeType: { select: { code: true, displayName: true, levelOrder: true } },
-          parent: { select: { id: true, name: true, nodeType: { select: { displayName: true } } } },
+          parent: { select: { id: true, name: true, nodeType: { select: { displayName: true, code: true } } } },
         },
       },
     },
@@ -414,6 +414,7 @@ export async function getMyDashboardData() {
               id: parent.id,
               name: parent.name,
               typeDisplayName: parent.nodeType.displayName,
+              typeCode: String(parent.nodeType.code).toLowerCase(),
             }
           : null,
       };
@@ -451,6 +452,7 @@ export async function getMyDashboardData() {
               id: a.node.parent.id,
               name: a.node.parent.name,
               typeDisplayName: a.node.parent.nodeType.displayName,
+              typeCode: String(a.node.parent.nodeType.code).toLowerCase(),
             }
           : null,
       };
@@ -605,7 +607,7 @@ export async function getMyDashboardData() {
             select: {
               id: true,
               name: true,
-              primaryNode: { select: { id: true, name: true, nodeType: { select: { displayName: true } } } },
+              primaryNode: { select: { id: true, name: true, nodeType: { select: { displayName: true, code: true } } } },
             },
           },
         },
@@ -627,6 +629,7 @@ export async function getMyDashboardData() {
           id: k.primaryNode.id,
           name: k.primaryNode.name,
           typeDisplayName: k.primaryNode.nodeType.displayName,
+          typeCode: String(k.primaryNode.nodeType.code).toLowerCase(),
         },
         latest: latest
           ? {
@@ -703,6 +706,7 @@ export async function getMyDashboardData() {
       kpiId: a.kpiId,
       kpiName: a.kpi.name,
       typeDisplayName: a.kpi.primaryNode?.nodeType.displayName ?? null,
+      typeCode: a.kpi.primaryNode?.nodeType?.code ? String(a.kpi.primaryNode.nodeType.code).toLowerCase() : null,
       primaryName: a.kpi.primaryNode?.name ?? null,
       calculatedValue: a.calculatedValue,
       submittedAt: a.submittedAt ? a.submittedAt.toISOString() : null,

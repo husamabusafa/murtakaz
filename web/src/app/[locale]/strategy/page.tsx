@@ -18,7 +18,7 @@ export default function StrategyPage() {
         title={t("strategy")}
         subtitle={tr(
           "Pillars, goals, and initiatives with drill-down into projects, KPIs, risks, and updates.",
-          "الركائز والأهداف والمبادرات مع استعراض تفصيلي للمشاريع والمؤشرات والمخاطر والتحديثات.",
+          "الركائز والأهداف والمبادرات مع استعراض تفصيلي للمشاريع ومؤشرات الأداء الرئيسية والمخاطر والتحديثات.",
         )}
         icon={<Icon name="tabler:target-arrow" className="h-5 w-5" />}
       />

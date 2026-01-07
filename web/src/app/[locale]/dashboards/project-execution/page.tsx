@@ -70,7 +70,7 @@ export default function ProjectExecutionDashboardPage() {
         <Card className="border-white/10 bg-white/5 text-white shadow-lg shadow-black/20">
           <CardHeader className="space-y-1">
             <CardTitle className="text-base">{tr("Project portfolio", "محفظة المشاريع")}</CardTitle>
-            <CardDescription className="text-slate-200">{tr("Health, status, and drill-down.", "الصحة والحالة والاستعراض التفصيلي.")}</CardDescription>
+            <CardDescription className="text-slate-200">{tr("Health, status, and drill-down.", "الأداء والحالة والاستعراض التفصيلي.")}</CardDescription>
           </CardHeader>
           <CardContent className="grid gap-3 md:grid-cols-2 lg:grid-cols-3">
             {projects.map((project) => (

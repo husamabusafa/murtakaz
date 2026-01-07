@@ -17,7 +17,7 @@ import { useRouter, useSearchParams } from "next/navigation";
 type KpiGridRow = Awaited<ReturnType<typeof getOrgKpisGridPaged>>["items"][number];
 
 export default function KPIsPage() {
-  const { locale, t, tr } = useLocale();
+  const { locale, t, tr, nodeTypeLabel } = useLocale();
   const { user, loading: sessionLoading } = useAuth();
   const router = useRouter();
   const searchParams = useSearchParams();
@@ -109,7 +109,7 @@ export default function KPIsPage() {
     <div className="space-y-8">
       <PageHeader
         title={t("kpis")}
-        subtitle={tr("KPI catalog with lineage, targets, trends, and data freshness.", "كتالوج المؤشرات مع التسلسل، المستهدفات، الاتجاهات، وحداثة البيانات.")}
+        subtitle={tr("KPI catalog with lineage, targets, trends, and data freshness.", "كتالوج مؤشرات الأداء الرئيسية مع التسلسل، المستهدفات، الاتجاهات، وحداثة البيانات.")}
         icon={<Icon name="tabler:chart-line" className="h-5 w-5" />}
       />
 
@@ -119,7 +119,7 @@ export default function KPIsPage() {
             <div>
               <CardTitle className="flex items-center gap-2 text-base">
                 <Icon name="tabler:report-analytics" className="h-4 w-4 text-slate-100" />
-                {tr("KPI catalog", "كتالوج المؤشرات")}
+                {tr("KPI catalog", "كتالوج مؤشرات الأداء الرئيسية")}
               </CardTitle>
               <CardDescription className="text-slate-200">{tr("Track target vs actual and governance ownership.", "متابعة المستهدف مقابل الفعلي وملكية الحوكمة.")}</CardDescription>
             </div>
@@ -139,7 +139,7 @@ export default function KPIsPage() {
                 <Button asChild className="bg-white/10 text-white hover:bg-white/15">
                   <Link href={`/${locale}/kpis/create`}>
                     <Plus className="h-4 w-4" />
-                    <span className="ms-2">{tr("Create KPI", "إنشاء مؤشر")}</span>
+                    <span className="ms-2">{tr("Create KPI", "إنشاء مؤشر أداء رئيسي")}</span>
                   </Link>
                 </Button>
               ) : null}
@@ -178,7 +178,9 @@ export default function KPIsPage() {
                     <div>
                       <p className="text-sm font-semibold text-white">{kpi.name}</p>
                       <p className="mt-1 text-xs text-slate-200">
-                        {(kpi.primaryNode?.nodeType?.displayName ?? tr("Type", "النوع"))}: {kpi.primaryNode?.name ?? "—"}
+                        {(kpi.primaryNode?.nodeType
+                          ? nodeTypeLabel(kpi.primaryNode.nodeType.code, kpi.primaryNode.nodeType.displayName)
+                          : tr("Type", "النوع"))}: {kpi.primaryNode?.name ?? "—"}
                       </p>
                     </div>
                   </div>
@@ -207,7 +209,7 @@ export default function KPIsPage() {
               ))}
             </div>
           ) : (
-            <div className="rounded-xl border border-white/10 bg-slate-950/40 p-6 text-sm text-slate-200">{tr("No KPIs yet.", "لا توجد مؤشرات بعد.")}</div>
+            <div className="rounded-xl border border-white/10 bg-slate-950/40 p-6 text-sm text-slate-200">{tr("No KPIs yet.", "لا توجد مؤشرات أداء رئيسية بعد.")}</div>
           )}
         </CardContent>
       </Card>

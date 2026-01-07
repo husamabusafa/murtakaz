@@ -3,6 +3,7 @@
 import { graphic, type EChartsOption } from "echarts";
 import { useMemo } from "react";
 import { EChart } from "@/components/charts/echart";
+import { useLocale } from "@/providers/locale-provider";
 
 type KpiGaugeProps = {
   value: number | null | undefined;
@@ -21,8 +22,10 @@ export function KpiGauge({
   height = 200,
   theme = "dark",
   withCard = true,
-  label = "Current",
+  label,
 }: KpiGaugeProps) {
+  const { t } = useLocale();
+  const effectiveLabel = label ?? t("current");
   const option = useMemo<EChartsOption>(() => {
     const safeValue = typeof value === "number" && Number.isFinite(value) ? value : 0;
     const safeTarget =
@@ -49,7 +52,7 @@ export function KpiGauge({
     const cGreen = "rgba(52,211,153,0.92)";
 
     const status =
-      ratio >= amber ? "On track" : ratio >= red ? "At risk" : safeTarget ? "Off track" : "—";
+      ratio >= amber ? t("onTrack") : ratio >= red ? t("atRisk") : safeTarget ? t("offTrack") : "—";
 
     const statusColor = ratio >= amber ? cGreen : ratio >= red ? cAmber : cRed;
 
@@ -92,17 +95,17 @@ export function KpiGauge({
           return `
             <div style="display:flex; flex-direction:column; gap:6px;">
               <div style="display:flex; justify-content:space-between; gap:14px;">
-                <span style="opacity:.75;">Value</span>
+                <span style="opacity:.75;">${t("value")}</span>
                 <b>${fmt(v)}${unit ?? ""}</b>
               </div>
               ${
                 t
                   ? `<div style="display:flex; justify-content:space-between; gap:14px;">
-                       <span style="opacity:.75;">Target</span>
+                       <span style="opacity:.75;">${t("target")}</span>
                        <b>${fmt(t)}${unit ?? ""}</b>
                      </div>
                      <div style="display:flex; justify-content:space-between; gap:14px;">
-                       <span style="opacity:.75;">Progress</span>
+                       <span style="opacity:.75;">${t("progress")}</span>
                        <b>${pct}</b>
                      </div>`
                   : ""
@@ -232,10 +235,10 @@ export function KpiGauge({
             formatter: (val: number) => {
               const v = Number.isFinite(val) ? val : 0;
               const u = unit ?? "";
-              const tgtLine = safeTarget ? `{muted|Target ${fmt(safeTarget)}${u}}` : `{muted| }`;
+              const tgtLine = safeTarget ? `{muted|${t("target")} ${fmt(safeTarget)}${u}}` : `{muted| }`;
               return [
                 `{value|${fmt(v)}${u}}`,
-                `{label|${label}}`,
+                `{label|${effectiveLabel}}`,
                 tgtLine,
                 `{status|${status}}`,
               ].join("\n");
@@ -273,7 +276,7 @@ export function KpiGauge({
         },
       ],
     };
-  }, [label, target, theme, unit, value]);
+  }, [effectiveLabel, target, theme, unit, value, t]);
 
   const Chart = <EChart option={option} height={height} />;
 

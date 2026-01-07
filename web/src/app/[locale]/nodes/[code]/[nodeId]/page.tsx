@@ -22,7 +22,7 @@ function normalizeCode(code: string) {
 
 export default function NodeDetailPage() {
   const params = useParams<{ code: string; nodeId: string }>();
-  const { tr, locale } = useLocale();
+  const { tr, locale, nodeTypeLabel } = useLocale();
   const { loading: sessionLoading } = useAuth();
 
   const code = typeof params?.code === "string" ? params.code : "";
@@ -128,9 +128,9 @@ export default function NodeDetailPage() {
           childType
             ? tr(
                 `Explore ${childType.displayName} and aggregated KPIs for this item.`,
-                `استعرض ${childType.displayName} والمؤشرات المجمعة لهذا العنصر.`,
+                `استعرض ${childType.displayName} ومؤشرات الأداء الرئيسية المجمعة لهذا العنصر.`,
               )
-            : tr("Explore hierarchy and aggregated KPIs for this item.", "استعرض التسلسل الهرمي والمؤشرات المجمعة لهذا العنصر.")
+            : tr("Explore hierarchy and aggregated KPIs for this item.", "استعرض التسلسل الهرمي ومؤشرات الأداء الرئيسية المجمعة لهذا العنصر.")
         }
         icon={<Icon name={pageIcon} className="h-5 w-5" />}
       />
@@ -151,7 +151,7 @@ export default function NodeDetailPage() {
             <div className="flex items-center gap-2">
               <StatusBadge status={data.node.status as Status} />
               <Badge variant="outline" className="border-white/10 bg-white/5">
-                {tr("KPIs", "المؤشرات")}: {data.kpis.length}
+                {tr("KPIs", "مؤشرات الأداء الرئيسية")}: {data.kpis.length}
               </Badge>
             </div>
           </div>
@@ -185,7 +185,7 @@ export default function NodeDetailPage() {
                           </Badge>
                         ) : null}
                         <Badge variant="outline" className="border-white/10 bg-white/5">
-                          {tr("KPIs", "المؤشرات")}: {c._count.kpis}
+                          {tr("KPIs", "مؤشرات الأداء الرئيسية")}: {c._count.kpis}
                         </Badge>
                       </div>
                     </CardHeader>
@@ -203,16 +203,16 @@ export default function NodeDetailPage() {
 
       <Card className="bg-card/70 backdrop-blur shadow-sm">
         <CardHeader>
-          <CardTitle className="text-base">{tr("KPIs (subtree)", "المؤشرات (ضمن الشجرة)")}</CardTitle>
-          <CardDescription>{tr("All KPIs linked to this item or any descendant item.", "كل المؤشرات المرتبطة بهذا العنصر أو أي عنصر تحته.")}</CardDescription>
+          <CardTitle className="text-base">{tr("KPIs (subtree)", "مؤشرات الأداء الرئيسية (ضمن الشجرة)")}</CardTitle>
+          <CardDescription>{tr("All KPIs linked to this item or any descendant item.", "كل مؤشرات الأداء الرئيسية المرتبطة بهذا العنصر أو أي عنصر تحته.")}</CardDescription>
         </CardHeader>
         <CardContent>
           <div className="overflow-hidden rounded-xl border border-border">
             <Table>
               <TableHeader>
                 <TableRow className="hover:bg-transparent">
-                  <TableHead>{tr("KPI", "المؤشر")}</TableHead>
-                  <TableHead>{tr("Owner", "المالك")}</TableHead>
+                  <TableHead>{tr("KPI", "مؤشر أداء رئيسي")}</TableHead>
+                  <TableHead>{tr("Owner", "المسؤول")}</TableHead>
                   <TableHead>{tr("Linked to", "مرتبط بـ")}</TableHead>
                   <TableHead>{tr("Target", "المستهدف")}</TableHead>
                   <TableHead>{tr("Baseline", "الأساس")}</TableHead>
@@ -231,7 +231,9 @@ export default function NodeDetailPage() {
                     <TableCell className="text-muted-foreground">
                       {k.primaryNode?.name ?? "—"}
                       {k.primaryNode?.nodeType?.displayName ? (
-                        <span className="ms-2 text-xs text-muted-foreground">({k.primaryNode.nodeType.displayName})</span>
+                        <span className="ms-2 text-xs text-muted-foreground">
+                          ({nodeTypeLabel(String(k.primaryNode.nodeType.code), k.primaryNode.nodeType.displayName)})
+                        </span>
                       ) : null}
                     </TableCell>
                     <TableCell className="text-muted-foreground">{typeof k.targetValue === "number" ? k.targetValue : "—"}</TableCell>
@@ -242,7 +244,7 @@ export default function NodeDetailPage() {
                 {data.kpis.length === 0 ? (
                   <TableRow>
                     <TableCell colSpan={5} className="py-8 text-center text-sm text-muted-foreground">
-                      {tr("No KPIs found.", "لا توجد مؤشرات.")}
+                      {tr("No KPIs found.", "لا توجد مؤشرات أداء رئيسية.")}
                     </TableCell>
                   </TableRow>
                 ) : null}

@@ -20,7 +20,7 @@ export default function RisksPage() {
     <div className="space-y-8">
       <PageHeader
         title={t("risks")}
-        subtitle={tr("Track risks by severity, aging, owner, and escalation status.", "متابعة المخاطر حسب الخطورة والعمر والمالك وحالة التصعيد.")}
+        subtitle={tr("Track risks by severity, aging, owner, and escalation status.", "متابعة المخاطر حسب الخطورة والعمر والمسؤول وحالة التصعيد.")}
         icon={<Icon name="tabler:shield-exclamation" className="h-5 w-5" />}
       />
 

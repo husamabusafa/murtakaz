@@ -10,7 +10,7 @@ import { Button } from "@/components/ui/button";
 import { useLocale } from "@/providers/locale-provider";
 
 export default function ContactPage() {
-  const { locale } = useLocale();
+  const { locale, t } = useLocale();
   const isArabic = locale === "ar";
 
   return (
@@ -70,9 +70,8 @@ export default function ContactPage() {
       </div>
 
       <Link href={`/${locale}`} className="text-sm font-semibold text-indigo-200 hover:text-indigo-100">
-        {isArabic ? "العودة إلى صفحة الهبوط" : "Back to landing"}
+        {t("backToHome")}
       </Link>
     </div>
   );
 }
-

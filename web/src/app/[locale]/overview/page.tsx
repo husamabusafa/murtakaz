@@ -46,7 +46,7 @@ function formatPercent(value: number | null | undefined) {
 }
 
 export default function OverviewPage() {
-  const { t, locale, tr } = useLocale();
+  const { t, locale, tr, nodeTypeLabel, kpiValueStatusLabel } = useLocale();
   const { user, loading: sessionLoading } = useAuth();
 
   const [loading, setLoading] = useState(true);
@@ -128,7 +128,10 @@ export default function OverviewPage() {
         id: a.id,
         href: `/${locale}/approvals`,
         title: a.kpiName,
-        subtitle: a.typeDisplayName && a.primaryName ? `${a.typeDisplayName} • ${a.primaryName}` : "—",
+        subtitle:
+          a.typeDisplayName && a.primaryName
+            ? `${nodeTypeLabel(a.typeCode, a.typeDisplayName)} • ${a.primaryName}`
+            : "—",
         right: a.calculatedValue === null ? "—" : formatNumber(a.calculatedValue),
         badge: undefined,
       }));
@@ -138,7 +141,9 @@ export default function OverviewPage() {
       id: it.id,
       href: `/${locale}/nodes/${it.type.code}/${it.id}`,
       title: it.name,
-      subtitle: it.parent ? `${it.type.displayName} • ${it.parent.typeDisplayName}: ${it.parent.name}` : it.type.displayName,
+      subtitle: it.parent
+        ? `${nodeTypeLabel(it.type.code, it.type.displayName)} • ${nodeTypeLabel(it.parent.typeCode, it.parent.typeDisplayName)}: ${it.parent.name}`
+        : nodeTypeLabel(it.type.code, it.type.displayName),
       right: `${it.progress}%`,
       badge: it.assignmentRole,
     }));
@@ -155,8 +160,8 @@ export default function OverviewPage() {
             ? "Organization-wide snapshot for KPI oversight and execution health."
             : "Your workspace snapshot based on what you own, what is assigned to you, and which KPIs you can access.",
           isAdmin
-            ? "ملخص عام للمؤسسة لمتابعة المؤشرات وصحة التنفيذ."
-            : "ملخص لمساحة عملك بناءً على ما تملكه وما هو مُسند لك والمؤشرات التي يمكنك الوصول إليها.",
+            ? "ملخص عام للجهة لمتابعة مؤشرات الأداء الرئيسية وأداء التنفيذ."
+            : "ملخص لمساحة عملك بناءً على ما تملكه وما هو مُسند لك ومؤشرات الأداء الرئيسية التي يمكنك الوصول إليها.",
         )}
         icon={<Icon name="tabler:layout-dashboard" className="h-5 w-5" />}
         actions={
@@ -206,7 +211,7 @@ export default function OverviewPage() {
                   <CardTitle className="text-base">{tr("Inbox", "الوارد")}</CardTitle>
                   <CardDescription>
                     {data.canApprove
-                      ? tr("Latest submitted KPI values to review.", "آخر قيم المؤشرات المُرسلة للمراجعة.")
+                      ? tr("Latest submitted KPI values to review.", "آخر قيم مؤشرات الأداء الرئيسية المُرسلة للمراجعة.")
                       : tr("Items that need your next action.", "عناصر تحتاج الإجراء التالي منك.")}
                   </CardDescription>
                 </div>
@@ -258,7 +263,7 @@ export default function OverviewPage() {
               <CardHeader className="flex flex-row items-start justify-between gap-3">
                 <div className="space-y-1">
                   <CardTitle className="text-base">{tr("Needs attention", "يتطلب متابعة")}</CardTitle>
-                  <CardDescription>{tr("KPIs that are missing data or awaiting action.", "مؤشرات بلا بيانات أو تحتاج إجراء.")}</CardDescription>
+                  <CardDescription>{tr("KPIs that are missing data or awaiting action.", "مؤشرات أداء رئيسية بلا بيانات أو تحتاج إجراء.")}</CardDescription>
                 </div>
                 <Badge variant="outline" className="border-border bg-muted/30 text-muted-foreground">
                   {attentionCount}
@@ -276,11 +281,11 @@ export default function OverviewPage() {
                         <div className="min-w-0">
                           <p className="truncate text-sm font-semibold">{k.name}</p>
                           <p className="mt-1 truncate text-xs text-muted-foreground">
-                            {k.primary.typeDisplayName} • {k.primary.name}
+                            {nodeTypeLabel(k.primary.typeCode, k.primary.typeDisplayName)} • {k.primary.name}
                           </p>
                         </div>
                         <Badge variant="outline" className={pillForKpiStatus(k.latest?.status ?? "NO_DATA")}>
-                          {(k.latest?.status ?? "NO_DATA") === "NO_DATA" ? tr("No data", "بلا بيانات") : (k.latest?.status ?? "NO_DATA")}
+                          {kpiValueStatusLabel(k.latest?.status ?? "NO_DATA")}
                         </Badge>
                       </div>
                     </Link>
@@ -295,7 +300,7 @@ export default function OverviewPage() {
 
             <Card className="bg-card/70 backdrop-blur shadow-sm">
               <CardHeader className="space-y-1">
-                <CardTitle className="text-base">{tr("Completion health", "صحة الإنجاز")}</CardTitle>
+                <CardTitle className="text-base">{tr("Completion health", "مستوى الإنجاز")}</CardTitle>
                 <CardDescription>{tr("A compact view of completion vs target.", "عرض مختصر للإنجاز مقابل المستهدف.")}</CardDescription>
               </CardHeader>
               <CardContent className="space-y-4">
@@ -349,7 +354,7 @@ export default function OverviewPage() {
                 <CardTitle className="text-base">{tr("Upcoming", "القادم")}</CardTitle>
                 <CardDescription>
                   {isAdmin
-                    ? tr("A quick view of owned items across the organization.", "عرض سريع للعناصر المملوكة على مستوى المؤسسة.")
+                    ? tr("A quick view of owned items across the organization.", "عرض سريع للعناصر المملوكة على مستوى الجهة.")
                     : tr("What you should focus on next.", "ما الذي يجب أن تركز عليه بعد ذلك.")}
                 </CardDescription>
               </CardHeader>
@@ -371,7 +376,7 @@ export default function OverviewPage() {
                             </p>
                             <p className="mt-1 truncate text-xs text-muted-foreground">
                               {it.type.displayName}
-                              {it.parent ? ` • ${it.parent.typeDisplayName}: ${it.parent.name}` : ""}
+                              {it.parent ? ` • ${nodeTypeLabel(it.parent.typeCode, it.parent.typeDisplayName)}: ${it.parent.name}` : ""}
                             </p>
                           </div>
                           <span className="text-xs text-muted-foreground" dir="ltr">
@@ -455,7 +460,7 @@ export default function OverviewPage() {
 
                 <div className="grid gap-3 sm:grid-cols-2">
                   <Button asChild variant="secondary" className="w-full">
-                    <Link href={`/${locale}/kpis`}>{tr("KPIs", "المؤشرات")}</Link>
+                    <Link href={`/${locale}/kpis`}>{tr("KPIs", "مؤشرات الأداء الرئيسية")}</Link>
                   </Button>
                   <Button asChild variant="secondary" className="w-full">
                     <Link href={`/${locale}/dashboards`}>{t("dashboards")}</Link>
@@ -485,7 +490,7 @@ export default function OverviewPage() {
             <Card className="bg-card/70 backdrop-blur shadow-sm">
               <CardHeader className="flex flex-row items-start justify-between gap-3">
                 <div className="space-y-1">
-                  <CardTitle className="text-base">{tr("KPIs you can access", "المؤشرات التي يمكنك الوصول إليها")}</CardTitle>
+                  <CardTitle className="text-base">{tr("KPIs you can access", "مؤشرات الأداء الرئيسية التي يمكنك الوصول إليها")}</CardTitle>
                   <CardDescription>{tr("Latest values, targets, and linked structure.", "آخر القيم والمستهدف والارتباط بالتسلسل.")}</CardDescription>
                 </div>
                 <Button asChild variant="ghost" className="text-primary hover:text-primary">
@@ -497,7 +502,7 @@ export default function OverviewPage() {
                   <Table>
                     <TableHeader>
                       <TableRow className="hover:bg-transparent">
-                        <TableHead>{tr("KPI", "المؤشر")}</TableHead>
+                        <TableHead>{tr("KPI", "مؤشر أداء رئيسي")}</TableHead>
                         <TableHead>{tr("Latest", "آخر قيمة")}</TableHead>
                         <TableHead>{t("target")}</TableHead>
                         <TableHead>{tr("Linked to", "مرتبط بـ")}</TableHead>
@@ -522,11 +527,11 @@ export default function OverviewPage() {
                               {formatNumber(k.targetValue)}
                             </TableCell>
                             <TableCell className="text-muted-foreground">
-                              {k.primary.typeDisplayName} • {k.primary.name}
+                              {nodeTypeLabel(k.primary.typeCode, k.primary.typeDisplayName)} • {k.primary.name}
                             </TableCell>
                             <TableCell className="text-right">
                               <Badge variant="outline" className={pillForKpiStatus(latestStatus)}>
-                                {latestStatus === "NO_DATA" ? tr("No data", "بلا بيانات") : latestStatus}
+                                {kpiValueStatusLabel(latestStatus)}
                               </Badge>
                             </TableCell>
                           </TableRow>
@@ -535,7 +540,7 @@ export default function OverviewPage() {
                       {topKpis.length === 0 ? (
                         <TableRow>
                           <TableCell colSpan={5} className="py-8 text-center text-sm text-muted-foreground">
-                            {tr("No KPIs found.", "لا توجد مؤشرات.")}
+                            {tr("No KPIs found.", "لا توجد مؤشرات أداء رئيسية.")}
                           </TableCell>
                         </TableRow>
                       ) : null}

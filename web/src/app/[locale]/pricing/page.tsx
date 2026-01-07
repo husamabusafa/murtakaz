@@ -8,7 +8,7 @@ import { Button } from "@/components/ui/button";
 import { useLocale } from "@/providers/locale-provider";
 
 export default function PricingPage() {
-  const { locale } = useLocale();
+  const { locale, t } = useLocale();
   const isArabic = locale === "ar";
 
   return (
@@ -22,7 +22,7 @@ export default function PricingPage() {
       <div className="grid gap-6 lg:grid-cols-3">
         {[
           { title: isArabic ? "تنفيذي" : "Executive", desc: isArabic ? "لوحات تنفيذية وحوكمة." : "Executive dashboards and governance.", highlight: true },
-          { title: isArabic ? "مكتب الاستراتيجية" : "Strategy Office", desc: isArabic ? "إدارة المبادرات والمؤشرات." : "Initiatives and KPI governance.", highlight: false },
+          { title: isArabic ? "مكتب الاستراتيجية" : "Strategy Office", desc: isArabic ? "إدارة المبادرات ومؤشرات الأداء الرئيسية." : "Initiatives and KPI governance.", highlight: false },
           { title: isArabic ? "مؤسسي" : "Enterprise", desc: isArabic ? "تكاملات وSSO وتعدد الجهات." : "SSO, integrations, and multi-org.", highlight: false },
         ].map((tier) => (
           <Card key={tier.title} className={`border-white/10 bg-white/5 text-white shadow-lg shadow-black/20 ${tier.highlight ? "ring-1 ring-indigo-500/40" : ""}`}>
@@ -59,9 +59,8 @@ export default function PricingPage() {
       </div>
 
       <Link href={`/${locale}`} className="text-sm font-semibold text-indigo-200 hover:text-indigo-100">
-        {isArabic ? "العودة إلى صفحة الهبوط" : "Back to landing"}
+        {t("backToHome")}
       </Link>
     </div>
   );
 }
-

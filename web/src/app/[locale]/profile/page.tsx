@@ -79,7 +79,7 @@ export default function ProfilePage() {
     <div className="space-y-8">
       <PageHeader
         title={tr("Profile", "الملف الشخصي")}
-        subtitle={tr("Your account info and organization scope.", "معلومات حسابك ونطاق المؤسسة.")}
+        subtitle={tr("Your account info and organization scope.", "معلومات حسابك ونطاق الجهة.")}
         actions={
           <Button variant="destructive" onClick={() => void signOut()}>
             {tr("Logout", "تسجيل الخروج")}
@@ -133,12 +133,12 @@ export default function ProfilePage() {
 
         <Card className="border-white/10 bg-white/5 text-white shadow-lg shadow-black/20 lg:col-span-2">
           <CardHeader>
-            <CardTitle className="text-base">{tr("Organization", "المؤسسة")}</CardTitle>
-            <CardDescription className="text-slate-200">{tr("Your organization and reporting line.", "معلومات المؤسسة وخط الإشراف.")}</CardDescription>
+            <CardTitle className="text-base">{tr("Organization", "الجهة")}</CardTitle>
+            <CardDescription className="text-slate-200">{tr("Your organization and reporting line.", "معلومات الجهة وخط الإشراف.")}</CardDescription>
           </CardHeader>
           <CardContent className="space-y-4 text-sm text-slate-100">
             <div className="rounded-xl border border-white/10 bg-slate-950/40 px-4 py-3">
-              <p className="text-xs font-semibold uppercase tracking-wide text-slate-200">{tr("Organization", "المؤسسة")}</p>
+              <p className="text-xs font-semibold uppercase tracking-wide text-slate-200">{tr("Organization", "الجهة")}</p>
               <p className="mt-1 text-white">{pOrg?.name ?? "—"}</p>
               <p className="mt-1 text-xs text-slate-200">{pOrg?.domain ?? "—"}</p>
             </div>

@@ -18,7 +18,7 @@ export default function PMODashboardPage() {
   return (
     <div className="space-y-8">
       <PageHeader
-        title={tr("PMO dashboard", "لوحة PMO")}
+        title={tr("PMO dashboard", "لوحة مكتب إدارة المشاريع")}
         subtitle={tr("Governance compliance, coverage gaps, dependencies, and approvals queue.", "الامتثال للحوكمة وفجوات التغطية والاعتمادات وقائمة الموافقات.")}
       />
 
@@ -104,16 +104,16 @@ export default function PMODashboardPage() {
           </CardHeader>
           <CardContent className="space-y-2 text-sm text-slate-100">
             <div className="rounded-xl border border-white/10 bg-slate-950/40 px-4 py-3">
-              <p className="font-semibold text-white">{tr("KPIs without owners", "مؤشرات بلا مالك")}</p>
-              <p className="mt-1 text-xs text-slate-200">{tr("Flag missing KPI owners/reviewers.", "تنبيه عند غياب مالك/مراجع المؤشر.")}</p>
+              <p className="font-semibold text-white">{tr("KPIs without owners", "مؤشرات أداء رئيسية بلا مسؤول")}</p>
+              <p className="mt-1 text-xs text-slate-200">{tr("Flag missing KPI owners/reviewers.", "تنبيه عند غياب مسؤول/مراجع مؤشر الأداء الرئيسي.")}</p>
             </div>
             <div className="rounded-xl border border-white/10 bg-slate-950/40 px-4 py-3">
               <p className="font-semibold text-white">{tr("Orphaned projects", "مشاريع غير مرتبطة")}</p>
               <p className="mt-1 text-xs text-slate-200">{tr("Prevent projects without an initiative.", "منع المشاريع غير المرتبطة بمبادرة.")}</p>
             </div>
             <div className="rounded-xl border border-white/10 bg-slate-950/40 px-4 py-3">
-              <p className="font-semibold text-white">{tr("Overdue KPI updates", "تحديثات مؤشرات متأخرة")}</p>
-              <p className="mt-1 text-xs text-slate-200">{tr("Remind owners when freshness threshold is exceeded.", "تذكير المالك عند تجاوز حد الحداثة.")}</p>
+              <p className="font-semibold text-white">{tr("Overdue KPI updates", "تحديثات مؤشرات أداء رئيسية متأخرة")}</p>
+              <p className="mt-1 text-xs text-slate-200">{tr("Remind owners when freshness threshold is exceeded.", "تذكير المسؤول عند تجاوز حد الحداثة.")}</p>
             </div>
           </CardContent>
         </Card>

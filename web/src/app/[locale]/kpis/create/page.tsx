@@ -191,12 +191,12 @@ export default function CreateKpiPage() {
 
   return (
     <div className="space-y-8">
-      <PageHeader title={tr("Create KPI", "إنشاء مؤشر")} subtitle={tr("Admin only.", "للإدارة فقط.")} icon={<Icon name="tabler:plus" className="h-5 w-5" />} />
+      <PageHeader title={tr("Create KPI", "إنشاء مؤشر أداء رئيسي")} subtitle={tr("Admin only.", "للإدارة فقط.")} icon={<Icon name="tabler:plus" className="h-5 w-5" />} />
 
       <Card className="border-white/10 bg-white/5 text-white shadow-lg shadow-black/20">
         <CardHeader>
           <CardTitle className="text-base">{tr("Definition", "التعريف")}</CardTitle>
-          <CardDescription className="text-slate-200">{tr("Configure KPI details and inputs.", "قم بضبط بيانات المؤشر والمدخلات.")}</CardDescription>
+          <CardDescription className="text-slate-200">{tr("Configure KPI details and inputs.", "قم بضبط بيانات مؤشر الأداء الرئيسي والمدخلات.")}</CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
           {error ? <div className="rounded-md border border-rose-500/30 bg-rose-500/10 p-3 text-sm text-rose-200 whitespace-pre-wrap">{error}</div> : null}

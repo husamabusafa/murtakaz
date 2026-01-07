@@ -7,7 +7,7 @@ import faqs from "@/content/faqs.json";
 import { useLocale } from "@/providers/locale-provider";
 
 export default function FAQPage() {
-  const { locale } = useLocale();
+  const { locale, t } = useLocale();
   const isArabic = locale === "ar";
 
   return (
@@ -37,7 +37,7 @@ export default function FAQPage() {
 
       <div className="flex flex-wrap gap-3">
         <Link href={`/${locale}`} className="text-sm font-semibold text-indigo-200 hover:text-indigo-100">
-          {isArabic ? "العودة إلى صفحة الهبوط" : "Back to landing"}
+          {t("backToHome")}
         </Link>
         <span className="text-slate-400">•</span>
         <Link href={`/${locale}/auth/login?next=/${locale}/overview`} className="text-sm font-semibold text-indigo-200 hover:text-indigo-100">
@@ -47,4 +47,3 @@ export default function FAQPage() {
     </div>
   );
 }
-

@@ -28,7 +28,7 @@ import { Loader2 } from "lucide-react";
 
 export default function KPIDetailPage() {
   const params = useParams<{ kpiId: string }>();
-  const { locale, tr } = useLocale();
+  const { locale, tr, kpiValueStatusLabel } = useLocale();
   const { user, loading: sessionLoading } = useAuth();
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -330,9 +330,9 @@ export default function KPIDetailPage() {
   if (!kpi) {
     return (
       <div className="rounded-2xl border border-white/10 bg-white/5 p-8 text-white">
-        <p className="text-sm text-slate-200">{tr("KPI not found.", "المؤشر غير موجود.")}</p>
+        <p className="text-sm text-slate-200">{tr("KPI not found.", "مؤشر الأداء الرئيسي غير موجود.")}</p>
         <Link href={`/${locale}/kpis`} className="mt-3 inline-flex text-sm font-semibold text-indigo-200 hover:text-indigo-100">
-          {tr("Back to KPIs", "العودة إلى المؤشرات")}
+          {tr("Back to KPIs", "العودة إلى مؤشرات الأداء الرئيسية")}
         </Link>
       </div>
     );
@@ -355,7 +355,7 @@ export default function KPIDetailPage() {
                   <Icon name="tabler:target-arrow" className="h-4 w-4 text-slate-100" />
                   {tr("Current vs target", "الحالي مقابل المستهدف")}
                 </CardTitle>
-                <CardDescription className="text-slate-200">{tr("At-a-glance KPI performance.", "نظرة سريعة على أداء المؤشر.")}</CardDescription>
+                <CardDescription className="text-slate-200">{tr("At-a-glance KPI performance.", "نظرة سريعة على أداء مؤشر الأداء الرئيسي.")}</CardDescription>
               </div>
               {canAdmin ? (
                 <div className="flex items-center gap-2">
@@ -429,7 +429,7 @@ export default function KPIDetailPage() {
         <CardContent className="space-y-4">
           <div className="rounded-xl border border-white/10 bg-slate-950/40 px-4 py-3 text-sm text-slate-100">
             <p className="text-xs font-semibold uppercase tracking-wide text-slate-200">{tr("Status", "الحالة")}</p>
-            <p className="mt-1">{periodStatus}</p>
+            <p className="mt-1">{kpiValueStatusLabel(periodStatus)}</p>
             {data?.currentPeriod?.changesRequestedMessage ? (
               <div className="mt-3 rounded-lg border border-orange-500/30 bg-orange-500/10 px-3 py-2">
                 <p className="text-xs font-semibold text-orange-100">{tr("Requested changes", "التعديلات المطلوبة")}</p>
@@ -571,7 +571,7 @@ export default function KPIDetailPage() {
             <DialogDescription className="text-slate-200">
               {tr(
                 "Write a message explaining what needs to be fixed. The KPI owner will see it.",
-                "اكتب رسالة توضح ما المطلوب تعديله. سيتمكن صاحب المؤشر من رؤيتها.",
+                "اكتب رسالة توضح ما المطلوب تعديله. سيتمكن مسؤول مؤشر الأداء الرئيسي من رؤيتها.",
               )}
             </DialogDescription>
           </DialogHeader>
@@ -621,7 +621,7 @@ export default function KPIDetailPage() {
       <Dialog open={deleteOpen} onOpenChange={setDeleteOpen}>
         <DialogContent className="sm:max-w-[520px]">
           <DialogHeader>
-            <DialogTitle>{tr("Delete KPI", "حذف المؤشر")}</DialogTitle>
+            <DialogTitle>{tr("Delete KPI", "حذف مؤشر أداء رئيسي")}</DialogTitle>
             <DialogDescription>{kpi.name}</DialogDescription>
           </DialogHeader>
 
@@ -629,7 +629,7 @@ export default function KPIDetailPage() {
             <div className="rounded-md border border-rose-500/30 bg-rose-500/10 p-3 text-sm text-rose-200 whitespace-pre-wrap">{deleteError}</div>
           ) : null}
 
-          <p className="text-sm text-slate-200">{tr("This will permanently delete the KPI.", "سيتم حذف المؤشر نهائيًا.")}</p>
+          <p className="text-sm text-slate-200">{tr("This will permanently delete the KPI.", "سيتم حذف مؤشر الأداء الرئيسي نهائيًا.")}</p>
 
           <DialogFooter>
             <Button variant="outline" onClick={() => setDeleteOpen(false)} disabled={submitting}>

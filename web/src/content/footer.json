@@ -3,7 +3,7 @@
     "name": "Murtakaz",
     "nameAr": "مرتكز",
     "description": "Empowering organizations to execute strategy with precision.",
-    "descriptionAr": "تمكين المؤسسات من تنفيذ الاستراتيجية بدقة."
+    "descriptionAr": "تمكين الجهات من تنفيذ الاستراتيجية بدقة."
   },
   "links": [
     {
@@ -29,11 +29,10 @@
       "titleAr": "قانوني",
       "items": [
         { "label": "Privacy Policy", "labelAr": "سياسة الخصوصية", "href": "/privacy" },
-        { "label": "Terms of Service", "labelAr": "شروط الخدمة", "href": "/terms" }
+        { "label": "Terms of Use", "labelAr": "شروط الاستخدام", "href": "/terms" }
       ]
     }
   ],
   "copyright": "© 2024 Murtakaz. All rights reserved.",
   "copyrightAr": "© 2024 مرتكز. جميع الحقوق محفوظة."
 }
-

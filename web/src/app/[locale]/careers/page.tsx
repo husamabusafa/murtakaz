@@ -7,7 +7,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { useLocale } from "@/providers/locale-provider";
 
 export default function CareersPage() {
-  const { locale } = useLocale();
+  const { locale, t } = useLocale();
   const isArabic = locale === "ar";
 
   return (
@@ -20,7 +20,7 @@ export default function CareersPage() {
 
       <div className="grid gap-6 lg:grid-cols-3">
         {[
-          { title: isArabic ? "مصمم منتج" : "Product Designer", icon: "tabler:palette", body: isArabic ? "خبرة في أنظمة التصميم وواجهات المؤسسات." : "Experience with design systems and enterprise UI." },
+          { title: isArabic ? "مصمم منتج" : "Product Designer", icon: "tabler:palette", body: isArabic ? "خبرة في أنظمة التصميم وواجهات الجهات." : "Experience with design systems and enterprise UI." },
           { title: isArabic ? "مهندس منصة" : "Platform Engineer", icon: "tabler:server", body: isArabic ? "Next.js / Prisma / Postgres وخبرة بالحوكمة." : "Next.js / Prisma / Postgres with governance mindset." },
           { title: isArabic ? "مدير منتج" : "Product Manager", icon: "tabler:clipboard-check", body: isArabic ? "ترجمة احتياج الجهات إلى منتج قابل للتنفيذ." : "Translate enterprise needs into build-ready specs." },
         ].map((role) => (
@@ -38,9 +38,8 @@ export default function CareersPage() {
       </div>
 
       <Link href={`/${locale}`} className="text-sm font-semibold text-indigo-200 hover:text-indigo-100">
-        {isArabic ? "العودة إلى صفحة الهبوط" : "Back to landing"}
+        {t("backToHome")}
       </Link>
     </div>
   );
 }
-

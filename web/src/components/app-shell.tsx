@@ -23,6 +23,15 @@ const nodeTypeIconMap: Record<string, string> = {
   task: "tabler:checklist",
 };
 
+const nodeTypeLabelMap: Partial<Record<string, TranslationKey>> = {
+  strategy: "strategy",
+  pillar: "pillar",
+  objective: "objective",
+  initiative: "initiative",
+  project: "project",
+  task: "task",
+};
+
 const navItems = [
   { href: "/overview", key: "home", icon: "tabler:layout-dashboard" },
   { href: "/kpis", key: "kpis", icon: "tabler:chart-line" },
@@ -253,7 +262,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
       href: `/nodes/${nt.code.toLowerCase()}`,
       key: `nodes-${nt.code.toLowerCase()}`,
       icon: nodeTypeIconMap[nt.code.toLowerCase()] ?? "tabler:layers-subtract",
-      label: nt.displayName,
+      label: nodeTypeLabelMap[nt.code.toLowerCase()] ? t(nodeTypeLabelMap[nt.code.toLowerCase()]!) : nt.displayName,
     }));
 
     const base: NavItem[] = [
@@ -274,7 +283,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
     }
 
     return base;
-  }, [orgNodeTypes, userRole]);
+  }, [orgNodeTypes, t, userRole]);
 
   const visibleNavItems = useMemo(() => {
     if (userRole === "SUPER_ADMIN") {
@@ -313,8 +322,8 @@ export function AppShell({ children }: { children: React.ReactNode }) {
                 >
                   <LogoMark text="SE" />
                   <div className="leading-tight">
-                    <p className="text-xs uppercase tracking-[0.24em] text-muted-foreground">Strategy Execution</p>
-                    <p className="text-sm font-semibold text-foreground">Command Center</p>
+                    <p className="text-xs uppercase tracking-[0.24em] text-muted-foreground">{t("appTitle")}</p>
+                    <p className="text-sm font-semibold text-foreground">{t("appShortTitle")}</p>
                   </div>
                 </Link>
 
@@ -404,7 +413,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
                     sidebarContentVisible ? "opacity-100 translate-x-0" : "opacity-0 -translate-x-2",
                   )}
                 >
-                  <p className="text-sm font-semibold text-foreground">Command Center</p>
+                  <p className="text-sm font-semibold text-foreground">{t("appShortTitle")}</p>
                 </div>
               </Link>
 
@@ -413,7 +422,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
                   variant="ghost"
                   className="h-9 w-9 px-0 text-muted-foreground hover:bg-accent hover:text-foreground"
                   onClick={() => setSidebarPinned((prev) => !prev)}
-                  aria-label={sidebarPinned ? "Unpin sidebar" : "Pin sidebar"}
+                  aria-label={sidebarPinned ? t("unpinSidebar") : t("pinSidebar")}
                 >
                   <Icon name={sidebarPinned ? "tabler:pin-filled" : "tabler:pin"} />
                 </Button>
@@ -518,8 +527,8 @@ export function AppShell({ children }: { children: React.ReactNode }) {
                 <Link href={`/${locale}`} className="flex items-center gap-3">
                   <LogoMark text="SE" />
                   <div className="leading-tight">
-                    <p className="text-xs uppercase tracking-[0.24em] text-slate-300">Strategy Execution</p>
-                    <p className="text-sm font-semibold text-white">Performance Command Center</p>
+                    <p className="text-xs uppercase tracking-[0.24em] text-slate-300">{t("appTitle")}</p>
+                    <p className="text-sm font-semibold text-white">{t("appTagline")}</p>
                   </div>
                 </Link>
               )}

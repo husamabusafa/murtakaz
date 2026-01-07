@@ -93,13 +93,13 @@ export default function UsersManagementPage() {
       <div className="flex items-center justify-between">
         <PageHeader
           title={tr("Users", "المستخدمون")}
-          subtitle={tr("Manage users, roles, and organization assignment.", "إدارة المستخدمين والأدوار وتعيين المؤسسات.")}
+          subtitle={tr("Manage users, roles, and organization assignment.", "إدارة المستخدمين والأدوار وتعيين الجهات.")}
         />
 
         <Dialog open={createOpen} onOpenChange={setCreateOpen}>
           <DialogTrigger asChild>
             <Button>
-              <Plus className="mr-2 h-4 w-4" />
+              <Plus className="me-2 h-4 w-4" />
               {tr("New User", "مستخدم جديد")}
             </Button>
           </DialogTrigger>
@@ -107,7 +107,7 @@ export default function UsersManagementPage() {
             <DialogHeader>
               <DialogTitle>{tr("Create User", "إنشاء مستخدم")}</DialogTitle>
               <DialogDescription className="text-muted-foreground">
-                {tr("Add a new user to an organization.", "إضافة مستخدم جديد إلى مؤسسة.")}
+                {tr("Add a new user to an organization.", "إضافة مستخدم جديد إلى جهة.")}
               </DialogDescription>
             </DialogHeader>
             <form onSubmit={handleCreate} className="space-y-4">
@@ -151,10 +151,10 @@ export default function UsersManagementPage() {
               </div>
 
               <div className="space-y-2">
-                <Label>{tr("Organization", "المؤسسة")}</Label>
+                <Label>{tr("Organization", "الجهة")}</Label>
                 <Select value={newUser.orgId} onValueChange={(val) => setNewUser({ ...newUser, orgId: val })}>
                   <SelectTrigger className="bg-card">
-                    <SelectValue placeholder={tr("Select Organization", "اختر المؤسسة")} />
+                    <SelectValue placeholder={tr("Select Organization", "اختر الجهة")} />
                   </SelectTrigger>
                   <SelectContent>
                     {orgs.map((org) => (
@@ -199,7 +199,7 @@ export default function UsersManagementPage() {
         <CardHeader>
           <CardTitle className="text-base">{tr("User Directory", "دليل المستخدمين")}</CardTitle>
           <CardDescription>
-            {tr("View and manage users across all organizations.", "عرض وإدارة المستخدمين في جميع المؤسسات.")}
+            {tr("View and manage users across all organizations.", "عرض وإدارة المستخدمين في جميع الجهات.")}
           </CardDescription>
         </CardHeader>
         <CardContent>
@@ -208,7 +208,7 @@ export default function UsersManagementPage() {
               <TableHeader>
                 <TableRow>
                   <TableHead>{tr("User", "المستخدم")}</TableHead>
-                  <TableHead>{tr("Organization", "المؤسسة")}</TableHead>
+                  <TableHead>{tr("Organization", "الجهة")}</TableHead>
                   <TableHead>{tr("Role", "الدور")}</TableHead>
                   <TableHead className="text-right">{tr("Joined", "تاريخ الانضمام")}</TableHead>
                 </TableRow>

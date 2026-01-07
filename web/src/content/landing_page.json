@@ -12,15 +12,15 @@
     {
       "id": "feat-1",
       "title": "Strategic Alignment",
-      "titleAr": "الموائمة الاستراتيجية",
+      "titleAr": "المواءمة الاستراتيجية",
       "description": "Align every project and initiative with your core pillars and goals.",
-      "descriptionAr": "وائم كل مشروع ومبادرة مع الركائز والأهداف الاستراتيجية.",
+      "descriptionAr": "واءم كل مشروع ومبادرة مع الركائز والأهداف الاستراتيجية.",
       "icon": "target"
     },
     {
       "id": "feat-2",
       "title": "Real-time KPIs",
-      "titleAr": "مؤشرات أداء رئيسية لحظية",
+      "titleAr": "مؤشرات الأداء الرئيسية الآنية",
       "description": "Monitor performance with automated, role-based dashboards.",
       "descriptionAr": "راقب الأداء من خلال لوحات معلومات آلية ومخصصة حسب الدور.",
       "icon": "chart-bar"

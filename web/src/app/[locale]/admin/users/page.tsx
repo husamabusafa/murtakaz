@@ -13,7 +13,7 @@ export default function UsersManagementPage() {
         title={tr("Users", "المستخدمون")}
         subtitle={tr(
           "Organization user management will be implemented for ADMIN role.",
-          "سيتم تنفيذ إدارة مستخدمي المؤسسة لدور المسؤول.",
+          "سيتم تنفيذ إدارة مستخدمي الجهة لدور المسؤول.",
         )}
       />
 

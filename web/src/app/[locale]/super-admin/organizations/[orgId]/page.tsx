@@ -121,7 +121,7 @@ export default function OrganizationDetailsPage() {
         router.push(`/${locale}/super-admin/organizations`);
         router.refresh();
       } else {
-        alert(result.error || tr("Failed to delete organization", "فشل حذف المؤسسة"));
+        alert(result.error || tr("Failed to delete organization", "فشل حذف الجهة"));
       }
     } finally {
       setDeletingOrg(false);
@@ -157,7 +157,7 @@ export default function OrganizationDetailsPage() {
         setEditNameOpen(false);
         router.refresh();
       } else {
-        alert(result.error || tr("Failed to update organization", "فشل تحديث المؤسسة"));
+        alert(result.error || tr("Failed to update organization", "فشل تحديث الجهة"));
       }
     } finally {
       setSavingOrg(false);
@@ -175,7 +175,7 @@ export default function OrganizationDetailsPage() {
         setEditKpiApprovalOpen(false);
         router.refresh();
       } else {
-        alert(result.error || tr("Failed to update organization", "فشل تحديث المؤسسة"));
+        alert(result.error || tr("Failed to update organization", "فشل تحديث الجهة"));
       }
     } finally {
       setSavingOrg(false);
@@ -193,7 +193,7 @@ export default function OrganizationDetailsPage() {
         setEditDomainOpen(false);
         router.refresh();
       } else {
-        alert(result.error || tr("Failed to update organization", "فشل تحديث المؤسسة"));
+        alert(result.error || tr("Failed to update organization", "فشل تحديث الجهة"));
       }
     } finally {
       setSavingOrg(false);
@@ -239,7 +239,7 @@ export default function OrganizationDetailsPage() {
   if (!org) {
     return (
       <div className="rounded-2xl border border-border bg-card p-8">
-        <p className="text-sm text-muted-foreground">{tr("Organization not found.", "المؤسسة غير موجودة.")}</p>
+        <p className="text-sm text-muted-foreground">{tr("Organization not found.", "الجهة غير موجودة.")}</p>
         <Link
           href={`/${locale}/super-admin/organizations`}
           className="mt-3 inline-flex text-sm font-semibold text-primary hover:opacity-90"
@@ -263,7 +263,7 @@ export default function OrganizationDetailsPage() {
                 setNameDraft(org.name ?? "");
                 setEditNameOpen(true);
               }}
-              aria-label={tr("Edit organization name", "تعديل اسم المؤسسة")}
+              aria-label={tr("Edit organization name", "تعديل اسم الجهة")}
             >
               <Pencil className="h-3.5 w-3.5" />
             </button>
@@ -271,12 +271,12 @@ export default function OrganizationDetailsPage() {
         }
         subtitle={tr(
           "Organization details and user directory.",
-          "تفاصيل المؤسسة ودليل المستخدمين.",
+          "تفاصيل الجهة ودليل المستخدمين.",
         )}
         actions={
           <div className="flex items-center gap-2">
             <Button variant="destructive" size="sm" onClick={() => setDeleteOrgOpen(true)}>
-              <Trash2 className="mr-2 h-4 w-4" />
+              <Trash2 className="me-2 h-4 w-4" />
               {tr("Delete", "حذف")}
             </Button>
             <Link
@@ -293,7 +293,7 @@ export default function OrganizationDetailsPage() {
         <Card className="bg-card/70 backdrop-blur shadow-sm">
           <CardHeader>
             <CardTitle className="text-base">{tr("Overview", "نظرة عامة")}</CardTitle>
-            <CardDescription>{tr("Tenant metadata", "بيانات المؤسسة")}</CardDescription>
+            <CardDescription>{tr("Tenant metadata", "بيانات الجهة")}</CardDescription>
           </CardHeader>
           <CardContent className="space-y-3 text-sm">
             <div className="rounded-xl border border-border bg-muted/30 px-4 py-3">
@@ -306,7 +306,7 @@ export default function OrganizationDetailsPage() {
                     setDomainDraft(org.domain ?? "");
                     setEditDomainOpen(true);
                   }}
-                  aria-label={tr("Edit organization domain", "تعديل نطاق المؤسسة")}
+                  aria-label={tr("Edit organization domain", "تعديل نطاق الجهة")}
                 >
                   <Pencil className="h-3.5 w-3.5" />
                 </button>
@@ -316,7 +316,7 @@ export default function OrganizationDetailsPage() {
 
             <div className="rounded-xl border border-border bg-muted/30 px-4 py-3">
               <div className="flex items-start justify-between gap-3">
-                <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">{tr("KPI Approval Level", "مستوى اعتماد المؤشرات")}</p>
+                <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">{tr("KPI Approval Level", "مستوى اعتماد مؤشرات الأداء الرئيسية")}</p>
                 <button
                   type="button"
                   className="inline-flex h-7 w-7 items-center justify-center rounded-md border border-border bg-card text-muted-foreground hover:text-foreground"
@@ -324,7 +324,7 @@ export default function OrganizationDetailsPage() {
                     setKpiApprovalDraft((org.kpiApprovalLevel as typeof kpiApprovalDraft) ?? "MANAGER");
                     setEditKpiApprovalOpen(true);
                   }}
-                  aria-label={tr("Edit KPI approval level", "تعديل مستوى اعتماد المؤشرات")}
+                  aria-label={tr("Edit KPI approval level", "تعديل مستوى اعتماد مؤشرات الأداء الرئيسية")}
                 >
                   <Pencil className="h-3.5 w-3.5" />
                 </button>
@@ -373,12 +373,12 @@ export default function OrganizationDetailsPage() {
             <div className="flex items-center justify-between gap-3">
               <CardTitle className="text-base">{tr("Users", "المستخدمون")}</CardTitle>
               <Button size="sm" onClick={() => setCreateUserOpen(true)}>
-                <Plus className="mr-2 h-4 w-4" />
+                <Plus className="me-2 h-4 w-4" />
                 {tr("Create", "إنشاء")}
               </Button>
             </div>
             <CardDescription>
-              {tr("All users assigned to this organization.", "جميع المستخدمين في هذه المؤسسة.")}
+              {tr("All users assigned to this organization.", "جميع المستخدمين في هذه الجهة.")}
             </CardDescription>
           </CardHeader>
           <CardContent>
@@ -423,9 +423,9 @@ export default function OrganizationDetailsPage() {
       <Dialog open={editNameOpen} onOpenChange={setEditNameOpen}>
         <DialogContent>
           <DialogHeader>
-            <DialogTitle>{tr("Edit organization name", "تعديل اسم المؤسسة")}</DialogTitle>
+            <DialogTitle>{tr("Edit organization name", "تعديل اسم الجهة")}</DialogTitle>
             <DialogDescription className="text-muted-foreground">
-              {tr("Update the organization name.", "قم بتحديث اسم المؤسسة.")}
+              {tr("Update the organization name.", "قم بتحديث اسم الجهة.")}
             </DialogDescription>
           </DialogHeader>
 
@@ -460,14 +460,14 @@ export default function OrganizationDetailsPage() {
       <Dialog open={editKpiApprovalOpen} onOpenChange={setEditKpiApprovalOpen}>
         <DialogContent>
           <DialogHeader>
-            <DialogTitle>{tr("Edit KPI Approval Level", "تعديل مستوى اعتماد المؤشرات")}</DialogTitle>
+            <DialogTitle>{tr("Edit KPI Approval Level", "تعديل مستوى اعتماد مؤشرات الأداء الرئيسية")}</DialogTitle>
             <DialogDescription className="text-muted-foreground">
-              {tr("Choose the minimum role level allowed to approve KPI values.", "اختر أقل مستوى دور يمكنه اعتماد قيم المؤشرات.")}
+              {tr("Choose the minimum role level allowed to approve KPI values.", "اختر أقل مستوى دور يمكنه اعتماد قيم مؤشرات الأداء الرئيسية.")}
             </DialogDescription>
           </DialogHeader>
 
           <div className="space-y-2">
-            <Label>{tr("KPI Approval Level", "مستوى اعتماد المؤشرات")}</Label>
+            <Label>{tr("KPI Approval Level", "مستوى اعتماد مؤشرات الأداء الرئيسية")}</Label>
             <Select value={kpiApprovalDraft} onValueChange={(v) => setKpiApprovalDraft(v as typeof kpiApprovalDraft)}>
               <SelectTrigger className="bg-card">
                 <SelectValue />
@@ -504,7 +504,7 @@ export default function OrganizationDetailsPage() {
           <DialogHeader>
             <DialogTitle>{tr("Edit Node Types", "تعديل أنواع العقد")}</DialogTitle>
             <DialogDescription className="text-muted-foreground">
-              {tr("Choose which node types are enabled for this organization.", "اختر أنواع العقد المفعلة لهذه المؤسسة.")}
+              {tr("Choose which node types are enabled for this organization.", "اختر أنواع العقد المفعلة لهذه الجهة.")}
             </DialogDescription>
           </DialogHeader>
 
@@ -555,7 +555,7 @@ export default function OrganizationDetailsPage() {
       <Dialog open={editDomainOpen} onOpenChange={setEditDomainOpen}>
         <DialogContent>
           <DialogHeader>
-            <DialogTitle>{tr("Edit organization domain", "تعديل نطاق المؤسسة")}</DialogTitle>
+            <DialogTitle>{tr("Edit organization domain", "تعديل نطاق الجهة")}</DialogTitle>
             <DialogDescription className="text-muted-foreground">
               {tr("Set the domain (optional).", "قم بتحديد النطاق (اختياري).")}
             </DialogDescription>
@@ -595,7 +595,7 @@ export default function OrganizationDetailsPage() {
           <DialogHeader>
             <DialogTitle>{tr("Create User", "إنشاء مستخدم")}</DialogTitle>
             <DialogDescription className="text-muted-foreground">
-              {tr("Add a new user to this organization.", "إضافة مستخدم جديد إلى هذه المؤسسة.")}
+              {tr("Add a new user to this organization.", "إضافة مستخدم جديد إلى هذه الجهة.")}
             </DialogDescription>
           </DialogHeader>
 
@@ -667,11 +667,11 @@ export default function OrganizationDetailsPage() {
       <Dialog open={deleteOrgOpen} onOpenChange={setDeleteOrgOpen}>
         <DialogContent>
           <DialogHeader>
-            <DialogTitle>{tr("Delete Organization", "حذف المؤسسة")}</DialogTitle>
+            <DialogTitle>{tr("Delete Organization", "حذف الجهة")}</DialogTitle>
             <DialogDescription className="text-muted-foreground">
               {tr(
                 "This will soft-delete the organization and its users.",
-                "سيتم حذف المؤسسة ومستخدميها (حذف منطقي).",
+                "سيتم حذف الجهة ومستخدميها (حذف منطقي).",
               )}
             </DialogDescription>
           </DialogHeader>

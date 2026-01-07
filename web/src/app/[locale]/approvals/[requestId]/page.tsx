@@ -80,7 +80,7 @@ export default function ApprovalDetailPage() {
               <p className="mt-1 text-slate-100">
                 {tr(
                   "In Phase 1, changes to KPI targets/formulas and strategy items require PMO approval. This view displays the proposed payload and audit metadata.",
-                  "في المرحلة الأولى، تتطلب تغييرات مستهدفات/معادلات المؤشرات وعناصر الاستراتيجية موافقة PMO. تعرض هذه الصفحة تفاصيل الطلب وبيانات التدقيق.",
+                  "في المرحلة الأولى، تتطلب تغييرات مستهدفات/معادلات مؤشرات الأداء الرئيسية وعناصر الاستراتيجية موافقة مكتب إدارة المشاريع (PMO). تعرض هذه الصفحة تفاصيل الطلب وبيانات التدقيق.",
                 )}
               </p>
             </div>

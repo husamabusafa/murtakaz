@@ -214,7 +214,7 @@ export async function getOrgKpisGridPaged(input: z.infer<typeof getOrgKpisGridPa
       baselineValue: number | null;
       periodType: KpiPeriodType;
       status: unknown;
-      primaryNode: { id: string; name: string; nodeType: { displayName: string } };
+      primaryNode: { id: string; name: string; nodeType: { displayName: string; code: string } };
       values: Array<{ calculatedValue: number | null; periodEnd: Date; status: unknown }>;
     }>({
       where,
@@ -234,7 +234,7 @@ export async function getOrgKpisGridPaged(input: z.infer<typeof getOrgKpisGridPa
           select: {
             id: true,
             name: true,
-            nodeType: { select: { displayName: true } },
+            nodeType: { select: { displayName: true, code: true } },
           },
         },
         values: {
@@ -903,7 +903,7 @@ export async function getOrgKpiApprovals(input?: { status?: "SUBMITTED" | "APPRO
     kpi: {
       id: string;
       name: string;
-      primaryNode: { name: string; nodeType: { displayName: string } } | null;
+      primaryNode: { name: string; nodeType: { displayName: string; code: string } } | null;
     };
   }>({
     where: {
@@ -927,7 +927,7 @@ export async function getOrgKpiApprovals(input?: { status?: "SUBMITTED" | "APPRO
         select: {
           id: true,
           name: true,
-          primaryNode: { select: { name: true, nodeType: { select: { displayName: true } } } },
+          primaryNode: { select: { name: true, nodeType: { select: { displayName: true, code: true } } } },
         },
       },
     },
@@ -948,7 +948,7 @@ export async function getOrgKpiPrimaryNodeOptions() {
       id: true,
       name: true,
       parentId: true,
-      nodeType: { select: { displayName: true } },
+      nodeType: { select: { displayName: true, code: true } },
     },
   });
 }

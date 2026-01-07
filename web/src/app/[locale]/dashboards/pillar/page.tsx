@@ -17,7 +17,7 @@ export default function PillarDashboardPage() {
     <div className="space-y-8">
       <PageHeader
         title={tr("Pillar dashboard", "لوحة الركائز")}
-        subtitle={tr("Pillar roll-up health, initiative coverage, KPI scorecard, and risks (prototype).", "صحة الركيزة المجمعة وتغطية المبادرات وبطاقة المؤشرات والمخاطر (نموذج أولي).")}
+        subtitle={tr("Pillar roll-up health, initiative coverage, KPI scorecard, and risks (prototype).", "أداء الركيزة المجمعة وتغطية المبادرات وبطاقة مؤشرات الأداء الرئيسية والمخاطر (نموذج أولي).")}
       />
 
       <section className="grid gap-6 lg:grid-cols-3">
@@ -27,7 +27,7 @@ export default function PillarDashboardPage() {
               <CardTitle className="text-base">{tr("Pillar posture", "موقف الركيزة")}</CardTitle>
               <Icon name="tabler:layers-subtract" className="text-slate-200" />
             </div>
-            <CardDescription className="text-slate-200">{tr("RAG health by pillar with drill-down.", "صحة RAG حسب الركيزة مع استعراض تفصيلي.")}</CardDescription>
+            <CardDescription className="text-slate-200">{tr("RAG health by pillar with drill-down.", "حالة RAG حسب الركيزة مع استعراض تفصيلي.")}</CardDescription>
           </CardHeader>
           <CardContent className="grid gap-3 md:grid-cols-2">
             {pillars.map((pillar) => (

@@ -253,7 +253,7 @@ export default function NodeTypePage() {
   const createDisabledReason = useMemo(() => {
     if (!isAdmin) return null;
     if (effectiveCanCreate) return null;
-    if (!enabledTypes.length) return tr("No node types enabled for this organization.", "لا توجد أنواع عقد مفعّلة لهذه المؤسسة.");
+    if (!enabledTypes.length) return tr("No node types enabled for this organization.", "لا توجد أنواع عقد مفعّلة لهذه الجهة.");
     if (requiresParent) {
       return requiredParentTypeLabel
         ? tr(
@@ -424,20 +424,20 @@ export default function NodeTypePage() {
                   ? hasLowerType
                     ? tr(
                         `Create, edit, delete, and open ${title} items to see ${lowerTypeLabel} and KPIs.`,
-                        `أنشئ وحرّر واحذف وافتح عناصر ${title} لرؤية ${lowerTypeLabel} والمؤشرات.`,
+                        `أنشئ وحرّر واحذف وافتح عناصر ${title} لرؤية ${lowerTypeLabel} ومؤشرات الأداء الرئيسية.`,
                       )
                     : tr(
                         `Create, edit, delete, and open ${title} items to see KPIs.`,
-                        `أنشئ وحرّر واحذف وافتح عناصر ${title} لرؤية المؤشرات.`,
+                        `أنشئ وحرّر واحذف وافتح عناصر ${title} لرؤية مؤشرات الأداء الرئيسية.`,
                       )
                   : hasLowerType
                     ? tr(
                         `Explore ${title} items to see ${lowerTypeLabel} and KPIs.`,
-                        `استعرض عناصر ${title} لرؤية ${lowerTypeLabel} والمؤشرات.`,
+                        `استعرض عناصر ${title} لرؤية ${lowerTypeLabel} ومؤشرات الأداء الرئيسية.`,
                       )
                     : tr(
                         `Explore ${title} items to see KPIs.`,
-                        `استعرض عناصر ${title} لرؤية المؤشرات.`,
+                        `استعرض عناصر ${title} لرؤية مؤشرات الأداء الرئيسية.`,
                       )}
               </CardDescription>
             </div>
@@ -613,7 +613,7 @@ export default function NodeTypePage() {
                         </Badge>
                       ) : null}
                       <Badge variant="outline" className="border-white/10 bg-white/5">
-                        {tr("KPIs", "المؤشرات")}: {n._count.kpis}
+                        {tr("KPIs", "مؤشرات الأداء الرئيسية")}: {n._count.kpis}
                       </Badge>
                     </div>
                   </CardHeader>
@@ -635,7 +635,7 @@ export default function NodeTypePage() {
                     <TableHead>{higherNodeLabel}</TableHead>
                     <TableHead>{tr("Status", "الحالة")}</TableHead>
                     {hasLowerType ? <TableHead>{lowerTypeLabel}</TableHead> : null}
-                    <TableHead>{tr("KPIs", "المؤشرات")}</TableHead>
+                    <TableHead>{tr("KPIs", "مؤشرات الأداء الرئيسية")}</TableHead>
                     {isAdmin ? <TableHead className="text-right">{tr("Actions", "الإجراءات")}</TableHead> : null}
                   </TableRow>
                 </TableHeader>

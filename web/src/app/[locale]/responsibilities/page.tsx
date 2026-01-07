@@ -85,7 +85,7 @@ function initials(name: string) {
 
 export default function ResponsibilitiesPage() {
   const { user, loading: sessionLoading } = useAuth();
-  const { locale, tr } = useLocale();
+  const { locale, tr, nodeTypeLabel } = useLocale();
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const userRole = (user as any)?.role as string | undefined;
@@ -299,7 +299,7 @@ export default function ResponsibilitiesPage() {
         title={tr("Responsibilities", "المسؤوليات")}
         subtitle={tr(
           "Assign nodes (with cascading scope) or individual KPIs to your direct reports.",
-          "قم بإسناد العناصر (مع نطاق متسلسل) أو المؤشرات الفردية لموظفيك المباشرين.",
+          "قم بإسناد العناصر (مع نطاق متسلسل) أو مؤشرات الأداء الرئيسية الفردية لموظفيك المباشرين.",
         )}
         icon={<Icon name="tabler:user-check" className="h-5 w-5" />}
       />
@@ -375,15 +375,15 @@ export default function ResponsibilitiesPage() {
                   setCascade(null);
                 }}
               >
-                {tr("Assign KPIs", "إسناد مؤشرات")}
+                {tr("Assign KPIs", "إسناد مؤشرات أداء رئيسية")}
               </Button>
             </div>
 
             <div className="rounded-xl border border-border bg-muted/20 p-4 text-xs text-muted-foreground">
               <p className="font-semibold text-foreground">{tr("Tip", "معلومة")}</p>
               <div className="mt-2 space-y-2">
-                <p>{tr("Item assignment cascades to all child items and all KPIs under them (including future ones).", "إسناد العنصر يتسلسل لكل العناصر الفرعية وجميع المؤشرات تحتها (بما في ذلك المستقبلية).")}</p>
-                <p>{tr("KPI assignment assigns only selected KPIs.", "إسناد المؤشرات يقتصر على المؤشرات المختارة فقط.")}</p>
+                <p>{tr("Item assignment cascades to all child items and all KPIs under them (including future ones).", "إسناد العنصر يتسلسل لكل العناصر الفرعية وجميع مؤشرات الأداء الرئيسية تحتها (بما في ذلك المستقبلية).")}</p>
+                <p>{tr("KPI assignment assigns only selected KPIs.", "إسناد مؤشرات الأداء الرئيسية يقتصر على المحددة فقط.")}</p>
               </div>
             </div>
           </CardContent>
@@ -391,11 +391,11 @@ export default function ResponsibilitiesPage() {
 
         <Card className="bg-card/70 backdrop-blur shadow-sm lg:col-span-2">
           <CardHeader>
-            <CardTitle className="text-base">{mode === "node" ? tr("Select an item", "اختر عنصرًا") : tr("Select KPIs", "اختر مؤشرات")}</CardTitle>
+            <CardTitle className="text-base">{mode === "node" ? tr("Select an item", "اختر عنصرًا") : tr("Select KPIs", "اختر مؤشرات أداء رئيسية")}</CardTitle>
             <CardDescription>
               {mode === "node"
                 ? tr("Pick an item and preview the cascading scope before confirming.", "اختر عنصرًا وعاين نطاق التسلسل قبل التأكيد.")
-                : tr("Search and add KPIs, then assign them in one action.", "ابحث وأضف مؤشرات، ثم قم بإسنادها دفعة واحدة.")}
+                : tr("Search and add KPIs, then assign them in one action.", "ابحث وأضف مؤشرات أداء رئيسية، ثم قم بإسنادها دفعة واحدة.")}
             </CardDescription>
           </CardHeader>
           <CardContent className="space-y-5">
@@ -439,7 +439,7 @@ export default function ResponsibilitiesPage() {
             ) : (
               <div className="space-y-4">
                 <div className="space-y-2">
-                  <Label>{tr("Search KPIs", "بحث المؤشرات")}</Label>
+                  <Label>{tr("Search KPIs", "بحث مؤشرات الأداء الرئيسية")}</Label>
                   <Input
                     value={kpiQuery}
                     onChange={(e) => setKpiQuery(e.target.value)}
@@ -477,7 +477,7 @@ export default function ResponsibilitiesPage() {
                         <div className="min-w-0">
                           <p className="truncate text-sm font-semibold">{k.name}</p>
                           <p className="mt-1 truncate text-xs text-muted-foreground">
-                            {k.primaryNode.nodeType.displayName} • {k.primaryNode.name}
+                            {nodeTypeLabel(String(k.primaryNode.nodeType.code), k.primaryNode.nodeType.displayName)} • {k.primaryNode.name}
                             {k.unit ? ` • ${k.unit}` : ""}
                           </p>
                         </div>
@@ -507,8 +507,8 @@ export default function ResponsibilitiesPage() {
 
                 <div className="flex justify-end">
                   <Button onClick={() => void applyKpiAssignment()} disabled={!selectedReportId || selectedKpis.length === 0 || submitting}>
-                    {submitting ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Plus className="mr-2 h-4 w-4" />}
-                    {tr("Assign selected KPIs", "إسناد المؤشرات المختارة")}
+                    {submitting ? <Loader2 className="me-2 h-4 w-4 animate-spin" /> : <Plus className="me-2 h-4 w-4" />}
+                    {tr("Assign selected KPIs", "إسناد مؤشرات الأداء الرئيسية المختارة")}
                   </Button>
                 </div>
               </div>
@@ -547,7 +547,7 @@ export default function ResponsibilitiesPage() {
                           <span className="h-2.5 w-2.5 rounded-full" style={{ background: a.rootNode.color }} />
                           <p className="truncate text-sm font-semibold">{a.rootNode.name}</p>
                           <Badge variant="outline" className="border-border bg-muted/30">
-                            {a.rootNode.nodeType.displayName}
+                            {nodeTypeLabel(String(a.rootNode.nodeType.code), a.rootNode.nodeType.displayName)}
                           </Badge>
                         </div>
                         <p className="mt-1 text-xs text-muted-foreground">
@@ -575,7 +575,7 @@ export default function ResponsibilitiesPage() {
 
               <div className="space-y-3">
                 <div className="flex items-center justify-between">
-                  <p className="text-sm font-semibold">{tr("KPI responsibilities", "مسؤوليات المؤشرات")}</p>
+                  <p className="text-sm font-semibold">{tr("KPI responsibilities", "مسؤوليات مؤشرات الأداء الرئيسية")}</p>
                   <Badge variant="outline" className="border-border bg-muted/30">
                     {assignments?.kpiAssignments.length ?? 0}
                   </Badge>
@@ -587,7 +587,7 @@ export default function ResponsibilitiesPage() {
                       <div className="min-w-0">
                         <p className="truncate text-sm font-semibold">{a.kpi.name}</p>
                         <p className="mt-1 truncate text-xs text-muted-foreground">
-                          {a.kpi.primaryNode.nodeType.displayName} • {a.kpi.primaryNode.name}
+                          {nodeTypeLabel(String(a.kpi.primaryNode.nodeType.code), a.kpi.primaryNode.nodeType.displayName)} • {a.kpi.primaryNode.name}
                           {a.kpi.unit ? ` • ${a.kpi.unit}` : ""}
                         </p>
                         <p className="mt-2 text-xs text-muted-foreground">
@@ -607,7 +607,7 @@ export default function ResponsibilitiesPage() {
 
                   {(assignments?.kpiAssignments.length ?? 0) === 0 ? (
                     <div className="rounded-xl border border-dashed border-border bg-muted/10 p-6 text-sm text-muted-foreground">
-                      {tr("No KPI responsibilities assigned.", "لا توجد مسؤوليات مؤشرات.")}
+                      {tr("No KPI responsibilities assigned.", "لا توجد مسؤوليات مؤشرات أداء رئيسية.")}
                     </div>
                   ) : null}
                 </div>
@@ -624,7 +624,7 @@ export default function ResponsibilitiesPage() {
             <DialogDescription>
               {tr(
                 "This will cascade responsibility to all child nodes and all KPIs under them.",
-                "سيتم تسلسل المسؤولية لكل العناصر الفرعية وجميع المؤشرات تحتها.",
+                "سيتم تسلسل المسؤولية لكل العناصر الفرعية وجميع مؤشرات الأداء الرئيسية تحتها.",
               )}
             </DialogDescription>
           </DialogHeader>
@@ -636,7 +636,7 @@ export default function ResponsibilitiesPage() {
                   <span className="h-2.5 w-2.5 rounded-full" style={{ background: cascadeNode.color }} />
                   <p className="text-sm font-semibold">{cascadeNode.name}</p>
                   <Badge variant="outline" className="border-border bg-muted/30">
-                    {cascadeNode.nodeType.displayName}
+                    {nodeTypeLabel(String(cascadeNode.nodeType.code), cascadeNode.nodeType.displayName)}
                   </Badge>
                 </div>
               </div>
@@ -654,24 +654,24 @@ export default function ResponsibilitiesPage() {
                   <p className="mt-2 text-2xl font-semibold">{cascade.counts.nodes}</p>
                 </div>
                 <div className="rounded-xl border border-border bg-background/50 p-4">
-                  <p className="text-xs font-semibold text-muted-foreground">{tr("KPIs in scope", "المؤشرات ضمن النطاق")}</p>
+                  <p className="text-xs font-semibold text-muted-foreground">{tr("KPIs in scope", "مؤشرات الأداء الرئيسية ضمن النطاق")}</p>
                   <p className="mt-2 text-2xl font-semibold">{cascade.counts.kpis}</p>
                 </div>
 
                 <div className="sm:col-span-2 rounded-xl border border-border bg-muted/20 p-4">
-                  <p className="text-xs font-semibold text-foreground">{tr("Sample KPIs", "أمثلة على المؤشرات")}</p>
+                  <p className="text-xs font-semibold text-foreground">{tr("Sample KPIs", "أمثلة على مؤشرات الأداء الرئيسية")}</p>
                   <div className="mt-3 space-y-2">
                     {cascade.sampleKpis.length ? (
                       cascade.sampleKpis.map((k) => (
                         <div key={k.id} className="rounded-lg border border-border bg-background/50 px-3 py-2">
                           <p className="truncate text-sm font-semibold">{k.name}</p>
                           <p className="truncate text-xs text-muted-foreground">
-                            {k.primaryNode.nodeType.displayName} • {k.primaryNode.name}
+                            {nodeTypeLabel(String(k.primaryNode.nodeType.code), k.primaryNode.nodeType.displayName)} • {k.primaryNode.name}
                           </p>
                         </div>
                       ))
                     ) : (
-                      <p className="text-sm text-muted-foreground">{tr("No KPIs under this node.", "لا توجد مؤشرات تحت هذا العنصر.")}</p>
+                      <p className="text-sm text-muted-foreground">{tr("No KPIs under this node.", "لا توجد مؤشرات أداء رئيسية تحت هذا العنصر.")}</p>
                     )}
                   </div>
                 </div>
@@ -692,7 +692,7 @@ export default function ResponsibilitiesPage() {
               {tr("Cancel", "إلغاء")}
             </Button>
             <Button onClick={() => void applyNodeAssignment()} disabled={!cascadeNode || submitting}>
-              {submitting ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : null}
+              {submitting ? <Loader2 className="me-2 h-4 w-4 animate-spin" /> : null}
               {tr("Confirm assignment", "تأكيد الإسناد")}
             </Button>
           </DialogFooter>

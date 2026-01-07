@@ -224,7 +224,7 @@ export function NodePickerTree(props: {
     <div className="grid gap-3">
       <div className="relative">
         <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" />
-        <Input value={query} onChange={(e) => setQuery(e.target.value)} placeholder={props.searchPlaceholder} className={`pl-9 ${inputClassName}`} />
+        <Input value={query} onChange={(e) => setQuery(e.target.value)} placeholder={props.searchPlaceholder} className={`ps-9 ${inputClassName}`} />
       </div>
 
       <ScrollArea className={`${props.heightClassName ?? "h-[420px]"} ${scrollClassName} p-2`}>

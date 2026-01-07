@@ -41,15 +41,15 @@ export default function SuperAdminPage() {
         title={tr("Super admin", "الإدارة العليا")}
         subtitle={tr(
           "System overview across organizations and users.",
-          "نظرة عامة على مستوى النظام عبر المؤسسات والمستخدمين.",
+          "نظرة عامة على مستوى النظام عبر الجهات والمستخدمين.",
         )}
       />
 
       <div className="grid gap-6 lg:grid-cols-3">
         <Card className="border-white/10 bg-white/5 text-white shadow-lg shadow-black/20">
           <CardHeader>
-            <CardTitle className="text-base">{tr("Organizations", "المؤسسات")}</CardTitle>
-            <CardDescription className="text-slate-200">{tr("Total organizations", "إجمالي المؤسسات")}</CardDescription>
+            <CardTitle className="text-base">{tr("Organizations", "الجهات")}</CardTitle>
+            <CardDescription className="text-slate-200">{tr("Total organizations", "إجمالي الجهات")}</CardDescription>
           </CardHeader>
           <CardContent className="text-3xl font-semibold">
             {loading ? "—" : (stats?.organizations ?? 0)}
@@ -58,7 +58,7 @@ export default function SuperAdminPage() {
                 href={`/${locale}/super-admin/organizations`}
                 className="inline-flex text-sm font-semibold text-indigo-200 hover:text-indigo-100"
               >
-                {tr("Open organizations", "فتح المؤسسات")}
+                {tr("Open organizations", "فتح الجهات")}
               </Link>
             </div>
           </CardContent>
@@ -89,8 +89,8 @@ export default function SuperAdminPage() {
           </CardHeader>
           <CardContent className="space-y-3 text-sm text-slate-100">
             <div className="rounded-xl border border-white/10 bg-slate-950/40 px-4 py-3">
-              <p className="font-semibold text-white">{tr("Organizations", "المؤسسات")}</p>
-              <p className="mt-1 text-xs text-slate-200">{tr("Review tenants and drill down into users.", "استعراض المؤسسات والانتقال للمستخدمين.")}</p>
+              <p className="font-semibold text-white">{tr("Organizations", "الجهات")}</p>
+              <p className="mt-1 text-xs text-slate-200">{tr("Review tenants and drill down into users.", "استعراض الجهات والانتقال للمستخدمين.")}</p>
             </div>
             <div className="rounded-xl border border-white/10 bg-slate-950/40 px-4 py-3">
               <p className="font-semibold text-white">{tr("Users", "المستخدمون")}</p>

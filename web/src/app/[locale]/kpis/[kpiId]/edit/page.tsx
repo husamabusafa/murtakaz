@@ -225,7 +225,7 @@ export default function EditKpiPage() {
   if (!draft) {
     return (
       <div className="rounded-2xl border border-white/10 bg-white/5 p-8 text-white">
-        <p className="text-sm text-slate-200">{tr("KPI not found.", "المؤشر غير موجود.")}</p>
+        <p className="text-sm text-slate-200">{tr("KPI not found.", "مؤشر الأداء الرئيسي غير موجود.")}</p>
         <Link href={`/${locale}/kpis`} className="mt-3 inline-flex text-sm font-semibold text-indigo-200 hover:text-indigo-100">
           {tr("Back", "رجوع")}
         </Link>
@@ -235,12 +235,12 @@ export default function EditKpiPage() {
 
   return (
     <div className="space-y-8">
-      <PageHeader title={tr("Edit KPI", "تعديل مؤشر")} subtitle={draft.name} icon={<Icon name="tabler:edit" className="h-5 w-5" />} />
+      <PageHeader title={tr("Edit KPI", "تعديل مؤشر أداء رئيسي")} subtitle={draft.name} icon={<Icon name="tabler:edit" className="h-5 w-5" />} />
 
       <Card className="border-white/10 bg-white/5 text-white shadow-lg shadow-black/20">
         <CardHeader>
           <CardTitle className="text-base">{tr("Definition", "التعريف")}</CardTitle>
-          <CardDescription className="text-slate-200">{tr("Update KPI details and inputs.", "قم بتحديث بيانات المؤشر والمدخلات.")}</CardDescription>
+          <CardDescription className="text-slate-200">{tr("Update KPI details and inputs.", "قم بتحديث بيانات مؤشر الأداء الرئيسي والمدخلات.")}</CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
           {error ? <div className="rounded-md border border-rose-500/30 bg-rose-500/10 p-3 text-sm text-rose-200 whitespace-pre-wrap">{error}</div> : null}

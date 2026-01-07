@@ -41,7 +41,7 @@ function SectionHeading({
   centered?: boolean;
 }) {
   return (
-    <div className={cn("space-y-4 max-w-3xl", isArabic ? "text-right ml-auto" : "mr-auto", centered && "mx-auto text-center")}>
+    <div className={cn("space-y-4 max-w-3xl", isArabic ? "text-right ms-auto" : "me-auto", centered && "mx-auto text-center")}>
       <h2 className="text-3xl font-bold tracking-tight text-white md:text-4xl">{title}</h2>
       {subtitle ? <p className="text-lg text-slate-400 leading-relaxed">{subtitle}</p> : null}
     </div>
@@ -268,7 +268,7 @@ export default function LandingPage() {
             {
               icon: "tabler:chart-line",
               title: isArabic ? "راقب الأداء" : "Track performance",
-              body: isArabic ? "مؤشرات واضحة وتقدم تنفيذي سريع." : "Clear KPIs and executive-ready progress.",
+              body: isArabic ? "مؤشرات أداء رئيسية واضحة وتقدم تنفيذي سريع." : "Clear KPIs and executive-ready progress.",
               step: "02"
             },
             {

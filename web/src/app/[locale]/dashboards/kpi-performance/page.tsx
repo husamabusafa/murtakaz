@@ -11,13 +11,13 @@ import { kpis } from "@/lib/mock-data";
 import { useLocale } from "@/providers/locale-provider";
 
 export default function KPIPerformanceDashboardPage() {
-  const { locale, tr, isArabic } = useLocale();
+  const { locale, tr, isArabic, t } = useLocale();
 
   return (
     <div className="space-y-8">
       <PageHeader
-        title={tr("KPI Performance dashboard", "لوحة أداء المؤشرات")}
-        subtitle={tr("Target vs actual, variance distribution, freshness, and drill-down to KPI details.", "المستهدف مقابل الفعلي وتوزيع الانحراف والحداثة والاستعراض التفصيلي للمؤشرات.")}
+        title={tr("KPI Performance dashboard", "لوحة أداء مؤشرات الأداء الرئيسية")}
+        subtitle={tr("Target vs actual, variance distribution, freshness, and drill-down to KPI details.", "المستهدف مقابل الفعلي وتوزيع الانحراف والحداثة والاستعراض التفصيلي لمؤشرات الأداء الرئيسية.")}
       />
 
       <section className="grid gap-6 lg:grid-cols-3">
@@ -27,7 +27,7 @@ export default function KPIPerformanceDashboardPage() {
               <CardTitle className="text-base">{tr("Variance distribution", "توزيع الانحراف")}</CardTitle>
               <Icon name="tabler:chart-bar" className="text-slate-200" />
             </div>
-            <CardDescription className="text-slate-200">{tr("Top KPI variance by theme (demo).", "أعلى انحراف للمؤشرات حسب المحور (عرض تجريبي).")}</CardDescription>
+            <CardDescription className="text-slate-200">{tr("Top KPI variance by theme (demo).", "أعلى انحراف لمؤشرات الأداء الرئيسية حسب المحور (عرض تجريبي).")}</CardDescription>
           </CardHeader>
           <CardContent>
             <Bar
@@ -42,7 +42,7 @@ export default function KPIPerformanceDashboardPage() {
         <Card className="border-white/10 bg-white/5 text-white shadow-lg shadow-black/20">
           <CardHeader className="space-y-1">
             <CardTitle className="text-base">{tr("Freshness watch", "مراقبة الحداثة")}</CardTitle>
-            <CardDescription className="text-slate-200">{tr("KPIs with oldest updates (demo).", "المؤشرات ذات أقدم تحديث (عرض تجريبي).")}</CardDescription>
+            <CardDescription className="text-slate-200">{tr("KPIs with oldest updates (demo).", "مؤشرات الأداء الرئيسية ذات أقدم تحديث (عرض تجريبي).")}</CardDescription>
           </CardHeader>
           <CardContent className="space-y-3">
             {kpis
@@ -68,7 +68,7 @@ export default function KPIPerformanceDashboardPage() {
       <section>
         <Card className="border-white/10 bg-white/5 text-white shadow-lg shadow-black/20">
           <CardHeader className="space-y-1">
-            <CardTitle className="text-base">{tr("KPI scorecard", "بطاقة المؤشرات")}</CardTitle>
+            <CardTitle className="text-base">{tr("KPI scorecard", "بطاقة مؤشرات الأداء الرئيسية")}</CardTitle>
             <CardDescription className="text-slate-200">{tr("Catalog view with drill-down.", "عرض كتالوج مع استعراض تفصيلي.")}</CardDescription>
           </CardHeader>
           <CardContent>
@@ -76,12 +76,12 @@ export default function KPIPerformanceDashboardPage() {
               <Table>
                 <TableHeader>
                   <TableRow className="border-white/10 hover:bg-white/0">
-                    <TableHead className="text-slate-200">KPI</TableHead>
-                    <TableHead className="text-slate-200">Owner</TableHead>
-                    <TableHead className="text-slate-200">Current</TableHead>
-                    <TableHead className="text-slate-200">Target</TableHead>
-                    <TableHead className="text-slate-200">Variance</TableHead>
-                    <TableHead className="text-right text-slate-200">Freshness</TableHead>
+                    <TableHead className="text-slate-200">{t("kpi")}</TableHead>
+                    <TableHead className="text-slate-200">{t("owner")}</TableHead>
+                    <TableHead className="text-slate-200">{t("current")}</TableHead>
+                    <TableHead className="text-slate-200">{t("target")}</TableHead>
+                    <TableHead className="text-slate-200">{t("variance")}</TableHead>
+                    <TableHead className="text-right text-slate-200">{t("freshness")}</TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>

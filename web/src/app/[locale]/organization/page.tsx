@@ -140,8 +140,8 @@ export default function OrganizationPage() {
   return (
     <div className="space-y-8">
       <PageHeader
-        title={tr("Organization", "المؤسسة")}
-        subtitle={tr("Organization settings and configuration (Admin only).", "إعدادات المؤسسة والتهيئة (للمسؤول فقط).")}
+        title={tr("Organization", "الجهة")}
+        subtitle={tr("Organization settings and configuration (Admin only).", "إعدادات الجهة والتهيئة (للمسؤول فقط).")}
         icon={<Icon name="tabler:building" className="h-5 w-5" />}
       />
 
@@ -156,7 +156,7 @@ export default function OrganizationPage() {
         <Card className="bg-card/70 backdrop-blur shadow-sm">
           <CardHeader>
             <CardTitle className="text-base">{tr("Unauthorized", "غير مصرح")}</CardTitle>
-            <CardDescription>{tr("This page is available to organization admins only.", "هذه الصفحة متاحة لمسؤولي المؤسسة فقط.")}</CardDescription>
+            <CardDescription>{tr("This page is available to organization admins only.", "هذه الصفحة متاحة لمسؤولي الجهة فقط.")}</CardDescription>
           </CardHeader>
           <CardContent>
             <Link href={`/${locale}/overview`} className="text-sm font-semibold text-primary hover:opacity-90">
@@ -167,7 +167,7 @@ export default function OrganizationPage() {
       ) : !org ? (
         <Card className="bg-card/70 backdrop-blur shadow-sm">
           <CardHeader>
-            <CardTitle className="text-base">{tr("Organization not found", "المؤسسة غير موجودة")}</CardTitle>
+            <CardTitle className="text-base">{tr("Organization not found", "الجهة غير موجودة")}</CardTitle>
           </CardHeader>
           <CardContent />
         </Card>
@@ -176,7 +176,7 @@ export default function OrganizationPage() {
           <Card className="bg-card/70 backdrop-blur shadow-sm lg:col-span-2">
             <CardHeader>
               <div className="flex items-center justify-between gap-3">
-                <CardTitle className="text-base">{tr("Organization", "المؤسسة")}</CardTitle>
+                <CardTitle className="text-base">{tr("Organization", "الجهة")}</CardTitle>
                 {!editingOrg ? (
                   <Button type="button" variant="outline" size="sm" onClick={() => setEditingOrg(true)}>
                     {tr("Edit", "تعديل")}
@@ -203,10 +203,10 @@ export default function OrganizationPage() {
                     <p className="mt-1">{org.domain || "—"}</p>
                   </div>
                   <div className="rounded-xl border border-border bg-muted/30 px-4 py-3">
-                    <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">{tr("KPI Approval Level", "مستوى اعتماد المؤشرات")}</p>
+                    <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">{tr("KPI Approval Level", "مستوى اعتماد مؤشرات الأداء الرئيسية")}</p>
                     <p className="mt-1">{String(org.kpiApprovalLevel ?? "MANAGER")}</p>
                     <p className="mt-2 text-xs text-muted-foreground">
-                      {tr("Minimum role required to approve KPI values.", "أقل مستوى دور مطلوب لاعتماد قيم المؤشرات.")}
+                      {tr("Minimum role required to approve KPI values.", "أقل مستوى دور مطلوب لاعتماد قيم مؤشرات الأداء الرئيسية.")}
                     </p>
                   </div>
                 </div>
@@ -224,7 +224,7 @@ export default function OrganizationPage() {
                   </div>
 
                   <div className="space-y-2">
-                    <Label>{tr("KPI Approval Level", "مستوى اعتماد المؤشرات")}</Label>
+                    <Label>{tr("KPI Approval Level", "مستوى اعتماد مؤشرات الأداء الرئيسية")}</Label>
                     <Select value={kpiApprovalDraft} onValueChange={(v) => setKpiApprovalDraft(v as typeof kpiApprovalDraft)}>
                       <SelectTrigger className="bg-card">
                         <SelectValue placeholder={tr("Select", "اختر")} />
@@ -265,7 +265,7 @@ export default function OrganizationPage() {
           <Card className="bg-card/70 backdrop-blur shadow-sm">
             <CardHeader>
               <CardTitle className="text-base">{tr("Overview", "نظرة عامة")}</CardTitle>
-              <CardDescription>{tr("Tenant metrics", "مؤشرات المؤسسة")}</CardDescription>
+              <CardDescription>{tr("Tenant metrics", "مؤشرات الجهة")}</CardDescription>
             </CardHeader>
             <CardContent className="space-y-3 text-sm">
               <div className="rounded-xl border border-border bg-muted/30 px-4 py-3">
@@ -293,7 +293,7 @@ export default function OrganizationPage() {
                 </div>
               </div>
               <div className="rounded-xl border border-border bg-muted/30 px-4 py-3">
-                <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">{tr("KPIs", "المؤشرات")}</p>
+                <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">{tr("KPIs", "مؤشرات الأداء الرئيسية")}</p>
                 <p className="mt-1 text-lg font-semibold">{org._count?.kpis ?? 0}</p>
               </div>
               <div className="rounded-xl border border-border bg-muted/30 px-4 py-3">
@@ -314,7 +314,7 @@ export default function OrganizationPage() {
                 ) : null}
               </div>
               <CardDescription>
-                {tr("Enable the node types available in this organization.", "قم بتفعيل أنواع العقد المتاحة في هذه المؤسسة.")}
+                {tr("Enable the node types available in this organization.", "قم بتفعيل أنواع العقد المتاحة في هذه الجهة.")}
               </CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">

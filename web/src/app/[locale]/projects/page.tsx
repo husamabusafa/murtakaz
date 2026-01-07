@@ -18,7 +18,7 @@ export default function ProjectsPage() {
     <div className="space-y-8">
       <PageHeader
         title={t("projects")}
-        subtitle={tr("High-level execution view with milestones, dependencies, and health roll-up.", "عرض تنفيذي للمشاريع مع المعالم والاعتمادات وتجميع الصحة.")}
+        subtitle={tr("High-level execution view with milestones, dependencies, and health roll-up.", "عرض تنفيذي للمشاريع مع المعالم والاعتمادات وتجميع الأداء.")}
         icon={<Icon name="tabler:timeline" className="h-5 w-5" />}
       />
 

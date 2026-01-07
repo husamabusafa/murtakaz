@@ -73,7 +73,7 @@ export default function InitiativeDetailPage() {
     parentPillar ? (isArabic ? parentPillar.titleAr ?? parentPillar.title : parentPillar.title) : null,
     initiative.owner || null,
     `${initiative.projects.length} ${tr("projects", "مشاريع")}`,
-    `${initiative.kpis.length} ${tr("KPIs", "مؤشرات")}`,
+    `${initiative.kpis.length} ${tr("KPIs", "مؤشرات الأداء الرئيسية")}`,
     `${initiative.risks.length} ${tr("risks", "مخاطر")}`,
   ].filter(Boolean);
 
@@ -100,7 +100,7 @@ export default function InitiativeDetailPage() {
             {tr("Projects", "المشاريع")}
           </TabsTrigger>
           <TabsTrigger value="kpis" className="data-[state=active]:bg-white/10 data-[state=active]:text-white">
-            {tr("KPIs", "المؤشرات")}
+            {tr("KPIs", "مؤشرات الأداء الرئيسية")}
           </TabsTrigger>
           <TabsTrigger value="risks" className="data-[state=active]:bg-white/10 data-[state=active]:text-white">
             {tr("Risks", "المخاطر")}
@@ -118,7 +118,7 @@ export default function InitiativeDetailPage() {
                 {tr("Initiative summary", "ملخص المبادرة")}
               </CardTitle>
               <CardDescription className="text-slate-200">
-                {tr("Drill-down across projects, KPIs, risks, and narrative updates.", "استعراض تفصيلي للمشاريع والمؤشرات والمخاطر والتحديثات.")}
+                {tr("Drill-down across projects, KPIs, risks, and narrative updates.", "استعراض تفصيلي للمشاريع ومؤشرات الأداء الرئيسية والمخاطر والتحديثات.")}
               </CardDescription>
             </CardHeader>
             <CardContent className="space-y-3 text-sm text-slate-100">
@@ -133,7 +133,7 @@ export default function InitiativeDetailPage() {
               ) : null}
               <div className="grid gap-3 md:grid-cols-2">
                 <div className="rounded-xl border border-white/10 bg-slate-950/40 px-4 py-3">
-                  <p className="text-xs font-semibold uppercase tracking-wide text-slate-200">{tr("Owner", "المالك")}</p>
+                  <p className="text-xs font-semibold uppercase tracking-wide text-slate-200">{tr("Owner", "المسؤول")}</p>
                   <p className="mt-1 text-white">{initiative.owner || "—"}</p>
                 </div>
                 <div className="rounded-xl border border-white/10 bg-slate-950/40 px-4 py-3">
@@ -200,9 +200,9 @@ export default function InitiativeDetailPage() {
             <CardHeader>
               <CardTitle className="flex items-center gap-2 text-base">
                 <Icon name="tabler:chart-line" className="h-4 w-4 text-slate-100" />
-                {tr("KPIs", "المؤشرات")}
+                {tr("KPIs", "مؤشرات الأداء الرئيسية")}
               </CardTitle>
-              <CardDescription className="text-slate-200">{tr("KPIs linked to this initiative.", "المؤشرات المرتبطة بهذه المبادرة.")}</CardDescription>
+              <CardDescription className="text-slate-200">{tr("KPIs linked to this initiative.", "مؤشرات الأداء الرئيسية المرتبطة بهذه المبادرة.")}</CardDescription>
             </CardHeader>
             <CardContent className="grid gap-3 md:grid-cols-2 lg:grid-cols-3">
               {kpis.map((kpi) => (

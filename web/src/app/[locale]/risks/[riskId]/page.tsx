@@ -23,7 +23,7 @@ import {
 
 export default function RiskDetailPage() {
   const params = useParams<{ riskId: string }>();
-  const { locale, tr, isArabic } = useLocale();
+  const { locale, tr, isArabic, t } = useLocale();
   const { user } = useAuth();
 
   const baseRisk = getBaseRisk(params.riskId);
@@ -137,33 +137,36 @@ export default function RiskDetailPage() {
             <CardHeader>
               <CardTitle className="flex items-center gap-2 text-base">
                 <Icon name="tabler:info-circle" className="h-4 w-4 text-slate-100" />
-                Risk summary
+                {t("riskSummary")}
               </CardTitle>
-              <CardDescription className="text-slate-200">Update status, escalation, and context.</CardDescription>
+              <CardDescription className="text-slate-200">{t("riskSummaryDesc")}</CardDescription>
             </CardHeader>
             <CardContent className="space-y-4 text-sm text-slate-100">
               <div className="grid gap-3 md:grid-cols-2">
                 <div className="rounded-xl border border-white/10 bg-slate-950/40 px-4 py-3">
-                  <p className="text-xs font-semibold uppercase tracking-wide text-slate-200">Status</p>
+                  <p className="text-xs font-semibold uppercase tracking-wide text-slate-200">{t("status")}</p>
                   <p className="mt-1 text-white">{risk.status}</p>
                 </div>
                 <div className="rounded-xl border border-white/10 bg-slate-950/40 px-4 py-3">
-                  <p className="text-xs font-semibold uppercase tracking-wide text-slate-200">Escalation</p>
-                  <p className="mt-1 text-white">{risk.escalated ? "Escalated" : "Not escalated"}</p>
+                  <p className="text-xs font-semibold uppercase tracking-wide text-slate-200">{t("escalation")}</p>
+                  <p className="mt-1 text-white">{risk.escalated ? t("escalated") : t("notEscalated")}</p>
                 </div>
               </div>
               <div className="rounded-xl border border-white/10 bg-slate-950/40 px-4 py-3">
-                <p className="text-xs font-semibold uppercase tracking-wide text-slate-200">Context</p>
+                <p className="text-xs font-semibold uppercase tracking-wide text-slate-200">{t("context")}</p>
                 <p className="mt-1 text-white">{context}</p>
               </div>
               <Separator className="bg-white/10" />
               <div className="rounded-xl border border-white/10 bg-slate-950/40 px-4 py-3">
-                <p className="text-xs font-semibold uppercase tracking-wide text-slate-200">Add note</p>
+                <p className="text-xs font-semibold uppercase tracking-wide text-slate-200">{t("addNote")}</p>
                 <RiskNoteEditor
                   onSubmit={(message) =>
                     update({
                       ...risk,
-                      notes: [{ id: `note-${Date.now()}`, at: new Date().toISOString(), author: user?.name ?? "User", message }, ...risk.notes],
+                      notes: [
+                        { id: `note-${Date.now()}`, at: new Date().toISOString(), author: user?.name ?? tr("User", "مستخدم"), message },
+                        ...risk.notes,
+                      ],
                     })
                   }
                 />
@@ -211,7 +214,7 @@ export default function RiskDetailPage() {
                 <Icon name="tabler:clipboard-text" className="h-4 w-4 text-slate-100" />
                 {tr("Mitigation plan", "خطة التخفيف")}
               </CardTitle>
-              <CardDescription className="text-slate-200">{tr("Add steps, owners, and due dates.", "إضافة خطوات ومالكين وتواريخ استحقاق.")}</CardDescription>
+              <CardDescription className="text-slate-200">{tr("Add steps, owners, and due dates.", "إضافة خطوات ومسؤولين وتواريخ استحقاق.")}</CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">
               <MitigationEditor
@@ -239,7 +242,7 @@ export default function RiskDetailPage() {
                         <div className="space-y-1">
                           <p className="text-sm font-semibold text-white">{step.text}</p>
                           <p className="text-xs text-slate-200">
-                            {step.owner ? `${tr("Owner:", "المالك:")} ${step.owner}` : `${tr("Owner:", "المالك:")} —`}
+                            {step.owner ? `${tr("Owner:", "المسؤول:")} ${step.owner}` : `${tr("Owner:", "المسؤول:")} —`}
                             {step.due ? ` • ${tr("Due:", "الاستحقاق:")} ${step.due}` : ""}
                           </p>
                         </div>
@@ -277,7 +280,7 @@ export default function RiskDetailPage() {
             </CardHeader>
             <CardContent className="space-y-2 text-sm text-slate-100">
               <div className="rounded-xl border border-white/10 bg-slate-950/40 px-4 py-3">
-                <p className="font-semibold text-white">{tr("Assign owners", "تعيين المالكين")}</p>
+                <p className="font-semibold text-white">{tr("Assign owners", "تعيين المسؤولين")}</p>
                 <p className="mt-1 text-xs text-slate-200">{tr("Define accountability and due dates.", "تحديد المسؤوليات وتواريخ الاستحقاق.")}</p>
               </div>
               <div className="rounded-xl border border-white/10 bg-slate-950/40 px-4 py-3">
@@ -372,7 +375,7 @@ function MitigationEditor({
         />
       </div>
       <div className="space-y-2">
-        <p className="text-sm font-semibold text-white">{tr("Owner", "المالك")}</p>
+        <p className="text-sm font-semibold text-white">{tr("Owner", "المسؤول")}</p>
         <Input
           value={owner}
           onChange={(e) => setOwner(e.target.value)}

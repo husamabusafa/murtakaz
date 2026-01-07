@@ -119,7 +119,7 @@ export default function CreateOrganizationPage() {
     const localIssues: ActionValidationIssue[] = [];
 
     if (!orgName.trim()) {
-      localIssues.push({ path: ["name"], message: tr("Organization name is required.", "اسم المؤسسة مطلوب.") });
+      localIssues.push({ path: ["name"], message: tr("Organization name is required.", "اسم الجهة مطلوب.") });
     }
 
     if (selectedNodeTypeIds.length === 0) {
@@ -162,7 +162,7 @@ export default function CreateOrganizationPage() {
       if (!result.success) {
         const serverIssues = (result as { issues?: ActionValidationIssue[] }).issues ?? [];
         setIssues(serverIssues);
-        setError(result.error || tr("Failed to create organization.", "فشل إنشاء المؤسسة."));
+        setError(result.error || tr("Failed to create organization.", "فشل إنشاء الجهة."));
         return;
       }
 
@@ -179,10 +179,10 @@ export default function CreateOrganizationPage() {
   return (
     <div className="space-y-8">
       <PageHeader
-        title={tr("Create organization", "إنشاء مؤسسة")}
+        title={tr("Create organization", "إنشاء جهة")}
         subtitle={tr(
           "Create a tenant, configure node types, and bootstrap users.",
-          "أنشئ مؤسسة، حدّد أنواع العقد، وأنشئ المستخدمين المبدئيين.",
+          "أنشئ جهة، حدّد أنواع العقد، وأنشئ المستخدمين المبدئيين.",
         )}
         actions={
           <Button asChild variant="ghost">
@@ -195,9 +195,9 @@ export default function CreateOrganizationPage() {
         <div className="grid gap-6 lg:grid-cols-3">
           <Card className="bg-card/70 backdrop-blur shadow-sm lg:col-span-2">
             <CardHeader>
-              <CardTitle className="text-base">{tr("Organization", "المؤسسة")}</CardTitle>
+              <CardTitle className="text-base">{tr("Organization", "الجهة")}</CardTitle>
               <CardDescription>
-                {tr("Basic details for the tenant.", "البيانات الأساسية للمؤسسة.")}
+                {tr("Basic details for the tenant.", "البيانات الأساسية للجهة.")}
               </CardDescription>
             </CardHeader>
             <CardContent className="space-y-5">
@@ -230,7 +230,7 @@ export default function CreateOrganizationPage() {
               </div>
 
               <div className="space-y-2">
-                <Label>{tr("KPI Approval Level", "مستوى اعتماد المؤشرات")}</Label>
+                <Label>{tr("KPI Approval Level", "مستوى اعتماد مؤشرات الأداء الرئيسية")}</Label>
                 <Select value={kpiApprovalLevel} onValueChange={(v) => setKpiApprovalLevel(v as typeof kpiApprovalLevel)}>
                   <SelectTrigger className="bg-background">
                     <SelectValue placeholder={tr("Select level", "اختر المستوى")} />
@@ -245,7 +245,7 @@ export default function CreateOrganizationPage() {
                 <p className={cn("text-xs text-muted-foreground", isArabic && "text-right")}>
                   {tr(
                     "Minimum role level allowed to approve KPI values.",
-                    "أقل مستوى دور مسموح له باعتماد قيم المؤشرات.",
+                    "أقل مستوى دور مسموح له باعتماد قيم مؤشرات الأداء الرئيسية.",
                   )}
                 </p>
               </div>
@@ -257,7 +257,7 @@ export default function CreateOrganizationPage() {
                     <p className="text-sm text-muted-foreground">
                       {tr(
                         "Pick which node types this organization can use.",
-                        "حدّد أنواع العقد المتاحة لهذه المؤسسة.",
+                        "حدّد أنواع العقد المتاحة لهذه الجهة.",
                       )}
                     </p>
                   </div>
@@ -339,11 +339,11 @@ export default function CreateOrganizationPage() {
               <div className={cn("space-y-1", isArabic && "text-right")}>
                 <CardTitle className="text-base">{tr("Users", "المستخدمون")}</CardTitle>
                 <CardDescription>
-                  {tr("Create initial users for this organization.", "أنشئ المستخدمين المبدئيين لهذه المؤسسة.")}
+                  {tr("Create initial users for this organization.", "أنشئ المستخدمين المبدئيين لهذه الجهة.")}
                 </CardDescription>
               </div>
               <Button type="button" onClick={addUser} className={cn(isArabic && "flex-row-reverse")}> 
-                <Plus className={cn("h-4 w-4", isArabic ? "ml-2" : "mr-2")} />
+                <Plus className={cn("h-4 w-4", isArabic ? "ms-2" : "me-2")} />
                 {tr("Add user", "إضافة مستخدم")}
               </Button>
             </div>
@@ -462,7 +462,7 @@ export default function CreateOrganizationPage() {
             <Link href={`/${locale}/super-admin/organizations`}>{tr("Cancel", "إلغاء")}</Link>
           </Button>
           <Button type="submit" disabled={submitting}>
-            {submitting ? tr("Creating…", "جارٍ الإنشاء…") : tr("Create organization", "إنشاء المؤسسة")}
+            {submitting ? tr("Creating…", "جارٍ الإنشاء…") : tr("Create organization", "إنشاء الجهة")}
           </Button>
         </div>
       </form>

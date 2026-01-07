@@ -18,15 +18,15 @@ export default function InitiativeHealthDashboardPage() {
   return (
     <div className="space-y-8">
       <PageHeader
-        title={tr("Initiative Health dashboard", "لوحة صحة المبادرات")}
-        subtitle={tr("System-calculated health drivers across KPIs, milestones, and risks (prototype).", "محركات الصحة المحسوبة للنظام عبر المؤشرات والمعالم والمخاطر (نموذج أولي).")}
+        title={tr("Initiative Health dashboard", "لوحة أداء المبادرات")}
+        subtitle={tr("System-calculated health drivers across KPIs, milestones, and risks (prototype).", "محركات الأداء المحسوبة للنظام عبر مؤشرات الأداء الرئيسية والمعالم والمخاطر (نموذج أولي).")}
       />
 
       <section className="grid gap-6 lg:grid-cols-3">
         <Card className="border-white/10 bg-white/5 text-white shadow-lg shadow-black/20 lg:col-span-2">
           <CardHeader className="space-y-1">
             <div className="flex items-center justify-between">
-              <CardTitle className="text-base">{tr("Health drivers", "محركات الصحة")}</CardTitle>
+              <CardTitle className="text-base">{tr("Health drivers", "محركات الأداء")}</CardTitle>
               <Icon name="tabler:activity-heartbeat" className="text-slate-200" />
             </div>
             <CardDescription className="text-slate-200">{tr("Illustrative driver weights (demo).", "أوزان توضيحية للمحركات (عرض تجريبي).")}</CardDescription>
@@ -38,7 +38,7 @@ export default function InitiativeHealthDashboardPage() {
 
         <Card className="border-white/10 bg-white/5 text-white shadow-lg shadow-black/20">
           <CardHeader className="space-y-1">
-            <CardTitle className="text-base">{tr("KPI variance signals", "إشارات انحراف المؤشرات")}</CardTitle>
+            <CardTitle className="text-base">{tr("KPI variance signals", "إشارات انحراف مؤشرات الأداء الرئيسية")}</CardTitle>
             <CardDescription className="text-slate-200">{tr("Top negative deltas (demo).", "أعلى الانحرافات السلبية (عرض تجريبي).")}</CardDescription>
           </CardHeader>
           <CardContent>
@@ -57,7 +57,7 @@ export default function InitiativeHealthDashboardPage() {
         <Card className="border-white/10 bg-white/5 text-white shadow-lg shadow-black/20">
           <CardHeader className="space-y-1">
             <CardTitle className="text-base">{tr("Initiatives requiring attention", "مبادرات تتطلب متابعة")}</CardTitle>
-            <CardDescription className="text-slate-200">{tr("Drill down to see projects, KPIs, risks, and updates.", "استعراض تفصيلي للمشاريع والمؤشرات والمخاطر والتحديثات.")}</CardDescription>
+            <CardDescription className="text-slate-200">{tr("Drill down to see projects, KPIs, risks, and updates.", "استعراض تفصيلي للمشاريع ومؤشرات الأداء الرئيسية والمخاطر والتحديثات.")}</CardDescription>
           </CardHeader>
           <CardContent className="grid gap-3 md:grid-cols-2 lg:grid-cols-3">
             {atRisk.map((initiative) => (
@@ -71,7 +71,7 @@ export default function InitiativeHealthDashboardPage() {
                     <p className="text-sm font-semibold text-white">{isArabic ? initiative.titleAr ?? initiative.title : initiative.title}</p>
                     <p className="text-xs text-slate-200">{initiative.owner}</p>
                     <p className="text-xs text-slate-300">
-                      {initiative.projects.length} {tr("projects", "مشاريع")} • {initiative.kpis.length} {tr("KPIs", "مؤشرات")} • {initiative.risks.length} {tr("risks", "مخاطر")}
+                      {initiative.projects.length} {tr("projects", "مشاريع")} • {initiative.kpis.length} {tr("KPIs", "مؤشرات الأداء الرئيسية")} • {initiative.risks.length} {tr("risks", "مخاطر")}
                     </p>
                   </div>
                   <RagBadge health={initiative.health} />

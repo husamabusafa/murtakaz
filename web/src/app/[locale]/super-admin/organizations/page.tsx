@@ -38,22 +38,22 @@ export default function OrganizationsPage() {
     <div className="space-y-8">
       <div className="flex items-center justify-between">
         <PageHeader
-          title={tr("Organizations", "المؤسسات")}
-          subtitle={tr("Manage tenant organizations and their settings.", "إدارة المؤسسات وإعداداتها.")}
+          title={tr("Organizations", "الجهات")}
+          subtitle={tr("Manage tenant organizations and their settings.", "إدارة الجهات وإعداداتها.")}
         />
         <Button asChild>
           <Link href={`/${locale}/super-admin/organizations/create`}>
-            <Plus className="mr-2 h-4 w-4" />
-            {tr("New Organization", "مؤسسة جديدة")}
+            <Plus className="me-2 h-4 w-4" />
+            {tr("New Organization", "جهة جديدة")}
           </Link>
         </Button>
       </div>
 
       <Card className="bg-card/70 backdrop-blur shadow-sm">
         <CardHeader>
-          <CardTitle className="text-base">{tr("All Organizations", "جميع المؤسسات")}</CardTitle>
+          <CardTitle className="text-base">{tr("All Organizations", "جميع الجهات")}</CardTitle>
           <CardDescription>
-            {tr("List of all registered organizations in the system.", "قائمة بجميع المؤسسات المسجلة في النظام.")}
+            {tr("List of all registered organizations in the system.", "قائمة بجميع الجهات المسجلة في النظام.")}
           </CardDescription>
         </CardHeader>
         <CardContent>

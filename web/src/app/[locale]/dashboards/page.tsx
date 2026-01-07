@@ -34,7 +34,7 @@ function formatNumber(value: number | null | undefined) {
 }
 
 export default function DashboardsPage() {
-  const { locale, t, tr } = useLocale();
+  const { locale, t, tr, nodeTypeLabel, kpiValueStatusLabel } = useLocale();
   const { user, loading: sessionLoading } = useAuth();
 
   const [loading, setLoading] = useState(true);
@@ -152,8 +152,8 @@ export default function DashboardsPage() {
             ? "Organization-wide insights for KPI oversight and execution health."
             : "Personalized insights based on what you own, what is assigned to you, and which KPIs you can access.",
           isAdmin
-            ? "مؤشرات عامة للمؤسسة لمتابعة المؤشرات وصحة التنفيذ."
-            : "معلومات مخصصة بناءً على ما تملكه وما هو مُسند لك والمؤشرات التي يمكنك الوصول إليها.",
+            ? "ملخص عام للجهة لمتابعة مؤشرات الأداء الرئيسية وأداء التنفيذ."
+            : "معلومات مخصصة بناءً على ما تملكه وما هو مُسند لك ومؤشرات الأداء الرئيسية التي يمكنك الوصول إليها.",
         )}
         icon={<Icon name="tabler:layout-dashboard" className="h-5 w-5" />}
         actions={
@@ -189,7 +189,7 @@ export default function DashboardsPage() {
                 <CardDescription className="flex items-center justify-between gap-2">
                   <span className="inline-flex items-center gap-2">
                     <Icon name="tabler:chart-line" className="h-4 w-4" />
-                    {tr("KPIs", "المؤشرات")}
+                    {tr("KPIs", "مؤشرات الأداء الرئيسية")}
                   </span>
                 </CardDescription>
                 <CardTitle className="text-3xl">{data.summary.kpisTotal}</CardTitle>
@@ -252,7 +252,7 @@ export default function DashboardsPage() {
                   <CardTitle className="text-3xl">{completionAvgLabel}</CardTitle>
                 </CardHeader>
                 <CardContent className="text-xs text-muted-foreground">
-                  {tr("KPIs with targets", "مؤشرات لها مستهدف")}: {data.kpiCompletion.totalWithTargets}
+                  {tr("KPIs with targets", "مؤشرات أداء رئيسية لها مستهدف")}: {data.kpiCompletion.totalWithTargets}
                 </CardContent>
               </Card>
             )}
@@ -279,11 +279,11 @@ export default function DashboardsPage() {
             <Card className="bg-card/70 backdrop-blur shadow-sm lg:col-span-3">
               <CardHeader className="flex flex-row items-start justify-between gap-3">
                 <div className="space-y-1">
-                  <CardTitle className="text-base">{tr("KPI pipeline", "حالة المؤشرات")}</CardTitle>
+                  <CardTitle className="text-base">{tr("KPI pipeline", "حالة مؤشرات الأداء الرئيسية")}</CardTitle>
                   <CardDescription>{tr("Distribution by latest status.", "توزيع حسب آخر حالة.")}</CardDescription>
                 </div>
                 <Button asChild variant="ghost" className="text-primary hover:text-primary">
-                  <Link href={`/${locale}/kpis`}>{tr("Open KPIs", "فتح المؤشرات")}</Link>
+                  <Link href={`/${locale}/kpis`}>{tr("Open KPIs", "فتح مؤشرات الأداء الرئيسية")}</Link>
                 </Button>
               </CardHeader>
               <CardContent>
@@ -293,8 +293,8 @@ export default function DashboardsPage() {
 
             <Card className="bg-card/70 backdrop-blur shadow-sm lg:col-span-1">
               <CardHeader className="space-y-1">
-                <CardTitle className="text-base">{tr("KPI completion", "إنجاز المؤشرات")}</CardTitle>
-                <CardDescription>{tr("Completion vs target across KPIs.", "نسبة الإنجاز مقارنة بالمستهدف عبر المؤشرات.")}</CardDescription>
+                <CardTitle className="text-base">{tr("KPI completion", "إنجاز مؤشرات الأداء الرئيسية")}</CardTitle>
+                <CardDescription>{tr("Completion vs target across KPIs.", "نسبة الإنجاز مقارنة بالمستهدف عبر مؤشرات الأداء الرئيسية.")}</CardDescription>
               </CardHeader>
               <CardContent>
                 {kpiCompletionDonut.length ? (
@@ -324,8 +324,8 @@ export default function DashboardsPage() {
           <section className="grid gap-6 lg:grid-cols-4">
             <Card className="bg-card/70 backdrop-blur shadow-sm lg:col-span-3">
               <CardHeader className="space-y-1">
-                <CardTitle className="text-base">{tr("KPI activity", "نشاط المؤشرات")}</CardTitle>
-                <CardDescription>{tr("Recent KPI updates over time.", "تحديثات المؤشرات خلال الفترة الأخيرة.")}</CardDescription>
+                <CardTitle className="text-base">{tr("KPI activity", "نشاط مؤشرات الأداء الرئيسية")}</CardTitle>
+                <CardDescription>{tr("Recent KPI updates over time.", "تحديثات مؤشرات الأداء الرئيسية خلال الفترة الأخيرة.")}</CardDescription>
               </CardHeader>
               <CardContent>
                 <AreaLine categories={data.kpiActivity.categories} values={data.kpiActivity.values} color="#a78bfa" />
@@ -379,7 +379,7 @@ export default function DashboardsPage() {
                             </p>
                             <p className="truncate text-xs text-muted-foreground">
                               {it.type.displayName}
-                              {it.parent ? ` • ${it.parent.typeDisplayName}: ${it.parent.name}` : ""}
+                              {it.parent ? ` • ${nodeTypeLabel(it.parent.typeCode, it.parent.typeDisplayName)}: ${it.parent.name}` : ""}
                             </p>
                           </div>
                           <Badge variant="outline" className="border-border bg-muted/30 text-muted-foreground">
@@ -405,7 +405,7 @@ export default function DashboardsPage() {
               <Card className="bg-card/70 backdrop-blur shadow-sm">
                 <CardHeader className="flex flex-row items-start justify-between gap-3">
                   <div className="space-y-1">
-                    <CardTitle className="text-base">{tr("Organization structure", "هيكل المؤسسة")}</CardTitle>
+                    <CardTitle className="text-base">{tr("Organization structure", "هيكل الجهة")}</CardTitle>
                     <CardDescription>{tr("Browse by type in the configured order.", "استعراض حسب النوع وبالترتيب المفعّل.")}</CardDescription>
                   </div>
                 </CardHeader>
@@ -440,7 +440,7 @@ export default function DashboardsPage() {
               <Card className="bg-card/70 backdrop-blur shadow-sm">
                 <CardHeader className="flex flex-row items-start justify-between gap-3">
                   <div className="space-y-1">
-                    <CardTitle className="text-base">{tr("Organization structure", "هيكل المؤسسة")}</CardTitle>
+                    <CardTitle className="text-base">{tr("Organization structure", "هيكل الجهة")}</CardTitle>
                     <CardDescription>{tr("Browse by type in the configured order.", "استعراض حسب النوع وبالترتيب المفعّل.")}</CardDescription>
                   </div>
                 </CardHeader>
@@ -476,7 +476,7 @@ export default function DashboardsPage() {
             <Card className="bg-card/70 backdrop-blur shadow-sm lg:col-span-2">
               <CardHeader className="flex flex-row items-start justify-between gap-3">
                 <div className="space-y-1">
-                  <CardTitle className="text-base">{tr("KPIs you can access", "المؤشرات التي يمكنك الوصول إليها")}</CardTitle>
+                  <CardTitle className="text-base">{tr("KPIs you can access", "مؤشرات الأداء الرئيسية التي يمكنك الوصول إليها")}</CardTitle>
                   <CardDescription>{tr("Latest values, targets, and linked structure.", "آخر القيم والمستهدف والارتباط بالتسلسل.")}</CardDescription>
                 </div>
                 <Button asChild variant="ghost" className="text-primary hover:text-primary">
@@ -487,9 +487,9 @@ export default function DashboardsPage() {
                 <Tabs defaultValue="all">
                   <TabsList className="w-full justify-start">
                     <TabsTrigger value="all">{tr("All", "الكل")}</TabsTrigger>
-                    <TabsTrigger value="no-data">{tr("No data", "بلا بيانات")}</TabsTrigger>
-                    <TabsTrigger value="draft">{tr("Draft", "مسودة")}</TabsTrigger>
-                    <TabsTrigger value="submitted">{tr("Submitted", "مرسل")}</TabsTrigger>
+                    <TabsTrigger value="no-data">{kpiValueStatusLabel("NO_DATA")}</TabsTrigger>
+                    <TabsTrigger value="draft">{kpiValueStatusLabel("DRAFT")}</TabsTrigger>
+                    <TabsTrigger value="submitted">{kpiValueStatusLabel("SUBMITTED")}</TabsTrigger>
                   </TabsList>
 
                   <TabsContent value="all">
@@ -497,7 +497,7 @@ export default function DashboardsPage() {
                       <Table>
                         <TableHeader>
                           <TableRow className="hover:bg-transparent">
-                            <TableHead>{tr("KPI", "المؤشر")}</TableHead>
+                            <TableHead>{tr("KPI", "مؤشر أداء رئيسي")}</TableHead>
                             <TableHead>{tr("Latest", "آخر قيمة")}</TableHead>
                             <TableHead>{t("target")}</TableHead>
                             <TableHead>{tr("Linked to", "مرتبط بـ")}</TableHead>
@@ -522,11 +522,11 @@ export default function DashboardsPage() {
                                   {formatNumber(k.targetValue)}
                                 </TableCell>
                                 <TableCell className="text-muted-foreground">
-                                  {k.primary.typeDisplayName} • {k.primary.name}
+                                  {nodeTypeLabel(k.primary.typeCode, k.primary.typeDisplayName)} • {k.primary.name}
                                 </TableCell>
                                 <TableCell className="text-right">
                                   <Badge variant="outline" className={pillForKpiStatus(latestStatus)}>
-                                    {latestStatus === "NO_DATA" ? tr("No data", "بلا بيانات") : latestStatus}
+                                    {kpiValueStatusLabel(latestStatus)}
                                   </Badge>
                                 </TableCell>
                               </TableRow>
@@ -535,7 +535,7 @@ export default function DashboardsPage() {
                           {topKpis.length === 0 ? (
                             <TableRow>
                               <TableCell colSpan={5} className="py-8 text-center text-sm text-muted-foreground">
-                                {tr("No KPIs found.", "لا توجد مؤشرات.")}
+                                {tr("No KPIs found.", "لا توجد مؤشرات أداء رئيسية.")}
                               </TableCell>
                             </TableRow>
                           ) : null}
@@ -566,11 +566,11 @@ export default function DashboardsPage() {
                                 <div className="min-w-0">
                                   <p className="truncate text-sm font-semibold">{k.name}</p>
                                   <p className="mt-1 truncate text-xs text-muted-foreground">
-                                    {k.primary.typeDisplayName} • {k.primary.name}
+                                    {nodeTypeLabel(k.primary.typeCode, k.primary.typeDisplayName)} • {k.primary.name}
                                   </p>
                                 </div>
                                 <Badge variant="outline" className={pillForKpiStatus(k.latest?.status ?? "NO_DATA")}>
-                                  {tab.status === "NO_DATA" ? tr("No data", "بلا بيانات") : tab.status}
+                                  {kpiValueStatusLabel(tab.status)}
                                 </Badge>
                               </div>
                             </Link>
@@ -592,7 +592,7 @@ export default function DashboardsPage() {
               <CardHeader className="flex flex-row items-start justify-between gap-3">
                 <div className="space-y-1">
                   <CardTitle className="text-base">{tr("Owned by you", "مملوك بواسطةك")}</CardTitle>
-                  <CardDescription>{tr("Items where you are marked as the owner.", "عناصر تم تعيينك كمالك لها.")}</CardDescription>
+                  <CardDescription>{tr("Items where you are marked as the owner.", "عناصر تم تعيينك كمسؤول عنها.")}</CardDescription>
                 </div>
                 <Badge variant="outline" className="border-border bg-muted/30">{data.summary.ownedTotal}</Badge>
               </CardHeader>
@@ -612,7 +612,7 @@ export default function DashboardsPage() {
                           </p>
                           <p className="mt-1 truncate text-xs text-muted-foreground">
                             {it.type.displayName}
-                            {it.parent ? ` • ${it.parent.typeDisplayName}: ${it.parent.name}` : ""}
+                            {it.parent ? ` • ${nodeTypeLabel(it.parent.typeCode, it.parent.typeDisplayName)}: ${it.parent.name}` : ""}
                           </p>
                         </div>
                         <div className="flex shrink-0 flex-col items-end gap-2">
@@ -660,7 +660,7 @@ export default function DashboardsPage() {
                             </Link>
                           </CardTitle>
                           <CardDescription className="truncate">
-                            {s.root.type.displayName} • {tr("KPIs", "المؤشرات")}: {s.kpisCount}
+                            {s.root.type.displayName} • {tr("KPIs", "مؤشرات الأداء الرئيسية")}: {s.kpisCount}
                           </CardDescription>
                         </div>
                         <StatusBadge status={s.root.status as unknown as UiStatus} />
@@ -712,7 +712,7 @@ export default function DashboardsPage() {
               <div className="rounded-xl border border-dashed border-border bg-muted/10 p-8 text-sm text-muted-foreground">
                 {tr(
                   "No responsibilities found for your account yet. KPIs you own and items you own will still appear above.",
-                  "لا توجد مسؤوليات لهذا الحساب بعد. المؤشرات التي تملكها والعناصر التي تملكها ستظهر أعلاه.",
+                  "لا توجد مسؤوليات لهذا الحساب بعد. مؤشرات الأداء الرئيسية التي تملكها والعناصر التي تملكها ستظهر أعلاه.",
                 )}
               </div>
             )}

@@ -19,7 +19,7 @@ export default function ExecutiveDashboardPage() {
     <div className="space-y-8">
       <PageHeader
         title={tr("CEO / Executive dashboard", "لوحة التنفيذيين")}
-        subtitle={tr("One-screen view of strategy posture, KPI attainment, and critical escalations.", "عرض تنفيذي موحد لموقف الاستراتيجية وتحقيق المؤشرات والتصعيدات الحرجة.")}
+        subtitle={tr("One-screen view of strategy posture, KPI attainment, and critical escalations.", "عرض تنفيذي موحد لموقف الاستراتيجية وتحقيق مؤشرات الأداء الرئيسية والتصعيدات الحرجة.")}
       />
 
       <section className="grid gap-6 lg:grid-cols-3">
@@ -85,7 +85,7 @@ export default function ExecutiveDashboardPage() {
               <CardDescription className="text-slate-200">{tr("Drill down to investigate health drivers.", "استعراض تفصيلي لفهم أسباب الحالة.")}</CardDescription>
             </div>
             <Link href={`/${locale}/dashboards/initiative-health`} className="text-sm font-medium text-indigo-200 hover:text-indigo-100">
-              {tr("Open initiative health", "فتح صحة المبادرات")}
+              {tr("Open initiative health", "فتح أداء المبادرات")}
             </Link>
           </CardHeader>
           <CardContent className="space-y-3">
@@ -109,8 +109,8 @@ export default function ExecutiveDashboardPage() {
 
         <Card className="border-white/10 bg-white/5 text-white shadow-lg shadow-black/20">
           <CardHeader className="space-y-1">
-            <CardTitle className="text-base">{tr("Top KPIs", "أهم المؤشرات")}</CardTitle>
-            <CardDescription className="text-slate-200">{tr("Quick links to KPI drill-down.", "روابط سريعة لاستعراض المؤشرات.")}</CardDescription>
+            <CardTitle className="text-base">{tr("Top KPIs", "أهم مؤشرات الأداء الرئيسية")}</CardTitle>
+            <CardDescription className="text-slate-200">{tr("Quick links to KPI drill-down.", "روابط سريعة لاستعراض مؤشرات الأداء الرئيسية.")}</CardDescription>
           </CardHeader>
           <CardContent className="space-y-3">
             {kpis.map((kpi) => (

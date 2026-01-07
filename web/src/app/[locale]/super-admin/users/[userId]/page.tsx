@@ -186,12 +186,12 @@ export default function UserDetailPage() {
         }
         subtitle={tr(
           `User details for ${userDetails.org?.name ?? "—"}.`,
-          `تفاصيل المستخدم للمؤسسة ${userDetails.org?.name ?? "—"}.`,
+          `تفاصيل المستخدم للجهة ${userDetails.org?.name ?? "—"}.`,
         )}
         actions={
           <div className="flex items-center gap-2">
             <Button variant="destructive" size="sm" onClick={() => setDeleteOpen(true)}>
-              <Trash2 className="mr-2 h-4 w-4" />
+              <Trash2 className="me-2 h-4 w-4" />
               {tr("Delete", "حذف")}
             </Button>
             <Link
@@ -245,7 +245,7 @@ export default function UserDetailPage() {
               <p className="mt-1">{userDetails.role}</p>
             </div>
             <div className="rounded-xl border border-border bg-muted/30 px-4 py-3">
-              <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">{tr("Organization", "المؤسسة")}</p>
+              <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">{tr("Organization", "الجهة")}</p>
               {userDetails.org?.id ? (
                 <Link
                   href={`/${locale}/super-admin/organizations/${userDetails.org.id}`}
@@ -328,10 +328,10 @@ export default function UserDetailPage() {
             </div>
 
             <div className="space-y-2">
-              <Label>{tr("Organization", "المؤسسة")}</Label>
+              <Label>{tr("Organization", "الجهة")}</Label>
               <Select value={draft.orgId} onValueChange={(val) => setDraft({ ...draft, orgId: val })}>
                 <SelectTrigger className="bg-card">
-                  <SelectValue placeholder={tr("Select Organization", "اختر المؤسسة")} />
+                  <SelectValue placeholder={tr("Select Organization", "اختر الجهة")} />
                 </SelectTrigger>
                 <SelectContent>
                   {orgs.map((org) => (
