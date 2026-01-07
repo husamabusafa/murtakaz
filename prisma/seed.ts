@@ -64,7 +64,20 @@ async function ensureNodeType(input: { code: NodeTypeCode; displayName: string; 
   });
 }
 
-async function ensureOrg(input: { domain?: string | null; name: string; nameAr?: string | null; kpiApprovalLevel?: "MANAGER" | "PMO" | "EXECUTIVE" | "ADMIN" }) {
+async function ensureOrg(input: {
+  domain?: string | null;
+  name: string;
+  nameAr?: string | null;
+  kpiApprovalLevel?: "MANAGER" | "PMO" | "EXECUTIVE" | "ADMIN";
+  logoUrl?: string | null;
+  mission?: string | null;
+  missionAr?: string | null;
+  vision?: string | null;
+  visionAr?: string | null;
+  about?: string | null;
+  aboutAr?: string | null;
+  contacts?: any;
+}) {
   const existing = await prisma.organization.findFirst({
     where: {
       deletedAt: null,
@@ -76,25 +89,42 @@ async function ensureOrg(input: { domain?: string | null; name: string; nameAr?:
     select: { id: true },
   });
 
+  const data = {
+    name: input.name,
+    nameAr: input.nameAr ?? undefined,
+    domain: typeof input.domain === "undefined" ? undefined : input.domain,
+    kpiApprovalLevel: (input.kpiApprovalLevel ?? "MANAGER") as any,
+    logoUrl: input.logoUrl ?? undefined,
+    mission: input.mission ?? undefined,
+    missionAr: input.missionAr ?? undefined,
+    vision: input.vision ?? undefined,
+    visionAr: input.visionAr ?? undefined,
+    about: input.about ?? undefined,
+    aboutAr: input.aboutAr ?? undefined,
+    contacts: input.contacts ?? undefined,
+  };
+
   if (existing) {
     return prisma.organization.update({
       where: { id: existing.id },
-      data: {
-        name: input.name,
-        nameAr: input.nameAr ?? undefined,
-        domain: typeof input.domain === "undefined" ? undefined : input.domain,
-        kpiApprovalLevel: (input.kpiApprovalLevel ?? "MANAGER") as any,
-      },
+      data,
       select: { id: true },
     });
   }
 
   return prisma.organization.create({
     data: {
-      name: input.name,
+      ...data,
       nameAr: input.nameAr ?? null,
       domain: typeof input.domain === "undefined" ? null : input.domain,
-      kpiApprovalLevel: (input.kpiApprovalLevel ?? "MANAGER") as any,
+      logoUrl: input.logoUrl ?? null,
+      mission: input.mission ?? null,
+      missionAr: input.missionAr ?? null,
+      vision: input.vision ?? null,
+      visionAr: input.visionAr ?? null,
+      about: input.about ?? null,
+      aboutAr: input.aboutAr ?? null,
+      contacts: input.contacts ?? null,
     },
     select: { id: true },
   });
@@ -572,6 +602,17 @@ async function main() {
       name: "Musa Bin Abdulaziz Al-Mousa & Sons Real Estate Holding Group",
       nameAr: "مجموعة موسى بن عبدالعزيز الموسى وأولاده العقارية القابضة",
       kpiApprovalLevel: "PMO",
+      mission: "To invest in vital sectors with economic impact to create sustainable value that embodies the Group's efficiency and leadership.",
+      missionAr: "نستثمر في القطاعات الحيوية ذات الأثر الاقتصادي لخلق قيمة مستدامة تجسد كفاءة المجموعة وريادتها.",
+      vision: "An ambitious investment group with efficiency that builds growth sustainability in vital sectors.",
+      visionAr: "مجموعة استثمارية طموحة ذات كفاءه تبني استدامة النمو في قطاعات حيوية.",
+      about: "Musa Bin Abdulaziz Al-Mousa & Sons Real Estate Holding Group is a leading investment and real estate group in Saudi Arabia.",
+      aboutAr: "مجموعة موسى بن عبدالعزيز الموسى وأولاده العقارية القابضة هي مجموعة استثمارية وعقارية رائدة في المملكة العربية السعودية.",
+      contacts: {
+        email: "info@almousa.local",
+        phone: "+966110000000",
+        website: "https://almousaholding.com"
+      }
     });
 
     await ensureOrgNodeTypes(org.id, [

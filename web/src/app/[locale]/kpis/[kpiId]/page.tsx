@@ -28,7 +28,7 @@ import { Loader2 } from "lucide-react";
 
 export default function KPIDetailPage() {
   const params = useParams<{ kpiId: string }>();
-  const { t, locale, kpiValueStatusLabel, formatDate, formatNumber, df } = useLocale();
+  const { t, locale, kpiValueStatusLabel, formatDate, formatNumber, df, te } = useLocale();
   const { user, loading: sessionLoading } = useAuth();
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -181,16 +181,8 @@ export default function KPIDetailPage() {
       const result = await saveOrgKpiValuesDraft(payload);
 
       if (!result.success) {
-        setError(result.error);
-        const formatted = Array.isArray(result.issues)
-          ? result.issues
-              .map((i) => {
-                const path = Array.isArray(i.path) ? i.path.join(".") : "";
-                return path ? `${path}: ${i.message}` : i.message;
-              })
-              .join("\n")
-          : null;
-        if (formatted) setIssues(formatted);
+        setError(te(result.error));
+        setIssues(te(null, result.issues));
         return;
       }
 
@@ -211,16 +203,8 @@ export default function KPIDetailPage() {
     try {
       const result = await requestChangesForOrgKpiValues({ kpiId: kpi.id, message: requestChangesMessage.trim() });
       if (!result.success) {
-        setError(result.error);
-        const formatted = Array.isArray(result.issues)
-          ? result.issues
-              .map((i) => {
-                const path = Array.isArray(i.path) ? i.path.join(".") : "";
-                return path ? `${path}: ${i.message}` : i.message;
-              })
-              .join("\n")
-          : null;
-        if (formatted) setIssues(formatted);
+        setError(te(result.error));
+        setIssues(te(null, result.issues));
         return;
       }
 
@@ -246,16 +230,8 @@ export default function KPIDetailPage() {
 
       const result = await submitOrgKpiValuesForApproval(payload);
       if (!result.success) {
-        setError(result.error);
-        const formatted = Array.isArray(result.issues)
-          ? result.issues
-              .map((i) => {
-                const path = Array.isArray(i.path) ? i.path.join(".") : "";
-                return path ? `${path}: ${i.message}` : i.message;
-              })
-              .join("\n")
-          : null;
-        if (formatted) setIssues(formatted);
+        setError(te(result.error));
+        setIssues(te(null, result.issues));
         return;
       }
 
@@ -279,16 +255,8 @@ export default function KPIDetailPage() {
 
       const result = await approveOrgKpiValues(payload);
       if (!result.success) {
-        setError(result.error);
-        const formatted = Array.isArray(result.issues)
-          ? result.issues
-              .map((i) => {
-                const path = Array.isArray(i.path) ? i.path.join(".") : "";
-                return path ? `${path}: ${i.message}` : i.message;
-              })
-              .join("\n")
-          : null;
-        if (formatted) setIssues(formatted);
+        setError(te(result.error));
+        setIssues(te(null, result.issues));
         return;
       }
 
@@ -308,7 +276,7 @@ export default function KPIDetailPage() {
     try {
       const result = await deleteOrgAdminKpi({ kpiId: kpi.id });
       if (!result.success) {
-        setDeleteError(result.error);
+        setDeleteError(te(result.error));
         return;
       }
       window.location.href = `/${locale}/kpis`;

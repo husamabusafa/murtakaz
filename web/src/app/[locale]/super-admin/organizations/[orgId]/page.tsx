@@ -10,6 +10,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Label } from "@/components/ui/label";
+import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useLocale } from "@/providers/locale-provider";
 import { createUser, deleteOrganization, getNodeTypes, getOrganizationDetails, updateOrganization, updateOrganizationNodeTypes } from "@/actions/admin";
@@ -26,16 +27,26 @@ type NodeTypeOption = Awaited<ReturnType<typeof getNodeTypes>>[number];
 export default function OrganizationDetailsPage() {
   const params = useParams<{ orgId: string }>();
   const router = useRouter();
-  const { t, locale, formatDate } = useLocale();
+  const { t, locale, formatDate, te } = useLocale();
 
   const [org, setOrg] = useState<OrgDetails>(null);
   const [loading, setLoading] = useState(true);
   const [editNameOpen, setEditNameOpen] = useState(false);
   const [editDomainOpen, setEditDomainOpen] = useState(false);
   const [editKpiApprovalOpen, setEditKpiApprovalOpen] = useState(false);
+  const [editDetailsOpen, setEditDetailsOpen] = useState(false);
   const [savingOrg, setSavingOrg] = useState(false);
+
   const [nameDraft, setNameDraft] = useState("");
+  const [nameArDraft, setNameArDraft] = useState("");
   const [domainDraft, setDomainDraft] = useState("");
+  const [logoUrlDraft, setLogoUrlDraft] = useState("");
+  const [missionDraft, setMissionDraft] = useState("");
+  const [missionArDraft, setMissionArDraft] = useState("");
+  const [visionDraft, setVisionDraft] = useState("");
+  const [visionArDraft, setVisionArDraft] = useState("");
+  const [aboutDraft, setAboutDraft] = useState("");
+  const [aboutArDraft, setAboutArDraft] = useState("");
   const [kpiApprovalDraft, setKpiApprovalDraft] = useState<"MANAGER" | "PMO" | "EXECUTIVE" | "ADMIN">("MANAGER");
 
   const [deleteOrgOpen, setDeleteOrgOpen] = useState(false);
@@ -64,7 +75,15 @@ export default function OrganizationDetailsPage() {
         if (isMounted) {
           setOrg(data);
           setNameDraft(data?.name ?? "");
+          setNameArDraft(data?.nameAr ?? "");
           setDomainDraft(data?.domain ?? "");
+          setLogoUrlDraft(data?.logoUrl ?? "");
+          setMissionDraft(data?.mission ?? "");
+          setMissionArDraft(data?.missionAr ?? "");
+          setVisionDraft(data?.vision ?? "");
+          setVisionArDraft(data?.visionAr ?? "");
+          setAboutDraft(data?.about ?? "");
+          setAboutArDraft(data?.aboutAr ?? "");
           setKpiApprovalDraft((data?.kpiApprovalLevel as typeof kpiApprovalDraft) ?? "MANAGER");
           setSelectedNodeTypeIds(
             (data?.nodeTypes ?? [])
@@ -122,7 +141,7 @@ export default function OrganizationDetailsPage() {
         router.push(`/${locale}/super-admin/organizations`);
         router.refresh();
       } else {
-        alert(result.error || t("failedToDeleteOrganization"));
+        alert(te(result.error) || t("failedToDeleteOrganization"));
       }
     } finally {
       setDeletingOrg(false);
@@ -140,7 +159,7 @@ export default function OrganizationDetailsPage() {
         setNodeTypesOpen(false);
         router.refresh();
       } else {
-        alert(result.error || t("failedToUpdateNodeTypes"));
+        alert(te(result.error) || t("failedToUpdateNodeTypes"));
       }
     } finally {
       setSavingNodeTypes(false);
@@ -151,14 +170,18 @@ export default function OrganizationDetailsPage() {
     if (!org) return;
     setSavingOrg(true);
     try {
-      const result = await updateOrganization({ orgId: org.id, name: nameDraft.trim() });
+      const result = await updateOrganization({
+        orgId: org.id,
+        name: nameDraft.trim(),
+        nameAr: nameArDraft.trim() || undefined,
+      });
       if (result.success) {
         const data = await getOrganizationDetails(params.orgId);
         setOrg(data);
         setEditNameOpen(false);
         router.refresh();
       } else {
-        alert(result.error || t("failedToUpdateOrganization"));
+        alert(te(result.error) || t("failedToUpdateOrganization"));
       }
     } finally {
       setSavingOrg(false);
@@ -176,7 +199,7 @@ export default function OrganizationDetailsPage() {
         setEditKpiApprovalOpen(false);
         router.refresh();
       } else {
-        alert(result.error || t("failedToUpdateOrganization"));
+        alert(te(result.error) || t("failedToUpdateOrganization"));
       }
     } finally {
       setSavingOrg(false);
@@ -194,7 +217,34 @@ export default function OrganizationDetailsPage() {
         setEditDomainOpen(false);
         router.refresh();
       } else {
-        alert(result.error || t("failedToUpdateOrganization"));
+        alert(te(result.error) || t("failedToUpdateOrganization"));
+      }
+    } finally {
+      setSavingOrg(false);
+    }
+  }
+
+  async function handleSaveDetails() {
+    if (!org) return;
+    setSavingOrg(true);
+    try {
+      const result = await updateOrganization({
+        orgId: org.id,
+        logoUrl: logoUrlDraft.trim() || undefined,
+        mission: missionDraft.trim() || undefined,
+        missionAr: missionArDraft.trim() || undefined,
+        vision: visionDraft.trim() || undefined,
+        visionAr: visionArDraft.trim() || undefined,
+        about: aboutDraft.trim() || undefined,
+        aboutAr: aboutArDraft.trim() || undefined,
+      });
+      if (result.success) {
+        const data = await getOrganizationDetails(params.orgId);
+        setOrg(data);
+        setEditDetailsOpen(false);
+        router.refresh();
+      } else {
+        alert(te(result.error) || t("failedToUpdateOrganization"));
       }
     } finally {
       setSavingOrg(false);
@@ -222,7 +272,7 @@ export default function OrganizationDetailsPage() {
         setOrg(data);
         router.refresh();
       } else {
-        alert(result.error || t("failedToCreateUser"));
+        alert(te(result.error) || t("failedToCreateUser"));
       }
     } finally {
       setCreatingUser(false);
@@ -262,6 +312,7 @@ export default function OrganizationDetailsPage() {
               className="inline-flex h-7 w-7 items-center justify-center rounded-md border border-border bg-card text-muted-foreground hover:text-foreground"
               onClick={() => {
                 setNameDraft(org.name ?? "");
+                setNameArDraft(org.nameAr ?? "");
                 setEditNameOpen(true);
               }}
               aria-label={t("editOrgName")}
@@ -290,7 +341,12 @@ export default function OrganizationDetailsPage() {
       <div className="grid gap-6 lg:grid-cols-3">
         <Card className="bg-card/70 backdrop-blur shadow-sm">
           <CardHeader>
-            <CardTitle className="text-base">{t("overview")}</CardTitle>
+            <div className="flex items-center justify-between gap-3">
+              <CardTitle className="text-base">{t("overview")}</CardTitle>
+              <Button type="button" variant="outline" size="sm" onClick={() => setEditDetailsOpen(true)}>
+                {t("edit")}
+              </Button>
+            </div>
             <CardDescription>{t("tenantMetadata")}</CardDescription>
           </CardHeader>
           <CardContent className="space-y-3 text-sm">
@@ -313,6 +369,44 @@ export default function OrganizationDetailsPage() {
             </div>
 
             <div className="rounded-xl border border-border bg-muted/30 px-4 py-3">
+              <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">{t("logoUrl")}</p>
+              <p className="mt-1 truncate">{org.logoUrl || "—"}</p>
+            </div>
+
+            <div className="grid gap-2">
+              <div className="rounded-xl border border-border bg-muted/30 px-4 py-3">
+                <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">{t("mission")}</p>
+                <p className="mt-1 text-xs whitespace-pre-wrap">{org.mission || "—"}</p>
+              </div>
+              <div className="rounded-xl border border-border bg-muted/30 px-4 py-3">
+                <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">{t("missionAr")}</p>
+                <p className="mt-1 text-xs whitespace-pre-wrap" dir="rtl">{org.missionAr || "—"}</p>
+              </div>
+            </div>
+
+            <div className="grid gap-2">
+              <div className="rounded-xl border border-border bg-muted/30 px-4 py-3">
+                <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">{t("vision")}</p>
+                <p className="mt-1 text-xs whitespace-pre-wrap">{org.vision || "—"}</p>
+              </div>
+              <div className="rounded-xl border border-border bg-muted/30 px-4 py-3">
+                <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">{t("visionAr")}</p>
+                <p className="mt-1 text-xs whitespace-pre-wrap" dir="rtl">{org.visionAr || "—"}</p>
+              </div>
+            </div>
+
+            <div className="grid gap-2">
+              <div className="rounded-xl border border-border bg-muted/30 px-4 py-3">
+                <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">{t("about")}</p>
+                <p className="mt-1 text-xs whitespace-pre-wrap">{org.about || "—"}</p>
+              </div>
+              <div className="rounded-xl border border-border bg-muted/30 px-4 py-3">
+                <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">{t("aboutAr")}</p>
+                <p className="mt-1 text-xs whitespace-pre-wrap" dir="rtl">{org.aboutAr || "—"}</p>
+              </div>
+            </div>
+
+            <div className="rounded-xl border border-border bg-muted/30 px-4 py-3">
               <div className="flex items-start justify-between gap-3">
                 <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">{t("kpiApprovalLevel")}</p>
                 <button
@@ -328,11 +422,6 @@ export default function OrganizationDetailsPage() {
                 </button>
               </div>
               <p className="mt-1">{String(org.kpiApprovalLevel ?? "MANAGER")}</p>
-            </div>
-
-            <div className="rounded-xl border border-border bg-muted/30 px-4 py-3">
-              <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">{t("users")}</p>
-              <p className="mt-1">{org._count?.users ?? users.length}</p>
             </div>
 
             <div className="rounded-xl border border-border bg-muted/30 px-4 py-3">
@@ -358,6 +447,10 @@ export default function OrganizationDetailsPage() {
                   ))}
                 </div>
               )}
+            </div>
+            <div className="rounded-xl border border-border bg-muted/30 px-4 py-3">
+              <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">{t("users")}</p>
+              <p className="mt-1">{org._count?.users ?? users.length}</p>
             </div>
             <div className="rounded-xl border border-border bg-muted/30 px-4 py-3">
               <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">{t("created")}</p>
@@ -427,14 +520,26 @@ export default function OrganizationDetailsPage() {
             </DialogDescription>
           </DialogHeader>
 
-          <div className="space-y-2">
-            <Label htmlFor="org-name">{t("name")}</Label>
-            <Input
-              id="org-name"
-              value={nameDraft}
-              onChange={(e) => setNameDraft(e.target.value)}
-              className="bg-card"
-            />
+          <div className="space-y-4">
+            <div className="space-y-2">
+              <Label htmlFor="org-name">{t("name")}</Label>
+              <Input
+                id="org-name"
+                value={nameDraft}
+                onChange={(e) => setNameDraft(e.target.value)}
+                className="bg-card"
+              />
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="org-name-ar">{t("nameAr")}</Label>
+              <Input
+                id="org-name-ar"
+                value={nameArDraft}
+                onChange={(e) => setNameArDraft(e.target.value)}
+                className="bg-card"
+                dir="rtl"
+              />
+            </div>
           </div>
 
           <DialogFooter>
@@ -443,12 +548,125 @@ export default function OrganizationDetailsPage() {
               variant="ghost"
               onClick={() => {
                 setNameDraft(org?.name ?? "");
+                setNameArDraft(org?.nameAr ?? "");
                 setEditNameOpen(false);
               }}
             >
               {t("cancel")}
             </Button>
             <Button type="button" onClick={handleSaveName} disabled={savingOrg}>
+              {savingOrg ? t("saving") : t("save")}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      <Dialog open={editDetailsOpen} onOpenChange={setEditDetailsOpen}>
+        <DialogContent className="max-h-[90vh] overflow-y-auto sm:max-w-[600px]">
+          <DialogHeader>
+            <DialogTitle>{t("edit")}</DialogTitle>
+            <DialogDescription className="text-muted-foreground">
+              {t("basicDetailsTenantDesc")}
+            </DialogDescription>
+          </DialogHeader>
+
+          <div className="space-y-4">
+            <div className="space-y-2">
+              <Label htmlFor="org-logo">{t("logoUrl")}</Label>
+              <Input
+                id="org-logo"
+                value={logoUrlDraft}
+                onChange={(e) => setLogoUrlDraft(e.target.value)}
+                placeholder="https://..."
+                className="bg-card"
+              />
+            </div>
+
+            <div className="grid gap-4 md:grid-cols-2">
+              <div className="space-y-2">
+                <Label htmlFor="org-mission">{t("mission")}</Label>
+                <Textarea
+                  id="org-mission"
+                  value={missionDraft}
+                  onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) => setMissionDraft(e.target.value)}
+                  className="bg-card"
+                />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="org-mission-ar">{t("missionAr")}</Label>
+                <Textarea
+                  id="org-mission-ar"
+                  value={missionArDraft}
+                  onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) => setMissionArDraft(e.target.value)}
+                  className="bg-card"
+                  dir="rtl"
+                />
+              </div>
+            </div>
+
+            <div className="grid gap-4 md:grid-cols-2">
+              <div className="space-y-2">
+                <Label htmlFor="org-vision">{t("vision")}</Label>
+                <Textarea
+                  id="org-vision"
+                  value={visionDraft}
+                  onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) => setVisionDraft(e.target.value)}
+                  className="bg-card"
+                />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="org-vision-ar">{t("visionAr")}</Label>
+                <Textarea
+                  id="org-vision-ar"
+                  value={visionArDraft}
+                  onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) => setVisionArDraft(e.target.value)}
+                  className="bg-card"
+                  dir="rtl"
+                />
+              </div>
+            </div>
+
+            <div className="grid gap-4 md:grid-cols-2">
+              <div className="space-y-2">
+                <Label htmlFor="org-about">{t("about")}</Label>
+                <Textarea
+                  id="org-about"
+                  value={aboutDraft}
+                  onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) => setAboutDraft(e.target.value)}
+                  className="bg-card"
+                />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="org-about-ar">{t("aboutAr")}</Label>
+                <Textarea
+                  id="org-about-ar"
+                  value={aboutArDraft}
+                  onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) => setAboutArDraft(e.target.value)}
+                  className="bg-card"
+                  dir="rtl"
+                />
+              </div>
+            </div>
+          </div>
+
+          <DialogFooter>
+            <Button
+              type="button"
+              variant="ghost"
+              onClick={() => {
+                setLogoUrlDraft(org?.logoUrl ?? "");
+                setMissionDraft(org?.mission ?? "");
+                setMissionArDraft(org?.missionAr ?? "");
+                setVisionDraft(org?.vision ?? "");
+                setVisionArDraft(org?.visionAr ?? "");
+                setAboutDraft(org?.about ?? "");
+                setAboutArDraft(org?.aboutAr ?? "");
+                setEditDetailsOpen(false);
+              }}
+            >
+              {t("cancel")}
+            </Button>
+            <Button type="button" onClick={handleSaveDetails} disabled={savingOrg}>
               {savingOrg ? t("saving") : t("save")}
             </Button>
           </DialogFooter>

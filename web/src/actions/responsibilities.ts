@@ -4,6 +4,7 @@ import { headers } from "next/headers";
 import { z } from "zod";
 import { prisma } from "@/lib/prisma";
 import { auth } from "@/lib/auth";
+import { ActionValidationIssue } from "@/types/actions";
 
 const prismaNode = (prisma as unknown as { node: unknown }).node as {
   findMany: <T>(args: unknown) => Promise<T[]>;
@@ -31,16 +32,9 @@ const prismaResponsibilityKpiAssignment = (prisma as unknown as { responsibility
 
 function requireResponsibilityModels() {
   if (!prismaResponsibilityNodeAssignment || !prismaResponsibilityKpiAssignment) {
-    throw new Error(
-      "Responsibilities models are not available in Prisma Client. Run a Prisma migration + prisma generate, then restart the dev server.",
-    );
+    throw new Error("unexpectedError");
   }
 }
-
-export type ActionValidationIssue = {
-  path: (string | number)[];
-  message: string;
-};
 
 function zodIssues(error: z.ZodError): ActionValidationIssue[] {
   return error.issues.map((i) => ({
@@ -51,15 +45,15 @@ function zodIssues(error: z.ZodError): ActionValidationIssue[] {
 
 async function requireOrgMember() {
   const session = await auth.api.getSession({ headers: await headers() });
-  if (!session?.user?.id) throw new Error("Unauthorized");
-  if (!session.user.orgId) throw new Error("Unauthorized: Missing organization scope");
+  if (!session?.user?.id) throw new Error("unauthorized");
+  if (!session.user.orgId) throw new Error("unauthorizedMissingOrg");
   return session;
 }
 
 function assertCanUseResponsibilities(role: unknown) {
   const r = String(role ?? "");
-  if (r === "EMPLOYEE") throw new Error("Unauthorized");
-  if (r === "SUPER_ADMIN") throw new Error("Unauthorized");
+  if (r === "EMPLOYEE") throw new Error("unauthorized");
+  if (r === "SUPER_ADMIN") throw new Error("unauthorized");
 }
 
 function buildSubtreeIds(input: { rootId: string; nodes: Array<{ id: string; parentId: string | null }> }) {
@@ -289,7 +283,7 @@ async function assertAssignableUser(input: { orgId: string; managerId: string; t
     where: { id: input.targetUserId, orgId: input.orgId, deletedAt: null, managerId: input.managerId },
     select: { id: true },
   });
-  if (!user) throw new Error("You can only assign responsibilities to your direct reports.");
+  if (!user) throw new Error("onlyAssignToDirectReportsDesc");
 }
 
 export async function assignResponsibilities(data: z.infer<typeof assignSchema>) {
@@ -297,7 +291,7 @@ export async function assignResponsibilities(data: z.infer<typeof assignSchema>)
   assertCanUseResponsibilities(session.user.role);
   const parsed = assignSchema.safeParse(data);
   if (!parsed.success) {
-    return { success: false as const, error: "Validation failed", issues: zodIssues(parsed.error) };
+    return { success: false as const, error: "validationFailed", issues: zodIssues(parsed.error) };
   }
 
   const orgId = session.user.orgId;
@@ -308,7 +302,7 @@ export async function assignResponsibilities(data: z.infer<typeof assignSchema>)
     if (parsed.data.mode === "node") {
       const rootNodeId = parsed.data.rootNodeId as string;
       const root = await prismaNode.findFirst({ where: { id: rootNodeId, orgId, deletedAt: null }, select: { id: true } });
-      if (!root) return { success: false as const, error: "Node not found." };
+      if (!root) return { success: false as const, error: "nodeNotFound" };
 
       await prismaResponsibilityNodeAssignment.upsert({
         where: { responsibility_node_unique: { assignedToId: parsed.data.assignedToId, rootNodeId } },
@@ -334,7 +328,7 @@ export async function assignResponsibilities(data: z.infer<typeof assignSchema>)
     });
     const existingIds = new Set(existing.map((k) => k.id));
     const missing = kpiIds.filter((id) => !existingIds.has(id));
-    if (missing.length) return { success: false as const, error: "Some KPIs were not found." };
+    if (missing.length) return { success: false as const, error: "kpiNotFound" };
 
     await prismaResponsibilityKpiAssignment.createMany({
       data: kpiIds.map((kpiId) => ({
@@ -365,7 +359,7 @@ export async function unassignResponsibility(data: z.infer<typeof unassignSchema
   assertCanUseResponsibilities(session.user.role);
   const parsed = unassignSchema.safeParse(data);
   if (!parsed.success) {
-    return { success: false as const, error: "Validation failed", issues: zodIssues(parsed.error) };
+    return { success: false as const, error: "validationFailed", issues: zodIssues(parsed.error) };
   }
 
   const orgId = session.user.orgId;

@@ -13,6 +13,7 @@ import {
   Role,
 } from "@prisma/client";
 import { getMyEffectiveKpiIds } from "@/actions/responsibilities";
+import { ActionValidationIssue } from "@/types/actions";
 
 type KpiApprovalLevelCode = "MANAGER" | "PMO" | "EXECUTIVE" | "ADMIN";
 
@@ -45,11 +46,6 @@ const prismaOrganization = (prisma as unknown as { organization: unknown }).orga
   findFirst: <T>(args: unknown) => Promise<T | null>;
 };
 
-export type ActionValidationIssue = {
-  path: (string | number)[];
-  message: string;
-};
-
 function zodIssues(error: z.ZodError): ActionValidationIssue[] {
   return error.issues.map((i) => ({
     path: i.path.map((p) => (typeof p === "string" || typeof p === "number" ? p : String(p))),
@@ -63,11 +59,11 @@ async function requireOrgMember() {
   });
 
   if (!session?.user?.id) {
-    throw new Error("Unauthorized");
+    throw new Error("unauthorized");
   }
 
   if (!session.user.orgId) {
-    throw new Error("Unauthorized: Missing organization scope");
+    throw new Error("unauthorizedMissingOrg");
   }
 
   return session;
@@ -76,7 +72,7 @@ async function requireOrgMember() {
 async function requireOrgAdmin() {
   const session = await requireOrgMember();
   if (session.user.role !== "ADMIN") {
-    throw new Error("Unauthorized: Organization admin access required");
+    throw new Error("unauthorizedAdminRequired");
   }
   return session;
 }
@@ -141,7 +137,7 @@ function resolvePeriodRange(input: { now: Date; periodType: KpiPeriodType }) {
 
 function evaluateFormula(input: { formula: string; valuesByCode: Record<string, number> }) {
   const trimmed = input.formula.trim();
-  if (!trimmed) return { ok: false as const, error: "Empty formula" };
+  if (!trimmed) return { ok: false as const, error: "emptyFormula" };
 
   const replaced = trimmed.replace(/\b[A-Za-z_][A-Za-z0-9_]*\b/g, (token) => {
     if (Object.prototype.hasOwnProperty.call(input.valuesByCode, token)) {
@@ -152,18 +148,18 @@ function evaluateFormula(input: { formula: string; valuesByCode: Record<string, 
 
   // Allow only numbers/operators/parentheses/whitespace/dot
   if (!/^[0-9+\-*/().\s]+$/.test(replaced)) {
-    return { ok: false as const, error: "Formula contains unsupported characters" };
+    return { ok: false as const, error: "unsupportedFormulaCharacters" };
   }
 
   try {
     const result = Function(`"use strict"; return (${replaced});`)();
     const num = typeof result === "number" && Number.isFinite(result) ? result : NaN;
     if (!Number.isFinite(num)) {
-      return { ok: false as const, error: "Formula result is not a valid number" };
+      return { ok: false as const, error: "invalidFormulaResult" };
     }
     return { ok: true as const, value: num };
   } catch {
-    return { ok: false as const, error: "Failed to evaluate formula" };
+    return { ok: false as const, error: "failedToEvaluateFormula" };
   }
 }
 
@@ -488,7 +484,7 @@ async function computeAndValidateKpiValue(input: {
     },
   });
 
-  if (!kpi) return { ok: false as const, error: "KPI not found." };
+  if (!kpi) return { ok: false as const, error: "kpiNotFound" };
 
   const range = resolvePeriodRange({ now: new Date(), periodType: kpi.periodType });
 
@@ -499,7 +495,7 @@ async function computeAndValidateKpiValue(input: {
   for (const v of kpi.variables) {
     if (v.isStatic) {
       if (v.isRequired && (v.staticValue === null || typeof v.staticValue === "undefined")) {
-        issues.push({ path: ["variables", v.id], message: `Static variable ${v.code} is required.` });
+        issues.push({ path: ["variables", v.id], message: "staticVariableRequired", params: { code: v.code } });
       }
       valuesByCode[v.code] = Number(v.staticValue ?? 0);
       continue;
@@ -507,7 +503,7 @@ async function computeAndValidateKpiValue(input: {
 
     const val = valuesByVarId[v.id];
     if (v.isRequired && (val === undefined || Number.isNaN(val))) {
-      issues.push({ path: ["values", v.id], message: `Variable ${v.code} is required.` });
+      issues.push({ path: ["values", v.id], message: "variableRequired", params: { code: v.code } });
       continue;
     }
 
@@ -519,7 +515,7 @@ async function computeAndValidateKpiValue(input: {
   }
 
   if (issues.length) {
-    return { ok: false as const, error: "Validation failed", issues };
+    return { ok: false as const, error: "validationFailed", issues };
   }
 
   let calculatedValue: number | null = null;
@@ -537,8 +533,8 @@ async function computeAndValidateKpiValue(input: {
     if (typeof input.manualValue !== "number" || !Number.isFinite(input.manualValue)) {
       return {
         ok: false as const,
-        error: "Value is required.",
-        issues: [{ path: ["manualValue"], message: "Value is required." } satisfies ActionValidationIssue],
+        error: "valueIsRequired",
+        issues: [{ path: ["manualValue"], message: "valueIsRequired" } satisfies ActionValidationIssue],
       };
     }
     calculatedValue = input.manualValue;
@@ -666,7 +662,7 @@ export async function saveOrgKpiValuesDraft(data: z.infer<typeof kpiValuesInputS
   const session = await requireOrgMember();
   const parsedResult = kpiValuesInputSchema.safeParse(data);
   if (!parsedResult.success) {
-    return { success: false as const, error: "Validation failed", issues: zodIssues(parsedResult.error) };
+    return { success: false as const, error: "validationFailed", issues: zodIssues(parsedResult.error) };
   }
 
   const parsed = parsedResult.data;
@@ -675,7 +671,7 @@ export async function saveOrgKpiValuesDraft(data: z.infer<typeof kpiValuesInputS
     const effective = await getMyEffectiveKpiIds();
     const allowed = new Set(effective);
     if (!allowed.has(parsed.kpiId)) {
-      return { success: false as const, error: "Unauthorized" };
+      return { success: false as const, error: "unauthorized" };
     }
   }
 
@@ -694,7 +690,7 @@ export async function saveOrgKpiValuesDraft(data: z.infer<typeof kpiValuesInputS
   const existingStatus = existing?.status ?? null;
 
   if (!approvalContext.canApprove && (existingStatus === KpiValueStatus.SUBMITTED || existingStatus === KpiValueStatus.APPROVED || existingStatus === KpiValueStatus.LOCKED)) {
-    return { success: false as const, error: "This KPI value is already submitted and cannot be edited." };
+    return { success: false as const, error: "kpiValueAlreadySubmitted" };
   }
 
   const nextStatus = existingStatus === KpiValueStatus.SUBMITTED && approvalContext.canApprove ? KpiValueStatus.SUBMITTED : KpiValueStatus.DRAFT;
@@ -724,12 +720,12 @@ export async function requestChangesForOrgKpiValues(input: { kpiId: string; mess
     })
     .safeParse(input);
   if (!parsed.success) {
-    return { success: false as const, error: "Validation failed", issues: zodIssues(parsed.error) };
+    return { success: false as const, error: "validationFailed", issues: zodIssues(parsed.error) };
   }
 
   const approvalContext = await getApprovalContext(session);
   if (!approvalContext.canApprove) {
-    return { success: false as const, error: "Unauthorized" };
+    return { success: false as const, error: "unauthorized" };
   }
 
   const kpi = await prismaKpiDefinition.findFirst<{ id: string; periodType: KpiPeriodType }>({
@@ -737,17 +733,17 @@ export async function requestChangesForOrgKpiValues(input: { kpiId: string; mess
     select: { id: true, periodType: true },
   });
 
-  if (!kpi) return { success: false as const, error: "KPI not found." };
+  if (!kpi) return { success: false as const, error: "kpiNotFound" };
 
   const range = resolvePeriodRange({ now: new Date(), periodType: kpi.periodType });
   const existing = await loadExistingValuePeriod({ kpiId: kpi.id, range });
 
   if (!existing) {
-    return { success: false as const, error: "No submitted value found for the current period." };
+    return { success: false as const, error: "noSubmittedValueFound" };
   }
 
   if (existing.status !== KpiValueStatus.SUBMITTED) {
-    return { success: false as const, error: "Only submitted KPI values can be returned for changes." };
+    return { success: false as const, error: "onlySubmittedCanBeReturned" };
   }
 
   const now = new Date();
@@ -772,7 +768,7 @@ export async function submitOrgKpiValuesForApproval(data: z.infer<typeof kpiValu
   const session = await requireOrgMember();
   const parsedResult = kpiValuesInputSchema.safeParse(data);
   if (!parsedResult.success) {
-    return { success: false as const, error: "Validation failed", issues: zodIssues(parsedResult.error) };
+    return { success: false as const, error: "validationFailed", issues: zodIssues(parsedResult.error) };
   }
 
   const parsed = parsedResult.data;
@@ -781,7 +777,7 @@ export async function submitOrgKpiValuesForApproval(data: z.infer<typeof kpiValu
     const effective = await getMyEffectiveKpiIds();
     const allowed = new Set(effective);
     if (!allowed.has(parsed.kpiId)) {
-      return { success: false as const, error: "Unauthorized" };
+      return { success: false as const, error: "unauthorized" };
     }
   }
 
@@ -798,10 +794,10 @@ export async function submitOrgKpiValuesForApproval(data: z.infer<typeof kpiValu
 
   const existing = await loadExistingValuePeriod({ kpiId: parsed.kpiId, range: computed.range });
   if (existing?.status === KpiValueStatus.SUBMITTED && !approvalContext.canApprove) {
-    return { success: false as const, error: "This KPI value is already submitted." };
+    return { success: false as const, error: "kpiValueAlreadySubmitted" };
   }
   if (existing?.status === KpiValueStatus.APPROVED && !approvalContext.canApprove) {
-    return { success: false as const, error: "This KPI value is already approved." };
+    return { success: false as const, error: "kpiValueAlreadySubmitted" };
   }
 
   const now = new Date();
@@ -839,12 +835,12 @@ export async function approveOrgKpiValues(data: z.infer<typeof kpiValuesInputSch
   const session = await requireOrgMember();
   const parsedResult = kpiValuesInputSchema.safeParse(data);
   if (!parsedResult.success) {
-    return { success: false as const, error: "Validation failed", issues: zodIssues(parsedResult.error) };
+    return { success: false as const, error: "validationFailed", issues: zodIssues(parsedResult.error) };
   }
 
   const approvalContext = await getApprovalContext(session);
   if (!approvalContext.canApprove) {
-    return { success: false as const, error: "Unauthorized" };
+    return { success: false as const, error: "unauthorized" };
   }
 
   const parsed = parsedResult.data;
@@ -894,7 +890,7 @@ export async function getOrgKpiApprovals(input?: { status?: "SUBMITTED" | "APPRO
   const session = await requireOrgMember();
   const approvalContext = await getApprovalContext(session);
   if (!approvalContext.canApprove) {
-    throw new Error("Unauthorized");
+    throw new Error("unauthorized");
   }
 
   const parsed = z
@@ -1013,14 +1009,14 @@ const createKpiSchema = z.object({
   periodType: z.nativeEnum(KpiPeriodType),
   baselineValue: z.preprocess((v) => (v === "" || v === undefined || v === null ? null : Number(v)), z.number().finite().nullable().optional()),
   targetValue: z.preprocess((v) => (v === "" || v === undefined || v === null ? null : Number(v)), z.number().finite().nullable().optional()),
-  variables: z.array(kpiVariableInputSchema).min(1, "At least one variable is required."),
+  variables: z.array(kpiVariableInputSchema).min(1, "atLeastOneInputDesc"),
 });
 
 export async function createOrgAdminKpi(data: z.infer<typeof createKpiSchema>) {
   const session = await requireOrgAdmin();
   const parsedResult = createKpiSchema.safeParse(data);
   if (!parsedResult.success) {
-    return { success: false as const, error: "Validation failed", issues: zodIssues(parsedResult.error) };
+    return { success: false as const, error: "validationFailed", issues: zodIssues(parsedResult.error) };
   }
 
   const parsed = parsedResult.data;
@@ -1030,8 +1026,8 @@ export async function createOrgAdminKpi(data: z.infer<typeof createKpiSchema>) {
   if (codes.length !== codeSet.size) {
     return {
       success: false as const,
-      error: "Variable codes must be unique.",
-      issues: [{ path: ["variables"], message: "Variable codes must be unique." } satisfies ActionValidationIssue],
+      error: "variableCodesMustBeUnique",
+      issues: [{ path: ["variables"], message: "variableCodesMustBeUnique" } satisfies ActionValidationIssue],
     };
   }
 
@@ -1039,8 +1035,8 @@ export async function createOrgAdminKpi(data: z.infer<typeof createKpiSchema>) {
   if (badStatic) {
     return {
       success: false as const,
-      error: "Static required variables must have a value.",
-      issues: [{ path: ["variables", badStatic.code], message: "Static required variables must have a value." } satisfies ActionValidationIssue],
+      error: "staticRequiredValueMissing",
+      issues: [{ path: ["variables", badStatic.code], message: "staticRequiredValueMissing" } satisfies ActionValidationIssue],
     };
   }
 
@@ -1087,7 +1083,7 @@ export async function updateOrgAdminKpi(data: z.infer<typeof updateKpiSchema>) {
   const session = await requireOrgAdmin();
   const parsedResult = updateKpiSchema.safeParse(data);
   if (!parsedResult.success) {
-    return { success: false as const, error: "Validation failed", issues: zodIssues(parsedResult.error) };
+    return { success: false as const, error: "validationFailed", issues: zodIssues(parsedResult.error) };
   }
 
   const parsed = parsedResult.data;
@@ -1097,15 +1093,15 @@ export async function updateOrgAdminKpi(data: z.infer<typeof updateKpiSchema>) {
     select: { id: true },
   });
 
-  if (!existing) return { success: false as const, error: "KPI not found." };
+  if (!existing) return { success: false as const, error: "kpiNotFound" };
 
   const codes = parsed.variables.map((v) => v.code.trim());
   const codeSet = new Set(codes);
   if (codes.length !== codeSet.size) {
     return {
       success: false as const,
-      error: "Variable codes must be unique.",
-      issues: [{ path: ["variables"], message: "Variable codes must be unique." } satisfies ActionValidationIssue],
+      error: "variableCodesMustBeUnique",
+      issues: [{ path: ["variables"], message: "variableCodesMustBeUnique" } satisfies ActionValidationIssue],
     };
   }
 
@@ -1113,8 +1109,8 @@ export async function updateOrgAdminKpi(data: z.infer<typeof updateKpiSchema>) {
   if (badStatic) {
     return {
       success: false as const,
-      error: "Static required variables must have a value.",
-      issues: [{ path: ["variables", badStatic.code], message: "Static required variables must have a value." } satisfies ActionValidationIssue],
+      error: "staticRequiredValueMissing",
+      issues: [{ path: ["variables", badStatic.code], message: "staticRequiredValueMissing" } satisfies ActionValidationIssue],
     };
   }
 
@@ -1186,14 +1182,14 @@ export async function updateOrgAdminKpi(data: z.infer<typeof updateKpiSchema>) {
 export async function deleteOrgAdminKpi(data: { kpiId: string }) {
   const session = await requireOrgAdmin();
   const parsed = z.object({ kpiId: z.string().uuid() }).safeParse(data);
-  if (!parsed.success) return { success: false as const, error: "Validation failed", issues: zodIssues(parsed.error) };
+  if (!parsed.success) return { success: false as const, error: "validationFailed", issues: zodIssues(parsed.error) };
 
   const existing = await prismaKpiDefinition.findFirst<{ id: string }>({
     where: { id: parsed.data.kpiId, orgId: session.user.orgId },
     select: { id: true },
   });
 
-  if (!existing) return { success: false as const, error: "KPI not found." };
+  if (!existing) return { success: false as const, error: "kpiNotFound" };
 
   await prismaKpiDefinition.delete({
     where: { id: parsed.data.kpiId },

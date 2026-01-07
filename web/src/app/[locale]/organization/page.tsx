@@ -6,6 +6,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useLocale } from "@/providers/locale-provider";
 import { useAuth } from "@/providers/auth-provider";
@@ -45,7 +46,15 @@ export default function OrganizationPage() {
   >([]);
 
   const [nameDraft, setNameDraft] = useState("");
+  const [nameArDraft, setNameArDraft] = useState("");
   const [domainDraft, setDomainDraft] = useState("");
+  const [logoUrlDraft, setLogoUrlDraft] = useState("");
+  const [missionDraft, setMissionDraft] = useState("");
+  const [missionArDraft, setMissionArDraft] = useState("");
+  const [visionDraft, setVisionDraft] = useState("");
+  const [visionArDraft, setVisionArDraft] = useState("");
+  const [aboutDraft, setAboutDraft] = useState("");
+  const [aboutArDraft, setAboutArDraft] = useState("");
   const [kpiApprovalDraft, setKpiApprovalDraft] = useState<"MANAGER" | "PMO" | "EXECUTIVE" | "ADMIN">("MANAGER");
   const [selectedNodeTypeIds, setSelectedNodeTypeIds] = useState<string[]>([]);
 
@@ -56,8 +65,17 @@ export default function OrganizationPage() {
     setEnabledNodeTypes(data.enabledNodeTypes);
     setEnabledNodeTypeCounts(data.enabledNodeTypeCounts ?? []);
     setNameDraft(data.org?.name ?? "");
+    setNameArDraft(data.org?.nameAr ?? "");
     setDomainDraft(data.org?.domain ?? "");
+    setLogoUrlDraft(data.org?.logoUrl ?? "");
+    setMissionDraft(data.org?.mission ?? "");
+    setMissionArDraft(data.org?.missionAr ?? "");
+    setVisionDraft(data.org?.vision ?? "");
+    setVisionArDraft(data.org?.visionAr ?? "");
+    setAboutDraft(data.org?.about ?? "");
+    setAboutArDraft(data.org?.aboutAr ?? "");
     setKpiApprovalDraft((String(data.org?.kpiApprovalLevel ?? "MANAGER") as typeof kpiApprovalDraft) || "MANAGER");
+
     setSelectedNodeTypeIds(data.enabledNodeTypes.map((nt) => nt.id));
     setEditingOrg(false);
     setEditingNodeTypes(false);
@@ -99,7 +117,15 @@ export default function OrganizationPage() {
     try {
       const res = await updateOrgAdminOrganizationSettings({
         name: nameDraft.trim(),
-        domain: domainDraft.trim(),
+        nameAr: nameArDraft.trim() || undefined,
+        domain: domainDraft.trim() || undefined,
+        logoUrl: logoUrlDraft.trim() || undefined,
+        mission: missionDraft.trim() || undefined,
+        missionAr: missionArDraft.trim() || undefined,
+        vision: visionDraft.trim() || undefined,
+        visionAr: visionArDraft.trim() || undefined,
+        about: aboutDraft.trim() || undefined,
+        aboutAr: aboutArDraft.trim() || undefined,
         kpiApprovalLevel: kpiApprovalDraft,
       });
       if (!res.success) {
@@ -198,8 +224,46 @@ export default function OrganizationPage() {
                     <p className="mt-1 font-semibold">{org.name}</p>
                   </div>
                   <div className="rounded-xl border border-border bg-muted/30 px-4 py-3">
+                    <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">{t("nameAr")}</p>
+                    <p className="mt-1 font-semibold" dir="rtl">{org.nameAr || "—"}</p>
+                  </div>
+                  <div className="rounded-xl border border-border bg-muted/30 px-4 py-3">
                     <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">{t("domain")}</p>
                     <p className="mt-1">{org.domain || "—"}</p>
+                  </div>
+                  <div className="rounded-xl border border-border bg-muted/30 px-4 py-3">
+                    <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">{t("logoUrl")}</p>
+                    <p className="mt-1 truncate">{org.logoUrl || "—"}</p>
+                  </div>
+                  <div className="grid gap-3 md:grid-cols-2">
+                    <div className="rounded-xl border border-border bg-muted/30 px-4 py-3">
+                      <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">{t("mission")}</p>
+                      <p className="mt-1 whitespace-pre-wrap">{org.mission || "—"}</p>
+                    </div>
+                    <div className="rounded-xl border border-border bg-muted/30 px-4 py-3">
+                      <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">{t("missionAr")}</p>
+                      <p className="mt-1 whitespace-pre-wrap" dir="rtl">{org.missionAr || "—"}</p>
+                    </div>
+                  </div>
+                  <div className="grid gap-3 md:grid-cols-2">
+                    <div className="rounded-xl border border-border bg-muted/30 px-4 py-3">
+                      <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">{t("vision")}</p>
+                      <p className="mt-1 whitespace-pre-wrap">{org.vision || "—"}</p>
+                    </div>
+                    <div className="rounded-xl border border-border bg-muted/30 px-4 py-3">
+                      <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">{t("visionAr")}</p>
+                      <p className="mt-1 whitespace-pre-wrap" dir="rtl">{org.visionAr || "—"}</p>
+                    </div>
+                  </div>
+                  <div className="grid gap-3 md:grid-cols-2">
+                    <div className="rounded-xl border border-border bg-muted/30 px-4 py-3">
+                      <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">{t("about")}</p>
+                      <p className="mt-1 whitespace-pre-wrap">{org.about || "—"}</p>
+                    </div>
+                    <div className="rounded-xl border border-border bg-muted/30 px-4 py-3">
+                      <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">{t("aboutAr")}</p>
+                      <p className="mt-1 whitespace-pre-wrap" dir="rtl">{org.aboutAr || "—"}</p>
+                    </div>
                   </div>
                   <div className="rounded-xl border border-border bg-muted/30 px-4 py-3">
                     <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">{t("kpiApprovalLevel")}</p>
@@ -217,8 +281,52 @@ export default function OrganizationPage() {
                       <Input value={nameDraft} onChange={(e) => setNameDraft(e.target.value)} className="bg-card" />
                     </div>
                     <div className="space-y-2">
+                      <Label>{t("nameAr")}</Label>
+                      <Input value={nameArDraft} onChange={(e) => setNameArDraft(e.target.value)} className="bg-card" dir="rtl" />
+                    </div>
+                  </div>
+
+                  <div className="grid gap-4 md:grid-cols-2">
+                    <div className="space-y-2">
                       <Label>{t("domain")}</Label>
                       <Input value={domainDraft} onChange={(e) => setDomainDraft(e.target.value)} className="bg-card" placeholder="example.com" />
+                    </div>
+                    <div className="space-y-2">
+                      <Label>{t("logoUrl")}</Label>
+                      <Input value={logoUrlDraft} onChange={(e) => setLogoUrlDraft(e.target.value)} className="bg-card" placeholder="https://..." />
+                    </div>
+                  </div>
+
+                  <div className="grid gap-4 md:grid-cols-2">
+                    <div className="space-y-2">
+                      <Label>{t("mission")}</Label>
+                      <Textarea value={missionDraft} onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) => setMissionDraft(e.target.value)} className="bg-card" />
+                    </div>
+                    <div className="space-y-2">
+                      <Label>{t("missionAr")}</Label>
+                      <Textarea value={missionArDraft} onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) => setMissionArDraft(e.target.value)} className="bg-card" dir="rtl" />
+                    </div>
+                  </div>
+
+                  <div className="grid gap-4 md:grid-cols-2">
+                    <div className="space-y-2">
+                      <Label>{t("vision")}</Label>
+                      <Textarea value={visionDraft} onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) => setVisionDraft(e.target.value)} className="bg-card" />
+                    </div>
+                    <div className="space-y-2">
+                      <Label>{t("visionAr")}</Label>
+                      <Textarea value={visionArDraft} onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) => setVisionArDraft(e.target.value)} className="bg-card" dir="rtl" />
+                    </div>
+                  </div>
+
+                  <div className="grid gap-4 md:grid-cols-2">
+                    <div className="space-y-2">
+                      <Label>{t("about")}</Label>
+                      <Textarea value={aboutDraft} onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) => setAboutDraft(e.target.value)} className="bg-card" />
+                    </div>
+                    <div className="space-y-2">
+                      <Label>{t("aboutAr")}</Label>
+                      <Textarea value={aboutArDraft} onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) => setAboutArDraft(e.target.value)} className="bg-card" dir="rtl" />
                     </div>
                   </div>
 

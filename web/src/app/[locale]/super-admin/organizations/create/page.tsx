@@ -9,12 +9,14 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { Textarea } from "@/components/ui/textarea";
 import { Badge } from "@/components/ui/badge";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useLocale } from "@/providers/locale-provider";
 import { cn } from "@/lib/utils";
-import { type ActionValidationIssue, createOrganizationWithUsers, getNodeTypes } from "@/actions/admin";
+import { ActionValidationIssue } from "@/types/actions";
+import { createOrganizationWithUsers, getNodeTypes } from "@/actions/admin";
 
 type NodeTypeRow = Awaited<ReturnType<typeof getNodeTypes>>[number];
 
@@ -26,7 +28,7 @@ type PendingUser = {
 };
 
 export default function CreateOrganizationPage() {
-  const { t, locale, isArabic } = useLocale();
+  const { t, locale, isArabic, te } = useLocale();
   const router = useRouter();
 
   const [submitting, setSubmitting] = useState(false);
@@ -34,7 +36,15 @@ export default function CreateOrganizationPage() {
   const [loadingNodeTypes, setLoadingNodeTypes] = useState(true);
 
   const [orgName, setOrgName] = useState("");
+  const [orgNameAr, setOrgNameAr] = useState("");
   const [orgDomain, setOrgDomain] = useState("");
+  const [logoUrl, setLogoUrl] = useState("");
+  const [mission, setMission] = useState("");
+  const [missionAr, setMissionAr] = useState("");
+  const [vision, setVision] = useState("");
+  const [visionAr, setVisionAr] = useState("");
+  const [about, setAbout] = useState("");
+  const [aboutAr, setAboutAr] = useState("");
   const [kpiApprovalLevel, setKpiApprovalLevel] = useState<"MANAGER" | "PMO" | "EXECUTIVE" | "ADMIN">("MANAGER");
   const [selectedNodeTypeIds, setSelectedNodeTypeIds] = useState<string[]>([]);
 
@@ -64,7 +74,9 @@ export default function CreateOrganizationPage() {
   }
 
   function getFirstFieldMessage(pathPrefix: Array<string | number>) {
-    return getFieldIssues(pathPrefix)[0]?.message;
+    const issue = getFieldIssues(pathPrefix)[0];
+    if (!issue) return undefined;
+    return te(issue.message, issue.params ? [issue] : undefined);
   }
 
   useEffect(() => {
@@ -119,15 +131,15 @@ export default function CreateOrganizationPage() {
     const localIssues: ActionValidationIssue[] = [];
 
     if (!orgName.trim()) {
-      localIssues.push({ path: ["name"], message: t("organizationNameRequired") });
+      localIssues.push({ path: ["name"], message: "organizationNameRequired" });
     }
 
     if (selectedNodeTypeIds.length === 0) {
-      localIssues.push({ path: ["nodeTypeIds"], message: t("selectAtLeastOneNodeType") });
+      localIssues.push({ path: ["nodeTypeIds"], message: "selectAtLeastOneNodeType" });
     }
 
     if (!hasAdminUser) {
-      localIssues.push({ path: ["users"], message: t("atLeastOneAdminUserRequired") });
+      localIssues.push({ path: ["users"], message: "atLeastOneAdminUserRequired" });
     }
 
     const normalizedUsers = users.map((u) => ({
@@ -138,9 +150,9 @@ export default function CreateOrganizationPage() {
     }));
 
     normalizedUsers.forEach((u, idx) => {
-      if (!u.name) localIssues.push({ path: ["users", idx, "name"], message: t("nameIsRequired") });
-      if (!u.email) localIssues.push({ path: ["users", idx, "email"], message: t("emailIsRequired") });
-      if (!u.password) localIssues.push({ path: ["users", idx, "password"], message: t("passwordIsRequired") });
+      if (!u.name) localIssues.push({ path: ["users", idx, "name"], message: "nameIsRequired" });
+      if (!u.email) localIssues.push({ path: ["users", idx, "email"], message: "emailIsRequired" });
+      if (!u.password) localIssues.push({ path: ["users", idx, "password"], message: "passwordIsRequired" });
     });
 
     if (localIssues.length) {
@@ -153,7 +165,15 @@ export default function CreateOrganizationPage() {
     try {
       const result = await createOrganizationWithUsers({
         name: orgName,
+        nameAr: orgNameAr || undefined,
         domain: orgDomain || undefined,
+        logoUrl: logoUrl || undefined,
+        mission: mission || undefined,
+        missionAr: missionAr || undefined,
+        vision: vision || undefined,
+        visionAr: visionAr || undefined,
+        about: about || undefined,
+        aboutAr: aboutAr || undefined,
         kpiApprovalLevel,
         nodeTypeIds: selectedNodeTypeIds,
         users: normalizedUsers,
@@ -162,7 +182,7 @@ export default function CreateOrganizationPage() {
       if (!result.success) {
         const serverIssues = (result as { issues?: ActionValidationIssue[] }).issues ?? [];
         setIssues(serverIssues);
-        setError(result.error || t("failedToCreateOrganization"));
+        setError(te(result.error));
         return;
       }
 
@@ -215,6 +235,20 @@ export default function CreateOrganizationPage() {
                 </div>
 
                 <div className="space-y-2">
+                  <Label htmlFor="org-name-ar">{t("nameAr")}</Label>
+                  <Input
+                    id="org-name-ar"
+                    value={orgNameAr}
+                    onChange={(e) => setOrgNameAr(e.target.value)}
+                    placeholder="شركة أكمي"
+                    className="bg-background"
+                    dir="rtl"
+                  />
+                </div>
+              </div>
+
+              <div className="grid gap-4 md:grid-cols-2">
+                <div className="space-y-2">
                   <Label htmlFor="org-domain">{t("domainOptional")}</Label>
                   <Input
                     id="org-domain"
@@ -222,6 +256,82 @@ export default function CreateOrganizationPage() {
                     onChange={(e) => setOrgDomain(e.target.value)}
                     placeholder="acme.com"
                     className="bg-background"
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="org-logo">{t("logoUrl")}</Label>
+                  <Input
+                    id="org-logo"
+                    value={logoUrl}
+                    onChange={(e) => setLogoUrl(e.target.value)}
+                    placeholder="https://..."
+                    className="bg-background"
+                  />
+                </div>
+              </div>
+
+              <div className="grid gap-4 md:grid-cols-2">
+                <div className="space-y-2">
+                  <Label htmlFor="org-mission">{t("mission")}</Label>
+                  <Textarea
+                    id="org-mission"
+                    value={mission}
+                    onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) => setMission(e.target.value)}
+                    className="bg-background"
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="org-mission-ar">{t("missionAr")}</Label>
+                  <Textarea
+                    id="org-mission-ar"
+                    value={missionAr}
+                    onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) => setMissionAr(e.target.value)}
+                    className="bg-background"
+                    dir="rtl"
+                  />
+                </div>
+              </div>
+
+              <div className="grid gap-4 md:grid-cols-2">
+                <div className="space-y-2">
+                  <Label htmlFor="org-vision">{t("vision")}</Label>
+                  <Textarea
+                    id="org-vision"
+                    value={vision}
+                    onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) => setVision(e.target.value)}
+                    className="bg-background"
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="org-vision-ar">{t("visionAr")}</Label>
+                  <Textarea
+                    id="org-vision-ar"
+                    value={visionAr}
+                    onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) => setVisionAr(e.target.value)}
+                    className="bg-background"
+                    dir="rtl"
+                  />
+                </div>
+              </div>
+
+              <div className="grid gap-4 md:grid-cols-2">
+                <div className="space-y-2">
+                  <Label htmlFor="org-about">{t("about")}</Label>
+                  <Textarea
+                    id="org-about"
+                    value={about}
+                    onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) => setAbout(e.target.value)}
+                    className="bg-background"
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="org-about-ar">{t("aboutAr")}</Label>
+                  <Textarea
+                    id="org-about-ar"
+                    value={aboutAr}
+                    onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) => setAboutAr(e.target.value)}
+                    className="bg-background"
+                    dir="rtl"
                   />
                 </div>
               </div>

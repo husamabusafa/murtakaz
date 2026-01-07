@@ -5,6 +5,7 @@ import { auth } from "@/lib/auth";
 import { headers } from "next/headers";
 import { z } from "zod";
 import { KpiApprovalLevel, Role } from "@prisma/client";
+import { ActionValidationIssue } from "@/types/actions";
 
 type NodeTypeRow = {
   id: string;
@@ -14,14 +15,7 @@ type NodeTypeRow = {
   canHaveKpis: boolean;
 };
 
-const prismaOrganization = (prisma as unknown as { organization: unknown }).organization as {
-  create: <T>(args: unknown) => Promise<T>;
-  update: <T>(args: unknown) => Promise<T>;
-  findFirst: <T>(args: unknown) => Promise<T | null>;
-  findMany: <T>(args: unknown) => Promise<T[]>;
-  delete: (args: unknown) => Promise<unknown>;
-  count: (args: unknown) => Promise<number>;
-};
+const prismaOrganization = (prisma as any).organization;
 
 type PrismaWithNodeTypes = typeof prisma & {
   nodeType: {
@@ -46,7 +40,16 @@ const kpiApprovalLevelSchema = z.enum(["MANAGER", "PMO", "EXECUTIVE", "ADMIN"]);
 // Schema for creating an organization
 const createOrgSchema = z.object({
   name: z.string().min(2),
+  nameAr: z.string().optional(),
   domain: z.string().optional(),
+  logoUrl: z.string().url().optional().or(z.literal("")),
+  mission: z.string().optional(),
+  missionAr: z.string().optional(),
+  vision: z.string().optional(),
+  visionAr: z.string().optional(),
+  about: z.string().optional(),
+  aboutAr: z.string().optional(),
+  contacts: z.any().optional(),
   kpiApprovalLevel: kpiApprovalLevelSchema.optional(),
 });
 
@@ -77,7 +80,16 @@ const createOrgWithUsersSchema = createOrgSchema.extend({
 const updateOrgSchema = z.object({
   orgId: z.string().uuid(),
   name: z.string().min(2).optional(),
+  nameAr: z.string().optional(),
   domain: z.string().optional(),
+  logoUrl: z.string().url().optional().or(z.literal("")),
+  mission: z.string().optional(),
+  missionAr: z.string().optional(),
+  vision: z.string().optional(),
+  visionAr: z.string().optional(),
+  about: z.string().optional(),
+  aboutAr: z.string().optional(),
+  contacts: z.any().optional(),
   kpiApprovalLevel: kpiApprovalLevelSchema.optional(),
 });
 
@@ -102,11 +114,6 @@ const updateOrgNodeTypesSchema = z.object({
   nodeTypeIds: z.array(z.string().uuid()).min(1),
 });
 
-export type ActionValidationIssue = {
-  path: Array<string | number>;
-  message: string;
-};
-
 // Helper to check if current user is SUPER_ADMIN
 async function requireSuperAdmin() {
   const session = await auth.api.getSession({
@@ -114,7 +121,7 @@ async function requireSuperAdmin() {
   });
 
   if (!session || session.user.role !== "SUPER_ADMIN") {
-    throw new Error("Unauthorized: Super Admin access required");
+    throw new Error("unauthorized");
   }
   return session;
 }
@@ -125,7 +132,7 @@ export async function updateOrganizationNodeTypes(data: z.infer<typeof updateOrg
   if (!prismaWithNodeTypes.organizationNodeType) {
     return {
       success: false,
-      error: "Prisma client is outdated. Run `npx prisma generate` and restart the dev server.",
+      error: "unexpectedError",
     };
   }
 
@@ -155,7 +162,7 @@ export async function updateUser(data: z.infer<typeof updateUserSchema>) {
   const parsed = updateUserSchema.parse(data);
 
   if (parsed.role === ("SUPER_ADMIN" as unknown as Role)) {
-    return { success: false, error: "Cannot assign SUPER_ADMIN role." };
+    return { success: false, error: "cannotAssignSuperAdmin" };
   }
 
   try {
@@ -213,10 +220,19 @@ export async function createOrganization(data: z.infer<typeof createOrgSchema>) 
   const parsed = createOrgSchema.parse(data);
   
   try {
-    const org = await prismaOrganization.create<{ id: string }>({
+    const org = await prismaOrganization.create({
       data: {
         name: parsed.name,
+        nameAr: parsed.nameAr || null,
         domain: parsed.domain || null,
+        logoUrl: parsed.logoUrl || null,
+        mission: parsed.mission || null,
+        missionAr: parsed.missionAr || null,
+        vision: parsed.vision || null,
+        visionAr: parsed.visionAr || null,
+        about: parsed.about || null,
+        aboutAr: parsed.aboutAr || null,
+        contacts: parsed.contacts || null,
         ...(typeof parsed.kpiApprovalLevel !== "undefined" ? { kpiApprovalLevel: parsed.kpiApprovalLevel } : {}),
       },
       select: { id: true },
@@ -224,28 +240,28 @@ export async function createOrganization(data: z.infer<typeof createOrgSchema>) 
     return { success: true, org };
   } catch (error) {
     console.error("Failed to create organization:", error);
-    return { success: false, error: "Failed to create organization" };
+    return { success: false, error: "failedToCreate" };
   }
 }
 
 export async function getOrganizations() {
   await requireSuperAdmin();
-  const orgs = await prismaOrganization.findMany<{
-    id: string;
-    name: string;
-    domain: string | null;
-    kpiApprovalLevel: KpiApprovalLevel;
-    createdAt: Date;
-    updatedAt: Date;
-    deletedAt: Date | null;
-    _count?: { users: number };
-  }>({
+  const orgs = await (prismaOrganization as any).findMany({
     where: { deletedAt: null },
     orderBy: { createdAt: "desc" },
     select: {
       id: true,
       name: true,
+      nameAr: true,
       domain: true,
+      logoUrl: true,
+      mission: true,
+      missionAr: true,
+      vision: true,
+      visionAr: true,
+      about: true,
+      aboutAr: true,
+      contacts: true,
       kpiApprovalLevel: true,
       createdAt: true,
       updatedAt: true,
@@ -263,27 +279,35 @@ export async function updateOrganization(data: z.infer<typeof updateOrgSchema>) 
   const parsed = updateOrgSchema.parse(data);
 
   try {
-    const org = await prismaOrganization.update<{
-      id: string;
-      name: string;
-      domain: string | null;
-      kpiApprovalLevel: unknown;
-      createdAt: Date;
-      updatedAt: Date;
-      deletedAt: Date | null;
-      _count: { users: number };
-      users: Array<{ id: string; name: string; email: string; role: Role; createdAt: Date }>;
-    }>({
+    const org = await (prismaOrganization as any).update({
       where: { id: parsed.orgId },
       data: {
         ...(typeof parsed.name === "string" ? { name: parsed.name } : {}),
+        ...(typeof parsed.nameAr === "string" ? { nameAr: parsed.nameAr || null } : {}),
         ...(typeof parsed.domain === "string" ? { domain: parsed.domain || null } : {}),
+        ...(typeof parsed.logoUrl !== "undefined" ? { logoUrl: parsed.logoUrl || null } : {}),
+        ...(typeof parsed.mission !== "undefined" ? { mission: parsed.mission || null } : {}),
+        ...(typeof parsed.missionAr !== "undefined" ? { missionAr: parsed.missionAr || null } : {}),
+        ...(typeof parsed.vision !== "undefined" ? { vision: parsed.vision || null } : {}),
+        ...(typeof parsed.visionAr !== "undefined" ? { visionAr: parsed.visionAr || null } : {}),
+        ...(typeof parsed.about !== "undefined" ? { about: parsed.about || null } : {}),
+        ...(typeof parsed.aboutAr !== "undefined" ? { aboutAr: parsed.aboutAr || null } : {}),
+        ...(typeof parsed.contacts !== "undefined" ? { contacts: parsed.contacts || null } : {}),
         ...(typeof parsed.kpiApprovalLevel !== "undefined" ? { kpiApprovalLevel: parsed.kpiApprovalLevel } : {}),
       },
       select: {
         id: true,
         name: true,
+        nameAr: true,
         domain: true,
+        logoUrl: true,
+        mission: true,
+        missionAr: true,
+        vision: true,
+        visionAr: true,
+        about: true,
+        aboutAr: true,
+        contacts: true,
         kpiApprovalLevel: true,
         createdAt: true,
         updatedAt: true,
@@ -339,7 +363,7 @@ export async function deleteOrganization(data: z.infer<typeof deleteOrgSchema>) 
 export async function getNodeTypes() {
   await requireSuperAdmin();
   if (!prismaWithNodeTypes.nodeType) {
-    throw new Error("Prisma client is outdated. Run `npx prisma generate` and restart the dev server.");
+    throw new Error("unexpectedError");
   }
   return prismaWithNodeTypes.nodeType.findMany({
     orderBy: [{ levelOrder: "asc" }, { code: "asc" }],
@@ -359,8 +383,7 @@ export async function createOrganizationWithUsers(data: z.infer<typeof createOrg
   if (!prismaWithNodeTypes.organizationNodeType) {
     return {
       success: false,
-      error: "Prisma client is outdated. Run `npx prisma generate` and restart the dev server.",
-      issues: [{ path: ["nodeTypeIds"], message: "Server is not ready (Prisma client not regenerated)." } satisfies ActionValidationIssue],
+      error: "unexpectedError",
     };
   }
 
@@ -368,7 +391,7 @@ export async function createOrganizationWithUsers(data: z.infer<typeof createOrg
   if (!parsedResult.success) {
     return {
       success: false,
-      error: "Validation failed",
+      error: "validationFailed",
       issues: parsedResult.error.issues.map((i) => ({
         path: i.path.map((p) => (typeof p === "string" || typeof p === "number" ? p : String(p))),
         message: i.message,
@@ -382,8 +405,8 @@ export async function createOrganizationWithUsers(data: z.infer<typeof createOrg
   if (!hasAdmin) {
     return {
       success: false,
-      error: "At least one ADMIN user is required.",
-      issues: [{ path: ["users"], message: "At least one ADMIN user is required." } satisfies ActionValidationIssue],
+      error: "atLeastOneAdminUserRequired",
+      issues: [{ path: ["users"], message: "atLeastOneAdminUserRequired" } satisfies ActionValidationIssue],
     };
   }
 
@@ -391,8 +414,8 @@ export async function createOrganizationWithUsers(data: z.infer<typeof createOrg
   if (hasSuperAdmin) {
     return {
       success: false,
-      error: "SUPER_ADMIN users cannot be created inside an organization.",
-      issues: [{ path: ["users"], message: "SUPER_ADMIN users cannot be created inside an organization." } satisfies ActionValidationIssue],
+      error: "cannotCreateSuperAdmin",
+      issues: [{ path: ["users"], message: "cannotCreateSuperAdmin" } satisfies ActionValidationIssue],
     };
   }
 
@@ -401,8 +424,8 @@ export async function createOrganizationWithUsers(data: z.infer<typeof createOrg
   if (uniqueEmails.size !== emails.length) {
     return {
       success: false,
-      error: "Duplicate emails detected in the users list.",
-      issues: [{ path: ["users"], message: "Duplicate emails detected in the users list." } satisfies ActionValidationIssue],
+      error: "validationFailed",
+      issues: [{ path: ["users"], message: "validationFailed" } satisfies ActionValidationIssue],
     };
   }
 
@@ -411,7 +434,16 @@ export async function createOrganizationWithUsers(data: z.infer<typeof createOrg
     const org = await prisma.organization.create({
       data: {
         name: parsed.name,
+        nameAr: parsed.nameAr || null,
         domain: parsed.domain || null,
+        logoUrl: parsed.logoUrl || null,
+        mission: parsed.mission || null,
+        missionAr: parsed.missionAr || null,
+        vision: parsed.vision || null,
+        visionAr: parsed.visionAr || null,
+        about: parsed.about || null,
+        aboutAr: parsed.aboutAr || null,
+        contacts: parsed.contacts || null,
         ...(typeof parsed.kpiApprovalLevel !== "undefined" ? { kpiApprovalLevel: parsed.kpiApprovalLevel } : {}),
       },
       select: { id: true },
@@ -438,7 +470,7 @@ export async function createOrganizationWithUsers(data: z.infer<typeof createOrg
       });
 
       if (!result?.user?.id) {
-        throw new Error("Failed to create user");
+        throw new Error("failedToCreateUser");
       }
     }
 
@@ -448,7 +480,7 @@ export async function createOrganizationWithUsers(data: z.infer<typeof createOrg
 
     if (orgId) {
       try {
-        await prismaOrganization.delete({ where: { id: orgId } });
+        await (prismaOrganization as any).delete({ where: { id: orgId } });
       } catch (cleanupError) {
         console.error("Failed to rollback organization creation:", cleanupError);
       }
@@ -465,8 +497,6 @@ export async function createUser(data: z.infer<typeof createUserSchema>) {
   const parsed = createUserSchema.parse(data);
 
   try {
-    // Create a credential account with hashed password via Better Auth.
-    // We have `emailAndPassword.autoSignIn = false` configured, so this won't sign-in the new user.
     const result = await auth.api.signUpEmail({
       body: {
         email: parsed.email,
@@ -502,7 +532,7 @@ export async function getSuperAdminOverviewStats() {
   await requireSuperAdmin();
 
   const [organizations, users] = await Promise.all([
-    prismaOrganization.count({ where: { deletedAt: null } }),
+    (prismaOrganization as any).count({ where: { deletedAt: null } }),
     prisma.user.count({ where: { deletedAt: null } }),
   ]);
 
@@ -513,22 +543,7 @@ export async function getOrganizationDetails(orgId: string) {
   await requireSuperAdmin();
   const parsedOrgId = orgIdSchema.parse(orgId);
 
-  const org = await prismaOrganization.findFirst<{
-    id: string;
-    name: string;
-    domain: string | null;
-    kpiApprovalLevel: unknown;
-    createdAt: Date;
-    updatedAt: Date;
-    deletedAt: Date | null;
-    _count: { users: number };
-    nodeTypes: Array<{
-      id: string;
-      nodeTypeId: string;
-      nodeType: { id: string; code: string; displayName: string; levelOrder: number; canHaveKpis: boolean };
-    }>;
-    users: Array<{ id: string; name: string; email: string; role: Role; createdAt: Date }>;
-  }>({
+  const org = await (prismaOrganization as any).findFirst({
     where: {
       id: parsedOrgId,
       deletedAt: null,
@@ -536,7 +551,16 @@ export async function getOrganizationDetails(orgId: string) {
     select: {
       id: true,
       name: true,
+      nameAr: true,
       domain: true,
+      logoUrl: true,
+      mission: true,
+      missionAr: true,
+      vision: true,
+      visionAr: true,
+      about: true,
+      aboutAr: true,
+      contacts: true,
       kpiApprovalLevel: true,
       createdAt: true,
       updatedAt: true,
@@ -572,7 +596,7 @@ export async function getOrganizationDetails(orgId: string) {
     },
   });
 
-  return org;
+  return org as any;
 }
 
 export async function getUserDetails(userId: string) {

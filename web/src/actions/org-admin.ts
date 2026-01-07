@@ -5,20 +5,16 @@ import { z } from "zod";
 import { Role, Status } from "@prisma/client";
 import { prisma } from "@/lib/prisma";
 import { auth } from "@/lib/auth";
+import { ActionValidationIssue } from "@/types/actions";
 
-const prismaNode = (prisma as any).node;
-const prismaKpiDefinition = (prisma as any).kpiDefinition;
-const prismaOrganization = (prisma as any).organization;
-const prismaNodeType = (prisma as any).nodeType;
-const prismaOrganizationNodeType = (prisma as any).organizationNodeType;
+const prismaNode = prisma.node;
+const prismaKpiDefinition = prisma.kpiDefinition;
+const prismaOrganization = prisma.organization;
+const prismaNodeType = prisma.nodeType;
+const prismaOrganizationNodeType = prisma.organizationNodeType;
 
 type KpiApprovalLevelCode = "MANAGER" | "PMO" | "EXECUTIVE" | "ADMIN";
 const kpiApprovalLevelSchema = z.enum(["MANAGER", "PMO", "EXECUTIVE", "ADMIN"]);
-
-export type ActionValidationIssue = {
-  path: (string | number)[];
-  message: string;
-};
 
 async function requireOrgAdmin() {
   const session = await auth.api.getSession({
@@ -26,11 +22,11 @@ async function requireOrgAdmin() {
   });
 
   if (!session || session.user.role !== "ADMIN") {
-    throw new Error("Unauthorized: Organization admin access required");
+    throw new Error("unauthorizedAdminRequired");
   }
 
   if (!session.user.orgId) {
-    throw new Error("Unauthorized: Missing organization scope");
+    throw new Error("unauthorizedMissingOrg");
   }
 
   return session;
@@ -64,7 +60,7 @@ const optionalHexColor = z.preprocess(
   },
   z
     .string()
-    .regex(/^#[0-9a-fA-F]{6}$/, "Color must be a 6-digit hex code like #22c55e")
+    .regex(/^#[0-9a-fA-F]{6}$/, "invalidColorHex")
     .optional(),
 );
 
@@ -204,7 +200,7 @@ export async function createOrgAdminDepartment(data: z.infer<typeof createOrgDep
   if (!parsedResult.success) {
     return {
       success: false,
-      error: "Validation failed",
+      error: "validationFailed",
       issues: zodIssues(parsedResult.error),
     };
   }
@@ -245,6 +241,14 @@ export async function getOrgAdminOrganizationSettings() {
         name: true,
         nameAr: true,
         domain: true,
+        logoUrl: true,
+        mission: true,
+        missionAr: true,
+        vision: true,
+        visionAr: true,
+        about: true,
+        aboutAr: true,
+        contacts: true,
         kpiApprovalLevel: true,
         createdAt: true,
         updatedAt: true,
@@ -279,6 +283,14 @@ export async function getOrgAdminOrganizationSettings() {
       name: string;
       nameAr: string | null;
       domain: string | null;
+      logoUrl: string | null;
+      mission: string | null;
+      missionAr: string | null;
+      vision: string | null;
+      visionAr: string | null;
+      about: string | null;
+      aboutAr: string | null;
+      contacts: any;
       kpiApprovalLevel: unknown;
       createdAt: Date;
       updatedAt: Date;
@@ -301,6 +313,14 @@ const updateOrgSettingsSchema = z.object({
   name: z.string().trim().min(2).optional(),
   nameAr: z.string().trim().optional(),
   domain: z.string().trim().optional(),
+  logoUrl: z.string().url().optional().or(z.literal("")),
+  mission: z.string().optional(),
+  missionAr: z.string().optional(),
+  vision: z.string().optional(),
+  visionAr: z.string().optional(),
+  about: z.string().optional(),
+  aboutAr: z.string().optional(),
+  contacts: z.any().optional(),
   kpiApprovalLevel: kpiApprovalLevelSchema.optional(),
 });
 
@@ -308,7 +328,7 @@ export async function updateOrgAdminOrganizationSettings(data: z.infer<typeof up
   const session = await requireOrgAdmin();
   const parsedResult = updateOrgSettingsSchema.safeParse(data);
   if (!parsedResult.success) {
-    return { success: false as const, error: "Validation failed", issues: zodIssues(parsedResult.error) };
+    return { success: false as const, error: "validationFailed", issues: zodIssues(parsedResult.error) };
   }
 
   const parsed = parsedResult.data;
@@ -320,6 +340,14 @@ export async function updateOrgAdminOrganizationSettings(data: z.infer<typeof up
         ...(typeof parsed.name === "string" ? { name: parsed.name } : {}),
         ...(typeof parsed.nameAr === "string" ? { nameAr: parsed.nameAr || null } : {}),
         ...(typeof parsed.domain === "string" ? { domain: parsed.domain ? parsed.domain : null } : {}),
+        ...(typeof parsed.logoUrl !== "undefined" ? { logoUrl: parsed.logoUrl || null } : {}),
+        ...(typeof parsed.mission !== "undefined" ? { mission: parsed.mission || null } : {}),
+        ...(typeof parsed.missionAr !== "undefined" ? { missionAr: parsed.missionAr || null } : {}),
+        ...(typeof parsed.vision !== "undefined" ? { vision: parsed.vision || null } : {}),
+        ...(typeof parsed.visionAr !== "undefined" ? { visionAr: parsed.visionAr || null } : {}),
+        ...(typeof parsed.about !== "undefined" ? { about: parsed.about || null } : {}),
+        ...(typeof parsed.aboutAr !== "undefined" ? { aboutAr: parsed.aboutAr || null } : {}),
+        ...(typeof parsed.contacts !== "undefined" ? { contacts: parsed.contacts || null } : {}),
         ...(typeof parsed.kpiApprovalLevel !== "undefined" ? { kpiApprovalLevel: parsed.kpiApprovalLevel as KpiApprovalLevelCode } : {}),
       },
       select: { id: true },
@@ -339,7 +367,7 @@ export async function updateOrgAdminEnabledNodeTypes(data: z.infer<typeof update
   const session = await requireOrgAdmin();
   const parsedResult = updateOrgNodeTypesSchema.safeParse(data);
   if (!parsedResult.success) {
-    return { success: false as const, error: "Validation failed", issues: zodIssues(parsedResult.error) };
+    return { success: false as const, error: "validationFailed", issues: zodIssues(parsedResult.error) };
   }
 
   const parsed = parsedResult.data;
@@ -511,7 +539,7 @@ export async function createOrgAdminNode(data: z.infer<typeof createNodeSchema>)
   if (!parsedResult.success) {
     return {
       success: false,
-      error: "Validation failed",
+      error: "validationFailed",
       issues: zodIssues(parsedResult.error),
     };
   }
@@ -519,7 +547,7 @@ export async function createOrgAdminNode(data: z.infer<typeof createNodeSchema>)
   const parsed = parsedResult.data;
   const { enabled, nodeType } = await resolveEnabledNodeTypeByCode({ orgId: session.user.orgId, code: parsed.code });
   if (!nodeType) {
-    return { success: false, error: "Node type is not enabled for this organization." };
+    return { success: false, error: "nodeTypeNotEnabled" };
   }
 
   const directHigher = getDirectHigherEnabledNodeType({ enabled, currentCode: String(nodeType.code) });
@@ -529,8 +557,8 @@ export async function createOrgAdminNode(data: z.infer<typeof createNodeSchema>)
     if (!parentId) {
       return {
         success: false,
-        error: "A parent node is required for this node type.",
-        issues: [{ path: ["parentId"], message: "Parent is required." } satisfies ActionValidationIssue],
+        error: "parentRequired",
+        issues: [{ path: ["parentId"], message: "parentRequired" } satisfies ActionValidationIssue],
       };
     }
 
@@ -549,24 +577,24 @@ export async function createOrgAdminNode(data: z.infer<typeof createNodeSchema>)
     if (!parent) {
       return {
         success: false,
-        error: "Selected parent was not found.",
-        issues: [{ path: ["parentId"], message: "Selected parent was not found." } satisfies ActionValidationIssue],
+        error: "parentNotFound",
+        issues: [{ path: ["parentId"], message: "parentNotFound" } satisfies ActionValidationIssue],
       };
     }
 
     if (String(parent.nodeType.code) !== String(directHigher.code)) {
       return {
         success: false,
-        error: "Selected parent has an invalid node type.",
-        issues: [{ path: ["parentId"], message: "Selected parent has an invalid node type." } satisfies ActionValidationIssue],
+        error: "invalidParentType",
+        issues: [{ path: ["parentId"], message: "invalidParentType" } satisfies ActionValidationIssue],
       };
     }
   } else {
     if (parentId) {
       return {
         success: false,
-        error: "This node type cannot have a parent.",
-        issues: [{ path: ["parentId"], message: "This node type cannot have a parent." } satisfies ActionValidationIssue],
+        error: "nodeTypeCannotHaveParent",
+        issues: [{ path: ["parentId"], message: "nodeTypeCannotHaveParent" } satisfies ActionValidationIssue],
       };
     }
   }
@@ -583,8 +611,8 @@ export async function createOrgAdminNode(data: z.infer<typeof createNodeSchema>)
     if (!owner) {
       return {
         success: false,
-        error: "Selected owner was not found.",
-        issues: [{ path: ["ownerUserId"], message: "Selected owner was not found." } satisfies ActionValidationIssue],
+        error: "ownerNotFound",
+        issues: [{ path: ["ownerUserId"], message: "ownerNotFound" } satisfies ActionValidationIssue],
       };
     }
   }
@@ -643,7 +671,7 @@ export async function updateOrgAdminNode(data: z.infer<typeof updateNodeSchema>)
   if (!parsedResult.success) {
     return {
       success: false,
-      error: "Validation failed",
+      error: "validationFailed",
       issues: zodIssues(parsedResult.error),
     };
   }
@@ -662,11 +690,11 @@ export async function updateOrgAdminNode(data: z.infer<typeof updateNodeSchema>)
     },
   });
 
-  if (!existing) return { success: false, error: "Node not found." };
+  if (!existing) return { success: false, error: "nodeNotFound" };
 
   const { enabled, nodeType } = await resolveEnabledNodeTypeByCode({ orgId: session.user.orgId, code: parsed.code });
   if (!nodeType || nodeType.id !== existing.nodeType.id) {
-    return { success: false, error: "Node type mismatch." };
+    return { success: false, error: "nodeTypeMismatch" };
   }
 
   const directHigher = getDirectHigherEnabledNodeType({ enabled, currentCode: String(nodeType.code) });
@@ -678,8 +706,8 @@ export async function updateOrgAdminNode(data: z.infer<typeof updateNodeSchema>)
       if (!parentId) {
         return {
           success: false,
-          error: "A parent node is required for this node type.",
-          issues: [{ path: ["parentId"], message: "Parent is required." } satisfies ActionValidationIssue],
+          error: "parentRequired",
+          issues: [{ path: ["parentId"], message: "parentRequired" } satisfies ActionValidationIssue],
         };
       }
 
@@ -697,23 +725,23 @@ export async function updateOrgAdminNode(data: z.infer<typeof updateNodeSchema>)
       if (!parent) {
         return {
           success: false,
-          error: "Selected parent was not found.",
-          issues: [{ path: ["parentId"], message: "Selected parent was not found." } satisfies ActionValidationIssue],
+          error: "parentNotFound",
+          issues: [{ path: ["parentId"], message: "parentNotFound" } satisfies ActionValidationIssue],
         };
       }
 
       if (String(parent.nodeType.code) !== String(directHigher.code)) {
         return {
           success: false,
-          error: "Selected parent has an invalid node type.",
-          issues: [{ path: ["parentId"], message: "Selected parent has an invalid node type." } satisfies ActionValidationIssue],
+          error: "invalidParentType",
+          issues: [{ path: ["parentId"], message: "invalidParentType" } satisfies ActionValidationIssue],
         };
       }
     } else if (parentId) {
       return {
         success: false,
-        error: "This node type cannot have a parent.",
-        issues: [{ path: ["parentId"], message: "This node type cannot have a parent." } satisfies ActionValidationIssue],
+        error: "nodeTypeCannotHaveParent",
+        issues: [{ path: ["parentId"], message: "nodeTypeCannotHaveParent" } satisfies ActionValidationIssue],
       };
     }
   }
@@ -730,8 +758,8 @@ export async function updateOrgAdminNode(data: z.infer<typeof updateNodeSchema>)
     if (!owner) {
       return {
         success: false,
-        error: "Selected owner was not found.",
-        issues: [{ path: ["ownerUserId"], message: "Selected owner was not found." } satisfies ActionValidationIssue],
+        error: "ownerNotFound",
+        issues: [{ path: ["ownerUserId"], message: "ownerNotFound" } satisfies ActionValidationIssue],
       };
     }
   }
@@ -776,7 +804,7 @@ export async function updateOrgAdminDepartment(data: z.infer<typeof updateOrgDep
   if (!parsedResult.success) {
     return {
       success: false,
-      error: "Validation failed",
+      error: "validationFailed",
       issues: zodIssues(parsedResult.error),
     };
   }
@@ -793,7 +821,7 @@ export async function updateOrgAdminDepartment(data: z.infer<typeof updateOrgDep
       select: { id: true },
     });
 
-    if (!existing) return { success: false, error: "Department not found." };
+    if (!existing) return { success: false, error: "departmentNotFound" };
 
     const department = await (prisma.department as any).update({
       where: { id: parsed.departmentId },
@@ -818,7 +846,7 @@ export async function deleteOrgAdminDepartment(data: z.infer<typeof deleteOrgDep
   if (!parsedResult.success) {
     return {
       success: false,
-      error: "Validation failed",
+      error: "validationFailed",
       issues: zodIssues(parsedResult.error),
     };
   }
@@ -835,7 +863,7 @@ export async function deleteOrgAdminDepartment(data: z.infer<typeof deleteOrgDep
       select: { id: true },
     });
 
-    if (!existing) return { success: false, error: "Department not found." };
+    if (!existing) return { success: false, error: "departmentNotFound" };
 
     await (prisma.department as any).update({
       where: { id: parsed.departmentId },
@@ -898,15 +926,15 @@ function validateManagerAssignment(input: { userRole: Role; managerRole: Role | 
   if (!input.managerRole) return;
 
   if (!managerEligibleRoles.includes(input.managerRole as (typeof managerEligibleRoles)[number])) {
-    throw new Error("Manager must be MANAGER, PMO, EXECUTIVE, or ADMIN.");
+    throw new Error("managerEligibleRolesError");
   }
 
   if (input.userRole === Role.ADMIN) {
-    throw new Error("ADMIN users cannot have a manager.");
+    throw new Error("adminCannotHaveManager");
   }
 
   if (roleRank(input.managerRole) < roleRank(input.userRole)) {
-    throw new Error("Manager must be in a higher or equal position than the user.");
+    throw new Error("managerHigherPosition");
   }
 }
 
@@ -916,7 +944,7 @@ export async function createOrgAdminUser(data: z.infer<typeof createOrgUserSchem
   if (!parsedResult.success) {
     return {
       success: false,
-      error: "Validation failed",
+      error: "validationFailed",
       issues: zodIssues(parsedResult.error),
     };
   }
@@ -924,7 +952,7 @@ export async function createOrgAdminUser(data: z.infer<typeof createOrgUserSchem
   const parsed = parsedResult.data;
 
   if (parsed.role === ("SUPER_ADMIN" as unknown as Role)) {
-    return { success: false, error: "Cannot create SUPER_ADMIN users inside an organization." };
+    return { success: false, error: "cannotCreateSuperAdmin" };
   }
 
   let managerRole: Role | null = null;
@@ -937,7 +965,7 @@ export async function createOrgAdminUser(data: z.infer<typeof createOrgUserSchem
       },
       select: { role: true },
     });
-    if (!manager) return { success: false, error: "Selected manager was not found." };
+    if (!manager) return { success: false, error: "ownerNotFound" };
     managerRole = manager.role;
   }
 
@@ -953,7 +981,7 @@ export async function createOrgAdminUser(data: z.infer<typeof createOrgUserSchem
         },
         select: { id: true },
       });
-      if (!department) return { success: false, error: "Selected department was not found." };
+      if (!department) return { success: false, error: "departmentNotFound" };
     }
 
     const result = await auth.api.signUpEmail({
@@ -993,7 +1021,7 @@ export async function updateOrgAdminUser(data: z.infer<typeof updateOrgUserSchem
   if (!parsedResult.success) {
     return {
       success: false,
-      error: "Validation failed",
+      error: "validationFailed",
       issues: zodIssues(parsedResult.error),
     };
   }
@@ -1013,13 +1041,13 @@ export async function updateOrgAdminUser(data: z.infer<typeof updateOrgUserSchem
   });
 
   if (!existing) {
-    return { success: false, error: "User not found." };
+    return { success: false, error: "userNotFound" };
   }
 
   const nextRole = parsed.role ?? existing.role;
 
   if (nextRole === ("SUPER_ADMIN" as unknown as Role)) {
-    return { success: false, error: "Cannot assign SUPER_ADMIN role." };
+    return { success: false, error: "cannotAssignSuperAdmin" };
   }
 
   let managerRole: Role | null = null;
@@ -1032,7 +1060,7 @@ export async function updateOrgAdminUser(data: z.infer<typeof updateOrgUserSchem
       },
       select: { role: true },
     });
-    if (!manager) return { success: false, error: "Selected manager was not found." };
+    if (!manager) return { success: false, error: "ownerNotFound" };
     managerRole = manager.role;
   }
 
@@ -1048,7 +1076,7 @@ export async function updateOrgAdminUser(data: z.infer<typeof updateOrgUserSchem
         },
         select: { id: true },
       });
-      if (!department) return { success: false, error: "Selected department was not found." };
+      if (!department) return { success: false, error: "departmentNotFound" };
     }
 
     const user = await prisma.user.update({
@@ -1087,7 +1115,7 @@ export async function deleteOrgAdminUser(data: z.infer<typeof deleteOrgUserSchem
   if (!parsedResult.success) {
     return {
       success: false,
-      error: "Validation failed",
+      error: "validationFailed",
       issues: zodIssues(parsedResult.error),
     };
   }
@@ -1104,7 +1132,7 @@ export async function deleteOrgAdminUser(data: z.infer<typeof deleteOrgUserSchem
       select: { id: true },
     });
 
-    if (!target) return { success: false, error: "User not found." };
+    if (!target) return { success: false, error: "userNotFound" };
 
     await prisma.user.update({
       where: { id: parsed.userId },
@@ -1126,7 +1154,7 @@ export async function deleteOrgAdminNode(data: { nodeId: string }) {
     where: { id: data.nodeId, orgId: session.user.orgId, deletedAt: null },
     select: { id: true },
   });
-  if (!target) return { success: false, error: "Node not found." };
+  if (!target) return { success: false, error: "nodeNotFound" };
   await (prisma.node as any).update({
     where: { id: data.nodeId },
     data: { deletedAt: new Date() },

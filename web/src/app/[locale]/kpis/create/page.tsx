@@ -35,7 +35,7 @@ type VariableDraft = {
 
 export default function CreateKpiPage() {
   const router = useRouter();
-  const { locale, t, tr, df } = useLocale();
+  const { locale, t, tr, df, te } = useLocale();
   const { user, loading: sessionLoading } = useAuth();
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -158,16 +158,8 @@ export default function CreateKpiPage() {
       });
 
       if (!result.success) {
-        setError(result.error);
-        const formatted = Array.isArray(result.issues)
-          ? result.issues
-              .map((i) => {
-                const path = Array.isArray(i.path) ? i.path.join(".") : "";
-                return path ? `${path}: ${i.message}` : i.message;
-              })
-              .join("\n")
-          : null;
-        if (formatted) setIssues(formatted);
+        setError(te(result.error));
+        setIssues(te(null, result.issues));
         return;
       }
 
@@ -332,7 +324,7 @@ export default function CreateKpiPage() {
             </div>
             <Button
               type="button"
-              className="variant="secondary""
+              variant="secondary"
               disabled={submitting}
               onClick={() =>
                 setDraft((p) => ({
@@ -508,7 +500,7 @@ export default function CreateKpiPage() {
             <Button variant="outline" asChild disabled={submitting}>
               <Link href={`/${locale}/kpis`}>{t("cancel")}</Link>
             </Button>
-            <Button className="variant="secondary"" onClick={handleCreate} disabled={!canSubmit || submitting}>
+            <Button variant="secondary" onClick={handleCreate} disabled={!canSubmit || submitting}>
               {submitting ? (
                 <span className="inline-flex items-center gap-2">
                   <Loader2 className="h-4 w-4 animate-spin" />

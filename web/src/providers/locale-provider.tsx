@@ -3,6 +3,7 @@
 import { createContext, useContext, useEffect, useMemo, useState } from "react";
 import enMessages from "../../messages/en.json";
 import arMessages from "../../messages/ar.json";
+import { ActionValidationIssue } from "@/types/actions";
 
 type Locale = "en" | "ar";
 
@@ -11,6 +12,7 @@ interface LocaleContextValue {
   dir: "ltr" | "rtl";
   isArabic: boolean;
   t: (key: TranslationKey, params?: Record<string, string | number>) => string;
+  te: (error: string | null | undefined, issues?: ActionValidationIssue[] | null) => string | null;
   tr: (en: string, ar: string) => string;
   df: (en: string | null | undefined, ar: string | null | undefined) => string;
   nodeTypeLabel: (code?: string | null, fallback?: string) => string;
@@ -81,6 +83,29 @@ export function LocaleProvider({ children, locale }: { children: React.ReactNode
         return msg;
       },
       tr: (en, ar) => (activeLocale === "ar" ? ar : en),
+      te: (error, issues) => {
+        if (!error) return null;
+        let msg = dictionary[activeLocale][error as TranslationKey] || error;
+
+        if (issues && issues.length > 0) {
+          const formatted = issues
+            .map((i) => {
+              const translatedMsg = dictionary[activeLocale][i.message as TranslationKey] || i.message;
+              let finalMsg = translatedMsg;
+              if (i.params) {
+                Object.entries(i.params).forEach(([k, v]) => {
+                  finalMsg = finalMsg.replace(`{${k}}`, String(v));
+                });
+              }
+              const path = Array.isArray(i.path) ? i.path.join(".") : "";
+              return path ? `${path}: ${finalMsg}` : finalMsg;
+            })
+            .join("\n");
+          return `${msg}\n${formatted}`;
+        }
+
+        return msg;
+      },
       df: (en, ar) => {
         if (activeLocale === "ar") return ar || en || "";
         return en || ar || "";
