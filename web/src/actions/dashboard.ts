@@ -628,6 +628,7 @@ export async function getMyDashboardData() {
       id: t.id,
       code: String(t.code),
       displayName: t.displayName,
+      nameAr: t.nameAr,
       levelOrder: t.levelOrder,
     })),
     canApprove,

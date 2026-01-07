@@ -11,13 +11,15 @@ import { useEffect, useMemo, useState } from "react";
 import { getOrgKpisGridPaged } from "@/actions/kpis";
 import { KpiGauge } from "@/components/charts/kpi-gauge";
 import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Plus } from "lucide-react";
 import { useRouter, useSearchParams } from "next/navigation";
 
 type KpiGridRow = Awaited<ReturnType<typeof getOrgKpisGridPaged>>["items"][number];
 
 export default function KPIsPage() {
-  const { locale, t, nodeTypeLabel, formatNumber, df } = useLocale();
+  const { locale, t, nodeTypeLabel, formatNumber, formatDate, kpiValueStatusLabel, df } = useLocale();
   const { user, loading: sessionLoading } = useAuth();
   const router = useRouter();
   const searchParams = useSearchParams();
@@ -29,6 +31,8 @@ export default function KPIsPage() {
   const [rows, setRows] = useState<KpiGridRow[]>([]);
   const [total, setTotal] = useState(0);
   const [loading, setLoading] = useState(true);
+  const [statusFilter, setStatusFilter] = useState<"ALL" | "NO_DATA" | "DRAFT" | "SUBMITTED" | "APPROVED" | "LOCKED">("ALL");
+  const [periodFilter, setPeriodFilter] = useState<"ALL" | "MONTHLY" | "QUARTERLY" | "YEARLY">("ALL");
 
   const q = useMemo(() => {
     const raw = searchParams?.get("q") ?? "";
@@ -105,6 +109,31 @@ export default function KPIsPage() {
     }));
   }, [rows]);
 
+  const filteredItems = useMemo(() => {
+    return items.filter((kpi) => {
+      const latestStatus = String(kpi.values?.[0]?.status ?? "NO_DATA");
+      if (statusFilter !== "ALL" && latestStatus !== statusFilter) return false;
+      if (periodFilter !== "ALL" && kpi.periodType !== periodFilter) return false;
+      return true;
+    });
+  }, [items, periodFilter, statusFilter]);
+
+  const summary = useMemo(() => {
+    const noData = filteredItems.filter((kpi) => String(kpi.values?.[0]?.status ?? "NO_DATA") === "NO_DATA").length;
+    const missingCurrent = filteredItems.filter((kpi) => kpi.currentValue == null).length;
+    const missingTarget = filteredItems.filter((kpi) => kpi.targetValue == null).length;
+    return { noData, missingCurrent, missingTarget };
+  }, [filteredItems]);
+
+  const formatValueWithUnit = (value: number | null | undefined, unit: string | null | undefined) => {
+    const formatted = formatNumber(value ?? null);
+    if (formatted === "—") return formatted;
+    const trimmedUnit = unit?.trim();
+    if (!trimmedUnit) return formatted;
+    if (trimmedUnit === "%") return `${formatted}%`;
+    return `${formatted} ${trimmedUnit}`;
+  };
+
   return (
     <div className="space-y-8">
       <PageHeader
@@ -149,7 +178,7 @@ export default function KPIsPage() {
         <CardContent>
           <div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
             <div className="text-xs text-muted-foreground">
-              {t("total")}: {total}
+              {t("total")}: {total} • {t("shown")}: {filteredItems.length}
             </div>
             <div className="flex items-center gap-2">
               <Button variant="outline" size="sm" onClick={() => goToPage(page - 1)} disabled={page <= 1}>
@@ -164,11 +193,55 @@ export default function KPIsPage() {
             </div>
           </div>
 
+          <div className="mt-3 flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
+            <div className="flex flex-wrap items-center gap-2">
+              <span className="text-xs text-muted-foreground">{t("filters")}</span>
+              <Select value={statusFilter} onValueChange={(value) => setStatusFilter(value as typeof statusFilter)}>
+                <SelectTrigger className="h-8 w-[150px] text-xs">
+                  <SelectValue placeholder={t("statusFilter")} />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="ALL">{t("allStatuses")}</SelectItem>
+                  <SelectItem value="NO_DATA">{t("statusNoData")}</SelectItem>
+                  <SelectItem value="DRAFT">{t("statusDraft")}</SelectItem>
+                  <SelectItem value="SUBMITTED">{t("statusSubmitted")}</SelectItem>
+                  <SelectItem value="APPROVED">{t("statusApproved")}</SelectItem>
+                  <SelectItem value="LOCKED">{t("statusLocked")}</SelectItem>
+                </SelectContent>
+              </Select>
+              <Select value={periodFilter} onValueChange={(value) => setPeriodFilter(value as typeof periodFilter)}>
+                <SelectTrigger className="h-8 w-[150px] text-xs">
+                  <SelectValue placeholder={t("periodFilter")} />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="ALL">{t("allPeriods")}</SelectItem>
+                  <SelectItem value="MONTHLY">{t("monthly")}</SelectItem>
+                  <SelectItem value="QUARTERLY">{t("quarterly")}</SelectItem>
+                  <SelectItem value="YEARLY">{t("yearly")}</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+            <div className="grid w-full gap-2 sm:grid-cols-3 md:w-auto">
+              <div className="rounded-xl border border-border bg-muted/20 px-3 py-2">
+                <p className="text-[11px] text-muted-foreground">{t("statusNoData")}</p>
+                <p className="text-sm font-semibold">{summary.noData}</p>
+              </div>
+              <div className="rounded-xl border border-border bg-muted/20 px-3 py-2">
+                <p className="text-[11px] text-muted-foreground">{t("missingCurrent")}</p>
+                <p className="text-sm font-semibold">{summary.missingCurrent}</p>
+              </div>
+              <div className="rounded-xl border border-border bg-muted/20 px-3 py-2">
+                <p className="text-[11px] text-muted-foreground">{t("missingTarget")}</p>
+                <p className="text-sm font-semibold">{summary.missingTarget}</p>
+              </div>
+            </div>
+          </div>
+
           {loading ? (
             <div className="rounded-xl border border-border bg-muted/30 p-6 text-sm text-muted-foreground">{t("loadingEllipsis")}</div>
-          ) : items.length ? (
+          ) : filteredItems.length ? (
             <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-              {items.map((kpi) => (
+              {filteredItems.map((kpi) => (
                 <Link
                   key={kpi.id}
                   href={`/${locale}/kpis/${kpi.id}`}
@@ -176,13 +249,19 @@ export default function KPIsPage() {
                 >
                   <div className="flex items-start justify-between gap-3">
                     <div>
-                      <p className="text-sm font-semibold">{df(kpi.name, kpi.nameAr)}</p>
-                      <p className="mt-1 text-xs text-muted-foreground">
+                      <p className="text-sm font-semibold line-clamp-2">{df(kpi.name, kpi.nameAr)}</p>
+                      <p className="mt-1 text-xs text-muted-foreground line-clamp-2">
                         {(kpi.primaryNode?.nodeType
                           ? nodeTypeLabel(kpi.primaryNode.nodeType.code, df(kpi.primaryNode.nodeType.displayName, kpi.primaryNode.nodeType.nameAr))
                           : t("type"))}: {df(kpi.primaryNode?.name, kpi.primaryNode?.nameAr) || "—"}
                       </p>
+                      <p className="mt-1 text-[11px] text-muted-foreground">
+                        {t("latestUpdate")}: {kpi.lastUpdatedAt ? formatDate(kpi.lastUpdatedAt) : "—"}
+                      </p>
                     </div>
+                    <Badge variant="outline">
+                      {kpiValueStatusLabel(String(kpi.values?.[0]?.status ?? "NO_DATA"))}
+                    </Badge>
                   </div>
 
                   <div className="mt-3 rounded-xl border border-border bg-muted/20 px-3 py-3">
@@ -193,15 +272,13 @@ export default function KPIsPage() {
                     <div className="rounded-xl border border-border bg-muted/20 px-3 py-2">
                       <p className="text-[11px] text-muted-foreground">{t("current")}</p>
                       <p className="text-sm font-semibold" dir="ltr">
-                        {formatNumber(kpi.currentValue)}
-                        {df(kpi.unit, kpi.unitAr)}
+                        {formatValueWithUnit(kpi.currentValue, df(kpi.unit, kpi.unitAr))}
                       </p>
                     </div>
                     <div className="rounded-xl border border-border bg-muted/20 px-3 py-2">
                       <p className="text-[11px] text-muted-foreground">{t("target")}</p>
                       <p className="text-sm font-semibold" dir="ltr">
-                        {formatNumber(kpi.targetValue)}
-                        {df(kpi.unit, kpi.unitAr)}
+                        {formatValueWithUnit(kpi.targetValue, df(kpi.unit, kpi.unitAr))}
                       </p>
                     </div>
                   </div>

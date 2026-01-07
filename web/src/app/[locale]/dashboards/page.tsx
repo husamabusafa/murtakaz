@@ -16,6 +16,7 @@ import { getMyDashboardData } from "@/actions/dashboard";
 import { useAuth } from "@/providers/auth-provider";
 import { useLocale } from "@/providers/locale-provider";
 import type { Status as UiStatus } from "@/lib/types";
+import { cn } from "@/lib/utils";
 
 type DashboardData = Awaited<ReturnType<typeof getMyDashboardData>>;
 
@@ -34,8 +35,9 @@ function formatNumber(value: number | null | undefined) {
 }
 
 export default function DashboardsPage() {
-  const { locale, t, tr, nodeTypeLabel, kpiValueStatusLabel } = useLocale();
+  const { locale, t, tr, nodeTypeLabel, kpiValueStatusLabel, df, dir } = useLocale();
   const { user, loading: sessionLoading } = useAuth();
+  const isRtl = dir === "rtl";
 
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -368,11 +370,13 @@ export default function DashboardsPage() {
                           <div className="min-w-0 space-y-1">
                             <p className="truncate text-sm font-semibold">
                               <span className="me-2 inline-block h-2.5 w-2.5 rounded-full" style={{ backgroundColor: it.color }} />
-                              {it.name}
+                              {df(it.name, it.nameAr)}
                             </p>
                             <p className="truncate text-xs text-muted-foreground">
-                              {it.type.displayName}
-                              {it.parent ? ` • ${nodeTypeLabel(it.parent.typeCode, it.parent.typeDisplayName)}: ${it.parent.name}` : ""}
+                              {df(it.type.displayName, it.type.nameAr)}
+                              {it.parent
+                                ? ` • ${nodeTypeLabel(it.parent.typeCode, df(it.parent.typeDisplayName, it.parent.typeDisplayNameAr))}: ${df(it.parent.name, it.parent.nameAr)}`
+                                : ""}
                             </p>
                           </div>
                           <Badge variant="outline" className="border-border bg-muted/30 text-muted-foreground">
@@ -414,7 +418,7 @@ export default function DashboardsPage() {
                         >
                           <div className="flex items-center justify-between gap-3">
                             <div className="min-w-0">
-                              <p className="truncate text-sm font-semibold">{nt.displayName}</p>
+                              <p className="truncate text-sm font-semibold">{df(nt.displayName, nt.nameAr)}</p>
                               <p className="mt-1 text-xs text-muted-foreground" dir="ltr">
                                 {t("level")}: {nt.levelOrder}
                               </p>
@@ -449,7 +453,7 @@ export default function DashboardsPage() {
                         >
                           <div className="flex items-center justify-between gap-3">
                             <div className="min-w-0">
-                              <p className="truncate text-sm font-semibold">{nt.displayName}</p>
+                              <p className="truncate text-sm font-semibold">{df(nt.displayName, nt.nameAr)}</p>
                               <p className="mt-1 text-xs text-muted-foreground" dir="ltr">
                                 {t("level")}: {nt.levelOrder}
                               </p>
@@ -490,32 +494,34 @@ export default function DashboardsPage() {
                       <Table>
                         <TableHeader>
                           <TableRow className="hover:bg-transparent">
-                            <TableHead>{t("kpi")}</TableHead>
-                            <TableHead>{t("latest")}</TableHead>
-                            <TableHead>{t("target")}</TableHead>
-                            <TableHead>{t("linkedTo")}</TableHead>
+                            <TableHead className={cn(isRtl && "text-right")}>{t("kpi")}</TableHead>
+                            <TableHead className={cn(isRtl && "text-right")}>{t("latest")}</TableHead>
+                            <TableHead className={cn(isRtl && "text-right")}>{t("target")}</TableHead>
+                            <TableHead className={cn(isRtl && "text-right")}>{t("linkedTo")}</TableHead>
                             <TableHead className="text-right">{t("status")}</TableHead>
                           </TableRow>
                         </TableHeader>
                         <TableBody>
                           {topKpis.map((k) => {
                             const latestStatus = k.latest?.status ?? "NO_DATA";
+                            const unitLabel = df(k.unit, k.unitAr);
                             return (
                               <TableRow key={k.id} className="hover:bg-card/40">
-                                <TableCell className="font-medium">
-                                  <Link href={`/${locale}/kpis/${k.id}`} className="hover:underline">
-                                    {k.name}
+                                <TableCell className={cn("font-medium", isRtl && "text-right")}>
+                                  <Link href={`/${locale}/kpis/${k.id}`} className="block truncate hover:underline">
+                                    {df(k.name, k.nameAr)}
                                   </Link>
-                                  {k.unit ? <span className="ms-2 text-xs text-muted-foreground">({k.unit})</span> : null}
+                                  {unitLabel ? <span className="ms-2 text-xs text-muted-foreground">({unitLabel})</span> : null}
                                 </TableCell>
-                                <TableCell className="text-muted-foreground" dir="ltr">
+                                <TableCell className={cn("text-muted-foreground", isRtl && "text-right")} dir="ltr">
                                   {formatNumber(k.latest?.calculatedValue)}
                                 </TableCell>
-                                <TableCell className="text-muted-foreground" dir="ltr">
+                                <TableCell className={cn("text-muted-foreground", isRtl && "text-right")} dir="ltr">
                                   {formatNumber(k.targetValue)}
                                 </TableCell>
-                                <TableCell className="text-muted-foreground">
-                                  {nodeTypeLabel(k.primary.typeCode, k.primary.typeDisplayName)} • {k.primary.name}
+                                <TableCell className={cn("text-muted-foreground", isRtl && "text-right", "max-w-[280px] truncate")}>
+                                  {nodeTypeLabel(k.primary.typeCode, df(k.primary.typeDisplayName, k.primary.typeDisplayNameAr))} •{" "}
+                                  {df(k.primary.name, k.primary.nameAr)}
                                 </TableCell>
                                 <TableCell className="text-right">
                                   <Badge variant="outline" className={pillForKpiStatus(latestStatus)}>
@@ -557,9 +563,10 @@ export default function DashboardsPage() {
                             >
                               <div className="flex items-start justify-between gap-3">
                                 <div className="min-w-0">
-                                  <p className="truncate text-sm font-semibold">{k.name}</p>
+                                  <p className="truncate text-sm font-semibold">{df(k.name, k.nameAr)}</p>
                                   <p className="mt-1 truncate text-xs text-muted-foreground">
-                                    {nodeTypeLabel(k.primary.typeCode, k.primary.typeDisplayName)} • {k.primary.name}
+                                    {nodeTypeLabel(k.primary.typeCode, df(k.primary.typeDisplayName, k.primary.typeDisplayNameAr))} •{" "}
+                                    {df(k.primary.name, k.primary.nameAr)}
                                   </p>
                                 </div>
                                 <Badge variant="outline" className={pillForKpiStatus(k.latest?.status ?? "NO_DATA")}>
@@ -601,11 +608,13 @@ export default function DashboardsPage() {
                         <div className="min-w-0">
                           <p className="truncate text-sm font-semibold">
                             <span className="me-2 inline-block h-2.5 w-2.5 rounded-full" style={{ backgroundColor: it.color }} />
-                            {it.name}
+                            {df(it.name, it.nameAr)}
                           </p>
                           <p className="mt-1 truncate text-xs text-muted-foreground">
-                            {it.type.displayName}
-                            {it.parent ? ` • ${nodeTypeLabel(it.parent.typeCode, it.parent.typeDisplayName)}: ${it.parent.name}` : ""}
+                            {df(it.type.displayName, it.type.nameAr)}
+                            {it.parent
+                              ? ` • ${nodeTypeLabel(it.parent.typeCode, df(it.parent.typeDisplayName, it.parent.typeDisplayNameAr))}: ${df(it.parent.name, it.parent.nameAr)}`
+                              : ""}
                           </p>
                         </div>
                         <div className="flex shrink-0 flex-col items-end gap-2">
@@ -649,11 +658,11 @@ export default function DashboardsPage() {
                           <CardTitle className="flex items-center gap-2 text-base">
                             <span className="inline-block h-2.5 w-2.5 rounded-full" style={{ backgroundColor: s.root.color }} />
                             <Link href={`/${locale}/nodes/${s.root.type.code}/${s.root.id}`} className="truncate hover:underline">
-                              {s.root.name}
+                              {df(s.root.name, s.root.nameAr)}
                             </Link>
                           </CardTitle>
                           <CardDescription className="truncate">
-                            {s.root.type.displayName} • {t("kpis")}: {s.kpisCount}
+                            {df(s.root.type.displayName, s.root.type.nameAr)} • {t("kpis")}: {s.kpisCount}
                           </CardDescription>
                         </div>
                         <StatusBadge status={s.root.status as unknown as UiStatus} />
@@ -683,10 +692,10 @@ export default function DashboardsPage() {
                               >
                                 <p className="truncate text-sm font-semibold">
                                   <span className="me-2 inline-block h-2 w-2 rounded-full" style={{ backgroundColor: x.color }} />
-                                  {x.name}
+                                  {df(x.name, x.nameAr)}
                                 </p>
                                 <p className="mt-1 truncate text-xs text-muted-foreground">
-                                  {x.type.displayName} • {t("progress")}: {x.progress}%
+                                  {df(x.type.displayName, x.type.nameAr)} • {t("progress")}: {x.progress}%
                                 </p>
                               </Link>
                             ))}
