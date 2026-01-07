@@ -131,7 +131,7 @@ export default function ApprovalsPage() {
                           {row.kpi.name}
                         </Link>
                         <p className="mt-1 text-xs text-slate-200">
-                          {(row.kpi.primaryNode?.nodeType?.displayName ?? tr("Node", "عقدة"))} • {row.kpi.primaryNode?.name ?? "—"}
+                          {(row.kpi.primaryNode?.nodeType?.displayName ?? tr("Type", "النوع"))} • {row.kpi.primaryNode?.name ?? "—"}
                         </p>
                       </TableCell>
                       <TableCell className="text-slate-200" dir="ltr">

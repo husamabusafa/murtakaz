@@ -453,7 +453,7 @@ export async function getMyEffectiveKpiIds() {
 
   requireResponsibilityModels();
 
-  const [nodeAssignments, directKpis, nodes] = await Promise.all([
+  const [nodeAssignments, directKpis, ownedKpis, nodes] = await Promise.all([
     prismaResponsibilityNodeAssignment.findMany<{ rootNodeId: string }>({
       where: { orgId, assignedToId: session.user.id },
       select: { rootNodeId: true },
@@ -461,6 +461,10 @@ export async function getMyEffectiveKpiIds() {
     prismaResponsibilityKpiAssignment.findMany<{ kpiId: string }>({
       where: { orgId, assignedToId: session.user.id },
       select: { kpiId: true },
+    }),
+    prismaKpiDefinition.findMany<{ id: string }>({
+      where: { orgId, ownerUserId: session.user.id },
+      select: { id: true },
     }),
     prismaNode.findMany<{ id: string; parentId: string | null }>({
       where: { orgId, deletedAt: null },
@@ -483,6 +487,7 @@ export async function getMyEffectiveKpiIds() {
 
   const ids = new Set<string>();
   directKpis.forEach((k: { kpiId: string }) => ids.add(k.kpiId));
+  ownedKpis.forEach((k: { id: string }) => ids.add(k.id));
   kpisFromNodes.forEach((k: { id: string }) => ids.add(k.id));
 
   return Array.from(ids);

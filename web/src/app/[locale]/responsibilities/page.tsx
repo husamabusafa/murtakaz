@@ -365,7 +365,7 @@ export default function ResponsibilitiesPage() {
                   setSelectedKpis([]);
                 }}
               >
-                {tr("Assign node", "إسناد عنصر")}
+                {tr("Assign item", "إسناد عنصر")}
               </Button>
               <Button
                 variant={mode === "kpi" ? "default" : "outline"}
@@ -382,7 +382,7 @@ export default function ResponsibilitiesPage() {
             <div className="rounded-xl border border-border bg-muted/20 p-4 text-xs text-muted-foreground">
               <p className="font-semibold text-foreground">{tr("Tip", "معلومة")}</p>
               <div className="mt-2 space-y-2">
-                <p>{tr("Node assignment cascades to all child nodes and all KPIs under them (including future ones).", "إسناد العنصر يتسلسل لكل العناصر الفرعية وجميع المؤشرات تحتها (بما في ذلك المستقبلية).")}</p>
+                <p>{tr("Item assignment cascades to all child items and all KPIs under them (including future ones).", "إسناد العنصر يتسلسل لكل العناصر الفرعية وجميع المؤشرات تحتها (بما في ذلك المستقبلية).")}</p>
                 <p>{tr("KPI assignment assigns only selected KPIs.", "إسناد المؤشرات يقتصر على المؤشرات المختارة فقط.")}</p>
               </div>
             </div>
@@ -391,10 +391,10 @@ export default function ResponsibilitiesPage() {
 
         <Card className="bg-card/70 backdrop-blur shadow-sm lg:col-span-2">
           <CardHeader>
-            <CardTitle className="text-base">{mode === "node" ? tr("Select a node", "اختر عنصرًا") : tr("Select KPIs", "اختر مؤشرات")}</CardTitle>
+            <CardTitle className="text-base">{mode === "node" ? tr("Select an item", "اختر عنصرًا") : tr("Select KPIs", "اختر مؤشرات")}</CardTitle>
             <CardDescription>
               {mode === "node"
-                ? tr("Pick a node and preview the cascading scope before confirming.", "اختر عنصرًا وعاين نطاق التسلسل قبل التأكيد.")
+                ? tr("Pick an item and preview the cascading scope before confirming.", "اختر عنصرًا وعاين نطاق التسلسل قبل التأكيد.")
                 : tr("Search and add KPIs, then assign them in one action.", "ابحث وأضف مؤشرات، ثم قم بإسنادها دفعة واحدة.")}
             </CardDescription>
           </CardHeader>
@@ -533,7 +533,7 @@ export default function ResponsibilitiesPage() {
             <div className="grid gap-6 lg:grid-cols-2">
               <div className="space-y-3">
                 <div className="flex items-center justify-between">
-                  <p className="text-sm font-semibold">{tr("Node responsibilities", "مسؤوليات العناصر")}</p>
+                  <p className="text-sm font-semibold">{tr("Item responsibilities", "مسؤوليات العناصر")}</p>
                   <Badge variant="outline" className="border-border bg-muted/30">
                     {assignments?.nodeAssignments.length ?? 0}
                   </Badge>

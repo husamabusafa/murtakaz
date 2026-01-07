@@ -4,7 +4,7 @@ import { prisma } from "@/lib/prisma";
 import { auth } from "@/lib/auth";
 import { headers } from "next/headers";
 import { z } from "zod";
-import { Role } from "@prisma/client";
+import { KpiApprovalLevel, Role } from "@prisma/client";
 
 type NodeTypeRow = {
   id: string;
@@ -234,12 +234,22 @@ export async function getOrganizations() {
     id: string;
     name: string;
     domain: string | null;
+    kpiApprovalLevel: KpiApprovalLevel;
     createdAt: Date;
+    updatedAt: Date;
+    deletedAt: Date | null;
     _count?: { users: number };
   }>({
     where: { deletedAt: null },
     orderBy: { createdAt: "desc" },
-    include: {
+    select: {
+      id: true,
+      name: true,
+      domain: true,
+      kpiApprovalLevel: true,
+      createdAt: true,
+      updatedAt: true,
+      deletedAt: true,
       _count: {
         select: { users: true },
       },

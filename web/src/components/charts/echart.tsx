@@ -3,6 +3,7 @@
 import React, { useEffect, useMemo, useRef } from "react";
 import type { EChartsOption } from "echarts";
 import { cn } from "@/lib/utils";
+import { useTheme } from "@/providers/theme-provider";
 
 export function EChart({
   option,
@@ -14,15 +15,29 @@ export function EChart({
   height?: number;
 }) {
   const containerRef = useRef<HTMLDivElement | null>(null);
+  const { theme } = useTheme();
 
-  const resolvedOption = useMemo<EChartsOption>(
-    () => ({
+  const resolvedOption = useMemo<EChartsOption>(() => {
+    const isDark = theme === "dark";
+    return {
       backgroundColor: "transparent",
-      textStyle: { color: "#e2e8f0", fontFamily: 'Tajawal, ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto' },
+      darkMode: isDark,
+      textStyle: {
+        color: isDark ? "#e2e8f0" : "#0f172a",
+        fontFamily: 'Tajawal, ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto',
+      },
+      color: [
+        "#60a5fa",
+        "#34d399",
+        "#a78bfa",
+        "#fb7185",
+        "#fbbf24",
+        "#22c55e",
+        "#38bdf8",
+      ],
       ...option,
-    }),
-    [option],
-  );
+    };
+  }, [option, theme]);
 
   useEffect(() => {
     const container = containerRef.current;

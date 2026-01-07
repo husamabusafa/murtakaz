@@ -1,6 +1,6 @@
 "use client";
 
-import type { EChartsOption } from "echarts";
+import { graphic, type EChartsOption } from "echarts";
 import { useMemo } from "react";
 import { EChart } from "@/components/charts/echart";
 
@@ -54,18 +54,11 @@ export function KpiGauge({
     const statusColor = ratio >= amber ? cGreen : ratio >= red ? cAmber : cRed;
 
     // progress gradient (subtle modern look)
-    const progressColor = {
-      type: "linear",
-      x: 0,
-      y: 0,
-      x2: 1,
-      y2: 0,
-      colorStops: [
-        { offset: 0, color: "rgba(255,255,255,0.08)" },
-        { offset: 0.25, color: statusColor },
-        { offset: 1, color: "rgba(255,255,255,0.10)" },
-      ],
-    } as const;
+    const progressColor = new graphic.LinearGradient(0, 0, 1, 0, [
+      { offset: 0, color: "rgba(255,255,255,0.08)" },
+      { offset: 0.25, color: statusColor },
+      { offset: 1, color: "rgba(255,255,255,0.10)" },
+    ]);
 
     const fmt = (n: number) => {
       if (!Number.isFinite(n)) return "0";
@@ -178,7 +171,7 @@ export function KpiGauge({
             width: 16,
             roundCap: true,
             itemStyle: {
-              color: progressColor as any,
+              color: progressColor,
               shadowBlur: 16,
               shadowColor: statusColor,
             },
@@ -280,7 +273,7 @@ export function KpiGauge({
         },
       ],
     };
-  }, [height, label, target, theme, unit, value]);
+  }, [label, target, theme, unit, value]);
 
   const Chart = <EChart option={option} height={height} />;
 
