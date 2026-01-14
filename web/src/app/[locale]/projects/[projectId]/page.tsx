@@ -382,7 +382,8 @@ function MilestonesCard({
             className="border-border bg-muted/20 text-foreground placeholder:text-muted-foreground"
           />
           <Button
-            className="w-full variant="secondary""
+            variant="secondary"
+            className="w-full"
             disabled={newTitle.trim().length === 0}
             onClick={() => {
               const trimmed = newTitle.trim();
@@ -458,7 +459,7 @@ function ProjectUpdateComposer({
           />
         </div>
         <Button
-          className="variant="secondary""
+          variant="secondary"
           disabled={summary.trim().length === 0}
           onClick={() => {
             onSubmit({ summary: summary.trim(), details: details.trim(), blockers: blockers.trim() });

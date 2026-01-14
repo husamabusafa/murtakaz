@@ -7,20 +7,27 @@ import { Plus, Pencil, Trash2 } from "lucide-react";
 import { PageHeader } from "@/components/page-header";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { useAuth } from "@/providers/auth-provider";
 import { useLocale } from "@/providers/locale-provider";
 import {
-  createOrgAdminDepartment,
   deleteOrgAdminDepartment,
   getOrgAdminDepartments,
   updateOrgAdminDepartment,
 } from "@/actions/org-admin";
 
 type DepartmentRow = Awaited<ReturnType<typeof getOrgAdminDepartments>>[number];
+
+type DepartmentManagerRow = {
+  user: {
+    id: string;
+    name: string;
+    role: string;
+  } | null;
+};
 
 function formatIssues(issues: unknown): string | null {
   if (!Array.isArray(issues) || issues.length === 0) return null;
@@ -49,19 +56,13 @@ export default function DepartmentsPage() {
 
   const [loadingData, setLoadingData] = useState(true);
   const [departments, setDepartments] = useState<DepartmentRow[]>([]);
-
-  const [createOpen, setCreateOpen] = useState(false);
   const [editOpen, setEditOpen] = useState(false);
   const [deleteOpen, setDeleteOpen] = useState(false);
   const [submitting, setSubmitting] = useState(false);
-
-  const [createError, setCreateError] = useState<string | null>(null);
   const [editError, setEditError] = useState<string | null>(null);
   const [deleteError, setDeleteError] = useState<string | null>(null);
 
   const [selectedDepartment, setSelectedDepartment] = useState<DepartmentRow | null>(null);
-
-  const [newDepartment, setNewDepartment] = useState({ name: "" });
   const [editDepartment, setEditDepartment] = useState({ departmentId: "", name: "" });
 
   const loadData = useCallback(async () => {
@@ -88,30 +89,6 @@ export default function DepartmentsPage() {
     departments.forEach((d) => map.set(d.id, d));
     return map;
   }, [departments]);
-
-  async function handleCreate(e: React.FormEvent) {
-    e.preventDefault();
-    setSubmitting(true);
-    setCreateError(null);
-    try {
-      const result = await createOrgAdminDepartment({ name: newDepartment.name });
-      if (!result.success) {
-        const issuesText = formatIssues((result as unknown as { issues?: unknown }).issues);
-        setCreateError(issuesText || result.error || t("failedToCreateDepartment"));
-        return;
-      }
-
-      setCreateOpen(false);
-      setNewDepartment({ name: "" });
-      await loadData();
-      router.refresh();
-    } catch (error: unknown) {
-      const message = error instanceof Error ? error.message : t("failedToCreateDepartment");
-      setCreateError(message);
-    } finally {
-      setSubmitting(false);
-    }
-  }
 
   async function handleUpdate(e: React.FormEvent) {
     e.preventDefault();
@@ -196,56 +173,12 @@ export default function DepartmentsPage() {
       <div className="flex items-center justify-between gap-3">
         <PageHeader title={t("departments")} subtitle={t("departmentsSubtitle")} />
 
-        <Dialog
-          open={createOpen}
-          onOpenChange={(open) => {
-            setCreateOpen(open);
-            if (open) setCreateError(null);
-          }}
-        >
-          <DialogTrigger asChild>
-            <Button>
-              <Plus className="me-2 h-4 w-4" />
-              {t("newDepartment")}
-            </Button>
-          </DialogTrigger>
-          <DialogContent className="border-border bg-card text-foreground">
-            <DialogHeader>
-              <DialogTitle>{t("createDepartment")}</DialogTitle>
-              <DialogDescription className="text-muted-foreground">
-                {t("addDepartmentDesc")}
-              </DialogDescription>
-            </DialogHeader>
-
-            <form onSubmit={handleCreate} className="space-y-4">
-              {createError ? (
-                <div className="rounded-xl border border-destructive/40 bg-destructive/10 px-4 py-3 text-sm text-destructive whitespace-pre-line">
-                  {createError}
-                </div>
-              ) : null}
-
-              <div className="space-y-2">
-                <Label htmlFor="dept-name">{t("name")}</Label>
-                <Input
-                  id="dept-name"
-                  value={newDepartment.name}
-                  onChange={(e) => setNewDepartment({ name: e.target.value })}
-                  required
-                  className="bg-card"
-                />
-              </div>
-
-              <DialogFooter>
-                <Button type="button" variant="ghost" onClick={() => setCreateOpen(false)}>
-                  {t("cancel")}
-                </Button>
-                <Button type="submit" disabled={submitting}>
-                  {submitting ? t("creating") : t("create")}
-                </Button>
-              </DialogFooter>
-            </form>
-          </DialogContent>
-        </Dialog>
+        <Button asChild>
+          <Link href={`/${locale}/departments/new`}>
+            <Plus className="me-2 h-4 w-4" />
+            {t("newDepartment")}
+          </Link>
+        </Button>
       </div>
 
       <Card className="bg-card/70 backdrop-blur shadow-sm">
@@ -259,6 +192,7 @@ export default function DepartmentsPage() {
               <TableHeader>
                 <TableRow>
                   <TableHead>{t("name")}</TableHead>
+                  <TableHead>{t("manager")}</TableHead>
                   <TableHead>{t("users")}</TableHead>
                   <TableHead>{t("created")}</TableHead>
                   <TableHead className="text-right">{t("actions")}</TableHead>
@@ -267,13 +201,13 @@ export default function DepartmentsPage() {
               <TableBody>
                 {loadingData ? (
                   <TableRow>
-                    <TableCell colSpan={4} className="py-8 text-center text-muted-foreground">
+                    <TableCell colSpan={5} className="py-8 text-center text-muted-foreground">
                       {t("loading")}
                     </TableCell>
                   </TableRow>
                 ) : departments.length === 0 ? (
                   <TableRow>
-                    <TableCell colSpan={4} className="py-8 text-center text-muted-foreground">
+                    <TableCell colSpan={5} className="py-8 text-center text-muted-foreground">
                       {t("noDepartmentsFound")}
                     </TableCell>
                   </TableRow>
@@ -281,6 +215,22 @@ export default function DepartmentsPage() {
                   departments.map((d) => (
                     <TableRow key={d.id} className="hover:bg-muted/40">
                       <TableCell className="font-medium">{d.name}</TableCell>
+                      <TableCell className="text-muted-foreground">
+                        {d._count?.managers ? (
+                          <span>
+                            {d._count.managers}
+                            {d.managers?.length
+                              ? ` • ${d.managers
+                                  .map((m: DepartmentManagerRow) => m.user?.name)
+                                  .filter((n: string | null | undefined): n is string => Boolean(n))
+                                  .slice(0, 2)
+                                  .join(", ")}${d.managers.length > 2 ? "…" : ""}`
+                              : ""}
+                          </span>
+                        ) : (
+                          "—"
+                        )}
+                      </TableCell>
                       <TableCell className="text-muted-foreground">{d._count?.users ?? 0}</TableCell>
                       <TableCell className="text-muted-foreground">
                         {new Date(d.createdAt).toLocaleDateString(locale === "ar" ? "ar" : "en", {

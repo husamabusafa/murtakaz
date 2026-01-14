@@ -35,7 +35,7 @@ function formatNumber(value: number | null | undefined) {
 }
 
 export default function DashboardsPage() {
-  const { locale, t, tr, nodeTypeLabel, kpiValueStatusLabel, df, dir } = useLocale();
+  const { locale, t, nodeTypeLabel, kpiValueStatusLabel, df, dir } = useLocale();
   const { user, loading: sessionLoading } = useAuth();
   const isRtl = dir === "rtl";
 
@@ -77,7 +77,7 @@ export default function DashboardsPage() {
 
   const canManageResponsibilities = useMemo(() => {
     const role = data?.user.role;
-    return Boolean(role) && role !== "EMPLOYEE" && role !== "SUPER_ADMIN";
+    return Boolean(role) && role !== "SUPER_ADMIN";
   }, [data?.user.role]);
 
   const isAdmin = useMemo(() => data?.user.role === "ADMIN", [data?.user.role]);
@@ -124,7 +124,7 @@ export default function DashboardsPage() {
       { name: t("onTrack"), value: b.LT_110 ?? 0, color: "#60a5fa" },
       { name: t("exceeded"), value: b.GTE_110 ?? 0, color: "#34d399" },
     ].filter((x) => x.value > 0);
-  }, [data, tr]);
+  }, [data, t]);
 
   const completionAvgLabel = useMemo(() => {
     const v = data?.kpiCompletion?.avgPercent;
@@ -278,7 +278,7 @@ export default function DashboardsPage() {
                   <CardDescription>{t("kpiPipelineDesc")}</CardDescription>
                 </div>
                 <Button asChild variant="ghost" className="text-primary hover:text-primary">
-                  <Link href={`/${locale}/kpis`}>{t("openKpis")}</Link>
+                  <Link href={`/${locale}/dashboards/kpi-performance`}>{t("openKpis")}</Link>
                 </Button>
               </CardHeader>
               <CardContent>
@@ -477,7 +477,7 @@ export default function DashboardsPage() {
                   <CardDescription>{t("kpisYouCanAccessDesc")}</CardDescription>
                 </div>
                 <Button asChild variant="ghost" className="text-primary hover:text-primary">
-                  <Link href={`/${locale}/kpis`}>{t("viewAll")}</Link>
+                  <Link href={`/${locale}/dashboards/kpi-performance`}>{t("viewAll")}</Link>
                 </Button>
               </CardHeader>
               <CardContent>

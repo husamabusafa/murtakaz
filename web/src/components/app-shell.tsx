@@ -6,7 +6,7 @@ import { useEffect, useMemo, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { LanguageToggle } from "@/components/language-toggle";
 import { ThemeToggle } from "@/components/theme-toggle";
-import { getMyOrganizationNodeTypes } from "@/actions/navigation";
+import { getMyOrganizationEntityTypes } from "@/actions/navigation";
 import { useAuth } from "@/providers/auth-provider";
 import { type TranslationKey, useLocale } from "@/providers/locale-provider";
 import { Icon } from "@/components/icon";
@@ -14,28 +14,32 @@ import { cn } from "@/lib/utils";
 
 const marketingRouteSet = new Set(["/", "/pricing", "/faq", "/about", "/contact", "/careers", "/privacy", "/terms"]);
 
-const nodeTypeIconMap: Record<string, string> = {
-  strategy: "tabler:target-arrow",
+const entityTypeIconMap: Record<string, string> = {
   pillar: "tabler:columns-3",
   objective: "tabler:flag-3",
+  department: "tabler:building-bank",
   initiative: "tabler:rocket",
   project: "tabler:briefcase-2",
   task: "tabler:checklist",
+  kpi: "tabler:chart-line",
 };
 
-const nodeTypeLabelMap: Partial<Record<string, TranslationKey>> = {
-  strategy: "strategy",
+const entityTypeLabelMap: Partial<Record<string, TranslationKey>> = {
   pillar: "pillar",
   objective: "objective",
+  departments: "departments",
   initiative: "initiative",
   project: "project",
   task: "task",
+  kpis: "kpis",
 };
 
 const navItems = [
   { href: "/overview", key: "home", icon: "tabler:layout-dashboard" },
-  { href: "/kpis", key: "kpis", icon: "tabler:chart-line" },
+  { href: "/pillars", key: "pillar", icon: "tabler:layers-subtract" },
+  { href: "/objectives", key: "objective", icon: "tabler:flag-3" },
   { href: "/dashboards", key: "dashboards", icon: "tabler:layout-dashboard" },
+  { href: "/responsibilities", key: "responsibilities", icon: "tabler:user-check" },
   { href: "/approvals", key: "approvals", icon: "tabler:gavel" },
   { href: "/organization", key: "organization", icon: "tabler:building" },
   { href: "/users", key: "users", icon: "tabler:users" },
@@ -74,7 +78,7 @@ function getAppHomeHref(userRole: unknown) {
 
 function LogoMark({ text }: { text: string }) {
   return (
-    <div className="flex h-10 w-10 items-center justify-center rounded-2xl bg-gradient-to-br from-indigo-500 via-emerald-400 to-sky-500 shadow-sm shadow-none">
+    <div className="flex h-10 w-10 items-center justify-center rounded-2xl bg-gradient-to-br from-indigo-500 via-emerald-400 to-sky-500 shadow-sm">
       <span className="text-lg font-semibold">{text}</span>
     </div>
   );
@@ -171,7 +175,7 @@ function useDelayedVisibility(isOpen: boolean, delayMs = 160) {
 export function AppShell({ children }: { children: React.ReactNode }) {
   const router = useRouter();
   const pathname = usePathname();
-  const { t, locale, isArabic } = useLocale();
+  const { t, locale } = useLocale();
   const { user, loading } = useAuth();
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const userRole = (user as any)?.role;
@@ -191,9 +195,14 @@ export function AppShell({ children }: { children: React.ReactNode }) {
   const isMarketingRoute = marketingRouteSet.has(canonicalPath);
   const showAppNav = !isAuthRoute && !isMarketingRoute && !loading && Boolean(user);
 
+  const [mounted, setMounted] = useState(false);
   const [sidebarPinned, setSidebarPinned] = useState(false);
   const [sidebarHovered, setSidebarHovered] = useState(false);
   const [mobileNavOpen, setMobileNavOpen] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
   useEffect(() => {
     if (loading) return;
@@ -226,11 +235,10 @@ export function AppShell({ children }: { children: React.ReactNode }) {
   const mobileContentVisible = useDelayedVisibility(mobileNavOpen, 120);
 
   const activeKey = useMemo(() => {
-    if (canonicalPath.startsWith("/nodes/")) {
+    if (canonicalPath.startsWith("/entities/")) {
       const slug = canonicalPath.split("/").filter(Boolean)[1];
-      return slug ? `nodes-${slug}` : "nodes";
+      return slug ? `entities-${slug}` : "entities";
     }
-    if (canonicalPath.startsWith("/departments")) return "departments";
     const matches = navItems.filter((item) => {
       if (item.href === "/overview") return canonicalPath === "/overview";
       return canonicalPath.startsWith(item.href);
@@ -240,7 +248,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
     return matches[0]?.key;
   }, [canonicalPath]);
 
-  const [orgNodeTypes, setOrgNodeTypes] = useState<Array<{ code: string; displayName: string }>>([]);
+  const [orgEntityTypes, setOrgEntityTypes] = useState<Array<{ code: string; name: string; nameAr: string | null; sortOrder: number }>>([]);
 
   useEffect(() => {
     if (!showAppNav) return;
@@ -249,41 +257,52 @@ export function AppShell({ children }: { children: React.ReactNode }) {
 
     void (async () => {
       try {
-        const types = await getMyOrganizationNodeTypes();
-        setOrgNodeTypes(types.map((n) => ({ code: String(n.code), displayName: n.displayName })));
+        const types = await getMyOrganizationEntityTypes();
+        setOrgEntityTypes(
+          (types as Array<{ code: string; name: string; nameAr: string | null; sortOrder: number }>).map((t) => ({
+            code: String(t.code),
+            name: String(t.name),
+            nameAr: t.nameAr ? String(t.nameAr) : null,
+            sortOrder: Number(t.sortOrder ?? 0),
+          })),
+        );
       } catch {
-        setOrgNodeTypes([]);
+        setOrgEntityTypes([]);
       }
     })();
   }, [showAppNav, user, userRole]);
 
   const regularNavItems = useMemo<NavItem[]>(() => {
-    const nodeTypeItems: DynamicNavItem[] = orgNodeTypes.map((nt) => ({
-      href: `/nodes/${nt.code.toLowerCase()}`,
-      key: `nodes-${nt.code.toLowerCase()}`,
-      icon: nodeTypeIconMap[nt.code.toLowerCase()] ?? "tabler:layers-subtract",
-      label: nodeTypeLabelMap[nt.code.toLowerCase()] ? t(nodeTypeLabelMap[nt.code.toLowerCase()]!) : nt.displayName,
-    }));
+    const baseItems = navItems
+      .filter((item) => !item.href.startsWith("/super-admin"))
+      .filter((item) => !["/pillars", "/objectives", "/departments"].includes(item.href));
 
-    const base: NavItem[] = [
-      { href: "/overview", key: "home", icon: "tabler:layout-dashboard" },
-      ...nodeTypeItems,
-      { href: "/kpis", key: "kpis", icon: "tabler:chart-line" },
-      ...(userRole && userRole !== "EMPLOYEE" ? ([{ href: "/responsibilities", key: "responsibilities", icon: "tabler:user-check" }] as NavItem[]) : []),
-      { href: "/dashboards", key: "dashboards", icon: "tabler:layout-dashboard" },
-      { href: "/approvals", key: "approvals", icon: "tabler:gavel" },
-      { href: "/organization", key: "organization", icon: "tabler:building" },
-    ];
+    const entityTypeItems: DynamicNavItem[] = orgEntityTypes
+      .slice()
+      .sort((a, b) => (a.sortOrder ?? 0) - (b.sortOrder ?? 0))
+      .map((et) => {
+        const code = String(et.code).trim();
+        const hrefSlug = code;
+        const keySlug = code;
 
-    if (userRole === "ADMIN") {
-      base.push(
-        { href: "/users", key: "users", icon: "tabler:users" },
-        { href: "/departments", key: "departments", icon: "tabler:building-bank" },
-      );
-    }
+        const lower = code.toLowerCase();
+        const icon = entityTypeIconMap[lower] ?? "tabler:layers-subtract";
 
-    return base;
-  }, [orgNodeTypes, t, userRole]);
+        const labelFromDb = locale === "ar" ? et.nameAr ?? et.name : et.name;
+        const labelKey = entityTypeLabelMap[lower];
+
+        return {
+          href: `/entities/${hrefSlug}`,
+          key: `entities-${keySlug}`,
+          icon,
+          label: labelKey ? t(labelKey) : labelFromDb,
+        };
+      });
+
+    const overview = baseItems.find((item) => item.href === "/overview");
+    const rest = baseItems.filter((item) => item.href !== "/overview");
+    return overview ? [overview, ...entityTypeItems, ...rest] : [...entityTypeItems, ...baseItems];
+  }, [locale, orgEntityTypes, t]);
 
   const visibleNavItems = useMemo(() => {
     if (userRole === "SUPER_ADMIN") {
@@ -298,7 +317,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
       <div className="absolute inset-0 pointer-events-none dark:bg-[radial-gradient(circle_at_top,_rgba(99,102,241,0.14),transparent_35%),radial-gradient(circle_at_20%_40%,_rgba(16,185,129,0.12),transparent_25%)]" />
 
       <div className={cn("relative flex min-h-screen")}>
-        {showAppNav ? (
+        {mounted && showAppNav ? (
           <div className={cn("fixed inset-0 z-[60] lg:hidden", mobileNavOpen ? "pointer-events-auto" : "pointer-events-none")}>
             <div
               className={cn(

@@ -44,7 +44,7 @@ export default function PricingPage() {
                   {t("exportsAndReporting")}
                 </li>
               </ul>
-              <Button asChild className="w-full variant="secondary"">
+              <Button asChild variant="secondary" className="w-full">
                 <Link href={`/${locale}/auth/login?next=/${locale}/dashboards/executive`}>
                   <span className="inline-flex items-center gap-2">
                     <Icon name="tabler:message-circle" className="h-4 w-4" />

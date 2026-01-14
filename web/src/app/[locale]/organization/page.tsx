@@ -55,7 +55,7 @@ export default function OrganizationPage() {
   const [visionArDraft, setVisionArDraft] = useState("");
   const [aboutDraft, setAboutDraft] = useState("");
   const [aboutArDraft, setAboutArDraft] = useState("");
-  const [kpiApprovalDraft, setKpiApprovalDraft] = useState<"MANAGER" | "PMO" | "EXECUTIVE" | "ADMIN">("MANAGER");
+  const [kpiApprovalDraft, setKpiApprovalDraft] = useState<"MANAGER" | "EXECUTIVE" | "ADMIN">("MANAGER");
   const [selectedNodeTypeIds, setSelectedNodeTypeIds] = useState<string[]>([]);
 
   async function reload() {

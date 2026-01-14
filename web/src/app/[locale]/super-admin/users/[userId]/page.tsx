@@ -15,7 +15,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { useLocale } from "@/providers/locale-provider";
 import { deleteUser, getOrganizations, getUserDetails, updateUser } from "@/actions/admin";
 import { Pencil, Trash2 } from "lucide-react";
-import type { Organization, Role } from "@prisma/client";
+import type { Organization, Role } from "@/generated/prisma-client";
 
 type UserDetails = Awaited<ReturnType<typeof getUserDetails>>;
 
@@ -35,7 +35,7 @@ export default function UserDetailPage() {
   const [draft, setDraft] = useState({
     name: "",
     email: "",
-    role: "EMPLOYEE" as Role,
+    role: "MANAGER" as Role,
     orgId: "",
   });
 
@@ -61,7 +61,7 @@ export default function UserDetailPage() {
           setDraft({
             name: data?.name ?? "",
             email: data?.email ?? "",
-            role: (data?.role ?? "EMPLOYEE") as Role,
+            role: (data?.role ?? "MANAGER") as Role,
             orgId: data?.org?.id ?? "",
           });
         }
@@ -173,7 +173,7 @@ export default function UserDetailPage() {
                 setDraft({
                   name: userDetails.name ?? "",
                   email: userDetails.email ?? "",
-                  role: (userDetails.role ?? "EMPLOYEE") as Role,
+                  role: (userDetails.role ?? "MANAGER") as Role,
                   orgId: userDetails.org?.id ?? "",
                 });
                 setEditOpen(true);
@@ -229,7 +229,7 @@ export default function UserDetailPage() {
                     setDraft({
                       name: userDetails.name ?? "",
                       email: userDetails.email ?? "",
-                      role: (userDetails.role ?? "EMPLOYEE") as Role,
+                      role: (userDetails.role ?? "MANAGER") as Role,
                       orgId: userDetails.org?.id ?? "",
                     });
                     setEditOpen(true);
@@ -312,7 +312,7 @@ export default function UserDetailPage() {
                   <SelectValue placeholder={t("selectRole")} />
                 </SelectTrigger>
                 <SelectContent>
-                  {(["ADMIN", "EXECUTIVE", "PMO", "MANAGER", "EMPLOYEE"] as Role[]).map((role) => (
+                  {(["ADMIN", "EXECUTIVE", "MANAGER"] as Role[]).map((role) => (
                     <SelectItem key={role} value={role}>
                       {role}
                     </SelectItem>
@@ -346,7 +346,7 @@ export default function UserDetailPage() {
                 setDraft({
                   name: userDetails?.name ?? "",
                   email: userDetails?.email ?? "",
-                  role: (userDetails?.role ?? "EMPLOYEE") as Role,
+                  role: (userDetails?.role ?? "MANAGER") as Role,
                   orgId: userDetails?.org?.id ?? "",
                 });
                 setEditOpen(false);

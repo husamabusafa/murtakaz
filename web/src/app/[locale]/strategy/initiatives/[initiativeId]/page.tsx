@@ -326,7 +326,7 @@ function InitiativeUpdateEditor({ onSubmit }: { onSubmit: (message: string) => v
         className="border-border bg-muted/20 text-foreground placeholder:text-muted-foreground"
       />
       <Button
-        className="variant="secondary""
+        variant="secondary"
         disabled={message.trim().length === 0}
         onClick={() => {
           onSubmit(message.trim());

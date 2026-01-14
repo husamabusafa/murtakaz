@@ -8,14 +8,6 @@ export const dashboards = [
     icon: "tabler:crown",
   },
   {
-    slug: "pmo",
-    title: "PMO",
-    titleAr: "PMO",
-    description: "Governance compliance, coverage, dependencies, and approvals queue.",
-    descriptionAr: "الامتثال للحوكمة والتغطية والاعتمادات وقائمة الموافقات.",
-    icon: "tabler:briefcase",
-  },
-  {
     slug: "pillar",
     title: "Pillar",
     titleAr: "ركيزة",
@@ -54,14 +46,6 @@ export const dashboards = [
     description: "Owned initiatives/projects, at-risk KPIs, and pending actions.",
     descriptionAr: "المبادرات/المشاريع المملوكة، مؤشرات معرضة للمخاطر، وإجراءات معلّقة.",
     icon: "tabler:users-group",
-  },
-  {
-    slug: "employee-contribution",
-    title: "Employee Contribution",
-    titleAr: "مساهمة الموظف",
-    description: "Assigned work, contribution velocity, and strategy alignment.",
-    descriptionAr: "الأعمال المسندة وسرعة المساهمة ومواءمة الاستراتيجية.",
-    icon: "tabler:user-check",
   },
   {
     slug: "risk-escalation",

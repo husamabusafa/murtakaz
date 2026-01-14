@@ -10,6 +10,6 @@
     "better-auth": "^1.4.10"
   },
   "prisma": {
-    "seed": "npx ts-node --compiler-options {\"module\":\"CommonJS\",\"skipLibCheck\":true} prisma/seed.ts"
+    "seed": "npx ts-node --compiler-options {\"module\":\"CommonJS\",\"skipLibCheck\":true} prisma/seed-entity.ts"
   }
 }

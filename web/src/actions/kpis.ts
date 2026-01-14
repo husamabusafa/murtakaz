@@ -11,11 +11,11 @@ import {
   KpiValueStatus,
   KpiVariableDataType,
   Role,
-} from "@prisma/client";
+} from "@/generated/prisma-client";
 import { getMyEffectiveKpiIds } from "@/actions/responsibilities";
 import { ActionValidationIssue } from "@/types/actions";
 
-type KpiApprovalLevelCode = "MANAGER" | "PMO" | "EXECUTIVE" | "ADMIN";
+type KpiApprovalLevelCode = "MANAGER" | "EXECUTIVE" | "ADMIN";
 
 const prismaKpiDefinition = (prisma as unknown as { kpiDefinition: unknown }).kpiDefinition as {
   findMany: <T>(args: unknown) => Promise<T[]>;
@@ -78,12 +78,10 @@ async function requireOrgAdmin() {
 }
 
 const ROLE_RANK: Record<string, number> = {
-  EMPLOYEE: 0,
   MANAGER: 1,
-  PMO: 2,
-  EXECUTIVE: 3,
-  ADMIN: 4,
-  SUPER_ADMIN: 5,
+  EXECUTIVE: 2,
+  ADMIN: 3,
+  SUPER_ADMIN: 4,
 };
 
 function resolveRoleRank(role: unknown) {

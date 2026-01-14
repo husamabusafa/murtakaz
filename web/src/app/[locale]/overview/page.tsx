@@ -46,8 +46,16 @@ function formatPercent(value: number | null | undefined) {
 }
 
 export default function OverviewPage() {
-  const { t, locale, tr, nodeTypeLabel, kpiValueStatusLabel, df } = useLocale();
+  const { t, locale, nodeTypeLabel, kpiValueStatusLabel, df } = useLocale();
   const { user, loading: sessionLoading } = useAuth();
+
+  type EnabledNodeTypeRow = {
+    id: string;
+    code: string;
+    displayName: string;
+    nameAr: string | null;
+    levelOrder: number;
+  };
 
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -429,7 +437,7 @@ export default function OverviewPage() {
               </CardHeader>
               <CardContent className="space-y-4">
                 <div className="grid gap-3 sm:grid-cols-2">
-                  {data.enabledNodeTypes.map((nt: any) => {
+                  {(data.enabledNodeTypes as unknown as EnabledNodeTypeRow[]).map((nt) => {
                     const codeLower = String(nt.code).toLowerCase();
                     return (
                       <Link
@@ -453,7 +461,7 @@ export default function OverviewPage() {
 
                 <div className="grid gap-3 sm:grid-cols-2">
                   <Button asChild variant="secondary" className="w-full">
-                    <Link href={`/${locale}/kpis`}>{t("kpis")}</Link>
+                    <Link href={`/${locale}/dashboards/kpi-performance`}>{t("kpis")}</Link>
                   </Button>
                   <Button asChild variant="secondary" className="w-full">
                     <Link href={`/${locale}/dashboards`}>{t("dashboards")}</Link>
@@ -487,7 +495,7 @@ export default function OverviewPage() {
                   <CardDescription>{t("kpisYouCanAccessDesc")}</CardDescription>
                 </div>
                 <Button asChild variant="ghost" className="text-primary hover:text-primary">
-                  <Link href={`/${locale}/kpis`}>{t("viewAll")}</Link>
+                  <Link href={`/${locale}/dashboards/kpi-performance`}>{t("viewAll")}</Link>
                 </Button>
               </CardHeader>
               <CardContent>

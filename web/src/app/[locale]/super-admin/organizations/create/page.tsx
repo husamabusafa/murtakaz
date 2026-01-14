@@ -1,9 +1,9 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useMemo, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { Plus, Trash2 } from "lucide-react";
+import { ArrowDown, ArrowUp, Plus, Trash2 } from "lucide-react";
 import { PageHeader } from "@/components/page-header";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -16,24 +16,34 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { useLocale } from "@/providers/locale-provider";
 import { cn } from "@/lib/utils";
 import { ActionValidationIssue } from "@/types/actions";
-import { createOrganizationWithUsers, getNodeTypes } from "@/actions/admin";
-
-type NodeTypeRow = Awaited<ReturnType<typeof getNodeTypes>>[number];
+import { createOrganizationWithUsers } from "@/actions/admin";
 
 type PendingUser = {
   name: string;
   email: string;
   password: string;
-  role: "ADMIN" | "EXECUTIVE" | "PMO" | "MANAGER" | "EMPLOYEE";
+  role: "ADMIN" | "EXECUTIVE" | "MANAGER";
 };
 
+type PendingEntityType = {
+  code: string;
+  name: string;
+  nameAr: string;
+};
+
+const defaultEntityTypes: PendingEntityType[] = [
+  { code: "pillar", name: "Pillars", nameAr: "الركائز" },
+  { code: "objective", name: "Objectives", nameAr: "الأهداف" },
+  { code: "department", name: "Departments", nameAr: "الإدارات" },
+  { code: "initiative", name: "Initiatives", nameAr: "المبادرات" },
+  { code: "kpi", name: "KPIs", nameAr: "مؤشرات الأداء" },
+];
+
 export default function CreateOrganizationPage() {
-  const { t, locale, isArabic, te } = useLocale();
+  const { t, locale, isArabic, te, tr } = useLocale();
   const router = useRouter();
 
   const [submitting, setSubmitting] = useState(false);
-  const [nodeTypes, setNodeTypes] = useState<NodeTypeRow[]>([]);
-  const [loadingNodeTypes, setLoadingNodeTypes] = useState(true);
 
   const [orgName, setOrgName] = useState("");
   const [orgNameAr, setOrgNameAr] = useState("");
@@ -45,8 +55,8 @@ export default function CreateOrganizationPage() {
   const [visionAr, setVisionAr] = useState("");
   const [about, setAbout] = useState("");
   const [aboutAr, setAboutAr] = useState("");
-  const [kpiApprovalLevel, setKpiApprovalLevel] = useState<"MANAGER" | "PMO" | "EXECUTIVE" | "ADMIN">("MANAGER");
-  const [selectedNodeTypeIds, setSelectedNodeTypeIds] = useState<string[]>([]);
+  const [kpiApprovalLevel, setKpiApprovalLevel] = useState<"MANAGER" | "EXECUTIVE" | "ADMIN">("MANAGER");
+  const [entityTypes, setEntityTypes] = useState<PendingEntityType[]>(defaultEntityTypes);
 
   const [users, setUsers] = useState<PendingUser[]>([
     { name: "", email: "", password: "", role: "ADMIN" },
@@ -58,9 +68,7 @@ export default function CreateOrganizationPage() {
   const roleOptions = useMemo(() => [
     { value: "ADMIN" as const, label: t("roleAdmin") },
     { value: "EXECUTIVE" as const, label: t("roleExecutive") },
-    { value: "PMO" as const, label: t("rolePMO") },
     { value: "MANAGER" as const, label: t("roleManager") },
-    { value: "EMPLOYEE" as const, label: t("roleEmployee") },
   ], [t]);
 
   function getFieldIssues(pathPrefix: Array<string | number>) {
@@ -79,36 +87,32 @@ export default function CreateOrganizationPage() {
     return te(issue.message, issue.params ? [issue] : undefined);
   }
 
-  useEffect(() => {
-    let mounted = true;
-    async function load() {
-      setLoadingNodeTypes(true);
-      try {
-        const rows = await getNodeTypes();
-        if (!mounted) return;
-        setNodeTypes(rows);
-        const defaultCodes = new Set(["STRATEGY", "INITIATIVE", "PROJECT"]);
-        setSelectedNodeTypeIds(rows.filter((r) => defaultCodes.has(r.code)).map((r) => r.id));
-      } catch (e) {
-        console.error(e);
-        if (mounted) setNodeTypes([]);
-      } finally {
-        if (mounted) setLoadingNodeTypes(false);
-      }
-    }
-
-    void load();
-    return () => {
-      mounted = false;
-    };
-  }, []);
-
   const hasAdminUser = useMemo(() => users.some((u) => u.role === "ADMIN"), [users]);
 
-  const selectedNodeTypeCount = selectedNodeTypeIds.length;
+  const entityTypeCount = entityTypes.length;
 
-  function toggleNodeType(id: string) {
-    setSelectedNodeTypeIds((prev) => (prev.includes(id) ? prev.filter((x) => x !== id) : [...prev, id]));
+  function updateEntityType(index: number, patch: Partial<PendingEntityType>) {
+    setEntityTypes((prev) => prev.map((et, i) => (i === index ? { ...et, ...patch } : et)));
+  }
+
+  function addEntityType() {
+    setEntityTypes((prev) => [...prev, { code: "", name: "", nameAr: "" }]);
+  }
+
+  function removeEntityType(index: number) {
+    setEntityTypes((prev) => prev.filter((_, i) => i !== index));
+  }
+
+  function moveEntityType(index: number, direction: "up" | "down") {
+    setEntityTypes((prev) => {
+      const next = prev.slice();
+      const target = direction === "up" ? index - 1 : index + 1;
+      if (target < 0 || target >= next.length) return prev;
+      const temp = next[index];
+      next[index] = next[target];
+      next[target] = temp;
+      return next;
+    });
   }
 
   function updateUser(index: number, patch: Partial<PendingUser>) {
@@ -116,7 +120,7 @@ export default function CreateOrganizationPage() {
   }
 
   function addUser() {
-    setUsers((prev) => [...prev, { name: "", email: "", password: "", role: "EMPLOYEE" }]);
+    setUsers((prev) => [...prev, { name: "", email: "", password: "", role: "MANAGER" }]);
   }
 
   function removeUser(index: number) {
@@ -134,8 +138,19 @@ export default function CreateOrganizationPage() {
       localIssues.push({ path: ["name"], message: "organizationNameRequired" });
     }
 
-    if (selectedNodeTypeIds.length === 0) {
-      localIssues.push({ path: ["nodeTypeIds"], message: "selectAtLeastOneNodeType" });
+    if (entityTypes.length === 0) {
+      localIssues.push({ path: ["entityTypes"], message: "atLeastOneInputDesc" });
+    } else {
+      const normalizedCodes = entityTypes.map((et) => et.code.trim().toLowerCase()).filter(Boolean);
+      const uniqueCodes = new Set(normalizedCodes);
+      if (uniqueCodes.size !== normalizedCodes.length) {
+        localIssues.push({ path: ["entityTypes"], message: "validationFailed" });
+      }
+
+      entityTypes.forEach((et, idx) => {
+        if (!et.code.trim()) localIssues.push({ path: ["entityTypes", idx, "code"], message: "valueIsRequired" });
+        if (!et.name.trim()) localIssues.push({ path: ["entityTypes", idx, "name"], message: "valueIsRequired" });
+      });
     }
 
     if (!hasAdminUser) {
@@ -147,6 +162,12 @@ export default function CreateOrganizationPage() {
       email: u.email.trim().toLowerCase(),
       password: u.password,
       role: u.role,
+    }));
+
+    const normalizedEntityTypes = entityTypes.map((et) => ({
+      code: et.code.trim().toLowerCase(),
+      name: et.name.trim(),
+      nameAr: et.nameAr.trim() || undefined,
     }));
 
     normalizedUsers.forEach((u, idx) => {
@@ -175,7 +196,7 @@ export default function CreateOrganizationPage() {
         about: about || undefined,
         aboutAr: aboutAr || undefined,
         kpiApprovalLevel,
-        nodeTypeIds: selectedNodeTypeIds,
+        entityTypes: normalizedEntityTypes,
         users: normalizedUsers,
       });
 
@@ -344,7 +365,6 @@ export default function CreateOrganizationPage() {
                   </SelectTrigger>
                   <SelectContent>
                     <SelectItem value="MANAGER">{t("roleManager")}</SelectItem>
-                    <SelectItem value="PMO">{t("rolePMO")}</SelectItem>
                     <SelectItem value="EXECUTIVE">{t("roleExecutive")}</SelectItem>
                     <SelectItem value="ADMIN">{t("roleAdmin")}</SelectItem>
                   </SelectContent>
@@ -357,55 +377,124 @@ export default function CreateOrganizationPage() {
               <div className="rounded-2xl border border-border bg-muted/30 p-4">
                 <div className={cn("flex items-start justify-between gap-4", isArabic && "flex-row-reverse")}> 
                   <div className={cn("space-y-1", isArabic && "text-right")}>
-                    <p className="text-sm font-semibold">{t("nodeTypes")}</p>
+                    <p className="text-sm font-semibold">{tr("Entities", "الكيانات")}</p>
                     <p className="text-sm text-muted-foreground">
-                      {t("pickOrgNodeTypesDesc")}
+                      {tr(
+                        "Define the entity types this organization can use. You can reorder them; the order will be used in the sidebar.",
+                        "حدّد أنواع الكيانات المتاحة لهذه الجهة. يمكنك إعادة ترتيبها؛ وسيُستخدم الترتيب في الشريط الجانبي.",
+                      )}
                     </p>
                   </div>
-                  <Badge variant={selectedNodeTypeCount === 0 ? "destructive" : "secondary"}>
-                    {t("selected")}: {selectedNodeTypeCount}
+                  <Badge variant={entityTypeCount === 0 ? "destructive" : "secondary"}>
+                    {t("selected")}: {entityTypeCount}
                   </Badge>
                 </div>
 
-                {getFirstFieldMessage(["nodeTypeIds"]) ? (
-                  <p className={cn("mt-3 text-xs text-destructive", isArabic && "text-right")}>{getFirstFieldMessage(["nodeTypeIds"])}</p>
+                {getFirstFieldMessage(["entityTypes"]) ? (
+                  <p className={cn("mt-3 text-xs text-destructive", isArabic && "text-right")}>{getFirstFieldMessage(["entityTypes"])}</p>
                 ) : null}
 
                 <div className="mt-4">
-                  {loadingNodeTypes ? (
-                    <div className="text-sm text-muted-foreground">{t("loadingEllipsis")}</div>
-                  ) : nodeTypes.length === 0 ? (
-                    <div className="text-sm text-muted-foreground">
-                      {t("noNodeTypesFoundDesc")}
-                    </div>
-                  ) : (
-                    <div className={cn("grid gap-2 sm:grid-cols-2", isArabic && "text-right")}>
-                      {nodeTypes.map((nt) => {
-                        const active = selectedNodeTypeIds.includes(nt.id);
-                        return (
-                          <button
-                            key={nt.id}
-                            type="button"
-                            onClick={() => toggleNodeType(nt.id)}
-                            className={cn(
-                              "flex items-center justify-between gap-3 rounded-xl border px-3 py-2 text-left transition",
-                              "border-border bg-background hover:bg-muted/50",
-                              active && "border-primary/30 bg-primary/10",
-                              isArabic && "text-right",
-                            )}
-                          >
-                            <div className="min-w-0">
-                              <p className="truncate text-sm font-semibold">{nt.displayName}</p>
-                              <p className="truncate text-xs text-muted-foreground">
-                                {t("level")}: {nt.levelOrder} · {nt.code}
-                              </p>
-                            </div>
-                            <Badge variant={active ? "default" : "outline"}>{active ? t("enabled") : t("disabled")}</Badge>
-                          </button>
-                        );
-                      })}
-                    </div>
-                  )}
+                  <div className="overflow-hidden rounded-xl border border-border bg-background">
+                    <Table>
+                      <TableHeader>
+                        <TableRow>
+                          <TableHead>#</TableHead>
+                          <TableHead>{t("code")}</TableHead>
+                          <TableHead>{t("name")}</TableHead>
+                          <TableHead>{t("nameAr")}</TableHead>
+                          <TableHead className="text-right">{t("actions")}</TableHead>
+                        </TableRow>
+                      </TableHeader>
+                      <TableBody>
+                        {entityTypes.map((et, idx) => (
+                          <TableRow key={`${et.code}-${idx}`} className="hover:bg-muted/50">
+                            <TableCell className="align-top text-muted-foreground">{idx + 1}</TableCell>
+                            <TableCell className="align-top">
+                              <div className="space-y-1">
+                                <Input
+                                  value={et.code}
+                                  onChange={(e) => updateEntityType(idx, { code: e.target.value })}
+                                  onBlur={() => updateEntityType(idx, { code: et.code.trim().toLowerCase() })}
+                                  className={cn(
+                                    "bg-background",
+                                    getFieldIssues(["entityTypes", idx, "code"]).length && "border-destructive focus-visible:ring-destructive",
+                                  )}
+                                />
+                                {getFirstFieldMessage(["entityTypes", idx, "code"]) ? (
+                                  <p className="text-xs text-destructive">{getFirstFieldMessage(["entityTypes", idx, "code"])}</p>
+                                ) : null}
+                              </div>
+                            </TableCell>
+                            <TableCell className="align-top">
+                              <div className="space-y-1">
+                                <Input
+                                  value={et.name}
+                                  onChange={(e) => updateEntityType(idx, { name: e.target.value })}
+                                  className={cn(
+                                    "bg-background",
+                                    getFieldIssues(["entityTypes", idx, "name"]).length && "border-destructive focus-visible:ring-destructive",
+                                  )}
+                                />
+                                {getFirstFieldMessage(["entityTypes", idx, "name"]) ? (
+                                  <p className="text-xs text-destructive">{getFirstFieldMessage(["entityTypes", idx, "name"])}</p>
+                                ) : null}
+                              </div>
+                            </TableCell>
+                            <TableCell className="align-top">
+                              <Input
+                                value={et.nameAr}
+                                onChange={(e) => updateEntityType(idx, { nameAr: e.target.value })}
+                                className="bg-background"
+                                dir="rtl"
+                              />
+                            </TableCell>
+                            <TableCell className="text-right align-top">
+                              <div className={cn("flex justify-end gap-1", isArabic && "flex-row-reverse")}> 
+                                <Button
+                                  type="button"
+                                  size="icon"
+                                  variant="ghost"
+                                  onClick={() => moveEntityType(idx, "up")}
+                                  disabled={idx === 0}
+                                  aria-label="Move up"
+                                >
+                                  <ArrowUp className="h-4 w-4" />
+                                </Button>
+                                <Button
+                                  type="button"
+                                  size="icon"
+                                  variant="ghost"
+                                  onClick={() => moveEntityType(idx, "down")}
+                                  disabled={idx === entityTypes.length - 1}
+                                  aria-label="Move down"
+                                >
+                                  <ArrowDown className="h-4 w-4" />
+                                </Button>
+                                <Button
+                                  type="button"
+                                  size="icon"
+                                  variant="ghost"
+                                  onClick={() => removeEntityType(idx)}
+                                  disabled={entityTypes.length <= 1}
+                                  aria-label={t("remove")}
+                                >
+                                  <Trash2 className="h-4 w-4" />
+                                </Button>
+                              </div>
+                            </TableCell>
+                          </TableRow>
+                        ))}
+                      </TableBody>
+                    </Table>
+                  </div>
+
+                  <div className={cn("mt-3 flex items-center justify-end", isArabic && "flex-row-reverse")}>
+                    <Button type="button" variant="outline" size="sm" onClick={addEntityType} className={cn(isArabic && "flex-row-reverse")}> 
+                      <Plus className={cn("h-4 w-4", isArabic ? "ms-2" : "me-2")} />
+                      {t("add")}
+                    </Button>
+                  </div>
                 </div>
               </div>
             </CardContent>
@@ -424,8 +513,8 @@ export default function CreateOrganizationPage() {
                 <Badge variant={hasAdminUser ? "secondary" : "destructive"}>{hasAdminUser ? t("ok") : t("required")}</Badge>
               </div>
               <div className="flex items-center justify-between gap-2 rounded-xl border border-border bg-muted/30 px-4 py-3">
-                <span className="text-muted-foreground">{t("atLeast1NodeTypeSelected")}</span>
-                <Badge variant={selectedNodeTypeCount > 0 ? "secondary" : "destructive"}>{selectedNodeTypeCount > 0 ? t("ok") : t("required")}</Badge>
+                <span className="text-muted-foreground">{tr("At least 1 entity type", "نوع كيان واحد على الأقل")}</span>
+                <Badge variant={entityTypeCount > 0 ? "secondary" : "destructive"}>{entityTypeCount > 0 ? t("ok") : t("required")}</Badge>
               </div>
             </CardContent>
           </Card>

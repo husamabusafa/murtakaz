@@ -14,9 +14,9 @@ import { useLocale } from "@/providers/locale-provider";
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Plus } from "lucide-react";
 import { getUsers, createUser, getOrganizations } from "@/actions/admin";
-import type { User, Organization, Role } from "@prisma/client";
+import type { User, Organization, Role } from "@/generated/prisma-client";
 
-const roles: Role[] = ["SUPER_ADMIN", "ADMIN", "EXECUTIVE", "PMO", "MANAGER", "EMPLOYEE"] as Role[];
+const roles: Role[] = ["SUPER_ADMIN", "ADMIN", "EXECUTIVE", "MANAGER"] as Role[];
 
 export default function UsersManagementPage() {
   const { t, locale } = useLocale();
@@ -32,7 +32,7 @@ export default function UsersManagementPage() {
     name: "",
     email: "",
     password: "",
-    role: "EMPLOYEE" as Role,
+    role: "MANAGER" as Role,
     orgId: "",
   });
 
@@ -72,7 +72,7 @@ export default function UsersManagementPage() {
           name: "",
           email: "",
           password: "",
-          role: "EMPLOYEE",
+          role: "MANAGER",
           orgId: orgs[0]?.id || "",
         });
         loadData();

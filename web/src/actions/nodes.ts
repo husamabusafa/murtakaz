@@ -5,7 +5,7 @@ import { z } from "zod";
 import { prisma } from "@/lib/prisma";
 import { auth } from "@/lib/auth";
 import { getMyEffectiveKpiIds } from "@/actions/responsibilities";
-import type { Role, Status } from "@prisma/client";
+import type { Role, Status } from "@/generated/prisma-client";
 
 const prismaNode = (prisma as unknown as { node: unknown }).node as {
   findMany: <T>(args: unknown) => Promise<T[]>;

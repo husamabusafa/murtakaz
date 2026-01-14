@@ -4,38 +4,70 @@ import { prisma } from "@/lib/prisma";
 import { auth } from "@/lib/auth";
 import { headers } from "next/headers";
 import { z } from "zod";
-import { KpiApprovalLevel, Role } from "@prisma/client";
+import { Role } from "@/generated/prisma-client";
 import { ActionValidationIssue } from "@/types/actions";
 
-type NodeTypeRow = {
+type OrgEntityTypeRow = {
   id: string;
   code: string;
-  displayName: string;
-  levelOrder: number;
-  canHaveKpis: boolean;
+  name: string;
+  nameAr: string | null;
+  sortOrder: number;
 };
 
-const prismaOrganization = (prisma as any).organization;
+type OrganizationRow = {
+  id: string;
+  name: string;
+  nameAr: string | null;
+  domain: string | null;
+  logoUrl: string | null;
+  mission: string | null;
+  missionAr: string | null;
+  vision: string | null;
+  visionAr: string | null;
+  about: string | null;
+  aboutAr: string | null;
+  contacts: unknown;
+  kpiApprovalLevel: unknown;
+  createdAt: Date;
+  updatedAt: Date;
+  deletedAt: Date | null;
+  _count?: { users: number };
+};
 
-type PrismaWithNodeTypes = typeof prisma & {
-  nodeType: {
+const prismaOrganization = (prisma as unknown as {
+  organization: {
+    create: (args: unknown) => Promise<unknown>;
+    update: (args: unknown) => Promise<unknown>;
+    delete: (args: unknown) => Promise<unknown>;
+    findMany: (args: unknown) => Promise<unknown[]>;
+    findFirst: (args: unknown) => Promise<unknown>;
+    count: (args: unknown) => Promise<number>;
+  };
+}).organization;
+
+const prismaOrgEntityType = (prisma as unknown as {
+  orgEntityType?: {
+    createMany: (args: { data: Array<{ orgId: string; code: string; name: string; nameAr: string | null; sortOrder: number }>; skipDuplicates?: boolean }) => Promise<unknown>;
     findMany: (args: {
+      where: { orgId: string };
       orderBy: Array<Record<string, "asc" | "desc">>;
-      select: Record<keyof NodeTypeRow, true>;
-    }) => Promise<NodeTypeRow[]>;
+      select: Record<keyof OrgEntityTypeRow, true>;
+    }) => Promise<OrgEntityTypeRow[]>;
+    deleteMany: (args: { where: { orgId: string; id?: { notIn?: string[] } } }) => Promise<unknown>;
+    update: (args: {
+      where: { id: string };
+      data: Partial<{ code: string; name: string; nameAr: string | null; sortOrder: number }>;
+      select: { id: true };
+    }) => Promise<{ id: string }>;
+    create: (args: {
+      data: { orgId: string; code: string; name: string; nameAr: string | null; sortOrder: number };
+      select: { id: true };
+    }) => Promise<{ id: string }>;
   };
-  organizationNodeType: {
-    createMany: (args: {
-      data: Array<{ orgId: string; nodeTypeId: string }>;
-      skipDuplicates?: boolean;
-    }) => Promise<unknown>;
-    deleteMany: (args: { where: { orgId: string } }) => Promise<unknown>;
-  };
-};
+}).orgEntityType;
 
-const prismaWithNodeTypes = prisma as unknown as PrismaWithNodeTypes;
-
-const kpiApprovalLevelSchema = z.enum(["MANAGER", "PMO", "EXECUTIVE", "ADMIN"]);
+const kpiApprovalLevelSchema = z.enum(["MANAGER", "EXECUTIVE", "ADMIN"]);
 
 // Schema for creating an organization
 const createOrgSchema = z.object({
@@ -72,8 +104,15 @@ const createOrgUserSchema = z.object({
   role: z.nativeEnum(Role),
 });
 
+const createOrgEntityTypeSchema = z.object({
+  id: z.string().uuid().optional(),
+  code: z.string().trim().min(1),
+  name: z.string().trim().min(1),
+  nameAr: z.string().trim().optional(),
+});
+
 const createOrgWithUsersSchema = createOrgSchema.extend({
-  nodeTypeIds: z.array(z.string().uuid()).min(1),
+  entityTypes: z.array(createOrgEntityTypeSchema).min(1),
   users: z.array(createOrgUserSchema).min(1),
 });
 
@@ -109,11 +148,6 @@ const deleteUserSchema = z.object({
   userId: z.string().min(1),
 });
 
-const updateOrgNodeTypesSchema = z.object({
-  orgId: z.string().uuid(),
-  nodeTypeIds: z.array(z.string().uuid()).min(1),
-});
-
 // Helper to check if current user is SUPER_ADMIN
 async function requireSuperAdmin() {
   const session = await auth.api.getSession({
@@ -124,37 +158,6 @@ async function requireSuperAdmin() {
     throw new Error("unauthorized");
   }
   return session;
-}
-
-export async function updateOrganizationNodeTypes(data: z.infer<typeof updateOrgNodeTypesSchema>) {
-  await requireSuperAdmin();
-
-  if (!prismaWithNodeTypes.organizationNodeType) {
-    return {
-      success: false,
-      error: "unexpectedError",
-    };
-  }
-
-  const parsed = updateOrgNodeTypesSchema.parse(data);
-
-  try {
-    await prismaWithNodeTypes.organizationNodeType.deleteMany({ where: { orgId: parsed.orgId } });
-
-    await prismaWithNodeTypes.organizationNodeType.createMany({
-      data: parsed.nodeTypeIds.map((nodeTypeId) => ({
-        orgId: parsed.orgId,
-        nodeTypeId,
-      })),
-      skipDuplicates: true,
-    });
-
-    return { success: true };
-  } catch (error: unknown) {
-    console.error("Failed to update organization node types:", error);
-    const errorMessage = error instanceof Error ? error.message : "Failed to update organization node types";
-    return { success: false, error: errorMessage };
-  }
 }
 
 export async function updateUser(data: z.infer<typeof updateUserSchema>) {
@@ -220,7 +223,7 @@ export async function createOrganization(data: z.infer<typeof createOrgSchema>) 
   const parsed = createOrgSchema.parse(data);
   
   try {
-    const org = await prismaOrganization.create({
+    const org = (await prismaOrganization.create({
       data: {
         name: parsed.name,
         nameAr: parsed.nameAr || null,
@@ -236,7 +239,7 @@ export async function createOrganization(data: z.infer<typeof createOrgSchema>) 
         ...(typeof parsed.kpiApprovalLevel !== "undefined" ? { kpiApprovalLevel: parsed.kpiApprovalLevel } : {}),
       },
       select: { id: true },
-    });
+    })) as { id: string };
     return { success: true, org };
   } catch (error) {
     console.error("Failed to create organization:", error);
@@ -246,7 +249,7 @@ export async function createOrganization(data: z.infer<typeof createOrgSchema>) 
 
 export async function getOrganizations() {
   await requireSuperAdmin();
-  const orgs = await (prismaOrganization as any).findMany({
+  const orgs = (await prismaOrganization.findMany({
     where: { deletedAt: null },
     orderBy: { createdAt: "desc" },
     select: {
@@ -270,7 +273,7 @@ export async function getOrganizations() {
         select: { users: true },
       },
     },
-  });
+  })) as OrganizationRow[];
   return orgs;
 }
 
@@ -279,7 +282,7 @@ export async function updateOrganization(data: z.infer<typeof updateOrgSchema>) 
   const parsed = updateOrgSchema.parse(data);
 
   try {
-    const org = await (prismaOrganization as any).update({
+    const org = (await prismaOrganization.update({
       where: { id: parsed.orgId },
       data: {
         ...(typeof parsed.name === "string" ? { name: parsed.name } : {}),
@@ -325,7 +328,7 @@ export async function updateOrganization(data: z.infer<typeof updateOrgSchema>) 
           },
         },
       },
-    });
+    })) as OrganizationRow;
 
     return { success: true, org };
   } catch (error: unknown) {
@@ -341,16 +344,16 @@ export async function deleteOrganization(data: z.infer<typeof deleteOrgSchema>) 
 
   try {
     const now = new Date();
-    await prisma.$transaction([
-      prisma.user.updateMany({
+    await prisma.$transaction(async (tx) => {
+      await tx.user.updateMany({
         where: { orgId: parsed.orgId, deletedAt: null },
         data: { deletedAt: now },
-      }),
-      prisma.organization.update({
+      });
+      await (tx as unknown as { organization: { update: (args: unknown) => Promise<unknown> } }).organization.update({
         where: { id: parsed.orgId },
         data: { deletedAt: now },
-      }),
-    ]);
+      });
+    });
 
     return { success: true };
   } catch (error: unknown) {
@@ -360,27 +363,10 @@ export async function deleteOrganization(data: z.infer<typeof deleteOrgSchema>) 
   }
 }
 
-export async function getNodeTypes() {
-  await requireSuperAdmin();
-  if (!prismaWithNodeTypes.nodeType) {
-    throw new Error("unexpectedError");
-  }
-  return prismaWithNodeTypes.nodeType.findMany({
-    orderBy: [{ levelOrder: "asc" }, { code: "asc" }],
-    select: {
-      id: true,
-      code: true,
-      displayName: true,
-      levelOrder: true,
-      canHaveKpis: true,
-    },
-  });
-}
-
 export async function createOrganizationWithUsers(data: z.infer<typeof createOrgWithUsersSchema>) {
   await requireSuperAdmin();
 
-  if (!prismaWithNodeTypes.organizationNodeType) {
+  if (!prismaOrgEntityType?.createMany) {
     return {
       success: false,
       error: "unexpectedError",
@@ -429,9 +415,19 @@ export async function createOrganizationWithUsers(data: z.infer<typeof createOrg
     };
   }
 
+  const codes = parsed.entityTypes.map((t) => t.code.trim().toLowerCase());
+  const uniqueCodes = new Set(codes);
+  if (uniqueCodes.size !== codes.length) {
+    return {
+      success: false,
+      error: "validationFailed",
+      issues: [{ path: ["entityTypes"], message: "validationFailed" } satisfies ActionValidationIssue],
+    };
+  }
+
   let orgId: string | null = null;
   try {
-    const org = await prisma.organization.create({
+    const org = (await prismaOrganization.create({
       data: {
         name: parsed.name,
         nameAr: parsed.nameAr || null,
@@ -447,13 +443,17 @@ export async function createOrganizationWithUsers(data: z.infer<typeof createOrg
         ...(typeof parsed.kpiApprovalLevel !== "undefined" ? { kpiApprovalLevel: parsed.kpiApprovalLevel } : {}),
       },
       select: { id: true },
-    });
+    })) as { id: string };
+
     orgId = org.id;
 
-    await prismaWithNodeTypes.organizationNodeType.createMany({
-      data: parsed.nodeTypeIds.map((nodeTypeId) => ({
+    await prismaOrgEntityType.createMany({
+      data: parsed.entityTypes.map((et, idx) => ({
         orgId: org.id,
-        nodeTypeId,
+        code: et.code.trim().toLowerCase(),
+        name: et.name.trim(),
+        nameAr: et.nameAr && et.nameAr.trim().length ? et.nameAr.trim() : null,
+        sortOrder: idx,
       })),
       skipDuplicates: true,
     });
@@ -480,13 +480,111 @@ export async function createOrganizationWithUsers(data: z.infer<typeof createOrg
 
     if (orgId) {
       try {
-        await (prismaOrganization as any).delete({ where: { id: orgId } });
+        await prismaOrganization.delete({ where: { id: orgId } });
       } catch (cleanupError) {
         console.error("Failed to rollback organization creation:", cleanupError);
       }
     }
 
     const errorMessage = error instanceof Error ? error.message : "Failed to create organization";
+    return { success: false, error: errorMessage };
+  }
+}
+
+const updateOrgEntityTypesSchema = z.object({
+  orgId: z.string().uuid(),
+  entityTypes: z.array(createOrgEntityTypeSchema).min(1),
+});
+
+export async function updateOrganizationEntityTypes(data: z.infer<typeof updateOrgEntityTypesSchema>) {
+  await requireSuperAdmin();
+
+  if (!prismaOrgEntityType?.findMany || !prismaOrgEntityType?.update || !prismaOrgEntityType?.create || !prismaOrgEntityType?.deleteMany) {
+    return {
+      success: false,
+      error: "unexpectedError",
+    };
+  }
+
+  const parsedResult = updateOrgEntityTypesSchema.safeParse(data);
+  if (!parsedResult.success) {
+    return {
+      success: false,
+      error: "validationFailed",
+      issues: parsedResult.error.issues.map((i) => ({
+        path: i.path.map((p) => (typeof p === "string" || typeof p === "number" ? p : String(p))),
+        message: i.message,
+      } satisfies ActionValidationIssue)),
+    };
+  }
+
+  const parsed = parsedResult.data;
+  const codes = parsed.entityTypes.map((t) => t.code.trim().toLowerCase());
+  const uniqueCodes = new Set(codes);
+  if (uniqueCodes.size !== codes.length) {
+    return {
+      success: false,
+      error: "validationFailed",
+      issues: [{ path: ["entityTypes"], message: "validationFailed" } satisfies ActionValidationIssue],
+    };
+  }
+
+  try {
+    const existing = await prismaOrgEntityType.findMany({
+      where: { orgId: parsed.orgId },
+      orderBy: [{ sortOrder: "asc" }, { createdAt: "asc" }],
+      select: { id: true, code: true, name: true, nameAr: true, sortOrder: true },
+    });
+
+    const existingIdSet = new Set(existing.map((r) => r.id));
+    const keepIds: string[] = [];
+
+    for (let idx = 0; idx < parsed.entityTypes.length; idx += 1) {
+      const et = parsed.entityTypes[idx];
+      const nameAr = et.nameAr && et.nameAr.trim().length ? et.nameAr.trim() : null;
+      const code = et.code.trim().toLowerCase();
+
+      if (et.id && existingIdSet.has(et.id)) {
+        keepIds.push(et.id);
+        await prismaOrgEntityType.update({
+          where: { id: et.id },
+          data: {
+            code,
+            name: et.name.trim(),
+            nameAr,
+            sortOrder: idx,
+          },
+          select: { id: true },
+        });
+      } else {
+        const created = await prismaOrgEntityType.create({
+          data: {
+            orgId: parsed.orgId,
+            code,
+            name: et.name.trim(),
+            nameAr,
+            sortOrder: idx,
+          },
+          select: { id: true },
+        });
+
+        keepIds.push(created.id);
+      }
+    }
+
+    if (existing.length > 0) {
+      await prismaOrgEntityType.deleteMany({
+        where: {
+          orgId: parsed.orgId,
+          ...(keepIds.length ? { id: { notIn: keepIds } } : {}),
+        },
+      });
+    }
+
+    return { success: true };
+  } catch (error: unknown) {
+    console.error("Failed to update organization entity types:", error);
+    const errorMessage = error instanceof Error ? error.message : "Failed to update organization entity types";
     return { success: false, error: errorMessage };
   }
 }
@@ -532,7 +630,7 @@ export async function getSuperAdminOverviewStats() {
   await requireSuperAdmin();
 
   const [organizations, users] = await Promise.all([
-    (prismaOrganization as any).count({ where: { deletedAt: null } }),
+    prismaOrganization.count({ where: { deletedAt: null } }),
     prisma.user.count({ where: { deletedAt: null } }),
   ]);
 
@@ -543,7 +641,7 @@ export async function getOrganizationDetails(orgId: string) {
   await requireSuperAdmin();
   const parsedOrgId = orgIdSchema.parse(orgId);
 
-  const org = await (prismaOrganization as any).findFirst({
+  const org = (await prismaOrganization.findFirst({
     where: {
       id: parsedOrgId,
       deletedAt: null,
@@ -565,38 +663,47 @@ export async function getOrganizationDetails(orgId: string) {
       createdAt: true,
       updatedAt: true,
       deletedAt: true,
-      _count: { select: { users: true } },
-      nodeTypes: {
-        orderBy: { nodeType: { levelOrder: "asc" } },
-        select: {
-          id: true,
-          nodeTypeId: true,
-          nodeType: {
-            select: {
-              id: true,
-              code: true,
-              displayName: true,
-              levelOrder: true,
-              canHaveKpis: true,
-            },
-          },
-        },
-      },
-      users: {
-        where: { deletedAt: null },
-        orderBy: { createdAt: "desc" },
-        select: {
-          id: true,
-          name: true,
-          email: true,
-          role: true,
-          createdAt: true,
-        },
-      },
     },
-  });
+  })) as OrganizationRow | null;
 
-  return org as any;
+  if (!org) return null;
+
+  if (!prismaOrgEntityType?.findMany) {
+    throw new Error("missingOrgEntityTypeModel");
+  }
+
+  const [entityTypes, users, userCount] = await Promise.all([
+    prismaOrgEntityType.findMany({
+      where: { orgId: org.id },
+      orderBy: [{ sortOrder: "asc" }, { createdAt: "asc" }],
+      select: {
+        id: true,
+        code: true,
+        name: true,
+        nameAr: true,
+        sortOrder: true,
+      },
+    }),
+    prisma.user.findMany({
+      where: { orgId: org.id, deletedAt: null },
+      orderBy: { createdAt: "desc" },
+      select: {
+        id: true,
+        name: true,
+        email: true,
+        role: true,
+        createdAt: true,
+      },
+    }),
+    prisma.user.count({ where: { orgId: org.id, deletedAt: null } }),
+  ]);
+
+  return {
+    ...org,
+    entityTypes,
+    users,
+    _count: { users: userCount },
+  } as unknown;
 }
 
 export async function getUserDetails(userId: string) {

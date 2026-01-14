@@ -24,7 +24,7 @@ import {
 
 export default function ApprovalDetailPage() {
   const params = useParams<{ requestId: string }>();
-  const { locale, t, tr } = useLocale();
+  const { locale, t } = useLocale();
   const { user } = useAuth();
 
   const base = getBaseChangeRequest(params.requestId);
@@ -136,7 +136,8 @@ export default function ApprovalDetailPage() {
           </CardHeader>
           <CardContent className="space-y-2 text-sm text-foreground">
             <Button
-              className="w-full variant="secondary""
+              variant="secondary"
+              className="w-full"
               disabled={request.status !== "PENDING"}
               onClick={() => {
                 const next = { ...request, status: "APPROVED" as const };

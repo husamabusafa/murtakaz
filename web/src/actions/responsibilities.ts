@@ -52,7 +52,6 @@ async function requireOrgMember() {
 
 function assertCanUseResponsibilities(role: unknown) {
   const r = String(role ?? "");
-  if (r === "EMPLOYEE") throw new Error("unauthorized");
   if (r === "SUPER_ADMIN") throw new Error("unauthorized");
 }
 
@@ -165,7 +164,7 @@ export async function searchAssignableNodes(input: z.infer<typeof searchNodesSch
       color: true,
       parentId: true,
       nodeType: { select: { code: true, displayName: true, levelOrder: true } },
-      parent: { select: { id: true, name: true, nodeType: { select: { displayName: true } } } },
+      parent: { select: { id: true, name: true, nodeType: { select: { code: true, displayName: true } } } },
       _count: { select: { children: true, kpis: true } },
     },
   });
@@ -199,7 +198,7 @@ export async function searchAssignableKpis(input: z.infer<typeof searchKpisSchem
       id: true,
       name: true,
       unit: true,
-      primaryNode: { select: { id: true, name: true, nodeType: { select: { displayName: true } } } },
+      primaryNode: { select: { id: true, name: true, nodeType: { select: { code: true, displayName: true } } } },
     },
   });
 }
@@ -240,7 +239,7 @@ export async function previewNodeCascade(input: z.infer<typeof previewNodeCascad
   const kpis = await prismaKpiDefinition.findMany<{
     id: string;
     name: string;
-    primaryNode: { id: string; name: string; nodeType: { displayName: string } };
+    primaryNode: { id: string; name: string; nodeType: { code: string; displayName: string } };
   }>({
     where: { orgId: session.user.orgId, primaryNodeId: { in: subtreeIds } },
     orderBy: [{ name: "asc" }],
@@ -248,7 +247,7 @@ export async function previewNodeCascade(input: z.infer<typeof previewNodeCascad
     select: {
       id: true,
       name: true,
-      primaryNode: { select: { id: true, name: true, nodeType: { select: { displayName: true } } } },
+      primaryNode: { select: { id: true, name: true, nodeType: { select: { code: true, displayName: true } } } },
     },
   });
 
@@ -402,7 +401,7 @@ export async function getResponsibilitiesForUser(input: z.infer<typeof getAssign
   const [nodeAssignments, kpiAssignments] = await Promise.all([
     prismaResponsibilityNodeAssignment.findMany<{
       id: string;
-      rootNode: { id: string; name: string; color: string; nodeType: { displayName: string } };
+      rootNode: { id: string; name: string; color: string; nodeType: { code: string; displayName: string } };
       assignedBy: { id: string; name: string; role: string };
       createdAt: Date;
     }>({
@@ -410,7 +409,7 @@ export async function getResponsibilitiesForUser(input: z.infer<typeof getAssign
       orderBy: [{ createdAt: "desc" }],
       select: {
         id: true,
-        rootNode: { select: { id: true, name: true, color: true, nodeType: { select: { displayName: true } } } },
+        rootNode: { select: { id: true, name: true, color: true, nodeType: { select: { code: true, displayName: true } } } },
         assignedBy: { select: { id: true, name: true, role: true } },
         createdAt: true,
       },
@@ -421,7 +420,7 @@ export async function getResponsibilitiesForUser(input: z.infer<typeof getAssign
         id: string;
         name: string;
         unit: string | null;
-        primaryNode: { id: string; name: string; nodeType: { displayName: string } };
+        primaryNode: { id: string; name: string; nodeType: { code: string; displayName: string } };
       };
       assignedBy: { id: string; name: string; role: string };
       createdAt: Date;
@@ -430,7 +429,7 @@ export async function getResponsibilitiesForUser(input: z.infer<typeof getAssign
       orderBy: [{ createdAt: "desc" }],
       select: {
         id: true,
-        kpi: { select: { id: true, name: true, unit: true, primaryNode: { select: { id: true, name: true, nodeType: { select: { displayName: true } } } } } },
+        kpi: { select: { id: true, name: true, unit: true, primaryNode: { select: { id: true, name: true, nodeType: { select: { code: true, displayName: true } } } } } },
         assignedBy: { select: { id: true, name: true, role: true } },
         createdAt: true,
       },

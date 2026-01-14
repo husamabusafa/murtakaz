@@ -4,7 +4,13 @@ import { headers } from "next/headers";
 import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 
-export async function getMyOrganizationNodeTypes() {
+const prismaOrgEntityType = (prisma as unknown as { orgEntityType?: unknown }).orgEntityType as
+  | {
+      findMany: <T>(args: unknown) => Promise<T[]>;
+    }
+  | undefined;
+
+export async function getMyOrganizationEntityTypes() {
   const session = await auth.api.getSession({
     headers: await headers(),
   });
@@ -16,32 +22,35 @@ export async function getMyOrganizationNodeTypes() {
   if (!session.user.orgId) {
     return [];
   }
+  if (!prismaOrgEntityType?.findMany) {
+    return [];
+  }
 
-  const rows = await (prisma as any).organizationNodeType.findMany({
+  const rows = await prismaOrgEntityType.findMany<{
+    id: string;
+    code: string;
+    name: string;
+    nameAr: string | null;
+    sortOrder: number;
+  }>({
     where: {
       orgId: session.user.orgId,
     },
-    orderBy: {
-      nodeType: { levelOrder: "asc" },
-    },
+    orderBy: [{ sortOrder: "asc" }, { createdAt: "asc" }],
     select: {
-      nodeType: {
-        select: {
-          id: true,
-          code: true,
-          displayName: true,
-          nameAr: true,
-          levelOrder: true,
-        },
-      },
+      id: true,
+      code: true,
+      name: true,
+      nameAr: true,
+      sortOrder: true,
     },
   });
 
-  return (rows as any[]).map((r) => r.nodeType) as Array<{
-    id: string;
-    code: string;
-    displayName: string;
-    nameAr: string | null;
-    levelOrder: number;
-  }>;
+  return rows.map((r) => ({
+    id: String(r.id),
+    code: String(r.code),
+    name: String(r.name),
+    nameAr: r.nameAr ? String(r.nameAr) : null,
+    sortOrder: Number(r.sortOrder ?? 0),
+  }));
 }

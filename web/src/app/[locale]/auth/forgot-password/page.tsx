@@ -41,7 +41,7 @@ export default function ForgotPasswordPage() {
               </div>
               <Button
                 onClick={() => setSubmitted(true)}
-                className="variant="secondary""
+                variant="secondary"
               >
                 {t("sendResetLink")}
               </Button>

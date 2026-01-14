@@ -13,24 +13,63 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useLocale } from "@/providers/locale-provider";
-import { createUser, deleteOrganization, getNodeTypes, getOrganizationDetails, updateOrganization, updateOrganizationNodeTypes } from "@/actions/admin";
-import { Pencil, Plus, Trash2 } from "lucide-react";
-import type { Role } from "@prisma/client";
-import { Badge } from "@/components/ui/badge";
+import { createUser, deleteOrganization, getOrganizationDetails, updateOrganization, updateOrganizationEntityTypes } from "@/actions/admin";
+import { ArrowDown, ArrowUp, Pencil, Plus, Trash2 } from "lucide-react";
+import type { Role } from "@/generated/prisma-client";
 
-type OrgDetails = Awaited<ReturnType<typeof getOrganizationDetails>>;
+type OrgDetails = {
+  id: string;
+  name: string;
+  nameAr: string | null;
+  domain: string | null;
+  logoUrl: string | null;
+  mission: string | null;
+  missionAr: string | null;
+  vision: string | null;
+  visionAr: string | null;
+  about: string | null;
+  aboutAr: string | null;
+  contacts: unknown;
+  kpiApprovalLevel: "MANAGER" | "EXECUTIVE" | "ADMIN";
+  createdAt: string | Date;
+  updatedAt: string | Date;
+  deletedAt: string | Date | null;
+  _count?: {
+    users?: number;
+  };
+  entityTypes: Array<{
+    id: string;
+    code: string;
+    name: string;
+    nameAr: string | null;
+    sortOrder: number;
+  }>;
+  users: Array<{
+    id: string;
+    name: string;
+    email: string;
+    role: string;
+    createdAt: string | Date;
+  }>;
+};
 
-type OrgUserRow = NonNullable<OrgDetails> extends { users: Array<infer U> } ? U : never;
-type OrgNodeTypeRow = NonNullable<OrgDetails> extends { nodeTypes: Array<infer N> } ? N : never;
-type NodeTypeOption = Awaited<ReturnType<typeof getNodeTypes>>[number];
+type OrgUserRow = OrgDetails["users"][number];
+
+type PendingEntityType = {
+  id: string;
+  code: string;
+  name: string;
+  nameAr: string;
+};
 
 export default function OrganizationDetailsPage() {
   const params = useParams<{ orgId: string }>();
   const router = useRouter();
   const { t, locale, formatDate, te } = useLocale();
 
-  const [org, setOrg] = useState<OrgDetails>(null);
+  const [org, setOrg] = useState<OrgDetails | null>(null);
   const [loading, setLoading] = useState(true);
+  const [loadError, setLoadError] = useState<string | null>(null);
   const [editNameOpen, setEditNameOpen] = useState(false);
   const [editDomainOpen, setEditDomainOpen] = useState(false);
   const [editKpiApprovalOpen, setEditKpiApprovalOpen] = useState(false);
@@ -47,15 +86,14 @@ export default function OrganizationDetailsPage() {
   const [visionArDraft, setVisionArDraft] = useState("");
   const [aboutDraft, setAboutDraft] = useState("");
   const [aboutArDraft, setAboutArDraft] = useState("");
-  const [kpiApprovalDraft, setKpiApprovalDraft] = useState<"MANAGER" | "PMO" | "EXECUTIVE" | "ADMIN">("MANAGER");
+  const [kpiApprovalDraft, setKpiApprovalDraft] = useState<"MANAGER" | "EXECUTIVE" | "ADMIN">("MANAGER");
 
   const [deleteOrgOpen, setDeleteOrgOpen] = useState(false);
   const [deletingOrg, setDeletingOrg] = useState(false);
 
-  const [nodeTypesOpen, setNodeTypesOpen] = useState(false);
-  const [savingNodeTypes, setSavingNodeTypes] = useState(false);
-  const [availableNodeTypes, setAvailableNodeTypes] = useState<NodeTypeOption[]>([]);
-  const [selectedNodeTypeIds, setSelectedNodeTypeIds] = useState<string[]>([]);
+  const [entityTypesOpen, setEntityTypesOpen] = useState(false);
+  const [savingEntityTypes, setSavingEntityTypes] = useState(false);
+  const [entityTypesDraft, setEntityTypesDraft] = useState<PendingEntityType[]>([]);
 
   const [createUserOpen, setCreateUserOpen] = useState(false);
   const [creatingUser, setCreatingUser] = useState(false);
@@ -63,15 +101,16 @@ export default function OrganizationDetailsPage() {
     name: "",
     email: "",
     password: "",
-    role: "EMPLOYEE" as Role,
+    role: "MANAGER" as Role,
   });
 
   useEffect(() => {
     let isMounted = true;
     async function load() {
       setLoading(true);
+      setLoadError(null);
       try {
-        const data = await getOrganizationDetails(params.orgId);
+        const data = (await getOrganizationDetails(params.orgId)) as OrgDetails | null;
         if (isMounted) {
           setOrg(data);
           setNameDraft(data?.name ?? "");
@@ -85,15 +124,25 @@ export default function OrganizationDetailsPage() {
           setAboutDraft(data?.about ?? "");
           setAboutArDraft(data?.aboutAr ?? "");
           setKpiApprovalDraft((data?.kpiApprovalLevel as typeof kpiApprovalDraft) ?? "MANAGER");
-          setSelectedNodeTypeIds(
-            (data?.nodeTypes ?? [])
-              .map((nt) => (nt as OrgNodeTypeRow).nodeTypeId)
-              .filter((id): id is string => typeof id === "string"),
+          const types = (data?.entityTypes ?? []) as OrgDetails["entityTypes"];
+          setEntityTypesDraft(
+            types
+              .slice()
+              .sort((a, b) => (a.sortOrder ?? 0) - (b.sortOrder ?? 0))
+              .map((et) => ({
+                id: et.id,
+                code: String(et.code ?? ""),
+                name: String(et.name ?? ""),
+                nameAr: et.nameAr ? String(et.nameAr) : "",
+              })),
           );
         }
       } catch (error) {
         console.error("Failed to load organization", error);
-        if (isMounted) setOrg(null);
+        if (isMounted) {
+          setOrg(null);
+          setLoadError(error instanceof Error ? error.message : "Failed to load organization");
+        }
       } finally {
         if (isMounted) setLoading(false);
       }
@@ -105,31 +154,36 @@ export default function OrganizationDetailsPage() {
     };
   }, [params.orgId]);
 
-  useEffect(() => {
-    let isMounted = true;
-    async function loadNodeTypes() {
-      try {
-        const data = await getNodeTypes();
-        if (isMounted) setAvailableNodeTypes(data);
-      } catch (error) {
-        console.error("Failed to load node types", error);
-      }
-    }
-
-    void loadNodeTypes();
-    return () => {
-      isMounted = false;
-    };
-  }, []);
-
-  const users = useMemo(() => (org ? (org.users as OrgUserRow[]) : []), [org]);
-  const enabledNodeTypes = useMemo(() => {
-    if (!org) return [] as Array<{ id: string; displayName: string; code: string }>;
-    return ((org.nodeTypes as OrgNodeTypeRow[]) ?? [])
-      .map((nt) => nt.nodeType)
-      .filter(Boolean)
-      .map((nt) => ({ id: nt.id, displayName: nt.displayName, code: String(nt.code) }));
+  const users = useMemo<OrgUserRow[]>(() => (org ? org.users : []), [org]);
+  const enabledEntityTypes = useMemo(() => {
+    if (!org) return [] as Array<{ id: string; code: string; name: string; nameAr: string | null; sortOrder: number }>;
+    const rows = (org.entityTypes ?? []) as OrgDetails["entityTypes"];
+    return rows.slice().sort((a, b) => (a.sortOrder ?? 0) - (b.sortOrder ?? 0));
   }, [org]);
+
+  function updateEntityTypeDraft(index: number, patch: Partial<PendingEntityType>) {
+    setEntityTypesDraft((prev) => prev.map((et, i) => (i === index ? { ...et, ...patch } : et)));
+  }
+
+  function addEntityTypeDraft() {
+    setEntityTypesDraft((prev) => [...prev, { id: "", code: "", name: "", nameAr: "" }]);
+  }
+
+  function removeEntityTypeDraft(index: number) {
+    setEntityTypesDraft((prev) => prev.filter((_, i) => i !== index));
+  }
+
+  function moveEntityTypeDraft(index: number, direction: "up" | "down") {
+    setEntityTypesDraft((prev) => {
+      const next = prev.slice();
+      const target = direction === "up" ? index - 1 : index + 1;
+      if (target < 0 || target >= next.length) return prev;
+      const temp = next[index];
+      next[index] = next[target];
+      next[target] = temp;
+      return next;
+    });
+  }
 
   async function handleDeleteOrg() {
     if (!org) return;
@@ -148,21 +202,28 @@ export default function OrganizationDetailsPage() {
     }
   }
 
-  async function handleSaveNodeTypes() {
+  async function handleSaveEntityTypes() {
     if (!org) return;
-    setSavingNodeTypes(true);
+    setSavingEntityTypes(true);
     try {
-      const result = await updateOrganizationNodeTypes({ orgId: org.id, nodeTypeIds: selectedNodeTypeIds });
+      const normalized = entityTypesDraft.map((et) => ({
+        id: et.id && et.id.length ? et.id : undefined,
+        code: et.code.trim().toLowerCase(),
+        name: et.name.trim(),
+        nameAr: et.nameAr.trim() || undefined,
+      }));
+
+      const result = await updateOrganizationEntityTypes({ orgId: org.id, entityTypes: normalized });
       if (result.success) {
         const data = await getOrganizationDetails(params.orgId);
-        setOrg(data);
-        setNodeTypesOpen(false);
+        setOrg(data as OrgDetails);
+        setEntityTypesOpen(false);
         router.refresh();
       } else {
-        alert(te(result.error) || t("failedToUpdateNodeTypes"));
+        alert(te(result.error) || t("unexpectedError"));
       }
     } finally {
-      setSavingNodeTypes(false);
+      setSavingEntityTypes(false);
     }
   }
 
@@ -177,7 +238,7 @@ export default function OrganizationDetailsPage() {
       });
       if (result.success) {
         const data = await getOrganizationDetails(params.orgId);
-        setOrg(data);
+        setOrg(data as OrgDetails);
         setEditNameOpen(false);
         router.refresh();
       } else {
@@ -195,7 +256,7 @@ export default function OrganizationDetailsPage() {
       const result = await updateOrganization({ orgId: org.id, kpiApprovalLevel: kpiApprovalDraft });
       if (result.success) {
         const data = await getOrganizationDetails(params.orgId);
-        setOrg(data);
+        setOrg(data as OrgDetails);
         setEditKpiApprovalOpen(false);
         router.refresh();
       } else {
@@ -213,7 +274,7 @@ export default function OrganizationDetailsPage() {
       const result = await updateOrganization({ orgId: org.id, domain: domainDraft.trim() });
       if (result.success) {
         const data = await getOrganizationDetails(params.orgId);
-        setOrg(data);
+        setOrg(data as OrgDetails);
         setEditDomainOpen(false);
         router.refresh();
       } else {
@@ -240,7 +301,7 @@ export default function OrganizationDetailsPage() {
       });
       if (result.success) {
         const data = await getOrganizationDetails(params.orgId);
-        setOrg(data);
+        setOrg(data as OrgDetails);
         setEditDetailsOpen(false);
         router.refresh();
       } else {
@@ -269,7 +330,7 @@ export default function OrganizationDetailsPage() {
         setCreateUserOpen(false);
         setNewUser({ name: "", email: "", password: "", role: "EMPLOYEE" as Role });
         const data = await getOrganizationDetails(params.orgId);
-        setOrg(data);
+        setOrg(data as OrgDetails);
         router.refresh();
       } else {
         alert(te(result.error) || t("failedToCreateUser"));
@@ -290,7 +351,7 @@ export default function OrganizationDetailsPage() {
   if (!org) {
     return (
       <div className="rounded-2xl border border-border bg-card p-8">
-        <p className="text-sm text-muted-foreground">{t("organizationNotFound")}</p>
+        <p className="text-sm text-muted-foreground">{loadError ? te(loadError) || loadError : t("organizationNotFound")}</p>
         <Link
           href={`/${locale}/super-admin/organizations`}
           className="mt-3 inline-flex text-sm font-semibold text-primary hover:opacity-90"
@@ -426,23 +487,23 @@ export default function OrganizationDetailsPage() {
 
             <div className="rounded-xl border border-border bg-muted/30 px-4 py-3">
               <div className="flex items-start justify-between gap-3">
-                <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">{t("nodeTypes")}</p>
+                <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">Entities</p>
                 <button
                   type="button"
                   className="inline-flex h-7 w-7 items-center justify-center rounded-md border border-border bg-card text-muted-foreground hover:text-foreground"
-                  onClick={() => setNodeTypesOpen(true)}
-                  aria-label={t("editNodeTypes")}
+                  onClick={() => setEntityTypesOpen(true)}
+                  aria-label="Edit entities"
                 >
                   <Pencil className="h-3.5 w-3.5" />
                 </button>
               </div>
-              {enabledNodeTypes.length === 0 ? (
-                <p className="mt-2 text-xs text-muted-foreground">{t("noNodeTypesSelected")}</p>
+              {enabledEntityTypes.length === 0 ? (
+                <p className="mt-2 text-xs text-muted-foreground">—</p>
               ) : (
                 <div className="mt-2 flex flex-wrap gap-2">
-                  {enabledNodeTypes.map((nt) => (
-                    <span key={nt.id} className="inline-flex items-center rounded-md border border-border bg-card px-2 py-1 text-xs">
-                      {nt.displayName}
+                  {enabledEntityTypes.map((et) => (
+                    <span key={et.id} className="inline-flex items-center rounded-md border border-border bg-card px-2 py-1 text-xs">
+                      {String(et.name)}
                     </span>
                   ))}
                 </div>
@@ -690,7 +751,6 @@ export default function OrganizationDetailsPage() {
               </SelectTrigger>
               <SelectContent>
                 <SelectItem value="MANAGER">{t("roleManager")}</SelectItem>
-                <SelectItem value="PMO">{t("rolePMO")}</SelectItem>
                 <SelectItem value="EXECUTIVE">{t("roleExecutive")}</SelectItem>
                 <SelectItem value="ADMIN">{t("roleAdmin")}</SelectItem>
               </SelectContent>
@@ -715,35 +775,74 @@ export default function OrganizationDetailsPage() {
         </DialogContent>
       </Dialog>
 
-      <Dialog open={nodeTypesOpen} onOpenChange={setNodeTypesOpen}>
+      <Dialog open={entityTypesOpen} onOpenChange={setEntityTypesOpen}>
         <DialogContent className="max-h-[90vh] overflow-y-auto">
           <DialogHeader>
-            <DialogTitle>{t("editNodeTypes")}</DialogTitle>
+            <DialogTitle>Entities</DialogTitle>
             <DialogDescription className="text-muted-foreground">
-              {t("chooseEnabledNodeTypesDesc")}
+              Manage the entity types and their order.
             </DialogDescription>
           </DialogHeader>
 
-          <div className="flex flex-wrap gap-2">
-            {availableNodeTypes.map((nt) => {
-              const selected = selectedNodeTypeIds.includes(nt.id);
-              return (
-                <button
-                  key={nt.id}
-                  type="button"
-                  onClick={() => {
-                    setSelectedNodeTypeIds((prev) => (selected ? prev.filter((x) => x !== nt.id) : [...prev, nt.id]));
-                  }}
-                  className={
-                    selected
-                      ? "inline-flex items-center rounded-md border border-border bg-primary px-2 py-1 text-xs text-primary-foreground"
-                      : "inline-flex items-center rounded-md border border-border bg-card px-2 py-1 text-xs text-foreground"
-                  }
-                >
-                  {nt.displayName}
-                </button>
-              );
-            })}
+          <div className="space-y-3">
+            {entityTypesDraft.map((et, idx) => (
+              <div key={`${et.id || et.code}-${idx}`} className="rounded-xl border border-border bg-card p-3">
+                <div className="grid gap-3 md:grid-cols-3">
+                  <div className="space-y-1">
+                    <Label>Code</Label>
+                    <Input
+                      value={et.code}
+                      onChange={(e) => updateEntityTypeDraft(idx, { code: e.target.value })}
+                      onBlur={() => updateEntityTypeDraft(idx, { code: et.code.trim().toLowerCase() })}
+                      className="bg-background"
+                    />
+                  </div>
+                  <div className="space-y-1">
+                    <Label>{t("name")}</Label>
+                    <Input
+                      value={et.name}
+                      onChange={(e) => updateEntityTypeDraft(idx, { name: e.target.value })}
+                      className="bg-background"
+                    />
+                  </div>
+                  <div className="space-y-1">
+                    <Label>{t("nameAr")}</Label>
+                    <Input
+                      value={et.nameAr}
+                      onChange={(e) => updateEntityTypeDraft(idx, { nameAr: e.target.value })}
+                      className="bg-background"
+                      dir="rtl"
+                    />
+                  </div>
+                </div>
+
+                <div className="mt-3 flex items-center justify-between">
+                  <div className="flex items-center gap-1">
+                    <Button type="button" size="icon" variant="ghost" onClick={() => moveEntityTypeDraft(idx, "up")} disabled={idx === 0}>
+                      <ArrowUp className="h-4 w-4" />
+                    </Button>
+                    <Button
+                      type="button"
+                      size="icon"
+                      variant="ghost"
+                      onClick={() => moveEntityTypeDraft(idx, "down")}
+                      disabled={idx === entityTypesDraft.length - 1}
+                    >
+                      <ArrowDown className="h-4 w-4" />
+                    </Button>
+                  </div>
+
+                  <Button type="button" size="icon" variant="ghost" onClick={() => removeEntityTypeDraft(idx)} disabled={entityTypesDraft.length <= 1}>
+                    <Trash2 className="h-4 w-4" />
+                  </Button>
+                </div>
+              </div>
+            ))}
+
+            <Button type="button" variant="outline" onClick={addEntityTypeDraft}>
+              <Plus className="me-2 h-4 w-4" />
+              {t("add")}
+            </Button>
           </div>
 
           <DialogFooter>
@@ -751,18 +850,25 @@ export default function OrganizationDetailsPage() {
               type="button"
               variant="ghost"
               onClick={() => {
-                setSelectedNodeTypeIds(
-                  (org?.nodeTypes ?? [])
-                    .map((nt) => (nt as OrgNodeTypeRow).nodeTypeId)
-                    .filter((id): id is string => typeof id === "string"),
+                const types = ((org?.entityTypes ?? []) as OrgDetails["entityTypes"]) ?? [];
+                setEntityTypesDraft(
+                  types
+                    .slice()
+                    .sort((a, b) => (a.sortOrder ?? 0) - (b.sortOrder ?? 0))
+                    .map((t) => ({
+                      id: t.id,
+                      code: String(t.code ?? ""),
+                      name: String(t.name ?? ""),
+                      nameAr: t.nameAr ? String(t.nameAr) : "",
+                    })),
                 );
-                setNodeTypesOpen(false);
+                setEntityTypesOpen(false);
               }}
             >
               {t("cancel")}
             </Button>
-            <Button type="button" onClick={handleSaveNodeTypes} disabled={savingNodeTypes || selectedNodeTypeIds.length === 0}>
-              {savingNodeTypes ? t("saving") : t("save")}
+            <Button type="button" onClick={handleSaveEntityTypes} disabled={savingEntityTypes || entityTypesDraft.length === 0}>
+              {savingEntityTypes ? t("saving") : t("save")}
             </Button>
           </DialogFooter>
         </DialogContent>
@@ -859,7 +965,7 @@ export default function OrganizationDetailsPage() {
                   <SelectValue placeholder={t("selectRole")} />
                 </SelectTrigger>
                 <SelectContent>
-                  {(["ADMIN", "EXECUTIVE", "PMO", "MANAGER", "EMPLOYEE"] as Role[]).map((role) => (
+                  {(["ADMIN", "EXECUTIVE", "MANAGER"] as Role[]).map((role) => (
                     <SelectItem key={role} value={role}>
                       {role}
                     </SelectItem>

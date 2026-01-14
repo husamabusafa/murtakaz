@@ -41,7 +41,7 @@ export default function ContactPage() {
               <p className="text-sm font-semibold text-foreground">{t("message")}</p>
               <Textarea className="border-border bg-muted/30 text-foreground placeholder:text-muted-foreground" placeholder={t("describeNeeds")} />
             </div>
-            <Button className="variant="secondary"">
+            <Button variant="secondary">
               <span className="inline-flex items-center gap-2">
                 <Icon name="tabler:send" className="h-4 w-4" />
                 {t("send")}

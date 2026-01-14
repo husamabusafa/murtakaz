@@ -18,23 +18,20 @@ import { useLocale } from "@/providers/locale-provider";
 import {
   createOrgAdminUser,
   deleteOrgAdminUser,
-  getOrgAdminDepartments,
   getOrgAdminManagerOptions,
   getOrgAdminUsers,
   updateOrgAdminUser,
 } from "@/actions/org-admin";
-import type { Role } from "@prisma/client";
+import type { Role } from "@/generated/prisma-client";
 
 type UserRow = Awaited<ReturnType<typeof getOrgAdminUsers>>[number];
-type DepartmentOption = Awaited<ReturnType<typeof getOrgAdminDepartments>>[number];
 type ManagerOption = Awaited<ReturnType<typeof getOrgAdminManagerOptions>>[number];
 
-const roles: Role[] = ["ADMIN", "EXECUTIVE", "PMO", "MANAGER", "EMPLOYEE"] as Role[];
+const roles: Role[] = ["ADMIN", "EXECUTIVE", "MANAGER"] as Role[];
 
 function roleRank(role: Role) {
   if (role === "ADMIN") return 4;
   if (role === "EXECUTIVE") return 3;
-  if (role === "PMO") return 2;
   if (role === "MANAGER") return 1;
   return 0;
 }
@@ -66,7 +63,6 @@ export default function UsersPage() {
 
   const [loading, setLoading] = useState(true);
   const [users, setUsers] = useState<UserRow[]>([]);
-  const [departments, setDepartments] = useState<DepartmentOption[]>([]);
   const [managers, setManagers] = useState<ManagerOption[]>([]);
 
   const [createOpen, setCreateOpen] = useState(false);
@@ -84,30 +80,26 @@ export default function UsersPage() {
     name: "",
     email: "",
     password: "",
-    role: "EMPLOYEE" as Role,
+    role: "MANAGER" as Role,
     managerId: "",
-    departmentId: "",
   });
 
   const [editUser, setEditUser] = useState({
     userId: "",
     name: "",
     email: "",
-    role: "EMPLOYEE" as Role,
+    role: "MANAGER" as Role,
     managerId: "",
-    departmentId: "",
   });
 
   const loadData = useCallback(async () => {
     setLoading(true);
     try {
-      const [usersData, deptData, managerData] = await Promise.all([
+      const [usersData, managerData] = await Promise.all([
         getOrgAdminUsers(),
-        getOrgAdminDepartments(),
         getOrgAdminManagerOptions(),
       ]);
       setUsers(usersData);
-      setDepartments(deptData);
       setManagers(managerData);
     } catch (error) {
       console.error("Failed to load users data", error);
@@ -154,7 +146,6 @@ export default function UsersPage() {
         password: newUser.password,
         role: newUser.role,
         managerId: newUser.managerId ? newUser.managerId : null,
-        departmentId: newUser.departmentId ? newUser.departmentId : null,
       });
 
       if (!result.success) {
@@ -164,7 +155,7 @@ export default function UsersPage() {
       }
 
       setCreateOpen(false);
-      setNewUser({ name: "", email: "", password: "", role: "EMPLOYEE", managerId: "", departmentId: "" });
+      setNewUser({ name: "", email: "", password: "", role: "MANAGER", managerId: "" });
       await loadData();
       router.refresh();
     } catch (error: unknown) {
@@ -186,7 +177,6 @@ export default function UsersPage() {
         email: editUser.email,
         role: editUser.role,
         managerId: editUser.managerId ? editUser.managerId : null,
-        departmentId: editUser.departmentId ? editUser.departmentId : null,
       });
 
       if (!result.success) {
@@ -371,26 +361,6 @@ export default function UsersPage() {
                 </Select>
               </div>
 
-              <div className="space-y-2">
-                <Label>{t("department")}</Label>
-                <Select
-                  value={newUser.departmentId || "__none__"}
-                  onValueChange={(val) => setNewUser((p) => ({ ...p, departmentId: val === "__none__" ? "" : val }))}
-                >
-                  <SelectTrigger className="bg-card">
-                    <SelectValue placeholder={t("selectDepartment")} />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="__none__">{t("noDepartment")}</SelectItem>
-                    {departments.map((d) => (
-                      <SelectItem key={d.id} value={d.id}>
-                        {d.name}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </div>
-
               <DialogFooter>
                 <Button type="button" variant="ghost" onClick={() => setCreateOpen(false)}>
                   {t("cancel")}
@@ -417,20 +387,19 @@ export default function UsersPage() {
                   <TableHead>{t("user")}</TableHead>
                   <TableHead>{t("role")}</TableHead>
                   <TableHead>{t("manager")}</TableHead>
-                  <TableHead>{t("department")}</TableHead>
                   <TableHead className="text-right">{t("actions")}</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
                 {loading ? (
                   <TableRow>
-                    <TableCell colSpan={5} className="py-8 text-center text-muted-foreground">
+                    <TableCell colSpan={4} className="py-8 text-center text-muted-foreground">
                       {t("loading")}
                     </TableCell>
                   </TableRow>
                 ) : users.length === 0 ? (
                   <TableRow>
-                    <TableCell colSpan={5} className="py-8 text-center text-muted-foreground">
+                    <TableCell colSpan={4} className="py-8 text-center text-muted-foreground">
                       {t("noUsersFound")}
                     </TableCell>
                   </TableRow>
@@ -451,7 +420,6 @@ export default function UsersPage() {
                       <TableCell className="text-muted-foreground">
                         {u.managerId && userById.get(u.managerId) ? userById.get(u.managerId)?.name : u.manager?.name ?? "—"}
                       </TableCell>
-                      <TableCell className="text-muted-foreground">{u.department?.name ?? "—"}</TableCell>
                       <TableCell className="text-right">
                         <div className="inline-flex items-center justify-end gap-2">
                           <Button
@@ -466,7 +434,6 @@ export default function UsersPage() {
                                 email: u.email,
                                 role: u.role,
                                 managerId: u.managerId ?? "",
-                                departmentId: u.departmentId ?? "",
                               });
                               setEditOpen(true);
                             }}
@@ -576,26 +543,6 @@ export default function UsersPage() {
                   {editManagerOptions.map((m) => (
                     <SelectItem key={m.id} value={m.id}>
                       {managerLabel(m)}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </div>
-
-            <div className="space-y-2">
-              <Label>{t("department")}</Label>
-              <Select
-                value={editUser.departmentId || "__none__"}
-                onValueChange={(val) => setEditUser((p) => ({ ...p, departmentId: val === "__none__" ? "" : val }))}
-              >
-                <SelectTrigger className="bg-card">
-                  <SelectValue placeholder={t("selectDepartment")} />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="__none__">{t("noDepartment")}</SelectItem>
-                  {departments.map((d) => (
-                    <SelectItem key={d.id} value={d.id}>
-                      {d.name}
                     </SelectItem>
                   ))}
                 </SelectContent>

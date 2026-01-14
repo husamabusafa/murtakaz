@@ -67,7 +67,6 @@ export default function RiskDetailPage() {
           <div className="flex items-center gap-2">
             <Button
               variant="secondary"
-              className="variant="secondary""
               onClick={() =>
                 update({
                   ...risk,
@@ -337,7 +336,7 @@ function RiskNoteEditor({ onSubmit }: { onSubmit: (message: string) => void }) {
         className="border-border bg-muted/20 text-foreground placeholder:text-muted-foreground"
       />
       <Button
-        className="variant="secondary""
+        variant="secondary"
         disabled={message.trim().length === 0}
         onClick={() => {
           onSubmit(message.trim());
@@ -389,7 +388,8 @@ function MitigationEditor({
       </div>
       <div className="flex items-end">
         <Button
-          className="w-full variant="secondary""
+          variant="secondary"
+          className="w-full"
           disabled={text.trim().length === 0}
           onClick={() => {
             onAdd({ text: text.trim(), owner: owner.trim() || undefined, due: due || undefined, done: false });

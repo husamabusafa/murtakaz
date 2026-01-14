@@ -4,7 +4,7 @@ import { headers } from "next/headers";
 import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { getMyEffectiveKpiIds } from "@/actions/responsibilities";
-import { KpiValueStatus, type Role, type Status } from "@prisma/client";
+import { KpiValueStatus } from "@/generated/prisma-client";
 
 const prismaOrganization = (prisma as any).organization;
 const prismaOrganizationNodeType = (prisma as any).organizationNodeType;
@@ -15,15 +15,11 @@ const prismaResponsibilityNodeAssignment = (prisma as any).responsibilityNodeAss
 const prismaKpiValuePeriod = (prisma as any).kpiValuePeriod;
 
 const ROLE_RANK: Record<string, number> = {
-  EMPLOYEE: 0,
   MANAGER: 1,
-  PMO: 2,
-  EXECUTIVE: 3,
-  ADMIN: 4,
-  SUPER_ADMIN: 5,
+  EXECUTIVE: 2,
+  ADMIN: 3,
+  SUPER_ADMIN: 4,
 };
-
-type KpiApprovalLevelCode = "MANAGER" | "PMO" | "EXECUTIVE" | "ADMIN";
 
 function resolveRoleRank(role: unknown) {
   if (typeof role !== "string") return 0;

@@ -68,7 +68,7 @@ async function ensureOrg(input: {
   domain?: string | null;
   name: string;
   nameAr?: string | null;
-  kpiApprovalLevel?: "MANAGER" | "PMO" | "EXECUTIVE" | "ADMIN";
+  kpiApprovalLevel?: "MANAGER" | "EXECUTIVE" | "ADMIN";
   logoUrl?: string | null;
   mission?: string | null;
   missionAr?: string | null;
@@ -589,10 +589,9 @@ async function main() {
     await wipeDatabase();
 
     const nodeTypes = await Promise.all([
-      ensureNodeType({ code: NodeTypeCode.STRATEGY, displayName: "Strategy", nameAr: "الاستراتيجية", levelOrder: 1, canHaveKpis: true }),
-      ensureNodeType({ code: NodeTypeCode.OBJECTIVE, displayName: "Objective", nameAr: "الهدف", levelOrder: 2, canHaveKpis: true }),
-      ensureNodeType({ code: NodeTypeCode.INITIATIVE, displayName: "Initiative", nameAr: "المبادرة", levelOrder: 3, canHaveKpis: true }),
-      ensureNodeType({ code: NodeTypeCode.TASK, displayName: "Task", nameAr: "المهمة", levelOrder: 4, canHaveKpis: false }),
+      ensureNodeType({ code: NodeTypeCode.INITIATIVE, displayName: "Initiative", nameAr: "المبادرة", levelOrder: 1, canHaveKpis: true }),
+      ensureNodeType({ code: NodeTypeCode.PROJECT, displayName: "Project", nameAr: "المشروع", levelOrder: 2, canHaveKpis: true }),
+      ensureNodeType({ code: NodeTypeCode.TASK, displayName: "Task", nameAr: "المهمة", levelOrder: 3, canHaveKpis: false }),
     ]);
 
     const nodeTypeByCode = new Map(nodeTypes.map((t) => [t.code, t.id] as const));
@@ -601,7 +600,7 @@ async function main() {
       domain: process.env.SEED_ORG_DOMAIN ?? "almousa.local",
       name: "Musa Bin Abdulaziz Al-Mousa & Sons Real Estate Holding Group",
       nameAr: "مجموعة موسى بن عبدالعزيز الموسى وأولاده العقارية القابضة",
-      kpiApprovalLevel: "PMO",
+      kpiApprovalLevel: "MANAGER",
       mission: "To invest in vital sectors with economic impact to create sustainable value that embodies the Group's efficiency and leadership.",
       missionAr: "نستثمر في القطاعات الحيوية ذات الأثر الاقتصادي لخلق قيمة مستدامة تجسد كفاءة المجموعة وريادتها.",
       vision: "An ambitious investment group with efficiency that builds growth sustainability in vital sectors.",
@@ -616,9 +615,8 @@ async function main() {
     });
 
     await ensureOrgNodeTypes(org.id, [
-      NodeTypeCode.STRATEGY,
-      NodeTypeCode.OBJECTIVE,
       NodeTypeCode.INITIATIVE,
+      NodeTypeCode.PROJECT,
       NodeTypeCode.TASK,
     ]);
 
@@ -672,7 +670,7 @@ async function main() {
       email: "strategy@almousa.local",
       password,
       name: "مدير الاستراتيجية والتميز المؤسسي",
-      role: Role.PMO,
+      role: Role.MANAGER,
       managerId: ceo.id,
       departmentId: deptStrategy.id,
       title: "Head of Strategy",
@@ -734,16 +732,16 @@ async function main() {
     });
 
     const [employee1, employee2, employee3, employee4, employee5] = await Promise.all([
-      ensureUser({ orgId: org.id, email: "employee1@almousa.local", password, name: "محلل استراتيجي", role: Role.EMPLOYEE, managerId: headStrategy.id, departmentId: deptStrategy.id, title: "Strategy Analyst" }),
-      ensureUser({ orgId: org.id, email: "employee2@almousa.local", password, name: "محاسب", role: Role.EMPLOYEE, managerId: headFinance.id, departmentId: deptFinance.id, title: "Accountant" }),
-      ensureUser({ orgId: org.id, email: "employee3@almousa.local", password, name: "مهندس نظم", role: Role.EMPLOYEE, managerId: headIt.id, departmentId: deptIt.id, title: "Systems Engineer" }),
-      ensureUser({ orgId: org.id, email: "employee4@almousa.local", password, name: "أخصائي موارد بشرية", role: Role.EMPLOYEE, managerId: headHr.id, departmentId: deptHr.id, title: "HR Specialist" }),
-      ensureUser({ orgId: org.id, email: "employee5@almousa.local", password, name: "منسق تسويق", role: Role.EMPLOYEE, managerId: headMarketing.id, departmentId: deptMarketing.id, title: "Marketing Coordinator" }),
+      ensureUser({ orgId: org.id, email: "employee1@almousa.local", password, name: "محلل استراتيجي", role: Role.MANAGER, managerId: headStrategy.id, departmentId: deptStrategy.id, title: "Strategy Analyst" }),
+      ensureUser({ orgId: org.id, email: "employee2@almousa.local", password, name: "محاسب", role: Role.MANAGER, managerId: headFinance.id, departmentId: deptFinance.id, title: "Accountant" }),
+      ensureUser({ orgId: org.id, email: "employee3@almousa.local", password, name: "مهندس نظم", role: Role.MANAGER, managerId: headIt.id, departmentId: deptIt.id, title: "Systems Engineer" }),
+      ensureUser({ orgId: org.id, email: "employee4@almousa.local", password, name: "أخصائي موارد بشرية", role: Role.MANAGER, managerId: headHr.id, departmentId: deptHr.id, title: "HR Specialist" }),
+      ensureUser({ orgId: org.id, email: "employee5@almousa.local", password, name: "منسق تسويق", role: Role.MANAGER, managerId: headMarketing.id, departmentId: deptMarketing.id, title: "Marketing Coordinator" }),
     ]);
 
-    const ntStrategy = nodeTypeByCode.get(NodeTypeCode.STRATEGY)!;
-    const ntObjective = nodeTypeByCode.get(NodeTypeCode.OBJECTIVE)!;
-    const ntInitiative = nodeTypeByCode.get(NodeTypeCode.INITIATIVE)!;
+    const ntStrategy = nodeTypeByCode.get(NodeTypeCode.INITIATIVE)!;
+    const ntObjective = nodeTypeByCode.get(NodeTypeCode.PROJECT)!;
+    const ntInitiative = nodeTypeByCode.get(NodeTypeCode.TASK)!;
     const ntTask = nodeTypeByCode.get(NodeTypeCode.TASK)!;
 
     const start2025 = new Date("2025-11-01T00:00:00.000Z");

@@ -1,695 +1,647 @@
 "use client";
 
+import { useCallback, useEffect, useState, useMemo } from "react";
 import Link from "next/link";
-import { useCallback, useEffect, useMemo, useState } from "react";
-import { Loader2, Plus, Trash2 } from "lucide-react";
+import { Search, X, CheckCircle2, UserPlus } from "lucide-react";
 import { PageHeader } from "@/components/page-header";
-import { Icon } from "@/components/icon";
-import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Badge } from "@/components/ui/badge";
+import { Checkbox } from "@/components/ui/checkbox";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { useAuth } from "@/providers/auth-provider";
 import { useLocale } from "@/providers/locale-provider";
-import {
-  assignResponsibilities,
-  getAssignableNodePickerNodes,
-  getMyDirectReports,
-  getResponsibilitiesForUser,
-  previewNodeCascade,
-  searchAssignableKpis,
-  unassignResponsibility,
-} from "@/actions/responsibilities";
-import { NodePickerTree } from "@/components/node-picker-dialog";
+import { getAllEntitiesWithAssignments, getAllAssignableUsersForAdmin, bulkAssignEntities, bulkUnassignEntities } from "@/actions/admin-assignments";
 
-type DirectReport = {
+type EntityWithAssignments = {
   id: string;
-  name: string;
-  role: string;
-  email: string;
-  department: { id: string; name: string } | null;
-};
-
-type NodePickerItem = { id: string; name: string; parentId: string | null; color: string; nodeType: { displayName: string; code: string } };
-
-type NodeSearchRow = {
-  id: string;
-  name: string;
-  color: string;
-  parentId: string | null;
-  nodeType: { code: string; displayName: string; levelOrder: number };
-  parent: { id: string; name: string; nodeType: { displayName: string } } | null;
-  _count: { children: number; kpis: number };
-};
-
-type KpiSearchRow = {
-  id: string;
-  name: string;
-  unit: string | null;
-  primaryNode: { id: string; name: string; nodeType: { displayName: string; code: string } };
-};
-
-type CurrentAssignments = {
-  nodeAssignments: Array<{
+  title: string;
+  titleAr: string | null;
+  key: string | null;
+  periodType: string | null;
+  orgEntityType: {
+    code: string;
+    name: string;
+    nameAr: string | null;
+  };
+  assignments: Array<{
     id: string;
-    rootNode: { id: string; name: string; color: string; nodeType: { displayName: string; code: string } };
-    assignedBy: { id: string; name: string; role: string };
-    createdAt: Date;
-  }>;
-  kpiAssignments: Array<{
-    id: string;
-    kpi: {
+    user: {
       id: string;
       name: string;
-      unit: string | null;
-      primaryNode: { id: string; name: string; nodeType: { displayName: string; code: string } };
+      email: string;
+      role: string;
+      title: string | null;
     };
-    assignedBy: { id: string; name: string; role: string };
-    createdAt: Date;
   }>;
 };
 
-type Mode = "node" | "kpi";
-
-function initials(name: string) {
-  const trimmed = name.trim();
-  if (!trimmed) return "—";
-  return trimmed
-    .split(/\s+/)
-    .slice(0, 2)
-    .map((p) => p[0])
-    .join("")
-    .toUpperCase();
-}
+type AssignableUser = {
+  id: string;
+  name: string;
+  email: string;
+  role: string;
+  title: string | null;
+  entityAssignments: Array<{ entityId: string }>;
+};
 
 export default function ResponsibilitiesPage() {
   const { user, loading: sessionLoading } = useAuth();
-  const { t, locale, nodeTypeLabel } = useLocale();
+  const { t, tr, locale, df } = useLocale();
 
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const userRole = (user as any)?.role as string | undefined;
-
-  const canUse = Boolean(userRole) && userRole !== "EMPLOYEE" && userRole !== "SUPER_ADMIN";
+  const userRole = (user as { role?: string })?.role;
+  const canAdmin = userRole === "ADMIN";
 
   const [loading, setLoading] = useState(true);
-  const [submitting, setSubmitting] = useState(false);
-
-  const [reports, setReports] = useState<DirectReport[]>([]);
-  const [selectedReportId, setSelectedReportId] = useState<string>("");
-
-  const [mode, setMode] = useState<Mode>("node");
-
-  const [nodePickerNodes, setNodePickerNodes] = useState<NodePickerItem[]>([]);
-  const [selectedNodeId, setSelectedNodeId] = useState<string>("");
-
-  const [kpiQuery, setKpiQuery] = useState("");
-  const [kpiResults, setKpiResults] = useState<KpiSearchRow[]>([]);
-  const [selectedKpis, setSelectedKpis] = useState<KpiSearchRow[]>([]);
-
-  const [cascadeOpen, setCascadeOpen] = useState(false);
-  const [cascadeNode, setCascadeNode] = useState<NodeSearchRow | null>(null);
-  const [cascade, setCascade] = useState<Awaited<ReturnType<typeof previewNodeCascade>> | null>(null);
-
-  const [assignments, setAssignments] = useState<CurrentAssignments | null>(null);
+  const [entities, setEntities] = useState<EntityWithAssignments[]>([]);
+  const [users, setUsers] = useState<AssignableUser[]>([]);
   const [error, setError] = useState<string | null>(null);
 
-  const selectedReport = useMemo(() => reports.find((r) => r.id === selectedReportId) ?? null, [reports, selectedReportId]);
+  const [searchQuery, setSearchQuery] = useState("");
+  const [selectedType, setSelectedType] = useState<string>("all");
 
-  const loadAssignments = useCallback(
-    async (reportId: string) => {
-      if (!reportId) {
-        setAssignments(null);
-        return;
+  const [assignDialogOpen, setAssignDialogOpen] = useState(false);
+  const [selectedEntity, setSelectedEntity] = useState<EntityWithAssignments | null>(null);
+  const [selectedUserIds, setSelectedUserIds] = useState<string[]>([]);
+  const [assigning, setAssigning] = useState(false);
+
+  const [entityAssignDialogOpen, setEntityAssignDialogOpen] = useState(false);
+  const [selectedUser, setSelectedUser] = useState<AssignableUser | null>(null);
+  const [selectedEntityIds, setSelectedEntityIds] = useState<string[]>([]);
+
+  const [viewMode, setViewMode] = useState<"entities" | "users">("entities");
+
+  const loadData = useCallback(async () => {
+    setLoading(true);
+    setError(null);
+    try {
+      const [entitiesRes, usersRes] = await Promise.all([
+        getAllEntitiesWithAssignments(),
+        getAllAssignableUsersForAdmin(),
+      ]);
+
+      if (entitiesRes.success) {
+        setEntities(entitiesRes.entities as EntityWithAssignments[]);
+      } else {
+        setError(entitiesRes.error);
       }
-      const res = await getResponsibilitiesForUser({ assignedToId: reportId });
-      setAssignments(res as unknown as CurrentAssignments);
-    },
-    [setAssignments],
-  );
+
+      if (usersRes.success) {
+        setUsers(usersRes.users as AssignableUser[]);
+      }
+    } catch {
+      setError("failedToLoad");
+    } finally {
+      setLoading(false);
+    }
+  }, []);
 
   useEffect(() => {
     if (sessionLoading) return;
-    if (!user) {
-      setLoading(false);
-      return;
+    if (!canAdmin) return;
+    void loadData();
+  }, [sessionLoading, canAdmin, loadData]);
+
+  const entityTypes = useMemo(() => {
+    const types = new Set<string>();
+    entities.forEach((e) => types.add(e.orgEntityType.code));
+    return Array.from(types).sort();
+  }, [entities]);
+
+  const filteredEntities = useMemo(() => {
+    let filtered = entities;
+
+    if (selectedType !== "all") {
+      filtered = filtered.filter((e) => e.orgEntityType.code === selectedType);
     }
 
-    let mounted = true;
-    setLoading(true);
-    setError(null);
+    if (searchQuery.trim()) {
+      const query = searchQuery.toLowerCase();
+      filtered = filtered.filter(
+        (e) =>
+          e.title.toLowerCase().includes(query) ||
+          e.titleAr?.toLowerCase().includes(query) ||
+          e.key?.toLowerCase().includes(query)
+      );
+    }
 
-    void (async () => {
-      try {
-        const [rows, pickerNodes] = await Promise.all([
-          getMyDirectReports(),
-          canUse ? getAssignableNodePickerNodes() : Promise.resolve([]),
-        ]);
-        if (!mounted) return;
-        setReports(rows);
-        setNodePickerNodes(pickerNodes as unknown as NodePickerItem[]);
-        const firstId = rows[0]?.id ?? "";
-        setSelectedReportId(firstId);
-        if (firstId) {
-          await loadAssignments(firstId);
-        }
-      } catch (e: unknown) {
-        if (!mounted) return;
-        setError(e instanceof Error ? e.message : t("failedToLoad"));
-      } finally {
-        if (mounted) setLoading(false);
-      }
-    })();
+    return filtered;
+  }, [entities, selectedType, searchQuery]);
 
-    return () => {
-      mounted = false;
-    };
-  }, [canUse, loadAssignments, sessionLoading, t, user]);
+  const getRoleBadgeColor = (role: string) => {
+    if (role === "EXECUTIVE") return "bg-purple-500/10 text-purple-500 border-purple-500/20";
+    if (role === "MANAGER") return "bg-blue-500/10 text-blue-500 border-blue-500/20";
+    return "bg-gray-500/10 text-gray-500 border-gray-500/20";
+  };
 
-  useEffect(() => {
-    if (!canUse) return;
-    void (async () => {
-      const rows = await searchAssignableKpis({ query: kpiQuery });
-      setKpiResults(rows as unknown as KpiSearchRow[]);
-    })();
-  }, [canUse, kpiQuery]);
+  const getRoleLabel = (role: string) => {
+    if (role === "EXECUTIVE") return tr("Executive", "تنفيذي");
+    if (role === "MANAGER") return tr("Manager", "مدير");
+    return role;
+  };
 
-  const selectedKpiIds = useMemo(() => new Set(selectedKpis.map((k) => k.id)), [selectedKpis]);
-
-  async function openCascadePreview(node: NodeSearchRow) {
-    setCascadeNode(node);
-    setCascadeOpen(true);
-    setCascade(null);
-    const res = await previewNodeCascade({ rootNodeId: node.id });
-    setCascade(res);
+  function openAssignDialog(entity: EntityWithAssignments) {
+    setSelectedEntity(entity);
+    setSelectedUserIds([]);
+    setAssignDialogOpen(true);
   }
 
-  async function applyNodeAssignment() {
-    if (!selectedReportId || !cascadeNode) return;
-    setSubmitting(true);
-    setError(null);
+  function openEntityAssignDialog(user: AssignableUser) {
+    setSelectedUser(user);
+    setSelectedEntityIds([]);
+    setEntityAssignDialogOpen(true);
+  }
+
+  async function handleAssign() {
+    if (!selectedEntity || selectedUserIds.length === 0) return;
+
+    setAssigning(true);
     try {
-      const res = await assignResponsibilities({ mode: "node", assignedToId: selectedReportId, rootNodeId: cascadeNode.id });
-      if (!res.success) {
+      const assignments = selectedUserIds.map((userId) => ({
+        entityId: selectedEntity.id,
+        userId,
+      }));
+
+      const res = await bulkAssignEntities({ assignments });
+      if (res.success) {
+        setAssignDialogOpen(false);
+        await loadData();
+      } else {
         setError(res.error);
-        return;
       }
-      setCascadeOpen(false);
-      setCascadeNode(null);
-      setCascade(null);
-      await loadAssignments(selectedReportId);
-    } catch (e: unknown) {
-      setError(e instanceof Error ? e.message : t("failedToSave"));
+    } catch {
+      setError("failedToAssign");
     } finally {
-      setSubmitting(false);
+      setAssigning(false);
     }
   }
 
-  async function applyKpiAssignment() {
-    if (!selectedReportId || selectedKpis.length === 0) return;
-    setSubmitting(true);
-    setError(null);
+  async function handleEntityAssign() {
+    if (!selectedUser || selectedEntityIds.length === 0) return;
+
+    setAssigning(true);
     try {
-      const res = await assignResponsibilities({ mode: "kpi", assignedToId: selectedReportId, kpiIds: selectedKpis.map((k) => k.id) });
-      if (!res.success) {
+      const assignments = selectedEntityIds.map((entityId) => ({
+        entityId,
+        userId: selectedUser.id,
+      }));
+
+      const res = await bulkAssignEntities({ assignments });
+      if (res.success) {
+        setEntityAssignDialogOpen(false);
+        await loadData();
+      } else {
         setError(res.error);
-        return;
       }
-      setSelectedKpis([]);
-      await loadAssignments(selectedReportId);
-    } catch (e: unknown) {
-      setError(e instanceof Error ? e.message : t("failedToSave"));
+    } catch {
+      setError("failedToAssign");
     } finally {
-      setSubmitting(false);
+      setAssigning(false);
     }
   }
 
-  async function removeNodeAssignment(rootNodeId: string) {
-    if (!selectedReportId) return;
-    setSubmitting(true);
-    setError(null);
+  async function handleUnassign(assignmentId: string) {
     try {
-      const res = await unassignResponsibility({ mode: "node", assignedToId: selectedReportId, rootNodeId });
-      if (!res.success) {
-        setError(res.error);
-        return;
+      const res = await bulkUnassignEntities({ assignmentIds: [assignmentId] });
+      if (res.success) {
+        await loadData();
       }
-      await loadAssignments(selectedReportId);
-    } catch (e: unknown) {
-      setError(e instanceof Error ? e.message : t("failedToSave"));
-    } finally {
-      setSubmitting(false);
+    } catch {
+      // Silently fail
     }
   }
 
-  async function removeKpiAssignment(kpiId: string) {
-    if (!selectedReportId) return;
-    setSubmitting(true);
-    setError(null);
-    try {
-      const res = await unassignResponsibility({ mode: "kpi", assignedToId: selectedReportId, kpiId });
-      if (!res.success) {
-        setError(res.error);
-        return;
-      }
-      await loadAssignments(selectedReportId);
-    } catch (e: unknown) {
-      setError(e instanceof Error ? e.message : t("failedToSave"));
-    } finally {
-      setSubmitting(false);
-    }
-  }
+  const userAssignmentMap = useMemo(() => {
+    const map = new Map<string, EntityWithAssignments[]>();
+    users.forEach((user) => {
+      const userEntities = entities.filter((e) =>
+        e.assignments.some((a) => a.user.id === user.id)
+      );
+      map.set(user.id, userEntities);
+    });
+    return map;
+  }, [users, entities]);
 
   if (sessionLoading || loading) {
     return (
-      <div className="rounded-2xl border border-border bg-card p-8">
-        <div className="flex items-center gap-2 text-sm text-muted-foreground">
-          <Loader2 className="h-4 w-4 animate-spin" />
-          <span>{t("loadingEllipsis")}</span>
-        </div>
+      <div className="space-y-6">
+        <PageHeader title={tr("Responsibilities", "المسؤوليات")} subtitle={tr("Manage entity assignments", "إدارة تعيينات الكيانات")} />
+        <Card>
+          <CardContent className="p-8">
+            <div className="text-sm text-muted-foreground">{t("loading")}</div>
+          </CardContent>
+        </Card>
       </div>
     );
   }
 
-  if (!user) {
+  if (!canAdmin) {
     return (
-      <div className="rounded-2xl border border-border bg-card p-8">
-        <p className="text-sm text-muted-foreground">{t("noActiveSession")}</p>
-        <Link href={`/${locale}/auth/login`} className="mt-3 inline-flex text-sm font-semibold text-primary hover:opacity-90">
-          {t("goToSignIn")}
-        </Link>
-      </div>
-    );
-  }
-
-  if (!canUse) {
-    return (
-      <div className="rounded-2xl border border-border bg-card p-8">
-        <p className="text-sm text-muted-foreground">{t("unauthorized")}</p>
-        <Link href={`/${locale}/overview`} className="mt-3 inline-flex text-sm font-semibold text-primary hover:opacity-90">
-          {t("back")}
-        </Link>
+      <div className="space-y-6">
+        <PageHeader title={tr("Responsibilities", "المسؤوليات")} />
+        <Card>
+          <CardContent className="p-8">
+            <div className="text-sm text-muted-foreground">{t("unauthorized")}</div>
+          </CardContent>
+        </Card>
       </div>
     );
   }
 
   return (
-    <div className="space-y-8">
+    <div className="space-y-6">
       <PageHeader
-        title={t("responsibilities")}
-        subtitle={t("responsibilitiesSubtitle")}
-        icon={<Icon name="tabler:user-check" className="h-5 w-5" />}
+        title={tr("Responsibilities", "المسؤوليات")}
+        subtitle={tr("Assign entities to executives and managers", "تعيين الكيانات للتنفيذيين والمديرين")}
       />
 
       {error ? (
-        <div className="rounded-xl border border-destructive/40 bg-destructive/10 px-4 py-3 text-sm text-destructive whitespace-pre-wrap">{error}</div>
+        <Card className="border-destructive/40 bg-destructive/10">
+          <CardContent className="p-4">
+            <div className="text-sm text-destructive">{error}</div>
+          </CardContent>
+        </Card>
       ) : null}
 
-      <div className="grid gap-6 lg:grid-cols-3">
-        <Card className="bg-card/70 backdrop-blur shadow-sm lg:col-span-1">
-          <CardHeader>
-            <CardTitle className="text-base">{t("chooseUser")}</CardTitle>
-            <CardDescription>{t("onlyAssignToDirectReportsDesc")}</CardDescription>
-          </CardHeader>
-          <CardContent className="space-y-4">
-            <div className="space-y-2">
-              <Label>{t("directReport")}</Label>
-              <Select
-                value={selectedReportId}
-                onValueChange={async (id) => {
-                  setSelectedReportId(id);
-                  setSelectedKpis([]);
-                  setCascadeNode(null);
-                  setCascade(null);
-                  await loadAssignments(id);
-                }}
-              >
-                <SelectTrigger className="bg-card">
-                  <SelectValue placeholder={t("selectUser")} />
-                </SelectTrigger>
-                <SelectContent>
-                  {reports.map((r) => (
-                    <SelectItem key={r.id} value={r.id}>
-                      {r.name} ({r.role})
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </div>
+      <Tabs value={viewMode} onValueChange={(v) => setViewMode(v as "entities" | "users")}>
+        <TabsList>
+          <TabsTrigger value="entities">{tr("By Entity", "حسب الكيان")}</TabsTrigger>
+          <TabsTrigger value="users">{tr("By User", "حسب المستخدم")}</TabsTrigger>
+        </TabsList>
 
-            {selectedReport ? (
-              <div className="rounded-xl border border-border bg-muted/30 p-4">
-                <div className="flex items-center gap-3">
-                  <div className="flex h-10 w-10 items-center justify-center rounded-full border border-border bg-background/70 text-xs font-semibold">
-                    {initials(selectedReport.name)}
-                  </div>
-                  <div className="min-w-0">
-                    <p className="truncate text-sm font-semibold">{selectedReport.name}</p>
-                    <p className="truncate text-xs text-muted-foreground">
-                      {selectedReport.role}
-                      {selectedReport.department?.name ? ` • ${selectedReport.department.name}` : ""}
-                    </p>
-                  </div>
+        <TabsContent value="entities" className="space-y-4 mt-6">
+          <Card>
+            <CardHeader>
+              <div className="flex items-center justify-between gap-4">
+                <div>
+                  <CardTitle>{tr("Entity Assignments", "تعيينات الكيان")}</CardTitle>
+                  <CardDescription>
+                    {tr("Assign users to entities they can manage", "تعيين المستخدمين للكيانات التي يمكنهم إدارتها")}
+                  </CardDescription>
                 </div>
               </div>
-            ) : null}
-
-            <div className="grid grid-cols-2 gap-2">
-              <Button
-                variant={mode === "node" ? "default" : "outline"}
-                onClick={() => {
-                  setMode("node");
-                  setSelectedKpis([]);
-                }}
-              >
-                {t("assignItem")}
-              </Button>
-              <Button
-                variant={mode === "kpi" ? "default" : "outline"}
-                onClick={() => {
-                  setMode("kpi");
-                  setCascadeNode(null);
-                  setCascade(null);
-                }}
-              >
-                {t("assignKpis")}
-              </Button>
-            </div>
-
-            <div className="rounded-xl border border-border bg-muted/20 p-4 text-xs text-muted-foreground">
-              <p className="font-semibold text-foreground">{t("tip")}</p>
-              <div className="mt-2 space-y-2">
-                <p>{t("itemAssignmentCascadeHelp")}</p>
-                <p>{t("kpiAssignmentHelp")}</p>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
-
-        <Card className="bg-card/70 backdrop-blur shadow-sm lg:col-span-2">
-          <CardHeader>
-            <CardTitle className="text-base">{mode === "node" ? t("selectAnItem") : t("selectKpis")}</CardTitle>
-            <CardDescription>
-              {mode === "node"
-                ? t("pickAndPreviewCascadeDesc")
-                : t("searchAndAddKpisDesc")}
-            </CardDescription>
-          </CardHeader>
-          <CardContent className="space-y-5">
-            {mode === "node" ? (
-              <div className="space-y-3">
-                <div className="space-y-2">
-                  <Label>{t("linkedNode")}</Label>
-                  <NodePickerTree
-                    nodes={nodePickerNodes}
-                    selectedId={selectedNodeId || null}
-                    onSelect={(id) => {
-                      if (!id) {
-                        setSelectedNodeId("");
-                        return;
-                      }
-
-                      const found = nodePickerNodes.find((n) => n.id === id);
-                      if (!found) return;
-                      setSelectedNodeId(id);
-
-                      void openCascadePreview({
-                        id: found.id,
-                        name: found.name,
-                        color: found.color,
-                        parentId: found.parentId,
-                        nodeType: { code: found.nodeType.code, displayName: found.nodeType.displayName, levelOrder: 0 },
-                        parent: null,
-                        _count: { children: 0, kpis: 0 },
-                      });
-                    }}
-                    searchPlaceholder={t("searchNodesPlaceholder")}
-                    clearLabel={t("clear")}
-                    typeFallbackLabel={t("type")}
-                    heightClassName="h-[360px]"
-                    variant="light"
-                    showClear={false}
-                    showSelectedIndicator={false}
-                  />
-                </div>
-              </div>
-            ) : (
+            </CardHeader>
+            <CardContent>
               <div className="space-y-4">
-                <div className="space-y-2">
-                  <Label>{t("searchKpis")}</Label>
-                  <Input
-                    value={kpiQuery}
-                    onChange={(e) => setKpiQuery(e.target.value)}
-                    placeholder={t("typeANamePlaceholder")}
-                    className="bg-card"
-                  />
-                </div>
-
-                {selectedKpis.length ? (
-                  <div className="rounded-xl border border-border bg-muted/20 p-3">
-                    <p className="text-xs font-semibold text-foreground">{t("selected")}</p>
-                    <div className="mt-2 flex flex-wrap gap-2">
-                      {selectedKpis.map((k) => (
-                        <span key={k.id} className="inline-flex items-center gap-2 rounded-full border border-border bg-background/60 px-3 py-1 text-xs">
-                          <span className="font-semibold">{k.name}</span>
-                          <button
-                            type="button"
-                            className="text-muted-foreground hover:text-foreground"
-                            onClick={() => setSelectedKpis((prev) => prev.filter((x) => x.id !== k.id))}
-                            aria-label={t("remove")}
-                          >
-                            <Trash2 className="h-3.5 w-3.5" />
-                          </button>
-                        </span>
-                      ))}
-                    </div>
+                <div className="flex flex-col sm:flex-row gap-3">
+                  <div className="relative flex-1">
+                    <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                    <Input
+                      placeholder={tr("Search entities...", "بحث الكيانات...")}
+                      value={searchQuery}
+                      onChange={(e) => setSearchQuery(e.target.value)}
+                      className="pl-10"
+                    />
                   </div>
-                ) : null}
+                  <select
+                    value={selectedType}
+                    onChange={(e) => setSelectedType(e.target.value)}
+                    className="rounded-md border border-border bg-background px-3 py-2 text-sm"
+                  >
+                    <option value="all">{tr("All Types", "جميع الأنواع")}</option>
+                    {entityTypes.map((type) => (
+                      <option key={type} value={type}>
+                        {type}
+                      </option>
+                    ))}
+                  </select>
+                </div>
 
-                <div className="grid gap-2">
-                  {kpiResults.map((k) => {
-                    const isSelected = selectedKpiIds.has(k.id);
+                <div className="space-y-3">
+                  {filteredEntities.length === 0 ? (
+                    <div className="text-center py-8 text-sm text-muted-foreground">
+                      {tr("No entities found", "لم يتم العثور على كيانات")}
+                    </div>
+                  ) : (
+                    filteredEntities.map((entity) => (
+                      <Card key={entity.id} className="bg-card/50">
+                        <CardHeader>
+                          <div className="flex items-start justify-between gap-4">
+                            <div className="flex-1">
+                              <div className="flex items-center gap-2">
+                                <CardTitle className="text-base">
+                                  <Link
+                                    href={`/${locale}/entities/${entity.orgEntityType.code}/${entity.id}`}
+                                    className="hover:text-primary transition-colors"
+                                  >
+                                    {df(entity.title, entity.titleAr)}
+                                  </Link>
+                                </CardTitle>
+                                {entity.periodType ? (
+                                  <Badge variant="outline" className="text-xs">
+                                    KPI
+                                  </Badge>
+                                ) : null}
+                              </div>
+                              <CardDescription>
+                                {df(entity.orgEntityType.name, entity.orgEntityType.nameAr)}
+                                {entity.key ? ` • ${entity.key}` : ""}
+                              </CardDescription>
+                            </div>
+                            <Button size="sm" onClick={() => openAssignDialog(entity)}>
+                              <UserPlus className="h-4 w-4 me-2" />
+                              {tr("Assign", "تعيين")}
+                            </Button>
+                          </div>
+                        </CardHeader>
+                        {entity.assignments.length > 0 ? (
+                          <CardContent>
+                            <div className="flex flex-wrap gap-2">
+                              {entity.assignments.map((assignment) => (
+                                <div
+                                  key={assignment.id}
+                                  className="flex items-center gap-2 rounded-lg border border-border bg-muted/20 px-3 py-2"
+                                >
+                                  <div className="flex items-center gap-2">
+                                    <div className="flex h-8 w-8 items-center justify-center rounded-full bg-primary/10 text-xs font-semibold">
+                                      {assignment.user.name.charAt(0).toUpperCase()}
+                                    </div>
+                                    <div>
+                                      <div className="text-sm font-medium">{assignment.user.name}</div>
+                                      <div className="text-xs text-muted-foreground">
+                                        {getRoleLabel(String(assignment.user.role))}
+                                      </div>
+                                    </div>
+                                  </div>
+                                  <Button
+                                    size="icon"
+                                    variant="ghost"
+                                    className="h-6 w-6 text-destructive hover:text-destructive"
+                                    onClick={() => void handleUnassign(assignment.id)}
+                                  >
+                                    <X className="h-3 w-3" />
+                                  </Button>
+                                </div>
+                              ))}
+                            </div>
+                          </CardContent>
+                        ) : (
+                          <CardContent>
+                            <div className="text-xs text-muted-foreground">
+                              {tr("No users assigned", "لا يوجد مستخدمون معينون")}
+                            </div>
+                          </CardContent>
+                        )}
+                      </Card>
+                    ))
+                  )}
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+        </TabsContent>
+
+        <TabsContent value="users" className="space-y-4 mt-6">
+          <Card>
+            <CardHeader>
+              <CardTitle>{tr("User Assignments", "تعيينات المستخدم")}</CardTitle>
+              <CardDescription>
+                {tr("View and manage assignments by user", "عرض وإدارة التعيينات حسب المستخدم")}
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <div className="space-y-3">
+                {users.length === 0 ? (
+                  <div className="text-center py-8 text-sm text-muted-foreground">
+                    {tr("No users available", "لا يوجد مستخدمون متاحون")}
+                  </div>
+                ) : (
+                  users.map((user) => {
+                    const userEntities = userAssignmentMap.get(user.id) || [];
                     return (
-                      <div key={k.id} className="flex items-start justify-between gap-3 rounded-xl border border-border bg-background/50 px-4 py-3">
-                        <div className="min-w-0">
-                          <p className="truncate text-sm font-semibold">{k.name}</p>
-                          <p className="mt-1 truncate text-xs text-muted-foreground">
-                            {nodeTypeLabel(String(k.primaryNode.nodeType.code), k.primaryNode.nodeType.displayName)} • {k.primaryNode.name}
-                            {k.unit ? ` • ${k.unit}` : ""}
-                          </p>
-                        </div>
-                        <Button
-                          variant={isSelected ? "outline" : "default"}
-                          size="sm"
-                          onClick={() => {
-                            if (isSelected) {
-                              setSelectedKpis((prev) => prev.filter((x) => x.id !== k.id));
-                              return;
-                            }
-                            setSelectedKpis((prev) => [...prev, k]);
-                          }}
-                        >
-                          {isSelected ? t("remove") : t("add")}
-                        </Button>
-                      </div>
+                      <Card key={user.id} className="bg-card/50">
+                        <CardHeader>
+                          <div className="flex items-center justify-between">
+                            <div className="flex items-center gap-3">
+                              <div className="flex h-12 w-12 items-center justify-center rounded-full bg-primary/10 text-sm font-semibold">
+                                {user.name.charAt(0).toUpperCase()}
+                              </div>
+                              <div>
+                                <div className="font-semibold">{user.name}</div>
+                                <div className="text-sm text-muted-foreground">{user.email}</div>
+                                <Badge variant="outline" className={`text-xs mt-1 ${getRoleBadgeColor(String(user.role))}`}>
+                                  {getRoleLabel(String(user.role))}
+                                </Badge>
+                              </div>
+                            </div>
+                            <div className="flex items-center gap-2">
+                              <div className="text-sm text-muted-foreground">
+                                <CheckCircle2 className="h-4 w-4 inline me-1" />
+                                {userEntities.length} {tr("assigned", "معين")}
+                              </div>
+                              <Button size="sm" onClick={() => openEntityAssignDialog(user)}>
+                                <UserPlus className="h-4 w-4 me-2" />
+                                {tr("Assign Entities", "تعيين كيانات")}
+                              </Button>
+                            </div>
+                          </div>
+                        </CardHeader>
+                        {userEntities.length > 0 ? (
+                          <CardContent>
+                            <div className="space-y-2">
+                              {userEntities.map((entity) => (
+                                <Link
+                                  key={entity.id}
+                                  href={`/${locale}/entities/${entity.orgEntityType.code}/${entity.id}`}
+                                  className="block rounded-lg border border-border bg-background/50 px-3 py-2 text-sm hover:bg-accent transition-colors"
+                                >
+                                  <div className="font-medium">{df(entity.title, entity.titleAr)}</div>
+                                  <div className="text-xs text-muted-foreground">
+                                    {df(entity.orgEntityType.name, entity.orgEntityType.nameAr)}
+                                  </div>
+                                </Link>
+                              ))}
+                            </div>
+                          </CardContent>
+                        ) : null}
+                      </Card>
                     );
-                  })}
-
-                  {kpiResults.length === 0 ? (
-                    <div className="rounded-xl border border-dashed border-border bg-muted/10 p-6 text-sm text-muted-foreground">
-                      {t("noKpisFound")}
-                    </div>
-                  ) : null}
-                </div>
-
-                <div className="flex justify-end">
-                  <Button onClick={() => void applyKpiAssignment()} disabled={!selectedReportId || selectedKpis.length === 0 || submitting}>
-                    {submitting ? <Loader2 className="me-2 h-4 w-4 animate-spin" /> : <Plus className="me-2 h-4 w-4" />}
-                    {t("assignSelectedKpis")}
-                  </Button>
-                </div>
+                  })
+                )}
               </div>
-            )}
-          </CardContent>
-        </Card>
-      </div>
+            </CardContent>
+          </Card>
+        </TabsContent>
+      </Tabs>
 
-      <Card className="bg-card/70 backdrop-blur shadow-sm">
-        <CardHeader>
-          <CardTitle className="text-base">{t("currentResponsibilities")}</CardTitle>
-          <CardDescription>{t("assignedToDirectReportDesc")}</CardDescription>
-        </CardHeader>
-        <CardContent className="space-y-6">
-          {!selectedReportId ? (
-            <div className="rounded-xl border border-dashed border-border bg-muted/10 p-6 text-sm text-muted-foreground">
-              {t("selectReportToViewDesc")}
-            </div>
-          ) : null}
-
-          {selectedReportId ? (
-            <div className="grid gap-6 lg:grid-cols-2">
-              <div className="space-y-3">
-                <div className="flex items-center justify-between">
-                  <p className="text-sm font-semibold">{t("itemResponsibilities")}</p>
-                  <Badge variant="outline" className="border-border bg-muted/30">
-                    {assignments?.nodeAssignments.length ?? 0}
-                  </Badge>
-                </div>
-
-                <div className="grid gap-2">
-                  {(assignments?.nodeAssignments ?? []).map((a) => (
-                    <div key={a.id} className="flex items-start justify-between gap-3 rounded-xl border border-border bg-background/50 px-4 py-3">
-                      <div className="min-w-0">
-                        <div className="flex items-center gap-2">
-                          <span className="h-2.5 w-2.5 rounded-full" style={{ background: a.rootNode.color }} />
-                          <p className="truncate text-sm font-semibold">{a.rootNode.name}</p>
-                          <Badge variant="outline" className="border-border bg-muted/30">
-                            {nodeTypeLabel(String(a.rootNode.nodeType.code), a.rootNode.nodeType.displayName)}
-                          </Badge>
-                        </div>
-                        <p className="mt-1 text-xs text-muted-foreground">
-                          {t("assignedBy")}: {a.assignedBy.name} ({a.assignedBy.role})
-                        </p>
-                      </div>
-                      <Button
-                        variant="outline"
-                        size="sm"
-                        disabled={submitting}
-                        onClick={() => void removeNodeAssignment(a.rootNode.id)}
-                      >
-                        {submitting ? <Loader2 className="h-4 w-4 animate-spin" /> : <Trash2 className="h-4 w-4" />}
-                      </Button>
-                    </div>
-                  ))}
-
-                  {(assignments?.nodeAssignments.length ?? 0) === 0 ? (
-                    <div className="rounded-xl border border-dashed border-border bg-muted/10 p-6 text-sm text-muted-foreground">
-                      {t("noNodeResponsibilitiesDesc")}
-                    </div>
-                  ) : null}
-                </div>
-              </div>
-
-              <div className="space-y-3">
-                <div className="flex items-center justify-between">
-                  <p className="text-sm font-semibold">{t("kpiResponsibilities")}</p>
-                  <Badge variant="outline" className="border-border bg-muted/30">
-                    {assignments?.kpiAssignments.length ?? 0}
-                  </Badge>
-                </div>
-
-                <div className="grid gap-2">
-                  {(assignments?.kpiAssignments ?? []).map((a) => (
-                    <div key={a.id} className="flex items-start justify-between gap-3 rounded-xl border border-border bg-background/50 px-4 py-3">
-                      <div className="min-w-0">
-                        <p className="truncate text-sm font-semibold">{a.kpi.name}</p>
-                        <p className="mt-1 truncate text-xs text-muted-foreground">
-                          {nodeTypeLabel(String(a.kpi.primaryNode.nodeType.code), a.kpi.primaryNode.nodeType.displayName)} • {a.kpi.primaryNode.name}
-                          {a.kpi.unit ? ` • ${a.kpi.unit}` : ""}
-                        </p>
-                        <p className="mt-2 text-xs text-muted-foreground">
-                          {t("assignedBy")}: {a.assignedBy.name} ({a.assignedBy.role})
-                        </p>
-                      </div>
-                      <Button
-                        variant="outline"
-                        size="sm"
-                        disabled={submitting}
-                        onClick={() => void removeKpiAssignment(a.kpi.id)}
-                      >
-                        {submitting ? <Loader2 className="h-4 w-4 animate-spin" /> : <Trash2 className="h-4 w-4" />}
-                      </Button>
-                    </div>
-                  ))}
-
-                  {(assignments?.kpiAssignments.length ?? 0) === 0 ? (
-                    <div className="rounded-xl border border-dashed border-border bg-muted/10 p-6 text-sm text-muted-foreground">
-                      {t("noKpiResponsibilitiesDesc")}
-                    </div>
-                  ) : null}
-                </div>
-              </div>
-            </div>
-          ) : null}
-        </CardContent>
-      </Card>
-
-      <Dialog open={cascadeOpen} onOpenChange={setCascadeOpen}>
-        <DialogContent className="sm:max-w-[640px]">
+      <Dialog open={assignDialogOpen} onOpenChange={setAssignDialogOpen}>
+        <DialogContent className="max-w-2xl">
           <DialogHeader>
-            <DialogTitle>{t("confirmNodeAssignment")}</DialogTitle>
+            <DialogTitle>{tr("Assign Users", "تعيين مستخدمين")}</DialogTitle>
             <DialogDescription>
-              {t("cascadeResponsibilityHelp")}
+              {selectedEntity ? `${tr("Assign to", "تعيين إلى")} "${df(selectedEntity.title, selectedEntity.titleAr)}"` : ""}
             </DialogDescription>
           </DialogHeader>
 
-          <div className="space-y-4">
-            {cascadeNode ? (
-              <div className="rounded-xl border border-border bg-muted/20 p-4">
-                <div className="flex items-center gap-2">
-                  <span className="h-2.5 w-2.5 rounded-full" style={{ background: cascadeNode.color }} />
-                  <p className="text-sm font-semibold">{cascadeNode.name}</p>
-                  <Badge variant="outline" className="border-border bg-muted/30">
-                    {nodeTypeLabel(String(cascadeNode.nodeType.code), cascadeNode.nodeType.displayName)}
-                  </Badge>
-                </div>
-              </div>
-            ) : null}
-
-            {!cascade ? (
-              <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                <Loader2 className="h-4 w-4 animate-spin" />
-                <span>{t("buildingCascadePreview")}</span>
-              </div>
-            ) : (
-              <div className="grid gap-4 sm:grid-cols-2">
-                <div className="rounded-xl border border-border bg-background/50 p-4">
-                  <p className="text-xs font-semibold text-muted-foreground">{t("nodesInScope")}</p>
-                  <p className="mt-2 text-2xl font-semibold">{cascade.counts.nodes}</p>
-                </div>
-                <div className="rounded-xl border border-border bg-background/50 p-4">
-                  <p className="text-xs font-semibold text-muted-foreground">{t("kpisInScope")}</p>
-                  <p className="mt-2 text-2xl font-semibold">{cascade.counts.kpis}</p>
-                </div>
-
-                <div className="sm:col-span-2 rounded-xl border border-border bg-muted/20 p-4">
-                  <p className="text-xs font-semibold text-foreground">{t("sampleKpis")}</p>
-                  <div className="mt-3 space-y-2">
-                    {cascade.sampleKpis.length ? (
-                      cascade.sampleKpis.map((k) => (
-                        <div key={k.id} className="rounded-lg border border-border bg-background/50 px-3 py-2">
-                          <p className="truncate text-sm font-semibold">{k.name}</p>
-                          <p className="truncate text-xs text-muted-foreground">
-                            {nodeTypeLabel(String(k.primaryNode.nodeType.code), k.primaryNode.nodeType.displayName)} • {k.primaryNode.name}
-                          </p>
-                        </div>
-                      ))
-                    ) : (
-                      <p className="text-sm text-muted-foreground">{t("noKpisUnderNode")}</p>
-                    )}
+          {(() => {
+            const availableUsers = users.filter((u) => !selectedEntity?.assignments.some((a) => a.user.id === u.id));
+            const allSelected = availableUsers.length > 0 && availableUsers.every((u) => selectedUserIds.includes(u.id));
+            
+            return (
+              <>
+                {availableUsers.length > 0 && (
+                  <div className="flex items-center justify-between pb-3 border-b">
+                    <span className="text-sm text-muted-foreground">
+                      {selectedUserIds.length} {tr("selected", "محدد")}
+                    </span>
+                    <Button
+                      type="button"
+                      variant="ghost"
+                      size="sm"
+                      onClick={() => {
+                        if (allSelected) {
+                          setSelectedUserIds([]);
+                        } else {
+                          setSelectedUserIds(availableUsers.map((u) => u.id));
+                        }
+                      }}
+                    >
+                      {allSelected ? tr("Deselect All", "إلغاء تحديد الكل") : tr("Select All", "تحديد الكل")}
+                    </Button>
                   </div>
+                )}
+
+                <div className="space-y-2 max-h-96 overflow-y-auto">
+                  {availableUsers.length === 0 ? (
+                    <div className="text-center py-8 text-sm text-muted-foreground">
+                      {tr("All users are already assigned", "جميع المستخدمين معينون بالفعل")}
+                    </div>
+                  ) : (
+                    availableUsers.map((user) => (
+                      <label
+                        key={user.id}
+                        className="flex items-center gap-3 rounded-lg border border-border bg-muted/10 px-4 py-3 cursor-pointer hover:bg-accent transition-colors"
+                      >
+                        <Checkbox
+                          checked={selectedUserIds.includes(user.id)}
+                          onCheckedChange={(checked: boolean) => {
+                            if (checked) {
+                              setSelectedUserIds((prev) => [...prev, user.id]);
+                            } else {
+                              setSelectedUserIds((prev) => prev.filter((id) => id !== user.id));
+                            }
+                          }}
+                        />
+                        <div className="flex h-10 w-10 items-center justify-center rounded-full bg-primary/10 text-sm font-semibold">
+                          {user.name.charAt(0).toUpperCase()}
+                        </div>
+                        <div className="flex-1">
+                          <div className="font-medium">{user.name}</div>
+                          <div className="text-xs text-muted-foreground">{user.email}</div>
+                        </div>
+                        <Badge variant="outline" className={`text-xs ${getRoleBadgeColor(String(user.role))}`}>
+                          {getRoleLabel(String(user.role))}
+                        </Badge>
+                      </label>
+                    ))
+                  )}
                 </div>
-              </div>
-            )}
-          </div>
+              </>
+            );
+          })()}
 
           <DialogFooter>
-            <Button
-              variant="outline"
-              onClick={() => {
-                setCascadeOpen(false);
-                setCascadeNode(null);
-                setCascade(null);
-              }}
-              disabled={submitting}
-            >
+            <Button type="button" variant="ghost" onClick={() => setAssignDialogOpen(false)}>
               {t("cancel")}
             </Button>
-            <Button onClick={() => void applyNodeAssignment()} disabled={!cascadeNode || submitting}>
-              {submitting ? <Loader2 className="me-2 h-4 w-4 animate-spin" /> : null}
-              {t("confirmAssignment")}
+            <Button type="button" onClick={() => void handleAssign()} disabled={assigning || selectedUserIds.length === 0}>
+              {assigning ? t("saving") : tr("Assign Selected", "تعيين المحددين")}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      <Dialog open={entityAssignDialogOpen} onOpenChange={setEntityAssignDialogOpen}>
+        <DialogContent className="max-w-2xl">
+          <DialogHeader>
+            <DialogTitle>{tr("Assign Entities", "تعيين كيانات")}</DialogTitle>
+            <DialogDescription>
+              {selectedUser ? `${tr("Assign to", "تعيين إلى")} ${selectedUser.name}` : ""}
+            </DialogDescription>
+          </DialogHeader>
+
+          {(() => {
+            const assignedEntityIds = new Set(
+              entities
+                .filter((e) => e.assignments.some((a) => a.user.id === selectedUser?.id))
+                .map((e) => e.id)
+            );
+            const availableEntities = entities.filter((e) => !assignedEntityIds.has(e.id));
+            const allSelected = availableEntities.length > 0 && availableEntities.every((e) => selectedEntityIds.includes(e.id));
+            
+            return (
+              <>
+                {availableEntities.length > 0 && (
+                  <div className="flex items-center justify-between pb-3 border-b">
+                    <span className="text-sm text-muted-foreground">
+                      {selectedEntityIds.length} {tr("selected", "محدد")}
+                    </span>
+                    <Button
+                      type="button"
+                      variant="ghost"
+                      size="sm"
+                      onClick={() => {
+                        if (allSelected) {
+                          setSelectedEntityIds([]);
+                        } else {
+                          setSelectedEntityIds(availableEntities.map((e) => e.id));
+                        }
+                      }}
+                    >
+                      {allSelected ? tr("Deselect All", "إلغاء تحديد الكل") : tr("Select All", "تحديد الكل")}
+                    </Button>
+                  </div>
+                )}
+
+                <div className="space-y-2 max-h-96 overflow-y-auto">
+                  {availableEntities.length === 0 ? (
+                    <div className="text-center py-8 text-sm text-muted-foreground">
+                      {tr("All entities are already assigned", "جميع الكيانات معينة بالفعل")}
+                    </div>
+                  ) : (
+                    availableEntities.map((entity) => (
+                      <label
+                        key={entity.id}
+                        className="flex items-center gap-3 rounded-lg border border-border bg-muted/10 px-4 py-3 cursor-pointer hover:bg-accent transition-colors"
+                      >
+                        <Checkbox
+                          checked={selectedEntityIds.includes(entity.id)}
+                          onCheckedChange={(checked: boolean) => {
+                            if (checked) {
+                              setSelectedEntityIds((prev) => [...prev, entity.id]);
+                            } else {
+                              setSelectedEntityIds((prev) => prev.filter((id) => id !== entity.id));
+                            }
+                          }}
+                        />
+                        <div className="flex-1">
+                          <div className="font-medium">{df(entity.title, entity.titleAr)}</div>
+                          <div className="text-xs text-muted-foreground">
+                            {df(entity.orgEntityType.name, entity.orgEntityType.nameAr)}
+                            {entity.key ? ` • ${entity.key}` : ""}
+                          </div>
+                        </div>
+                        {entity.periodType ? (
+                          <Badge variant="outline" className="text-xs">
+                            KPI
+                          </Badge>
+                        ) : null}
+                      </label>
+                    ))
+                  )}
+                </div>
+              </>
+            );
+          })()}
+
+          <DialogFooter>
+            <Button type="button" variant="ghost" onClick={() => setEntityAssignDialogOpen(false)}>
+              {t("cancel")}
+            </Button>
+            <Button type="button" onClick={() => void handleEntityAssign()} disabled={assigning || selectedEntityIds.length === 0}>
+              {assigning ? t("saving") : tr("Assign Selected", "تعيين المحددين")}
             </Button>
           </DialogFooter>
         </DialogContent>

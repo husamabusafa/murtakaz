@@ -1,6 +1,6 @@
 import seedUsers from "@/content/seed/users.json";
 
-export type Role = "ADMIN" | "EXECUTIVE" | "PMO" | "MANAGER" | "EMPLOYEE";
+export type Role = "ADMIN" | "EXECUTIVE" | "MANAGER";
 
 export type DemoUser = {
   id: string;
@@ -14,7 +14,6 @@ export type DemoUser = {
 function titleFor(role: Role, department?: string) {
   if (role === "ADMIN") return "System Administrator";
   if (role === "EXECUTIVE") return "Group Executive";
-  if (role === "PMO") return "PMO Lead";
   if (role === "MANAGER") return department ? `Head of ${department}` : "Department Manager";
   return "Contributor";
 }
@@ -28,14 +27,6 @@ export const demoUsers: DemoUser[] = [
     department: user.department,
     title: titleFor(user.role as Role, user.department),
   })),
-  {
-    id: "user-employee",
-    name: "Project Contributor",
-    email: "employee@musa.com",
-    role: "EMPLOYEE",
-    department: "Delivery",
-    title: "Project Contributor",
-  },
 ];
 
 export function getDemoUserById(userId: string | undefined | null) {

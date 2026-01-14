@@ -10,7 +10,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { useLocale } from "@/providers/locale-provider";
 import { getOrganizations } from "@/actions/admin";
 import { Plus } from "lucide-react";
-import type { Organization } from "@prisma/client";
+import type { Organization } from "@/generated/prisma-client";
 
 export default function OrganizationsPage() {
   const { t, locale } = useLocale();

@@ -16,9 +16,8 @@ import { type TranslationKey, useLocale } from "@/providers/locale-provider";
 function roleLabel(role: string, t: (key: TranslationKey) => string) {
   if (role === "ADMIN") return t("roleAdmin");
   if (role === "EXECUTIVE") return t("roleExecutive");
-  if (role === "PMO") return t("rolePMO");
   if (role === "MANAGER") return t("roleManager");
-  if (role === "EMPLOYEE") return t("roleEmployee");
+  if (role === "SUPER_ADMIN") return t("superAdmin");
   return role;
 }
 
