@@ -13,7 +13,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { useAuth } from "@/providers/auth-provider";
 import { useLocale } from "@/providers/locale-provider";
-import { getAllEntitiesWithAssignments, getAllAssignableUsersForAdmin, bulkAssignEntities, bulkUnassignEntities } from "@/actions/admin-assignments";
+import { getAllEntitiesWithAssignments, getAllAssignableUsersForAdmin, getSubordinatesWithAssignments, bulkAssignEntities, bulkUnassignEntities } from "@/actions/admin-assignments";
 
 type EntityWithAssignments = {
   id: string;
@@ -77,32 +77,45 @@ export default function ResponsibilitiesPage() {
     setLoading(true);
     setError(null);
     try {
-      const [entitiesRes, usersRes] = await Promise.all([
-        getAllEntitiesWithAssignments(),
-        getAllAssignableUsersForAdmin(),
-      ]);
+      if (canAdmin) {
+        // Admin: Load all entities and users
+        const [entitiesRes, usersRes] = await Promise.all([
+          getAllEntitiesWithAssignments(),
+          getAllAssignableUsersForAdmin(),
+        ]);
 
-      if (entitiesRes.success) {
-        setEntities(entitiesRes.entities as EntityWithAssignments[]);
+        if (entitiesRes.success) {
+          setEntities(entitiesRes.entities as EntityWithAssignments[]);
+        } else {
+          setError(entitiesRes.error);
+        }
+
+        if (usersRes.success) {
+          setUsers(usersRes.users as AssignableUser[]);
+        }
       } else {
-        setError(entitiesRes.error);
-      }
-
-      if (usersRes.success) {
-        setUsers(usersRes.users as AssignableUser[]);
+        // Manager/Executive: Load subordinates and their entities
+        const res = await getSubordinatesWithAssignments();
+        
+        if (res.success) {
+          setEntities(res.entities as EntityWithAssignments[]);
+          setUsers(res.users as AssignableUser[]);
+        } else {
+          setError(res.error);
+        }
       }
     } catch {
       setError("failedToLoad");
     } finally {
       setLoading(false);
     }
-  }, []);
+  }, [canAdmin]);
 
   useEffect(() => {
     if (sessionLoading) return;
-    if (!canAdmin) return;
+    if (!user) return;
     void loadData();
-  }, [sessionLoading, canAdmin, loadData]);
+  }, [sessionLoading, user, loadData]);
 
   const entityTypes = useMemo(() => {
     const types = new Set<string>();
@@ -237,13 +250,14 @@ export default function ResponsibilitiesPage() {
     );
   }
 
-  if (!canAdmin) {
+  // Show message if no subordinates and not admin
+  if (!canAdmin && users.length === 0 && !loading) {
     return (
       <div className="space-y-6">
-        <PageHeader title={tr("Responsibilities", "المسؤوليات")} />
+        <PageHeader title={tr("Responsibilities", "المسؤوليات")} subtitle={tr("View your team's assignments", "عرض تعيينات فريقك")} />
         <Card>
           <CardContent className="p-8">
-            <div className="text-sm text-muted-foreground">{t("unauthorized")}</div>
+            <div className="text-sm text-muted-foreground">{tr("No subordinates found. You can view entities assigned to your team members here.", "لم يتم العثور على مرؤوسين. يمكنك عرض الكيانات المخصصة لأعضاء فريقك هنا.")}</div>
           </CardContent>
         </Card>
       </div>
@@ -254,7 +268,7 @@ export default function ResponsibilitiesPage() {
     <div className="space-y-6">
       <PageHeader
         title={tr("Responsibilities", "المسؤوليات")}
-        subtitle={tr("Assign entities to executives and managers", "تعيين الكيانات للتنفيذيين والمديرين")}
+        subtitle={canAdmin ? tr("Assign entities to executives and managers", "تعيين الكيانات للتنفيذيين والمديرين") : tr("View your team's assignments", "عرض تعيينات فريقك")}
       />
 
       {error ? (
@@ -340,10 +354,12 @@ export default function ResponsibilitiesPage() {
                                 {entity.key ? ` • ${entity.key}` : ""}
                               </CardDescription>
                             </div>
-                            <Button size="sm" onClick={() => openAssignDialog(entity)}>
-                              <UserPlus className="h-4 w-4 me-2" />
-                              {tr("Assign", "تعيين")}
-                            </Button>
+                            {canAdmin && (
+                              <Button size="sm" onClick={() => openAssignDialog(entity)}>
+                                <UserPlus className="h-4 w-4 me-2" />
+                                {tr("Assign", "تعيين")}
+                              </Button>
+                            )}
                           </div>
                         </CardHeader>
                         {entity.assignments.length > 0 ? (
@@ -365,14 +381,16 @@ export default function ResponsibilitiesPage() {
                                       </div>
                                     </div>
                                   </div>
-                                  <Button
-                                    size="icon"
-                                    variant="ghost"
-                                    className="h-6 w-6 text-destructive hover:text-destructive"
-                                    onClick={() => void handleUnassign(assignment.id)}
-                                  >
-                                    <X className="h-3 w-3" />
-                                  </Button>
+                                  {canAdmin && (
+                                    <Button
+                                      size="icon"
+                                      variant="ghost"
+                                      className="h-6 w-6 text-destructive hover:text-destructive"
+                                      onClick={() => void handleUnassign(assignment.id)}
+                                    >
+                                      <X className="h-3 w-3" />
+                                    </Button>
+                                  )}
                                 </div>
                               ))}
                             </div>
@@ -431,10 +449,12 @@ export default function ResponsibilitiesPage() {
                                 <CheckCircle2 className="h-4 w-4 inline me-1" />
                                 {userEntities.length} {tr("assigned", "معين")}
                               </div>
-                              <Button size="sm" onClick={() => openEntityAssignDialog(user)}>
-                                <UserPlus className="h-4 w-4 me-2" />
-                                {tr("Assign Entities", "تعيين كيانات")}
-                              </Button>
+                              {canAdmin && (
+                                <Button size="sm" onClick={() => openEntityAssignDialog(user)}>
+                                  <UserPlus className="h-4 w-4 me-2" />
+                                  {tr("Assign Entities", "تعيين كيانات")}
+                                </Button>
+                              )}
                             </div>
                           </div>
                         </CardHeader>

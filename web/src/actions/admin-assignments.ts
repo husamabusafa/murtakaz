@@ -9,6 +9,24 @@ import { headers } from "next/headers";
  * Admin actions for managing entity assignments across the organization
  */
 
+import { getSubordinateIds } from "@/lib/permissions";
+
+async function requireOrgMember() {
+  const session = await auth.api.getSession({
+    headers: await headers(),
+  });
+
+  if (!session?.user?.id) {
+    throw new Error("unauthorized");
+  }
+
+  if (!session.user.orgId) {
+    throw new Error("unauthorizedMissingOrg");
+  }
+
+  return session;
+}
+
 async function requireOrgAdmin() {
   const session = await auth.api.getSession({
     headers: await headers(),
@@ -113,6 +131,118 @@ export async function getAllAssignableUsersForAdmin() {
   } catch (error: unknown) {
     console.error("[getAllAssignableUsersForAdmin]", error);
     return { success: false as const, error: "failedToFetch", users: [] };
+  }
+}
+
+/**
+ * Get subordinates and their assigned entities for managers/executives
+ */
+export async function getSubordinatesWithAssignments() {
+  try {
+    const session = await requireOrgMember();
+
+    // Get subordinate user IDs
+    const subordinateIds = await getSubordinateIds(session.user.id, session.user.orgId);
+
+    if (subordinateIds.length === 0) {
+      return { success: true as const, users: [], entities: [] };
+    }
+
+    // Get subordinate users with their assignments
+    const users = await prisma.user.findMany({
+      where: {
+        id: { in: subordinateIds },
+        deletedAt: null,
+      },
+      select: {
+        id: true,
+        name: true,
+        email: true,
+        role: true,
+        title: true,
+        entityAssignments: {
+          select: {
+            entityId: true,
+            entity: {
+              select: {
+                id: true,
+                title: true,
+                titleAr: true,
+                key: true,
+                periodType: true,
+                orgEntityType: {
+                  select: {
+                    code: true,
+                    name: true,
+                    nameAr: true,
+                  },
+                },
+              },
+            },
+          },
+        },
+      },
+      orderBy: [
+        { name: "asc" },
+      ],
+    });
+
+    // Get all entities assigned to subordinates
+    const entityIds = new Set<string>();
+    users.forEach(user => {
+      user.entityAssignments.forEach(assignment => {
+        entityIds.add(assignment.entityId);
+      });
+    });
+
+    const entities = await prisma.entity.findMany({
+      where: {
+        id: { in: Array.from(entityIds) },
+        deletedAt: null,
+      },
+      select: {
+        id: true,
+        title: true,
+        titleAr: true,
+        key: true,
+        periodType: true,
+        orgEntityType: {
+          select: {
+            code: true,
+            name: true,
+            nameAr: true,
+          },
+        },
+        assignments: {
+          where: {
+            userId: { in: subordinateIds },
+          },
+          include: {
+            user: {
+              select: {
+                id: true,
+                name: true,
+                email: true,
+                role: true,
+                title: true,
+              },
+            },
+          },
+          orderBy: {
+            assignedAt: "desc",
+          },
+        },
+      },
+      orderBy: [
+        { orgEntityType: { sortOrder: "asc" } },
+        { title: "asc" },
+      ],
+    });
+
+    return { success: true as const, users, entities };
+  } catch (error: unknown) {
+    console.error("[getSubordinatesWithAssignments]", error);
+    return { success: false as const, error: "failedToFetch", users: [], entities: [] };
   }
 }
 

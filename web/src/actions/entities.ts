@@ -16,6 +16,7 @@ import { prisma } from "@/lib/prisma";
 import { auth } from "@/lib/auth";
 import { ActionValidationIssue } from "@/types/actions";
 import { getUserReadableEntityIds, getEntityAccess, canEditEntityValues, type EntityAccess } from "@/lib/permissions";
+import { resolveRoleRank } from "@/lib/roles";
 
 function zodIssues(error: z.ZodError): ActionValidationIssue[] {
   return error.issues.map((i) => ({
@@ -99,6 +100,10 @@ function evaluateFormula(input: { formula: string; valuesByCode: Record<string, 
   }
 }
 
+function normalizeEntityKey(key: string) {
+  return String(key ?? "").trim().toUpperCase();
+}
+
 function evaluateJsFormula(input: { code: string; vars: Record<string, number>; get: (key: string) => number }) {
   const raw = input.code.trim();
   if (!raw) return { ok: false as const, error: "emptyFormula" };
@@ -121,7 +126,7 @@ function extractGetKeys(code: string) {
   const keys: string[] = [];
   const re = /get\(\s*["']([^"']+)["']\s*\)/g;
   for (const match of code.matchAll(re)) {
-    const key = String(match[1] ?? "").trim();
+    const key = normalizeEntityKey(String(match[1] ?? ""));
     if (key) keys.push(key);
   }
   return Array.from(new Set(keys));
@@ -133,7 +138,6 @@ async function findDependentEntities(input: { orgId: string; dependsOnKey: strin
       orgId: input.orgId,
       deletedAt: null,
       formula: { not: null },
-      periodType: { not: null },
     },
     select: {
       id: true,
@@ -143,19 +147,21 @@ async function findDependentEntities(input: { orgId: string; dependsOnKey: strin
     },
   });
 
+  const dependsOn = normalizeEntityKey(input.dependsOnKey);
+
   return entities.filter((e) => {
     if (!e.formula) return false;
     const deps = extractGetKeys(e.formula);
-    return deps.includes(input.dependsOnKey);
+    return deps.includes(dependsOn);
   });
 }
 
 const entityTypeCodeSchema = z.string().trim().min(1);
 
 async function getOrgEntityTypeByCode(input: { orgId: string; code: string }) {
-  const code = input.code.trim().toLowerCase();
+  const code = input.code.trim();
   const row = await prisma.orgEntityType.findFirst({
-    where: { orgId: input.orgId, code },
+    where: { orgId: input.orgId, code: { equals: code, mode: "insensitive" } },
     select: { id: true, code: true, name: true, nameAr: true, sortOrder: true },
   });
   return row
@@ -430,6 +436,17 @@ export async function getOrgEntityDetail(input: { entityId: string }) {
     // Admin can edit both values AND definition
     userAccess = { canRead: true, canEditValues: true, canEditDefinition: true, reason: "admin" };
   }
+
+  // Get approval context
+  const org = await prisma.organization.findFirst({
+    where: { id: session.user.orgId, deletedAt: null },
+    select: { kpiApprovalLevel: true },
+  });
+  const orgApprovalLevel = (org?.kpiApprovalLevel as "MANAGER" | "EXECUTIVE" | "ADMIN") ?? "MANAGER";
+
+  const userRoleRank = resolveRoleRank(session.user.role);
+  const requiredRoleRank = resolveRoleRank(orgApprovalLevel);
+  const canApprove = userRoleRank >= requiredRoleRank;
   
   // Get current assignments if admin
   let assignments: Array<{ userId: string; userName: string; userRole: string }> = [];
@@ -485,6 +502,102 @@ export async function getOrgEntityDetail(input: { entityId: string }) {
 
   const latest = (entity.values ?? [])[0] ?? null;
 
+  // For non-periodType entities with formulas, calculate value on-the-fly
+  let calculatedPeriod = null;
+  if (!entity.periodType && entity.formula && entity.formula.trim()) {
+    const formulaRaw = entity.formula.trim();
+    const isJs = /\breturn\b|\bconst\b|\blet\b|\bvars\.|\bget\s*\(/.test(formulaRaw);
+    
+    if (isJs) {
+      // Extract dependencies and compute them
+      const deps = extractGetKeys(formulaRaw);
+      const depValues: Record<string, number> = {};
+      
+      const cacheByKey = new Map<string, number>();
+      const visiting = new Set<string>();
+      
+      async function computeKeyValue(key: string): Promise<number> {
+        const normalized = String(key ?? "").trim().toUpperCase();
+        if (!normalized) return 0;
+        if (cacheByKey.has(normalized)) return cacheByKey.get(normalized) ?? 0;
+        if (visiting.has(normalized)) return 0;
+        
+        visiting.add(normalized);
+        
+        const ref = await prisma.entity.findFirst({
+          where: { orgId: session.user.orgId, key: { equals: normalized, mode: "insensitive" }, deletedAt: null },
+          select: {
+            formula: true,
+            periodType: true,
+            variables: { select: { id: true, code: true, isStatic: true, staticValue: true } },
+            values: {
+              orderBy: [{ periodEnd: "desc" }],
+              take: 1,
+              select: {
+                actualValue: true,
+                calculatedValue: true,
+                finalValue: true,
+                variableValues: { select: { entityVariableId: true, value: true } },
+              },
+            },
+          },
+        });
+        
+        if (!ref) {
+          cacheByKey.set(normalized, 0);
+          visiting.delete(normalized);
+          return 0;
+        }
+        
+        if (!ref.periodType) {
+          cacheByKey.set(normalized, 0);
+          visiting.delete(normalized);
+          return 0;
+        }
+        
+        const refLatest = ref.values?.[0] ?? null;
+        const stored =
+          typeof refLatest?.finalValue === "number"
+            ? Number(refLatest.finalValue)
+            : typeof refLatest?.calculatedValue === "number"
+              ? Number(refLatest.calculatedValue)
+              : typeof refLatest?.actualValue === "number"
+                ? Number(refLatest.actualValue)
+                : 0;
+        
+        cacheByKey.set(normalized, stored);
+        visiting.delete(normalized);
+        return stored;
+      }
+      
+      for (const d of deps) {
+        depValues[d] = await computeKeyValue(d);
+      }
+      
+      const res = evaluateJsFormula({
+        code: formulaRaw,
+        vars: {},
+        get: (k: string) => depValues[normalizeEntityKey(String(k ?? ""))] ?? 0,
+      });
+      
+      if (res.ok) {
+        calculatedPeriod = {
+          id: "calculated",
+          periodStart: now,
+          periodEnd: now,
+          actualValue: null,
+          calculatedValue: res.value,
+          finalValue: res.value,
+          status: "DRAFT" as const,
+          note: null,
+          submittedAt: null,
+          approvedAt: null,
+          variableValues: [],
+        };
+      }
+    }
+  }
+
   return {
     entity: {
       id: entity.id,
@@ -513,22 +626,17 @@ export async function getOrgEntityDetail(input: { entityId: string }) {
         dataType: String(v.dataType),
       })),
     },
-    latest,
+    latest: latest ?? calculatedPeriod,
     currentRange,
-    currentPeriod: currentPeriod
-      ? {
-          ...currentPeriod,
-          id: String(currentPeriod.id),
-          variableValues: (currentPeriod.variableValues ?? []).map((vv) => ({
-            entityVariableId: String(vv.entityVariableId),
-            value: Number(vv.value),
-          })),
-        }
-      : null,
+    currentPeriod: currentPeriod ?? calculatedPeriod,
     canAdmin,
     userAccess,
     assignments,
     role: session.user.role as Role,
+    approvalContext: {
+      orgApprovalLevel,
+      canApprove,
+    },
   };
 }
 
@@ -859,6 +967,22 @@ export async function saveOrgEntityKpiValuesDraft(input: z.infer<typeof saveOrgE
   const now = new Date();
   const range = resolvePeriodRange({ now, periodType: entity.periodType });
 
+  // Check if period is locked due to approval status
+  if (!isAdmin) {
+    const existingPeriod = await prisma.entityValuePeriod.findFirst({
+      where: {
+        entityId: parsed.data.entityId,
+        periodStart: range.start,
+        periodEnd: range.end,
+      },
+      select: { status: true },
+    });
+
+    if (existingPeriod && existingPeriod.status === "SUBMITTED") {
+      return { success: false as const, error: "periodLockedForApproval" };
+    }
+  }
+
   const issues: ActionValidationIssue[] = [];
   const valuesByCode: Record<string, number> = {};
 
@@ -895,7 +1019,7 @@ export async function saveOrgEntityKpiValuesDraft(input: z.infer<typeof saveOrgE
       const visiting = new Set<string>();
 
       async function computeKeyValue(key: string): Promise<number> {
-        const normalized = String(key ?? "").trim();
+        const normalized = normalizeEntityKey(String(key ?? ""));
         if (!normalized) return 0;
         if (cacheByKey.has(normalized)) return cacheByKey.get(normalized) ?? 0;
         if (visiting.has(normalized)) return 0;
@@ -903,7 +1027,11 @@ export async function saveOrgEntityKpiValuesDraft(input: z.infer<typeof saveOrgE
         visiting.add(normalized);
 
         const ref = await prisma.entity.findFirst({
-          where: { orgId: session.user.orgId, deletedAt: null, key: normalized },
+          where: {
+            orgId: session.user.orgId,
+            deletedAt: null,
+            key: { equals: normalized, mode: "insensitive" as const },
+          },
           select: {
             id: true,
             periodType: true,
@@ -977,7 +1105,7 @@ export async function saveOrgEntityKpiValuesDraft(input: z.infer<typeof saveOrgE
           const res = evaluateJsFormula({
             code: formulaRaw,
             vars: valuesByCode,
-            get: (k: string) => depValues[String(k ?? "").trim()] ?? 0,
+            get: (k: string) => depValues[normalizeEntityKey(String(k ?? ""))] ?? 0,
           });
 
           const computed = res.ok ? res.value : 0;
@@ -1000,7 +1128,7 @@ export async function saveOrgEntityKpiValuesDraft(input: z.infer<typeof saveOrgE
       const res = evaluateJsFormula({
         code: trimmed,
         vars: valuesByCode,
-        get: (key: string) => refsByKey[String(key ?? "").trim()] ?? 0,
+        get: (key: string) => refsByKey[normalizeEntityKey(String(key ?? ""))] ?? 0,
       });
 
       if (!res.ok) return { success: false as const, error: res.error };
@@ -1115,29 +1243,30 @@ async function cascadeRecalculateDependents(input: {
 }) {
   const visited = input._visited ?? new Set<string>();
   const depth = input._depth ?? 0;
+  const updatedKey = normalizeEntityKey(input.updatedKey);
 
   if (depth >= input.maxDepth) {
     console.warn(`Cascade depth limit reached (${input.maxDepth}), stopping recalculation`);
     return;
   }
 
-  if (visited.has(input.updatedKey)) {
-    console.warn(`Circular dependency detected for key: ${input.updatedKey}, skipping`);
+  if (visited.has(updatedKey)) {
+    console.warn(`Circular dependency detected for key: ${updatedKey}, skipping`);
     return;
   }
 
-  visited.add(input.updatedKey);
+  visited.add(updatedKey);
 
   const dependents = await findDependentEntities({
     orgId: input.orgId,
-    dependsOnKey: input.updatedKey,
+    dependsOnKey: updatedKey,
   });
 
   if (dependents.length === 0) {
     return;
   }
 
-  console.log(`Recalculating ${dependents.length} dependent entities for key: ${input.updatedKey}`);
+  console.log(`Recalculating ${dependents.length} dependent entities for key: ${updatedKey}`);
 
   for (const dependent of dependents) {
     if (!dependent.key || !dependent.periodType) continue;

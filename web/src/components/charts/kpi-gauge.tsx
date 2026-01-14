@@ -27,12 +27,13 @@ export function KpiGauge({
   const { theme } = useTheme();
   const effectiveLabel = label ?? t("current");
   const option = useMemo<EChartsOption>(() => {
-    const safeValue = typeof value === "number" && Number.isFinite(value) ? value : 0;
+    const hasValue = typeof value === "number" && Number.isFinite(value);
+    const safeValue = hasValue ? value : 0;
     const safeTarget =
       typeof target === "number" && Number.isFinite(target) && target > 0 ? target : null;
 
     const max = safeTarget ?? Math.max(100, Math.abs(safeValue) * 1.25);
-    const ratio = safeTarget ? safeValue / safeTarget : 0;
+    const ratio = safeTarget && hasValue ? safeValue / safeTarget : 0;
 
     // thresholds
     const red = 0.6;
@@ -52,7 +53,15 @@ export function KpiGauge({
     const cGreen = "rgba(52,211,153,0.92)";
 
     const status =
-      ratio >= amber ? t("onTrack") : ratio >= red ? t("atRisk") : safeTarget ? t("offTrack") : "—";
+      !hasValue
+        ? "—"
+        : ratio >= amber
+          ? t("onTrack")
+          : ratio >= red
+            ? t("atRisk")
+            : safeTarget
+              ? t("offTrack")
+              : "—";
 
     const statusColor = ratio >= amber ? cGreen : ratio >= red ? cAmber : cRed;
 
@@ -91,12 +100,12 @@ export function KpiGauge({
         formatter: () => {
           const v = safeValue;
           const targetVal = safeTarget;
-          const pct = targetVal ? `${Math.round((v / targetVal) * 100)}%` : "—";
+          const pct = targetVal && hasValue ? `${Math.round((v / targetVal) * 100)}%` : "—";
           return `
             <div style="display:flex; flex-direction:column; gap:6px;">
               <div style="display:flex; justify-content:space-between; gap:14px;">
                 <span style="opacity:.75;">${t("value")}</span>
-                <b>${fmt(v)}${unit ?? ""}</b>
+                <b>${hasValue ? `${fmt(v)}${unit ?? ""}` : "—"}</b>
               </div>
               ${
                 targetVal
@@ -237,7 +246,7 @@ export function KpiGauge({
               const u = unit ?? "";
               const tgtLine = safeTarget ? `{muted|${t("target")} ${fmt(safeTarget)}${u}}` : `{muted| }`;
               return [
-                `{value|${fmt(v)}${u}}`,
+                `{value|${hasValue ? `${fmt(v)}${u}` : "—"}}`,
                 `{label|${effectiveLabel}}`,
                 tgtLine,
                 `{status|${status}}`,

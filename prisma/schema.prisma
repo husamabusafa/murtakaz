@@ -5,7 +5,7 @@ generator client {
 
 generator web_client {
   provider = "prisma-client-js"
-  output   = "../web/src/generated/prisma-client"
+  output   = "../web/node_modules/.prisma/client"
 }
 
 datasource db {

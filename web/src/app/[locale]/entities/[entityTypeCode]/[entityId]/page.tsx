@@ -23,6 +23,11 @@ import {
   getOrgEntityDetail,
   saveOrgEntityKpiValuesDraft,
 } from "@/actions/entities";
+import {
+  submitEntityForApproval,
+  approveEntityValue,
+  rejectEntityValue,
+} from "@/actions/approvals";
 
 type EntityDetail = Awaited<ReturnType<typeof getOrgEntityDetail>>;
 
@@ -72,6 +77,14 @@ export default function EntityDetailPage() {
   const [deleteOpen, setDeleteOpen] = useState(false);
   const [deleting, setDeleting] = useState(false);
   const [deleteError, setDeleteError] = useState<string | null>(null);
+
+  const [submitting, setSubmitting] = useState(false);
+  const [approving, setApproving] = useState(false);
+  const [rejecting, setRejecting] = useState(false);
+  const [approvalError, setApprovalError] = useState<string | null>(null);
+  
+  const [calculating, setCalculating] = useState(false);
+  const [calculateError, setCalculateError] = useState<string | null>(null);
 
   async function reload() {
     setLoading(true);
@@ -178,6 +191,22 @@ export default function EntityDetailPage() {
     };
   }, [entity?.targetValue, entity?.values, t]);
 
+  async function handleCalculate() {
+    if (!entity) return;
+    setCalculating(true);
+    setCalculateError(null);
+
+    try {
+      await reload();
+      router.refresh();
+    } catch (error: unknown) {
+      const message = error instanceof Error ? error.message : tr("Calculation failed", "فشل الحساب");
+      setCalculateError(message);
+    } finally {
+      setCalculating(false);
+    }
+  }
+
   async function handleSaveDraft() {
     if (!entity) return;
     setSaving(true);
@@ -252,6 +281,87 @@ export default function EntityDetailPage() {
     }
   }
 
+  async function handleSubmitForApproval() {
+    if (!entity || !data?.currentPeriod?.id) return;
+
+    setSubmitting(true);
+    setApprovalError(null);
+
+    try {
+      const res = await submitEntityForApproval({ 
+        entityId: entity.id, 
+        periodId: data.currentPeriod.id 
+      });
+      if (!res.success) {
+        setApprovalError(te(res.error) || res.error || t("failedToSubmit"));
+        return;
+      }
+
+      if (res.autoApproved) {
+        setApprovalError(null);
+      }
+      await reload();
+      router.refresh();
+    } catch (error: unknown) {
+      const message = error instanceof Error ? error.message : t("failedToSubmit");
+      setApprovalError(message);
+    } finally {
+      setSubmitting(false);
+    }
+  }
+
+  async function handleApprove() {
+    if (!entity || !data?.currentPeriod?.id) return;
+
+    setApproving(true);
+    setApprovalError(null);
+
+    try {
+      const res = await approveEntityValue({ 
+        entityId: entity.id, 
+        periodId: data.currentPeriod.id 
+      });
+      if (!res.success) {
+        setApprovalError(te(res.error) || res.error || t("failedToApprove"));
+        return;
+      }
+
+      await reload();
+      router.refresh();
+    } catch (error: unknown) {
+      const message = error instanceof Error ? error.message : t("failedToApprove");
+      setApprovalError(message);
+    } finally {
+      setApproving(false);
+    }
+  }
+
+  async function handleReject() {
+    if (!entity || !data?.currentPeriod?.id) return;
+
+    setRejecting(true);
+    setApprovalError(null);
+
+    try {
+      const res = await rejectEntityValue({ 
+        entityId: entity.id, 
+        periodId: data.currentPeriod.id 
+      });
+      if (!res.success) {
+        setApprovalError(te(res.error) || res.error || t("failedToReject"));
+        return;
+      }
+
+      await reload();
+      router.refresh();
+    } catch (error: unknown) {
+      const message = error instanceof Error ? error.message : t("failedToReject");
+      setApprovalError(message);
+    } finally {
+      setRejecting(false);
+    }
+  }
+
 
   if (sessionLoading || loading) {
     return (
@@ -296,6 +406,15 @@ export default function EntityDetailPage() {
 
   const pageTitle = df(entity.title, entity.titleAr);
   const canEditValues = canAdmin || (data?.userAccess?.canEditValues ?? false);
+  const currentStatus = data?.currentPeriod?.status ?? "DRAFT";
+  const canApprove = data?.approvalContext?.canApprove ?? false;
+  const isSubmitted = currentStatus === "SUBMITTED";
+  const isApproved = currentStatus === "APPROVED";
+  const isDraft = currentStatus === "DRAFT";
+  const canEditPeriod = canEditValues && (isDraft || isApproved);
+  
+  // Check if KPI has any fillable inputs
+  const hasFillableInputs = fillableVariables.length > 0 || needsManualValue;
 
   return (
     <div className="space-y-8">
@@ -338,18 +457,50 @@ export default function EntityDetailPage() {
 
       {canAdmin ? <EntityAssignments entityId={entity.id} entityTitle={pageTitle} /> : null}
 
-      {isKpiEntity ? (
+      {entity.formula || entity.targetValue ? (
         <div className="grid gap-6 lg:grid-cols-3">
           <Card className="bg-card/70 backdrop-blur shadow-sm lg:col-span-1">
             <CardHeader>
-              <CardTitle className="text-base">{tr("KPI", "مؤشر الأداء")}</CardTitle>
+              <CardTitle className="text-base">{isKpiEntity ? tr("KPI", "مؤشر الأداء") : tr("Value", "القيمة")}</CardTitle>
               <CardDescription>{tr("Current value and target.", "القيمة الحالية والهدف.")}</CardDescription>
             </CardHeader>
             <CardContent>
               <KpiGauge value={currentValue} target={entity.targetValue} unit={unitLabel || undefined} />
-              <div className="mt-3 text-xs text-muted-foreground">
-                {tr("Status", "الحالة")}: {kpiValueStatusLabel(String(data?.currentPeriod?.status ?? data?.latest?.status ?? "DRAFT"))}
-              </div>
+              {isKpiEntity && (
+                <div className="mt-3 text-xs text-muted-foreground">
+                  {tr("Status", "الحالة")}: {kpiValueStatusLabel(String(data?.currentPeriod?.status ?? data?.latest?.status ?? "DRAFT"))}
+                </div>
+              )}
+              {entity.formula && (
+                <div className="mt-4 space-y-2">
+                  <div className="flex items-center justify-between">
+                    <div className="text-xs font-medium text-muted-foreground">{tr("Formula", "الصيغة")}</div>
+                    <Button
+                      type="button"
+                      size="sm"
+                      variant="outline"
+                      onClick={() => void handleCalculate()}
+                      disabled={calculating}
+                      className="h-6 text-xs"
+                    >
+                      {calculating ? (
+                        <>
+                          <Loader2 className="me-1 h-3 w-3 animate-spin" />
+                          {tr("Calculating", "جارٍ الحساب")}
+                        </>
+                      ) : (
+                        tr("Calculate", "احسب")
+                      )}
+                    </Button>
+                  </div>
+                  <div className="rounded-md bg-muted/50 p-2 font-mono text-[10px] overflow-x-auto">
+                    {entity.formula}
+                  </div>
+                  {calculateError && (
+                    <div className="text-xs text-destructive">{calculateError}</div>
+                  )}
+                </div>
+              )}
             </CardContent>
           </Card>
 
@@ -372,9 +523,44 @@ export default function EntityDetailPage() {
             <CardDescription>{tr("Enter the inputs for the current period, then save.", "أدخل المدخلات للفترة الحالية ثم احفظ.")}</CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">
+            {/* Approval Status Badge */}
+            {data?.currentPeriod && (
+              <div className="flex items-center justify-between pb-2 border-b">
+                <div className="flex items-center gap-2">
+                  <span className="text-sm text-muted-foreground">{tr("Status", "الحالة")}:</span>
+                  {isApproved && (
+                    <span className="inline-flex items-center rounded-full bg-green-500/10 px-3 py-1 text-xs font-medium text-green-600 dark:text-green-500">
+                      {tr("Approved", "معتمد")}
+                    </span>
+                  )}
+                  {isSubmitted && (
+                    <span className="inline-flex items-center rounded-full bg-amber-500/10 px-3 py-1 text-xs font-medium text-amber-600 dark:text-amber-500">
+                      {tr("Pending Approval", "في انتظار الاعتماد")}
+                    </span>
+                  )}
+                  {isDraft && (
+                    <span className="inline-flex items-center rounded-full bg-gray-500/10 px-3 py-1 text-xs font-medium text-gray-600 dark:text-gray-400">
+                      {tr("Draft", "مسودة")}
+                    </span>
+                  )}
+                </div>
+                {data.approvalContext && (
+                  <span className="text-xs text-muted-foreground">
+                    {tr("Approval Level", "مستوى الاعتماد")}: {data.approvalContext.orgApprovalLevel}
+                  </span>
+                )}
+              </div>
+            )}
+
             {saveError ? (
               <div className="rounded-xl border border-destructive/40 bg-destructive/10 px-4 py-3 text-sm text-destructive whitespace-pre-line">
                 {saveError}
+              </div>
+            ) : null}
+
+            {approvalError ? (
+              <div className="rounded-xl border border-destructive/40 bg-destructive/10 px-4 py-3 text-sm text-destructive whitespace-pre-line">
+                {approvalError}
               </div>
             ) : null}
 
@@ -411,7 +597,7 @@ export default function EntityDetailPage() {
                       onChange={(e) => setValuesByVariableId((p) => ({ ...p, [v.id]: e.target.value }))}
                       className="bg-card"
                       placeholder={v.dataType === "PERCENTAGE" ? "0-100" : "0"}
-                      disabled={!canEditValues}
+                      disabled={!canEditPeriod}
                     />
                     <div className="text-xs text-muted-foreground">{v.code}</div>
                   </div>
@@ -420,7 +606,7 @@ export default function EntityDetailPage() {
             ) : needsManualValue ? (
               <div className="space-y-2">
                 <Label htmlFor="manualValue">{t("value")}</Label>
-                <Input id="manualValue" value={manualValue} onChange={(e) => setManualValue(e.target.value)} className="bg-card" disabled={!canEditValues} />
+                <Input id="manualValue" value={manualValue} onChange={(e) => setManualValue(e.target.value)} className="bg-card" disabled={!canEditPeriod} />
               </div>
             ) : (
               <div className="rounded-xl border border-border bg-muted/20 px-4 py-3 text-sm text-muted-foreground">
@@ -430,25 +616,74 @@ export default function EntityDetailPage() {
 
             <div className="space-y-2">
               <Label htmlFor="note">{tr("Note", "ملاحظة")}</Label>
-              <Textarea id="note" value={note} onChange={(e) => setNote(e.target.value)} className="bg-card" disabled={!canEditValues} />
+              <Textarea id="note" value={note} onChange={(e) => setNote(e.target.value)} className="bg-card" disabled={!canEditPeriod} />
             </div>
 
-            {canEditValues ? (
-              <div className="flex items-center justify-end gap-2">
-                <Button type="button" onClick={() => void handleSaveDraft()} disabled={saving}>
-                  {saving ? (
-                    <>
-                      <Loader2 className="me-2 h-4 w-4 animate-spin" />
-                      {t("saving")}
-                    </>
-                  ) : (
-                    t("save")
+            {/* Action Buttons */}
+            {hasFillableInputs && (
+              <div className="flex items-center justify-between gap-2 pt-2 border-t">
+                {!canEditValues ? (
+                  <div className="rounded-xl border border-amber-500/40 bg-amber-500/10 px-4 py-3 text-sm text-amber-600 dark:text-amber-500 flex-1">
+                    {tr("Read-only: You can view this entity but cannot edit its values.", "للقراءة فقط: يمكنك عرض هذا الكيان لكن لا يمكنك تعديل قيمه.")}
+                  </div>
+                ) : isSubmitted ? (
+                <div className="flex items-center justify-between w-full">
+                  <div className="rounded-xl border border-amber-500/40 bg-amber-500/10 px-4 py-3 text-sm text-amber-600 dark:text-amber-500">
+                    {tr("Locked for approval. Contact an approver to make changes.", "مقفل للاعتماد. اتصل بالمعتمد لإجراء تغييرات.")}
+                  </div>
+                  {canApprove && (
+                    <div className="flex items-center gap-2">
+                      <Button type="button" variant="destructive" onClick={() => void handleReject()} disabled={rejecting}>
+                        {rejecting ? (
+                          <>
+                            <Loader2 className="me-2 h-4 w-4 animate-spin" />
+                            {tr("Rejecting", "جارٍ الرفض")}
+                          </>
+                        ) : (
+                          tr("Reject", "رفض")
+                        )}
+                      </Button>
+                      <Button type="button" onClick={() => void handleApprove()} disabled={approving}>
+                        {approving ? (
+                          <>
+                            <Loader2 className="me-2 h-4 w-4 animate-spin" />
+                            {tr("Approving", "جارٍ الاعتماد")}
+                          </>
+                        ) : (
+                          tr("Approve", "اعتماد")
+                        )}
+                      </Button>
+                    </div>
                   )}
-                </Button>
-              </div>
-            ) : (
-              <div className="rounded-xl border border-amber-500/40 bg-amber-500/10 px-4 py-3 text-sm text-amber-600 dark:text-amber-500">
-                {tr("Read-only: You can view this entity but cannot edit its values.", "للقراءة فقط: يمكنك عرض هذا الكيان لكن لا يمكنك تعديل قيمه.")}
+                </div>
+              ) : (
+                <div className="flex items-center justify-end gap-2 w-full">
+                  {canEditPeriod && (
+                    <>
+                      <Button type="button" variant="outline" onClick={() => void handleSaveDraft()} disabled={saving}>
+                        {saving ? (
+                          <>
+                            <Loader2 className="me-2 h-4 w-4 animate-spin" />
+                            {t("saving")}
+                          </>
+                        ) : (
+                          t("save")
+                        )}
+                      </Button>
+                      <Button type="button" onClick={() => void handleSubmitForApproval()} disabled={submitting}>
+                        {submitting ? (
+                          <>
+                            <Loader2 className="me-2 h-4 w-4 animate-spin" />
+                            {tr("Submitting", "جارٍ الإرسال")}
+                          </>
+                        ) : (
+                          tr("Submit for Approval", "إرسال للاعتماد")
+                        )}
+                      </Button>
+                    </>
+                  )}
+                </div>
+              )}
               </div>
             )}
           </CardContent>

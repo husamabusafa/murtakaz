@@ -7,14 +7,14 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Button } from "@/components/ui/button";
 import { useLocale } from "@/providers/locale-provider";
-import { getOrgKpiApprovals } from "@/actions/kpis";
+import { getEntityApprovals } from "@/actions/approvals";
 import { useEffect, useMemo, useState } from "react";
 
 export default function ApprovalsPage() {
-  const { locale, t, nodeTypeLabel, kpiValueStatusLabel, formatDate, formatNumber } = useLocale();
+  const { locale, t, kpiValueStatusLabel, formatDate, formatNumber } = useLocale();
 
   const [filter, setFilter] = useState<"PENDING" | "APPROVED" | "ALL">("PENDING");
-  const [rows, setRows] = useState<Awaited<ReturnType<typeof getOrgKpiApprovals>>>([]);
+  const [rows, setRows] = useState<Awaited<ReturnType<typeof getEntityApprovals>>>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
@@ -30,7 +30,7 @@ export default function ApprovalsPage() {
     setError(null);
     (async () => {
       try {
-        const data = await getOrgKpiApprovals(statusParam ? { status: statusParam } : undefined);
+        const data = await getEntityApprovals(statusParam ? { status: statusParam } : undefined);
         if (!mounted) return;
         setRows(data);
       } catch (e: unknown) {
@@ -102,7 +102,7 @@ export default function ApprovalsPage() {
             <Table>
               <TableHeader>
                 <TableRow className="border-border hover:bg-white/0">
-                  <TableHead className="text-muted-foreground">{t("kpi")}</TableHead>
+                  <TableHead className="text-muted-foreground">{locale === "ar" ? "الكيان" : "Entity"}</TableHead>
                   <TableHead className="text-muted-foreground">{t("period")}</TableHead>
                   <TableHead className="text-muted-foreground">{t("value")}</TableHead>
                   <TableHead className="text-muted-foreground">{t("submittedBy")}</TableHead>
@@ -127,21 +127,19 @@ export default function ApprovalsPage() {
                   rows.map((row) => (
                     <TableRow key={row.id} className="border-border hover:bg-card/50">
                       <TableCell className="font-medium text-foreground">
-                        <Link href={`/${locale}/kpis/${row.kpiId}`} className="hover:underline">
-                          {row.kpi.name}
+                        <Link href={`/${locale}/entities/${row.entity.orgEntityType.code}/${row.entityId}`} className="hover:underline">
+                          {locale === "ar" ? (row.entity.titleAr ?? row.entity.title) : row.entity.title}
                         </Link>
                         <p className="mt-1 text-xs text-muted-foreground">
-                          {(row.kpi.primaryNode?.nodeType
-                            ? nodeTypeLabel(row.kpi.primaryNode.nodeType.code, row.kpi.primaryNode.nodeType.displayName)
-                            : t("type"))}{" "}
-                          • {row.kpi.primaryNode?.name ?? "—"}
+                          {locale === "ar" ? (row.entity.orgEntityType.nameAr ?? row.entity.orgEntityType.name) : row.entity.orgEntityType.name}
+                          {row.entity.key ? ` • ${row.entity.key}` : ""}
                         </p>
                       </TableCell>
                       <TableCell className="text-muted-foreground" dir="ltr">
                         {formatDate(row.periodEnd)}
                       </TableCell>
                       <TableCell className="text-muted-foreground" dir="ltr">
-                        {formatNumber(row.calculatedValue)}
+                        {formatNumber(row.finalValue ?? row.calculatedValue ?? row.actualValue ?? 0)}
                       </TableCell>
                       <TableCell className="text-muted-foreground">{row.submittedByUser?.name ?? "—"}</TableCell>
                       <TableCell className="text-muted-foreground" dir="ltr">

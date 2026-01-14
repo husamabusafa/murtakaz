@@ -2,7 +2,7 @@
 
 import { headers } from "next/headers";
 import { z } from "zod";
-import { Role } from "@/generated/prisma-client";
+import { Role, KpiApprovalLevel } from "@/generated/prisma-client";
 import { prisma } from "@/lib/prisma";
 import { auth } from "@/lib/auth";
 import { ActionValidationIssue } from "@/types/actions";
@@ -113,6 +113,127 @@ export async function getOrgAdminManagerOptions() {
       role: true,
     },
   });
+}
+
+/**
+ * Get organization settings for admin
+ */
+export async function getOrgAdminOrganizationSettings() {
+  const session = await requireOrgAdmin();
+
+  const org = await prisma.organization.findFirst({
+    where: {
+      id: session.user.orgId,
+      deletedAt: null,
+    },
+    select: {
+      id: true,
+      name: true,
+      nameAr: true,
+      domain: true,
+      logoUrl: true,
+      mission: true,
+      missionAr: true,
+      vision: true,
+      visionAr: true,
+      about: true,
+      aboutAr: true,
+      kpiApprovalLevel: true,
+      createdAt: true,
+      updatedAt: true,
+    },
+  });
+
+  // Get node type options and enabled node types
+  const nodeTypeOptions: Array<{ id: string; name: string; nameAr: string | null }> = [];
+  const enabledNodeTypes: Array<{ id: string; nodeType: string }> = [];
+  const enabledNodeTypeCounts: Array<{ nodeType: string; count: number }> = [];
+
+  return {
+    org,
+    nodeTypeOptions,
+    enabledNodeTypes,
+    enabledNodeTypeCounts,
+  };
+}
+
+const updateOrgSettingsSchema = z.object({
+  name: z.string().min(1),
+  nameAr: z.string().optional(),
+  domain: z.string().optional(),
+  logoUrl: z.string().optional(),
+  mission: z.string().optional(),
+  missionAr: z.string().optional(),
+  vision: z.string().optional(),
+  visionAr: z.string().optional(),
+  about: z.string().optional(),
+  aboutAr: z.string().optional(),
+  kpiApprovalLevel: z.nativeEnum(KpiApprovalLevel),
+});
+
+/**
+ * Update organization settings
+ */
+export async function updateOrgAdminOrganizationSettings(data: z.infer<typeof updateOrgSettingsSchema>) {
+  const session = await requireOrgAdmin();
+  const parsedResult = updateOrgSettingsSchema.safeParse(data);
+  
+  if (!parsedResult.success) {
+    return {
+      success: false as const,
+      error: "validationFailed",
+      issues: zodIssues(parsedResult.error),
+    };
+  }
+
+  try {
+    await prisma.organization.update({
+      where: {
+        id: session.user.orgId,
+      },
+      data: {
+        name: parsedResult.data.name,
+        nameAr: parsedResult.data.nameAr || null,
+        domain: parsedResult.data.domain || null,
+        logoUrl: parsedResult.data.logoUrl || null,
+        mission: parsedResult.data.mission || null,
+        missionAr: parsedResult.data.missionAr || null,
+        vision: parsedResult.data.vision || null,
+        visionAr: parsedResult.data.visionAr || null,
+        about: parsedResult.data.about || null,
+        aboutAr: parsedResult.data.aboutAr || null,
+        kpiApprovalLevel: parsedResult.data.kpiApprovalLevel,
+      },
+    });
+
+    return { success: true as const };
+  } catch (error: unknown) {
+    console.error("Failed to update organization", error);
+    return { success: false as const, error: "failedToUpdate" };
+  }
+}
+
+const updateNodeTypesSchema = z.object({
+  nodeTypeIds: z.array(z.string()),
+});
+
+/**
+ * Update enabled node types for organization
+ */
+export async function updateOrgAdminEnabledNodeTypes(data: z.infer<typeof updateNodeTypesSchema>) {
+  await requireOrgAdmin();
+  const parsedResult = updateNodeTypesSchema.safeParse(data);
+  
+  if (!parsedResult.success) {
+    return {
+      success: false as const,
+      error: "validationFailed",
+      issues: zodIssues(parsedResult.error),
+    };
+  }
+
+  // For now, just return success as node types are handled elsewhere
+  return { success: true as const };
 }
 
 function validateManagerAssignment(input: { userRole: Role; managerRole: Role | null }) {

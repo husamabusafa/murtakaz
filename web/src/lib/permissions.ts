@@ -16,18 +16,23 @@ export type EntityAccess = {
   reason: "assigned" | "dependency" | "hierarchical" | "admin" | "none";
 };
 
+function normalizeEntityKey(key: string) {
+  return String(key ?? "").trim().toUpperCase();
+}
+
 /**
  * Extract entity keys referenced in a formula using get("KEY") syntax
  */
 export function extractFormulaKeys(formula: string | null | undefined): string[] {
   if (!formula) return [];
   const regex = /get\s*\(\s*["']([^"']+)["']\s*\)/g;
-  const keys: string[] = [];
+  const keys = new Set<string>();
   let match;
   while ((match = regex.exec(formula)) !== null) {
-    keys.push(match[1]);
+    const key = normalizeEntityKey(match[1] ?? "");
+    if (key) keys.add(key);
   }
-  return keys;
+  return Array.from(keys);
 }
 
 /**
@@ -93,6 +98,44 @@ export async function canEditEntityValues(userId: string, entityId: string, orgI
 }
 
 /**
+ * Check if user can edit entity period considering approval status
+ * Users cannot edit periods that are SUBMITTED for approval
+ */
+export async function canEditEntityPeriod(
+  userId: string,
+  entityId: string,
+  periodId: string,
+  orgId: string
+): Promise<boolean> {
+  // First check if user has permission to edit entity values
+  const hasEditPermission = await canEditEntityValues(userId, entityId, orgId);
+  if (!hasEditPermission) {
+    return false;
+  }
+
+  // Check if period is in SUBMITTED status (locked for editing)
+  const period = await prisma.entityValuePeriod.findFirst({
+    where: {
+      id: periodId,
+      entityId,
+    },
+    select: { status: true },
+  });
+
+  if (!period) {
+    return false;
+  }
+
+  // Users with role < approval level cannot edit SUBMITTED periods
+  // Only approvers can approve/reject
+  if (period.status === "SUBMITTED") {
+    return false;
+  }
+
+  return true;
+}
+
+/**
  * Get comprehensive entity access for a user
  */
 export async function getEntityAccess(
@@ -136,10 +179,11 @@ export async function getEntityAccess(
   });
 
   if (targetEntity?.key) {
+    const targetKey = normalizeEntityKey(targetEntity.key);
     for (const assignment of userAssignments) {
       if (assignment.entity.formula) {
         const referencedKeys = extractFormulaKeys(assignment.entity.formula);
-        if (referencedKeys.includes(targetEntity.key)) {
+        if (referencedKeys.includes(targetKey)) {
           return { canRead: true, canEditValues: false, canEditDefinition: false, reason: "dependency" };
         }
       }
@@ -165,6 +209,7 @@ export async function getEntityAccess(
     // Check hierarchical dependency access (subordinates' entities depend on this one)
     // Managers can READ entities that their subordinates' entities depend on
     if (targetEntity?.key) {
+      const targetKey = normalizeEntityKey(targetEntity.key);
       const subordinateAssignments = await prisma.userEntityAssignment.findMany({
         where: {
           userId: { in: subordinateIds },
@@ -182,7 +227,7 @@ export async function getEntityAccess(
       for (const assignment of subordinateAssignments) {
         if (assignment.entity.formula) {
           const referencedKeys = extractFormulaKeys(assignment.entity.formula);
-          if (referencedKeys.includes(targetEntity.key)) {
+          if (referencedKeys.includes(targetKey)) {
             return { canRead: true, canEditValues: false, canEditDefinition: false, reason: "dependency" };
           }
         }
@@ -218,11 +263,12 @@ export async function getUserReadableEntityIds(userId: string, orgId: string): P
   }
 
   if (referencedKeys.size > 0) {
+    const keys = Array.from(referencedKeys);
     const dependencyEntities = await prisma.entity.findMany({
       where: {
         orgId,
-        key: { in: Array.from(referencedKeys) },
         deletedAt: null,
+        OR: keys.map((k) => ({ key: { equals: k, mode: "insensitive" as const } })),
       },
       select: { id: true },
     });
@@ -250,11 +296,12 @@ export async function getUserReadableEntityIds(userId: string, orgId: string): P
     }
 
     if (hierarchicalReferencedKeys.size > 0) {
+      const keys = Array.from(hierarchicalReferencedKeys);
       const hierarchicalDependencies = await prisma.entity.findMany({
         where: {
           orgId,
-          key: { in: Array.from(hierarchicalReferencedKeys) },
           deletedAt: null,
+          OR: keys.map((k) => ({ key: { equals: k, mode: "insensitive" as const } })),
         },
         select: { id: true },
       });
@@ -345,7 +392,7 @@ export async function batchGetEntityAccess(
       accessMap.set(entityId, { canRead: true, canEditValues: true, canEditDefinition: false, reason: "assigned" });
     } else {
       const entityKey = entityKeyMap.get(entityId);
-      if (entityKey && referencedKeys.has(entityKey)) {
+      if (entityKey && referencedKeys.has(normalizeEntityKey(entityKey))) {
         accessMap.set(entityId, { canRead: true, canEditValues: false, canEditDefinition: false, reason: "dependency" });
       } else if (subordinateAssignedIds.has(entityId)) {
         accessMap.set(entityId, { canRead: true, canEditValues: true, canEditDefinition: false, reason: "hierarchical" });

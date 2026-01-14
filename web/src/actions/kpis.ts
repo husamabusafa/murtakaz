@@ -14,6 +14,7 @@ import {
 } from "@/generated/prisma-client";
 import { getMyEffectiveKpiIds } from "@/actions/responsibilities";
 import { ActionValidationIssue } from "@/types/actions";
+import { resolveRoleRank } from "@/lib/roles";
 
 type KpiApprovalLevelCode = "MANAGER" | "EXECUTIVE" | "ADMIN";
 
@@ -46,6 +47,10 @@ const prismaOrganization = (prisma as unknown as { organization: unknown }).orga
   findFirst: <T>(args: unknown) => Promise<T | null>;
 };
 
+ const prismaNode = (prisma as unknown as { node: unknown }).node as {
+   findMany: <T>(args: unknown) => Promise<T[]>;
+ };
+
 function zodIssues(error: z.ZodError): ActionValidationIssue[] {
   return error.issues.map((i) => ({
     path: i.path.map((p) => (typeof p === "string" || typeof p === "number" ? p : String(p))),
@@ -75,18 +80,6 @@ async function requireOrgAdmin() {
     throw new Error("unauthorizedAdminRequired");
   }
   return session;
-}
-
-const ROLE_RANK: Record<string, number> = {
-  MANAGER: 1,
-  EXECUTIVE: 2,
-  ADMIN: 3,
-  SUPER_ADMIN: 4,
-};
-
-function resolveRoleRank(role: unknown) {
-  if (typeof role !== "string") return 0;
-  return ROLE_RANK[role] ?? 0;
 }
 
 async function getOrgApprovalSettings(orgId: string) {
@@ -953,7 +946,7 @@ export async function submitOrgKpiValues(data: z.infer<typeof kpiValuesInputSche
 export async function getOrgKpiPrimaryNodeOptions() {
   const session = await requireOrgAdmin();
 
-  const nodes = await (prisma.node as any).findMany({
+  const nodes = await prismaNode.findMany({
     where: { orgId: session.user.orgId, deletedAt: null },
     orderBy: [{ name: "asc" }],
     select: {

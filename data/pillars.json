@@ -1,0 +1,71 @@
+{
+  "entityType": "pillar",
+  "version": "1.0",
+  "data": [
+    {
+      "id": "pillar-1",
+      "nameAr": "التميز التشغيلي",
+      "nameEn": "Operational Excellence",
+      "descriptionAr": "تحقيق أعلى مستويات الكفاءة والجودة في العمليات التشغيلية من خلال تطبيق أفضل الممارسات العالمية والتحسين المستمر",
+      "descriptionEn": "Achieving the highest levels of efficiency and quality in operational processes through implementing global best practices and continuous improvement",
+      "icon": "settings",
+      "color": "#1976d2",
+      "order": 1,
+      "weight": 25,
+      "isActive": true,
+      "progressFormula": "const objectives = getRelatedEntities('objective', 'pillar-1'); return calculateWeightedAverage(objectives, 'progress');"
+    },
+    {
+      "id": "pillar-2",
+      "nameAr": "النمو والتوسع",
+      "nameEn": "Growth and Expansion",
+      "descriptionAr": "تحقيق النمو المستدام من خلال التوسع الجغرافي وتطوير خطوط إنتاج جديدة وزيادة الحصة السوقية",
+      "descriptionEn": "Achieving sustainable growth through geographical expansion, developing new product lines, and increasing market share",
+      "icon": "trending-up",
+      "color": "#388e3c",
+      "order": 2,
+      "weight": 25,
+      "isActive": true,
+      "progressFormula": "const objectives = getRelatedEntities('objective', 'pillar-2'); return calculateWeightedAverage(objectives, 'progress');"
+    },
+    {
+      "id": "pillar-3",
+      "nameAr": "الابتكار والتحول الرقمي",
+      "nameEn": "Innovation and Digital Transformation",
+      "descriptionAr": "قيادة التحول الرقمي واعتماد التقنيات الحديثة لتحسين العمليات وتطوير منتجات وخدمات مبتكرة",
+      "descriptionEn": "Leading digital transformation and adopting modern technologies to improve processes and develop innovative products and services",
+      "icon": "lightbulb",
+      "color": "#f57c00",
+      "order": 3,
+      "weight": 20,
+      "isActive": true,
+      "progressFormula": "const objectives = getRelatedEntities('objective', 'pillar-3'); return calculateWeightedAverage(objectives, 'progress');"
+    },
+    {
+      "id": "pillar-4",
+      "nameAr": "رأس المال البشري",
+      "nameEn": "Human Capital",
+      "descriptionAr": "بناء فريق عمل متميز ومتمكن من خلال الاستقطاب والتطوير والاحتفاظ بالكفاءات وتعزيز ثقافة الأداء العالي",
+      "descriptionEn": "Building an outstanding and empowered workforce through recruitment, development, talent retention, and fostering a high-performance culture",
+      "icon": "users",
+      "color": "#7b1fa2",
+      "order": 4,
+      "weight": 15,
+      "isActive": true,
+      "progressFormula": "const objectives = getRelatedEntities('objective', 'pillar-4'); return calculateWeightedAverage(objectives, 'progress');"
+    },
+    {
+      "id": "pillar-5",
+      "nameAr": "الاستدامة والمسؤولية الاجتماعية",
+      "nameEn": "Sustainability and Social Responsibility",
+      "descriptionAr": "تحقيق التوازن بين النمو الاقتصادي والمسؤولية البيئية والاجتماعية لضمان استدامة الأعمال على المدى الطويل",
+      "descriptionEn": "Achieving balance between economic growth and environmental and social responsibility to ensure long-term business sustainability",
+      "icon": "leaf",
+      "color": "#00897b",
+      "order": 5,
+      "weight": 15,
+      "isActive": true,
+      "progressFormula": "const objectives = getRelatedEntities('objective', 'pillar-5'); return calculateWeightedAverage(objectives, 'progress');"
+    }
+  ]
+}

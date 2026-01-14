@@ -275,7 +275,15 @@ export function AppShell({ children }: { children: React.ReactNode }) {
   const regularNavItems = useMemo<NavItem[]>(() => {
     const baseItems = navItems
       .filter((item) => !item.href.startsWith("/super-admin"))
-      .filter((item) => !["/pillars", "/objectives", "/departments"].includes(item.href));
+      .filter((item) => !["/pillars", "/objectives", "/departments"].includes(item.href))
+      .filter((item) => {
+        // Hide admin-only pages for non-admin users
+        const isAdminOnlyPage = ["/organization", "/users"].includes(item.href);
+        if (isAdminOnlyPage && userRole !== "ADMIN") {
+          return false;
+        }
+        return true;
+      });
 
     const entityTypeItems: DynamicNavItem[] = orgEntityTypes
       .slice()
@@ -302,7 +310,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
     const overview = baseItems.find((item) => item.href === "/overview");
     const rest = baseItems.filter((item) => item.href !== "/overview");
     return overview ? [overview, ...entityTypeItems, ...rest] : [...entityTypeItems, ...baseItems];
-  }, [locale, orgEntityTypes, t]);
+  }, [locale, orgEntityTypes, t, userRole]);
 
   const visibleNavItems = useMemo(() => {
     if (userRole === "SUPER_ADMIN") {

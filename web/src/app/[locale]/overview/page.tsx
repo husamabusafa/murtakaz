@@ -1,558 +1,346 @@
 "use client";
 
 import Link from "next/link";
-import { useEffect, useMemo, useState } from "react";
-import { Icon } from "@/components/icon";
 import { PageHeader } from "@/components/page-header";
-import { StatusBadge } from "@/components/rag-badge";
+import { Icon } from "@/components/icon";
+import { AreaLine, Bar, Donut } from "@/components/charts/dashboard-charts";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { getMyDashboardData } from "@/actions/dashboard";
-import { useAuth } from "@/providers/auth-provider";
 import { useLocale } from "@/providers/locale-provider";
-import type { Status as UiStatus } from "@/lib/types";
+import type { TranslationKey } from "@/providers/locale-provider";
 
-type DashboardData = Awaited<ReturnType<typeof getMyDashboardData>>;
-
-type InboxItem = {
-  id: string;
-  href: string;
-  title: string;
-  subtitle: string;
-  right?: string;
-  badge?: string;
+const SAMPLE_DATA = {
+  summary: { totalStrategies: 5, totalObjectives: 24, totalKpis: 42, overallHealth: 89, criticalAlerts: 3, upcomingDeadlines: 7 },
+  strategicAlignment: { categories: ["Vision", "Mission", "Values", "Goals", "Initiatives"], values: [95, 92, 88, 85, 90] },
+  healthDistribution: [
+    { nameKey: "excellent", value: 18, color: "#10b981" },
+    { nameKey: "good", value: 14, color: "#3b82f6" },
+    { nameKey: "fair", value: 7, color: "#f59e0b" },
+    { nameKey: "needsAttention", value: 3, color: "#ef4444" },
+  ],
+  quarterlyProgress: { categories: ["Q1", "Q2", "Q3", "Q4"], values: [78, 85, 88, 92] },
+  recentActivities: [
+    { title: "Strategic Review Completed", time: "2 hours ago", status: "completed", icon: "tabler:check" },
+    { title: "Q4 Targets Updated", time: "5 hours ago", status: "updated", icon: "tabler:edit" },
+    { title: "New Initiative Approved", time: "1 day ago", status: "new", icon: "tabler:plus" },
+    { title: "Risk Assessment Pending", time: "2 days ago", status: "pending", icon: "tabler:alert-circle" },
+  ],
+  upcomingMilestones: [
+    { name: "Annual Strategy Review", date: "Jan 30, 2026", progress: 75, daysLeft: 16 },
+    { name: "Q1 OKR Planning", date: "Feb 15, 2026", progress: 45, daysLeft: 32 },
+    { name: "Budget Approval", date: "Mar 1, 2026", progress: 30, daysLeft: 46 },
+  ],
+  teamPerformance: [
+    { team: "Executive", score: 96, trendKey: "up", color: "#8b5cf6" },
+    { team: "Operations", score: 91, trendKey: "up", color: "#3b82f6" },
+    { team: "Sales", score: 88, trendKey: "stable", color: "#10b981" },
+    { team: "Marketing", score: 85, trendKey: "down", color: "#f59e0b" },
+    { team: "IT", score: 92, trendKey: "up", color: "#06b6d4" },
+  ],
 };
 
-function pillForKpiStatus(status: string) {
-  if (status === "NO_DATA") return "border-border bg-muted/30 text-muted-foreground";
-  if (status === "DRAFT") return "border-amber-500/25 bg-amber-500/10 text-amber-700 dark:text-amber-100";
-  if (status === "SUBMITTED") return "border-indigo-500/25 bg-indigo-500/10 text-indigo-700 dark:text-indigo-100";
-  if (status === "APPROVED" || status === "LOCKED") return "border-emerald-500/25 bg-emerald-500/10 text-emerald-700 dark:text-emerald-100";
-  return "border-border bg-muted/30 text-muted-foreground";
+function getActivityIcon(status: string) {
+  if (status === "completed") return { name: "tabler:check", color: "text-emerald-500" };
+  if (status === "updated") return { name: "tabler:edit", color: "text-blue-500" };
+  if (status === "new") return { name: "tabler:plus", color: "text-violet-500" };
+  return { name: "tabler:alert-circle", color: "text-amber-500" };
 }
 
-function formatNumber(value: number | null | undefined) {
-  if (typeof value !== "number" || !Number.isFinite(value)) return "—";
-  const hasFraction = Math.abs(value % 1) > 0;
-  return hasFraction ? value.toFixed(2) : String(value);
-}
-
-function formatPercent(value: number | null | undefined) {
-  if (typeof value !== "number" || !Number.isFinite(value)) return "—";
-  return `${Math.round(value)}%`;
+function getTrendIcon(trend: string) {
+  if (trend === "up") return { name: "tabler:trending-up", color: "text-emerald-500" };
+  if (trend === "down") return { name: "tabler:trending-down", color: "text-rose-500" };
+  return { name: "tabler:minus", color: "text-slate-500" };
 }
 
 export default function OverviewPage() {
-  const { t, locale, nodeTypeLabel, kpiValueStatusLabel, df } = useLocale();
-  const { user, loading: sessionLoading } = useAuth();
-
-  type EnabledNodeTypeRow = {
-    id: string;
-    code: string;
-    displayName: string;
-    nameAr: string | null;
-    levelOrder: number;
-  };
-
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
-  const [data, setData] = useState<DashboardData | null>(null);
-
-  useEffect(() => {
-    if (sessionLoading) return;
-    if (!user) {
-      setLoading(false);
-      setError(null);
-      setData(null);
-      return;
-    }
-
-    let mounted = true;
-    setLoading(true);
-    setError(null);
-
-    void (async () => {
-      try {
-        const result = await getMyDashboardData();
-        if (!mounted) return;
-        setData(result);
-      } catch (e: unknown) {
-        if (!mounted) return;
-        setData(null);
-        setError(e instanceof Error ? e.message : t("overviewFailedToLoad"));
-      } finally {
-        if (mounted) setLoading(false);
-      }
-    })();
-
-    return () => {
-      mounted = false;
-    };
-  }, [sessionLoading, t, user]);
-
-  const isAdmin = useMemo(() => data?.user.role === "ADMIN", [data?.user.role]);
-
-  const completionHealth = useMemo(() => {
-    const b = data?.kpiCompletion?.buckets;
-    if (!b) return null;
-    const segs = [
-      { key: "LT_60", label: t("offTrack"), color: "bg-rose-500/80", value: b.LT_60 ?? 0 },
-      { key: "LT_90", label: t("atRisk"), color: "bg-amber-500/80", value: b.LT_90 ?? 0 },
-      { key: "LT_110", label: t("onTrack"), color: "bg-sky-500/80", value: b.LT_110 ?? 0 },
-      { key: "GTE_110", label: t("exceeded"), color: "bg-emerald-500/80", value: b.GTE_110 ?? 0 },
-    ].filter((s) => s.value > 0);
-    const total = segs.reduce((sum, s) => sum + s.value, 0);
-    if (!total) return null;
-    return { total, segs };
-  }, [data?.kpiCompletion?.buckets, t]);
-
-  const completionAvgLabel = useMemo(() => formatPercent(data?.kpiCompletion?.avgPercent), [data?.kpiCompletion?.avgPercent]);
-
-  const attentionKpis = useMemo(() => {
-    const rows = data?.kpis ?? [];
-    const filtered = rows.filter((k) => {
-      const s = k.latest?.status ?? "NO_DATA";
-      return s === "NO_DATA" || s === "DRAFT" || s === "SUBMITTED";
-    });
-    return filtered.slice(0, 7);
-  }, [data?.kpis]);
-
-  const attentionCount = useMemo(() => {
-    if (!data) return 0;
-    return (data.kpiStatusCounts.NO_DATA ?? 0) + (data.kpiStatusCounts.DRAFT ?? 0) + (data.kpiStatusCounts.SUBMITTED ?? 0);
-  }, [data]);
-
-  const upcomingAssigned = useMemo(() => (data?.workItems ?? []).slice(0, 5), [data?.workItems]);
-  const upcomingOwned = useMemo(() => (data?.ownedItems ?? []).slice(0, 5), [data?.ownedItems]);
-
-  const inboxItems = useMemo(() => {
-    if (!data) return [] as InboxItem[];
-
-    if (data.canApprove) {
-      return (data.approvals ?? []).slice(0, 6).map((a) => ({
-        id: a.id,
-        href: `/${locale}/approvals`,
-        title: df(a.kpiName, a.kpiNameAr),
-        subtitle:
-          a.typeDisplayName && a.primaryName
-            ? `${nodeTypeLabel(a.typeCode, df(a.typeDisplayName, a.typeDisplayNameAr))} • ${df(a.primaryName, a.primaryNameAr)}`
-            : "—",
-        right: a.calculatedValue === null ? "—" : formatNumber(a.calculatedValue),
-        badge: undefined,
-      }));
-    }
-
-    return (data.workItems ?? []).slice(0, 6).map((it) => ({
-      id: it.id,
-      href: `/${locale}/nodes/${it.type.code}/${it.id}`,
-      title: df(it.name, it.nameAr),
-      subtitle: it.parent
-        ? `${nodeTypeLabel(it.type.code, df(it.type.displayName, it.type.nameAr))} • ${nodeTypeLabel(it.parent.typeCode, df(it.parent.typeDisplayName, it.parent.typeDisplayNameAr))}: ${df(it.parent.name, it.parent.nameAr)}`
-        : nodeTypeLabel(it.type.code, df(it.type.displayName, it.type.nameAr)),
-      right: `${it.progress}%`,
-      badge: it.assignmentRole,
-    }));
-  }, [data, df, locale, nodeTypeLabel]);
-
-  const topKpis = useMemo(() => (data?.kpis ?? []).slice(0, 8), [data?.kpis]);
+  const { locale, t } = useLocale();
+  const data = SAMPLE_DATA;
 
   return (
-    <div className="space-y-8">
+    <div className="space-y-6">
       <PageHeader
-        title={t("overviewTitle")}
-        subtitle={isAdmin ? t("overviewAdminSubtitle") : t("overviewUserSubtitle")}
+        title={t("executiveOverview")}
+        subtitle={t("executiveOverviewSubtitle")}
         icon={<Icon name="tabler:layout-dashboard" className="h-5 w-5" />}
         actions={
-          data?.canApprove ? (
-            <Button asChild variant="secondary">
-              <Link href={`/${locale}/approvals`}>{t("openApprovals")}</Link>
+          <div className="flex gap-2">
+            <Button asChild variant="outline" size="sm">
+              <Link href={`/${locale}/dashboards`}>
+                <Icon name="tabler:chart-line" className="me-2 h-4 w-4" />
+                {t("dashboards")}
+              </Link>
             </Button>
-          ) : (
-            <Button asChild variant="secondary">
-              <Link href={`/${locale}/dashboards`}>{t("openDashboard")}</Link>
+            <Button asChild size="sm">
+              <Link href={`/${locale}/strategy`}>
+                <Icon name="tabler:target-arrow" className="me-2 h-4 w-4" />
+                {t("strategy")}
+              </Link>
             </Button>
-          )
+          </div>
         }
       />
 
-      {error ? (
-        <div className="rounded-xl border border-destructive/40 bg-destructive/10 px-4 py-3 text-sm text-destructive whitespace-pre-wrap">{error}</div>
-      ) : null}
+      <section className="grid gap-4 md:grid-cols-2 lg:grid-cols-6">
+        <Card className="bg-gradient-to-br from-violet-500/10 to-card backdrop-blur border-violet-500/20">
+          <CardHeader className="pb-3">
+            <CardDescription className="flex items-center gap-2 text-violet-600 dark:text-violet-400">
+              <Icon name="tabler:target-arrow" className="h-4 w-4" />
+              {t("strategies")}
+            </CardDescription>
+            <CardTitle className="text-3xl font-bold">{data.summary.totalStrategies}</CardTitle>
+          </CardHeader>
+          <CardContent><p className="text-xs text-muted-foreground">{t("activeStrategicInitiatives")}</p></CardContent>
+        </Card>
 
-      {sessionLoading || loading ? (
+        <Card className="bg-gradient-to-br from-blue-500/10 to-card backdrop-blur border-blue-500/20">
+          <CardHeader className="pb-3">
+            <CardDescription className="flex items-center gap-2 text-blue-600 dark:text-blue-400">
+              <Icon name="tabler:flag-3" className="h-4 w-4" />
+              {t("objectives")}
+            </CardDescription>
+            <CardTitle className="text-3xl font-bold">{data.summary.totalObjectives}</CardTitle>
+          </CardHeader>
+          <CardContent><p className="text-xs text-muted-foreground">{t("organizationalObjectives")}</p></CardContent>
+        </Card>
+
+        <Card className="bg-gradient-to-br from-emerald-500/10 to-card backdrop-blur border-emerald-500/20">
+          <CardHeader className="pb-3">
+            <CardDescription className="flex items-center gap-2 text-emerald-600 dark:text-emerald-400">
+              <Icon name="tabler:chart-bar" className="h-4 w-4" />
+              {t("kpis")}
+            </CardDescription>
+            <CardTitle className="text-3xl font-bold">{data.summary.totalKpis}</CardTitle>
+          </CardHeader>
+          <CardContent><p className="text-xs text-muted-foreground">{t("keyPerformanceIndicators")}</p></CardContent>
+        </Card>
+
+        <Card className="bg-gradient-to-br from-cyan-500/10 to-card backdrop-blur border-cyan-500/20">
+          <CardHeader className="pb-3">
+            <CardDescription className="flex items-center gap-2 text-cyan-600 dark:text-cyan-400">
+              <Icon name="tabler:activity" className="h-4 w-4" />
+              {t("health")}
+            </CardDescription>
+            <CardTitle className="text-3xl font-bold">{data.summary.overallHealth}%</CardTitle>
+          </CardHeader>
+          <CardContent><Progress value={data.summary.overallHealth} className="h-1.5" /></CardContent>
+        </Card>
+
+        <Card className="bg-gradient-to-br from-amber-500/10 to-card backdrop-blur border-amber-500/20">
+          <CardHeader className="pb-3">
+            <CardDescription className="flex items-center gap-2 text-amber-600 dark:text-amber-400">
+              <Icon name="tabler:alert-triangle" className="h-4 w-4" />
+              {t("alerts")}
+            </CardDescription>
+            <CardTitle className="text-3xl font-bold">{data.summary.criticalAlerts}</CardTitle>
+          </CardHeader>
+          <CardContent><p className="text-xs text-muted-foreground">{t("itemsNeedAttention")}</p></CardContent>
+        </Card>
+
+        <Card className="bg-gradient-to-br from-rose-500/10 to-card backdrop-blur border-rose-500/20">
+          <CardHeader className="pb-3">
+            <CardDescription className="flex items-center gap-2 text-rose-600 dark:text-rose-400">
+              <Icon name="tabler:calendar-due" className="h-4 w-4" />
+              {t("deadlines")}
+            </CardDescription>
+            <CardTitle className="text-3xl font-bold">{data.summary.upcomingDeadlines}</CardTitle>
+          </CardHeader>
+          <CardContent><p className="text-xs text-muted-foreground">{t("dueWithin30Days")}</p></CardContent>
+        </Card>
+      </section>
+
+      <section className="grid gap-6 lg:grid-cols-3">
+        <Card className="bg-card/70 backdrop-blur shadow-sm lg:col-span-2">
+          <CardHeader>
+            <div className="flex items-center justify-between">
+              <div>
+                <CardTitle className="text-lg">{t("strategicAlignment")}</CardTitle>
+                <CardDescription className="mt-1">{t("alignmentAcrossStrategicDimensions")}</CardDescription>
+              </div>
+              <Badge variant="outline" className="bg-emerald-500/10 text-emerald-700 dark:text-emerald-400 border-emerald-500/20">{t("strong")}</Badge>
+            </div>
+          </CardHeader>
+          <CardContent><Bar categories={data.strategicAlignment.categories} values={data.strategicAlignment.values} height={280} color="#8b5cf6" /></CardContent>
+        </Card>
+
         <Card className="bg-card/70 backdrop-blur shadow-sm">
           <CardHeader>
-            <CardTitle className="text-base">{t("loading")}</CardTitle>
-            <CardDescription>{t("pleaseWait")}</CardDescription>
+            <CardTitle className="text-lg">{t("organizationalHealth")}</CardTitle>
+            <CardDescription className="mt-1">{t("performanceDistribution")}</CardDescription>
           </CardHeader>
-          <CardContent />
-        </Card>
-      ) : !user ? (
-        <Card className="bg-card/70 backdrop-blur shadow-sm">
-          <CardContent className="p-6 text-sm text-muted-foreground">
-            <p>{t("signInToViewWorkspace")}</p>
-            <Link href={`/${locale}/auth/login?next=/${locale}/overview`} className="mt-3 inline-flex text-sm font-semibold text-primary hover:opacity-90">
-              {t("signIn")}
-            </Link>
+          <CardContent>
+            <Donut items={data.healthDistribution.map(item => ({ name: t(item.nameKey as TranslationKey), value: item.value, color: item.color }))} height={240} />
+            <div className="mt-4 space-y-2">
+              {data.healthDistribution.map((item) => (
+                <div key={item.nameKey} className="flex items-center justify-between text-sm">
+                  <div className="flex items-center gap-2">
+                    <div className="h-2.5 w-2.5 rounded-full" style={{ backgroundColor: item.color }} />
+                    <span className="text-muted-foreground">{t(item.nameKey as TranslationKey)}</span>
+                  </div>
+                  <span className="font-medium">{item.value}</span>
+                </div>
+              ))}
+            </div>
           </CardContent>
         </Card>
-      ) : !data ? (
+      </section>
+
+      <section className="grid gap-6 lg:grid-cols-3">
         <Card className="bg-card/70 backdrop-blur shadow-sm">
-          <CardContent className="p-6 text-sm text-muted-foreground">{t("noOverviewData")}</CardContent>
+          <CardHeader>
+            <CardTitle className="text-lg">{t("recentActivity")}</CardTitle>
+            <CardDescription className="mt-1">{t("latestUpdatesAndChanges")}</CardDescription>
+          </CardHeader>
+          <CardContent className="space-y-3">
+            {data.recentActivities.map((activity, idx) => {
+              const iconData = getActivityIcon(activity.status);
+              return (
+                <div key={idx} className="flex items-start gap-3 rounded-lg border border-border bg-background/50 p-3">
+                  <div className={`rounded-full bg-muted p-2 ${iconData.color}`}><Icon name={iconData.name} className="h-4 w-4" /></div>
+                  <div className="flex-1 space-y-1">
+                    <p className="text-sm font-medium">{activity.title}</p>
+                    <p className="text-xs text-muted-foreground">{activity.time}</p>
+                  </div>
+                </div>
+              );
+            })}
+          </CardContent>
         </Card>
-      ) : (
-        <>
-          <section className="grid gap-6 lg:grid-cols-3">
-            <Card className="bg-card/70 backdrop-blur shadow-sm">
-              <CardHeader className="flex flex-row items-start justify-between gap-3">
-                <div className="space-y-1">
-                  <CardTitle className="text-base">{t("inbox")}</CardTitle>
-                  <CardDescription>
-                    {data.canApprove
-                      ? t("inboxAdminDesc")
-                      : t("inboxUserDesc")}
-                  </CardDescription>
-                </div>
-                <Badge variant="outline" className="border-border bg-muted/30 text-muted-foreground">
-                  {data.canApprove ? data.summary.approvalsPending : data.summary.workTotal}
-                </Badge>
-              </CardHeader>
-              <CardContent className="space-y-3">
-                {inboxItems.length ? (
-                  inboxItems.map((it) => (
-                    <Link
-                      key={it.id}
-                      href={it.href}
-                      className="block rounded-xl border border-border bg-background/50 px-4 py-3 transition hover:bg-accent"
-                    >
-                      <div className="flex items-start justify-between gap-3">
-                        <div className="min-w-0">
-                          <p className="truncate text-sm font-semibold">{it.title}</p>
-                          <p className="mt-1 truncate text-xs text-muted-foreground">{it.subtitle}</p>
-                        </div>
-                        <div className="flex shrink-0 flex-col items-end gap-2">
-                          {it.badge ? (
-                            <Badge variant="outline" className="border-border bg-muted/30 text-muted-foreground">
-                              {it.badge}
-                            </Badge>
-                          ) : null}
-                          {it.right ? (
-                            <span className="text-xs text-muted-foreground" dir="ltr">
-                              {it.right}
-                            </span>
-                          ) : null}
-                        </div>
-                      </div>
-                    </Link>
-                  ))
-                ) : (
-                  <div className="rounded-xl border border-dashed border-border bg-muted/10 p-6 text-sm text-muted-foreground">
-                    {data.canApprove ? t("noPendingItems") : t("noAssignedItems")}
-                  </div>
-                )}
 
-                <Button asChild variant="outline" className="w-full">
-                  <Link href={data.canApprove ? `/${locale}/approvals` : `/${locale}/dashboards`}>{t("open")}</Link>
-                </Button>
-              </CardContent>
-            </Card>
+        <Card className="bg-card/70 backdrop-blur shadow-sm lg:col-span-2">
+          <CardHeader>
+            <div className="flex items-center justify-between">
+              <div>
+                <CardTitle className="text-lg">{t("quarterlyProgress")}</CardTitle>
+                <CardDescription className="mt-1">{t("yearOverYearPerformanceTrend")}</CardDescription>
+              </div>
+              <Button variant="ghost" size="sm" asChild>
+                <Link href={`/${locale}/dashboards`}>{t("viewDetails")}<Icon name="tabler:arrow-right" className="ms-2 h-4 w-4" /></Link>
+              </Button>
+            </div>
+          </CardHeader>
+          <CardContent><AreaLine categories={data.quarterlyProgress.categories} values={data.quarterlyProgress.values} height={260} color="#10b981" /></CardContent>
+        </Card>
+      </section>
 
-            <Card className="bg-card/70 backdrop-blur shadow-sm">
-              <CardHeader className="flex flex-row items-start justify-between gap-3">
-                <div className="space-y-1">
-                  <CardTitle className="text-base">{t("needsAttention")}</CardTitle>
-                  <CardDescription>{t("needsAttentionDesc")}</CardDescription>
-                </div>
-                <Badge variant="outline" className="border-border bg-muted/30 text-muted-foreground">
-                  {attentionCount}
-                </Badge>
-              </CardHeader>
-              <CardContent className="space-y-2">
-                {attentionKpis.length ? (
-                  attentionKpis.map((k) => (
-                    <Link
-                      key={k.id}
-                      href={`/${locale}/kpis/${k.id}`}
-                      className="block rounded-xl border border-border bg-background/50 px-4 py-3 transition hover:bg-accent"
-                    >
-                      <div className="flex items-start justify-between gap-3">
-                        <div className="min-w-0">
-                          <p className="truncate text-sm font-semibold">{df(k.name, k.nameAr)}</p>
-                          <p className="mt-1 truncate text-xs text-muted-foreground">
-                            {nodeTypeLabel(k.primary.typeCode, df(k.primary.typeDisplayName, k.primary.typeDisplayNameAr))} • {df(k.primary.name, k.primary.nameAr)}
-                          </p>
-                        </div>
-                        <Badge variant="outline" className={pillForKpiStatus(k.latest?.status ?? "NO_DATA")}>
-                          {kpiValueStatusLabel(k.latest?.status ?? "NO_DATA")}
-                        </Badge>
-                      </div>
-                    </Link>
-                  ))
-                ) : (
-                  <div className="rounded-xl border border-dashed border-border bg-muted/10 p-6 text-sm text-muted-foreground">
-                    {t("nothingUrgent")}
-                  </div>
-                )}
-              </CardContent>
-            </Card>
-
-            <Card className="bg-card/70 backdrop-blur shadow-sm">
-              <CardHeader className="space-y-1">
-                <CardTitle className="text-base">{t("completionHealth")}</CardTitle>
-                <CardDescription>{t("completionHealthDesc")}</CardDescription>
-              </CardHeader>
-              <CardContent className="space-y-4">
-                <div className="flex items-end justify-between">
+      <section className="grid gap-6 lg:grid-cols-2">
+        <Card className="bg-card/70 backdrop-blur shadow-sm">
+          <CardHeader>
+            <CardTitle className="text-lg">{t("upcomingMilestones")}</CardTitle>
+            <CardDescription className="mt-1">{t("keyDeliverablesAndCheckpoints")}</CardDescription>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            {data.upcomingMilestones.map((milestone, idx) => (
+              <div key={idx} className="space-y-2">
+                <div className="flex items-start justify-between">
                   <div>
-                    <p className="text-xs text-muted-foreground">{t("average")}</p>
-                    <p className="text-2xl font-semibold" dir="ltr">
-                      {completionAvgLabel}
-                    </p>
+                    <p className="font-medium">{milestone.name}</p>
+                    <p className="text-xs text-muted-foreground">{milestone.date}</p>
                   </div>
-                  <Badge variant="outline" className="border-border bg-muted/30 text-muted-foreground">
-                    {t("tracked")}: {data.kpiCompletion.totalWithTargets}
-                  </Badge>
+                  <Badge variant="outline" className="border-blue-500/20 bg-blue-500/10 text-blue-700 dark:text-blue-400">{milestone.daysLeft} {t("daysLeft")}</Badge>
                 </div>
+                <Progress value={milestone.progress} className="h-2" />
+                <p className="text-xs text-muted-foreground">{milestone.progress}% {t("complete")}</p>
+              </div>
+            ))}
+          </CardContent>
+        </Card>
 
-                {completionHealth ? (
-                  <>
-                    <div className="flex h-3 overflow-hidden rounded-full bg-muted/30">
-                      {completionHealth.segs.map((s) => (
-                        <div
-                          key={s.key}
-                          className={s.color}
-                          style={{ width: `${(s.value / completionHealth.total) * 100}%` }}
-                        />
-                      ))}
+        <Card className="bg-card/70 backdrop-blur shadow-sm">
+          <CardHeader>
+            <CardTitle className="text-lg">{t("teamPerformance")}</CardTitle>
+            <CardDescription className="mt-1">{t("departmentLevelScorecard")}</CardDescription>
+          </CardHeader>
+          <CardContent className="space-y-3">
+            {data.teamPerformance.map((team, idx) => {
+              const trendData = getTrendIcon(team.trendKey);
+              return (
+                <div key={idx} className="flex items-center justify-between rounded-lg border border-border bg-background/50 p-3">
+                  <div className="flex items-center gap-3">
+                    <div className="h-10 w-10 rounded-lg flex items-center justify-center text-sm font-bold text-white" style={{ backgroundColor: team.color }}>{team.score}</div>
+                    <div>
+                      <p className="font-medium">{team.team}</p>
+                      <div className="flex items-center gap-1 text-xs text-muted-foreground">
+                        <Icon name={trendData.name} className={`h-3 w-3 ${trendData.color}`} />
+                        <span className="capitalize">{t(team.trendKey as TranslationKey)}</span>
+                      </div>
                     </div>
-                    <div className="grid grid-cols-2 gap-2">
-                      {completionHealth.segs.map((s) => (
-                        <div key={s.key} className="flex items-center justify-between gap-2 text-xs text-muted-foreground">
-                          <span className="inline-flex items-center gap-2">
-                            <span className={`h-2.5 w-2.5 rounded-full ${s.color}`} />
-                            {s.label}
-                          </span>
-                          <span dir="ltr">{s.value}</span>
-                        </div>
-                      ))}
-                    </div>
-                  </>
-                ) : (
-                  <div className="rounded-xl border border-dashed border-border bg-muted/10 p-6 text-sm text-muted-foreground">
-                    {t("noCompletionData")}
                   </div>
-                )}
-              </CardContent>
-            </Card>
-          </section>
+                  <Progress value={team.score} className="h-1.5 w-24" />
+                </div>
+              );
+            })}
+          </CardContent>
+        </Card>
+      </section>
 
-          <section className="grid gap-6 lg:grid-cols-2">
-            <Card className="bg-card/70 backdrop-blur shadow-sm">
-              <CardHeader className="space-y-1">
-                <CardTitle className="text-base">{t("upcoming")}</CardTitle>
-                <CardDescription>
-                  {isAdmin
-                    ? t("upcomingAdminDesc")
-                    : t("upcomingUserDesc")}
-                </CardDescription>
-              </CardHeader>
-              <CardContent className="space-y-3">
-                {!isAdmin && upcomingAssigned.length ? (
-                  <>
-                    <p className="text-xs font-semibold text-muted-foreground">{t("assigned")}</p>
-                    {upcomingAssigned.map((it) => (
-                      <Link
-                        key={it.id}
-                        href={`/${locale}/nodes/${it.type.code}/${it.id}`}
-                        className="block rounded-xl border border-border bg-background/50 px-4 py-3 transition hover:bg-accent"
-                      >
-                        <div className="flex items-start justify-between gap-3">
-                          <div className="min-w-0">
-                            <p className="truncate text-sm font-semibold">
-                              <span className="me-2 inline-block h-2.5 w-2.5 rounded-full" style={{ backgroundColor: it.color }} />
-                              {df(it.name, it.nameAr)}
-                            </p>
-                            <p className="mt-1 truncate text-xs text-muted-foreground">
-                              {df(it.type.displayName, it.type.nameAr)}
-                              {it.parent ? ` • ${nodeTypeLabel(it.parent.typeCode, df(it.parent.typeDisplayName, it.parent.typeDisplayNameAr))}: ${df(it.parent.name, it.parent.nameAr)}` : ""}
-                            </p>
-                          </div>
-                          <span className="text-xs text-muted-foreground" dir="ltr">
-                            {it.progress}%
-                          </span>
-                        </div>
-                        <div className="mt-3">
-                          <Progress value={it.progress} />
-                        </div>
-                      </Link>
-                    ))}
-                  </>
-                ) : null}
-
-                {upcomingOwned.length ? (
-                  <>
-                    <p className="text-xs font-semibold text-muted-foreground">{t("owned")}</p>
-                    {upcomingOwned.map((it) => (
-                      <Link
-                        key={it.id}
-                        href={`/${locale}/nodes/${it.type.code}/${it.id}`}
-                        className="block rounded-xl border border-border bg-background/50 px-4 py-3 transition hover:bg-accent"
-                      >
-                        <div className="flex items-start justify-between gap-3">
-                          <div className="min-w-0">
-                            <p className="truncate text-sm font-semibold">
-                              <span className="me-2 inline-block h-2.5 w-2.5 rounded-full" style={{ backgroundColor: it.color }} />
-                              {df(it.name, it.nameAr)}
-                            </p>
-                            <p className="mt-1 truncate text-xs text-muted-foreground">{df(it.type.displayName, it.type.nameAr)}</p>
-                          </div>
-                          <div className="flex shrink-0 flex-col items-end gap-2">
-                            <StatusBadge status={it.status as unknown as UiStatus} />
-                            <span className="text-xs text-muted-foreground" dir="ltr">
-                              {it.progress}%
-                            </span>
-                          </div>
-                        </div>
-                        <div className="mt-3">
-                          <Progress value={it.progress} />
-                        </div>
-                      </Link>
-                    ))}
-                  </>
-                ) : (
-                  <div className="rounded-xl border border-dashed border-border bg-muted/10 p-6 text-sm text-muted-foreground">
-                    {t("noItemsYet")}
+      <section>
+        <Card className="bg-card/70 backdrop-blur shadow-sm">
+          <CardHeader>
+            <CardTitle className="text-lg">{t("strategicNavigation")}</CardTitle>
+            <CardDescription className="mt-1">{t("quickAccessToKeyStrategicAreas")}</CardDescription>
+          </CardHeader>
+          <CardContent>
+            <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+              <Button asChild variant="outline" className="h-auto justify-start gap-3 p-4">
+                <Link href={`/${locale}/strategy`}>
+                  <Icon name="tabler:target-arrow" className="h-6 w-6 text-violet-500" />
+                  <div className="text-left">
+                    <div className="font-semibold">{t("strategicPlanning")}</div>
+                    <div className="text-xs text-muted-foreground">{t("defineAndTrackStrategy")}</div>
                   </div>
-                )}
-              </CardContent>
-            </Card>
-
-            <Card className="bg-card/70 backdrop-blur shadow-sm">
-              <CardHeader className="space-y-1">
-                <CardTitle className="text-base">{t("quickAccess")}</CardTitle>
-                <CardDescription>{t("quickAccessDesc")}</CardDescription>
-              </CardHeader>
-              <CardContent className="space-y-4">
-                <div className="grid gap-3 sm:grid-cols-2">
-                  {(data.enabledNodeTypes as unknown as EnabledNodeTypeRow[]).map((nt) => {
-                    const codeLower = String(nt.code).toLowerCase();
-                    return (
-                      <Link
-                        key={nt.id}
-                        href={`/${locale}/nodes/${codeLower}`}
-                        className="block rounded-xl border border-border bg-background/50 px-4 py-3 transition hover:bg-accent"
-                      >
-                        <div className="flex items-center justify-between gap-3">
-                          <div className="min-w-0">
-                            <p className="truncate text-sm font-semibold">{df(nt.displayName, nt.nameAr)}</p>
-                            <p className="mt-1 text-xs text-muted-foreground" dir="ltr">
-                              {t("level")}: {nt.levelOrder}
-                            </p>
-                          </div>
-                          <Icon name="tabler:layers-subtract" className="h-5 w-5 text-muted-foreground" />
-                        </div>
-                      </Link>
-                    );
-                  })}
-                </div>
-
-                <div className="grid gap-3 sm:grid-cols-2">
-                  <Button asChild variant="secondary" className="w-full">
-                    <Link href={`/${locale}/dashboards/kpi-performance`}>{t("kpis")}</Link>
-                  </Button>
-                  <Button asChild variant="secondary" className="w-full">
-                    <Link href={`/${locale}/dashboards`}>{t("dashboards")}</Link>
-                  </Button>
-                </div>
-
-                <div className="grid gap-3 sm:grid-cols-2">
-                  {data.canApprove ? (
-                    <Button asChild variant="outline" className="w-full">
-                      <Link href={`/${locale}/approvals`}>{t("approvals")}</Link>
-                    </Button>
-                  ) : (
-                    <Button asChild variant="outline" className="w-full">
-                      <Link href={`/${locale}/responsibilities`}>{t("responsibilities")}</Link>
-                    </Button>
-                  )}
-
-                  <Button asChild variant="outline" className="w-full">
-                    <Link href={`/${locale}/profile`}>{t("profile")}</Link>
-                  </Button>
-                </div>
-              </CardContent>
-            </Card>
-          </section>
-
-          <section>
-            <Card className="bg-card/70 backdrop-blur shadow-sm">
-              <CardHeader className="flex flex-row items-start justify-between gap-3">
-                <div className="space-y-1">
-                  <CardTitle className="text-base">{t("kpisYouCanAccess")}</CardTitle>
-                  <CardDescription>{t("kpisYouCanAccessDesc")}</CardDescription>
-                </div>
-                <Button asChild variant="ghost" className="text-primary hover:text-primary">
-                  <Link href={`/${locale}/dashboards/kpi-performance`}>{t("viewAll")}</Link>
-                </Button>
-              </CardHeader>
-              <CardContent>
-                <div className="overflow-hidden rounded-xl border border-border">
-                  <Table>
-                    <TableHeader>
-                      <TableRow className="hover:bg-transparent">
-                        <TableHead>{t("kpi")}</TableHead>
-                        <TableHead>{t("latest")}</TableHead>
-                        <TableHead>{t("target")}</TableHead>
-                        <TableHead>{t("linkedTo")}</TableHead>
-                        <TableHead className="text-right">{t("status")}</TableHead>
-                      </TableRow>
-                    </TableHeader>
-                    <TableBody>
-                      {topKpis.map((k) => {
-                        const latestStatus = k.latest?.status ?? "NO_DATA";
-                        return (
-                          <TableRow key={k.id} className="hover:bg-card/40">
-                            <TableCell className="font-medium">
-                              <Link href={`/${locale}/kpis/${k.id}`} className="hover:underline">
-                                {df(k.name, k.nameAr)}
-                              </Link>
-                              {df(k.unit, k.unitAr) ? <span className="ms-2 text-xs text-muted-foreground">({df(k.unit, k.unitAr)})</span> : null}
-                            </TableCell>
-                            <TableCell className="text-muted-foreground" dir="ltr">
-                              {formatNumber(k.latest?.calculatedValue)}
-                            </TableCell>
-                            <TableCell className="text-muted-foreground" dir="ltr">
-                              {formatNumber(k.targetValue)}
-                            </TableCell>
-                            <TableCell className="text-muted-foreground">
-                              {nodeTypeLabel(k.primary.typeCode, df(k.primary.typeDisplayName, k.primary.typeDisplayNameAr))} • {df(k.primary.name, k.primary.nameAr)}
-                            </TableCell>
-                            <TableCell className="text-right">
-                              <Badge variant="outline" className={pillForKpiStatus(latestStatus)}>
-                                {kpiValueStatusLabel(latestStatus)}
-                              </Badge>
-                            </TableCell>
-                          </TableRow>
-                        );
-                      })}
-                      {topKpis.length === 0 ? (
-                        <TableRow>
-                          <TableCell colSpan={5} className="py-8 text-center text-sm text-muted-foreground">
-                            {t("noKpisFound")}
-                          </TableCell>
-                        </TableRow>
-                      ) : null}
-                    </TableBody>
-                  </Table>
-                </div>
-              </CardContent>
-            </Card>
-          </section>
-        </>
-      )}
+                </Link>
+              </Button>
+              <Button asChild variant="outline" className="h-auto justify-start gap-3 p-4">
+                <Link href={`/${locale}/pillars`}>
+                  <Icon name="tabler:columns-3" className="h-6 w-6 text-blue-500" />
+                  <div className="text-left">
+                    <div className="font-semibold">{t("strategicPillars")}</div>
+                    <div className="text-xs text-muted-foreground">{t("coreFocusAreas")}</div>
+                  </div>
+                </Link>
+              </Button>
+              <Button asChild variant="outline" className="h-auto justify-start gap-3 p-4">
+                <Link href={`/${locale}/objectives`}>
+                  <Icon name="tabler:flag-3" className="h-6 w-6 text-emerald-500" />
+                  <div className="text-left">
+                    <div className="font-semibold">{t("objectives")}</div>
+                    <div className="text-xs text-muted-foreground">{t("strategicObjectives")}</div>
+                  </div>
+                </Link>
+              </Button>
+              <Button asChild variant="outline" className="h-auto justify-start gap-3 p-4">
+                <Link href={`/${locale}/projects`}>
+                  <Icon name="tabler:briefcase-2" className="h-6 w-6 text-cyan-500" />
+                  <div className="text-left">
+                    <div className="font-semibold">{t("projects")}</div>
+                    <div className="text-xs text-muted-foreground">{t("activeInitiatives")}</div>
+                  </div>
+                </Link>
+              </Button>
+              <Button asChild variant="outline" className="h-auto justify-start gap-3 p-4">
+                <Link href={`/${locale}/risks`}>
+                  <Icon name="tabler:shield-exclamation" className="h-6 w-6 text-amber-500" />
+                  <div className="text-left">
+                    <div className="font-semibold">{t("riskManagement")}</div>
+                    <div className="text-xs text-muted-foreground">{t("monitorAndMitigate")}</div>
+                  </div>
+                </Link>
+              </Button>
+              <Button asChild variant="outline" className="h-auto justify-start gap-3 p-4">
+                <Link href={`/${locale}/organization`}>
+                  <Icon name="tabler:building" className="h-6 w-6 text-rose-500" />
+                  <div className="text-left">
+                    <div className="font-semibold">{t("organization")}</div>
+                    <div className="text-xs text-muted-foreground">{t("structureAndTeams")}</div>
+                  </div>
+                </Link>
+              </Button>
+            </div>
+          </CardContent>
+        </Card>
+      </section>
     </div>
   );
 }
