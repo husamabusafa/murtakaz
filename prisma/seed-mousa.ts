@@ -1,7 +1,192 @@
+import { readFile } from "node:fs/promises";
+import path from "node:path";
 import { KpiApprovalLevel, KpiDirection, KpiPeriodType, KpiSourceType, KpiValueStatus, KpiVariableDataType, PrismaClient, Role, Status, KpiAggregationMethod } from "@prisma/client";
-import { auth } from "../web/src/lib/auth";
+import { hashPassword } from "better-auth/crypto";
 
 const prisma = new PrismaClient();
+
+type SeedFile<T> = {
+  entityType: string;
+  version: string;
+  data: T[];
+};
+
+type KpiSeedRow = {
+  id: string;
+  initiativeId: string | null;
+  objectiveId: string;
+  nameAr: string;
+  nameEn: string;
+  descriptionAr?: string;
+  descriptionEn?: string;
+  unit?: string;
+  targetValue?: number;
+  currentValue?: number;
+  baselineValue?: number;
+  frequency?: string;
+  dataSource?: string;
+  ownerDepartmentId?: string;
+  isActive?: boolean;
+  formula?: string;
+  achievementFormula?: string;
+};
+
+type InitiativeSeedRow = {
+  id: string;
+  objectiveId: string;
+  nameAr: string;
+  nameEn: string;
+  descriptionAr?: string;
+  descriptionEn?: string;
+  status?: string;
+  progress?: number;
+  isActive?: boolean;
+};
+
+type DepartmentSeedRow = {
+  id: string;
+  nameAr: string;
+  nameEn: string;
+  descriptionAr?: string;
+  descriptionEn?: string;
+  code?: string;
+  parentId?: string | null;
+  level?: number;
+  headName?: string;
+  headEmail?: string;
+  employeeCount?: number;
+  isActive?: boolean;
+  relatedPillars?: string[];
+  relatedObjectives?: string[];
+};
+
+type ObjectiveSeedRow = {
+  id: string;
+  pillarId: string;
+  nameAr: string;
+  nameEn: string;
+  descriptionAr?: string;
+  descriptionEn?: string;
+  targetValue?: number;
+  currentValue?: number;
+  unit?: string;
+  weight?: number;
+  isActive?: boolean;
+};
+
+type PillarSeedRow = {
+  id: string;
+  nameAr: string;
+  nameEn: string;
+  descriptionAr?: string;
+  descriptionEn?: string;
+  order?: number;
+  weight?: number;
+  isActive?: boolean;
+};
+
+async function readSeedJson<T>(filename: string): Promise<SeedFile<T>> {
+  const filePath = path.join(process.cwd(), "data", filename);
+  const raw = await readFile(filePath, "utf8");
+  return JSON.parse(raw) as SeedFile<T>;
+}
+
+function normalizeKey(key: string) {
+  return String(key ?? "").trim().toUpperCase();
+}
+
+function toEntityKey(prefix: string, id: string) {
+  const raw = String(id ?? "");
+  const lowerPrefix = `${prefix.toLowerCase()}-`;
+  const stripped = raw.toLowerCase().startsWith(lowerPrefix) ? raw.slice(lowerPrefix.length) : raw;
+  const normalized = stripped
+    .trim()
+    .replace(/[^a-zA-Z0-9]+/g, "_")
+    .replace(/^_+|_+$/g, "")
+    .toUpperCase();
+  return `${prefix.toUpperCase()}_${normalized}`;
+}
+
+function mapPeriodTypeFromFrequency(raw: string | undefined): KpiPeriodType {
+  const v = String(raw ?? "").trim().toLowerCase();
+  if (v === "quarterly") return KpiPeriodType.QUARTERLY;
+  if (v === "yearly") return KpiPeriodType.YEARLY;
+  return KpiPeriodType.MONTHLY;
+}
+
+function resolvePeriodRange(input: { now: Date; periodType: KpiPeriodType }) {
+  const now = input.now;
+  const year = now.getUTCFullYear();
+  const month = now.getUTCMonth();
+
+  if (input.periodType === KpiPeriodType.MONTHLY) {
+    const start = new Date(Date.UTC(year, month, 1));
+    const end = new Date(Date.UTC(year, month + 1, 0, 23, 59, 59, 999));
+    return { start, end };
+  }
+
+  if (input.periodType === KpiPeriodType.QUARTERLY) {
+    const quarter = Math.floor(month / 3);
+    const startMonth = quarter * 3;
+    const start = new Date(Date.UTC(year, startMonth, 1));
+    const end = new Date(Date.UTC(year, startMonth + 3, 0, 23, 59, 59, 999));
+    return { start, end };
+  }
+
+  const start = new Date(Date.UTC(year, 0, 1));
+  const end = new Date(Date.UTC(year, 12, 0, 23, 59, 59, 999));
+  return { start, end };
+}
+
+function mapStatus(raw: string | undefined, fallback: Status) {
+  const v = String(raw ?? "").trim().toLowerCase();
+  if (v === "completed") return Status.COMPLETED;
+  if (v === "planned") return Status.PLANNED;
+  if (v === "at_risk") return Status.AT_RISK;
+  if (v === "active" || v === "in_progress") return Status.ACTIVE;
+  return fallback;
+}
+
+function safeNumber(n: unknown) {
+  const v = typeof n === "number" ? n : Number(n);
+  return Number.isFinite(v) ? v : null;
+}
+
+function progressPercent(current: number | null, target: number | null) {
+  if (typeof current !== "number" || !Number.isFinite(current)) return 0;
+  if (typeof target !== "number" || !Number.isFinite(target) || target === 0) return 0;
+  return (current / target) * 100;
+}
+
+function weightedAverage(items: Array<{ value: number; weight?: number | null }>) {
+  let sumW = 0;
+  let sum = 0;
+  for (const i of items) {
+    const w = typeof i.weight === "number" && Number.isFinite(i.weight) ? i.weight : 1;
+    sumW += w;
+    sum += i.value * w;
+  }
+  return sumW > 0 ? sum / sumW : 0;
+}
+
+function evaluateAchievementFormula(input: { achievementFormula?: string; baselineValue: number | null; currentValue: number | null; targetValue: number | null }) {
+  const raw = String(input.achievementFormula ?? "").trim();
+  if (!raw) return null;
+
+  const body = /\breturn\b/.test(raw) ? raw : `return (${raw});`;
+  try {
+    const result = Function(
+      "baselineValue",
+      "currentValue",
+      "targetValue",
+      `"use strict";\n${body}`,
+    )(input.baselineValue ?? 0, input.currentValue ?? 0, input.targetValue ?? 0);
+    const num = typeof result === "number" && Number.isFinite(result) ? result : NaN;
+    return Number.isFinite(num) ? num : null;
+  } catch {
+    return null;
+  }
+}
 
 async function wipeDatabase() {
   console.log("🗑️  Wiping database...");
@@ -22,12 +207,35 @@ async function wipeDatabase() {
   console.log("✅ Database wiped");
 }
 
+function extractGetKeys(code: string) {
+  const keys: string[] = [];
+  const re = /get\(\s*["']([^"']+)["']\s*\)/g;
+  for (const match of code.matchAll(re)) {
+    const k = normalizeKey(String(match[1] ?? ""));
+    if (k) keys.push(k);
+  }
+  return Array.from(new Set(keys));
+}
+
+function evaluateJs(input: { code: string; get: (key: string) => number }) {
+  const raw = String(input.code ?? "").trim();
+  if (!raw) return { ok: false as const, error: "emptyFormula" };
+  const body = /\breturn\b/.test(raw) ? raw : `return (${raw});`;
+  try {
+    const result = Function("vars", "get", `"use strict";\n${body}`)({}, input.get);
+    const num = typeof result === "number" && Number.isFinite(result) ? result : NaN;
+    if (!Number.isFinite(num)) return { ok: false as const, error: "invalidFormulaResult" };
+    return { ok: true as const, value: num };
+  } catch {
+    return { ok: false as const, error: "failedToEvaluateFormula" };
+  }
+}
+
 async function main() {
-  console.log("🌱 Starting Al-Mousa comprehensive seed...");
-  
+  console.log("🌱 Starting Al-Mousa JSON seed...");
+
   await wipeDatabase();
 
-  // Organization
   const org = await prisma.organization.create({
     data: {
       name: "Musa Bin Abdulaziz Al-Mousa & Sons Holding Group",
@@ -42,7 +250,6 @@ async function main() {
     },
   });
 
-  // Entity Types
   const etPillar = await prisma.orgEntityType.create({
     data: { orgId: org.id, code: "PILLAR", name: "Pillar", nameAr: "ركيزة", sortOrder: 1 },
   });
@@ -63,227 +270,467 @@ async function main() {
     data: { orgId: org.id, code: "KPI", name: "KPI", nameAr: "مؤشر أداء", sortOrder: 5 },
   });
 
-  // Users
-  const pwd = "password123";
-  
-  const ceo = await auth.api.signUpEmail({ body: { email: "ceo@almousa.local", password: pwd, name: "عبدالله الموسى", role: Role.EXECUTIVE, orgId: org.id } });
-  await prisma.user.update({ where: { id: ceo.user.id }, data: { title: "Group CEO" } });
+  const defaultPassword = "password123";
+  const hashedPassword = await hashPassword(defaultPassword);
 
-  const admin = await auth.api.signUpEmail({ body: { email: "admin@almousa.local", password: pwd, name: "مدير النظام", role: Role.ADMIN, orgId: org.id } });
-  await prisma.user.update({ where: { id: admin.user.id }, data: { managerId: ceo.user.id, title: "Administrator" } });
+  const ceo = await prisma.user.create({
+    data: {
+      email: "ceo@almousa.local",
+      name: "عبدالله الموسى",
+      role: Role.EXECUTIVE,
+      orgId: org.id,
+      title: "Group CEO",
+      emailVerified: true,
+    },
+  });
 
-  const cfo = await auth.api.signUpEmail({ body: { email: "cfo@almousa.local", password: pwd, name: "خالد الأحمد", role: Role.EXECUTIVE, orgId: org.id } });
-  await prisma.user.update({ where: { id: cfo.user.id }, data: { managerId: ceo.user.id, title: "CFO" } });
+  await prisma.account.create({
+    data: {
+      userId: ceo.id,
+      accountId: ceo.email,
+      providerId: "credential",
+      password: hashedPassword,
+    },
+  });
 
-  const headStrategy = await auth.api.signUpEmail({ body: { email: "strategy@almousa.local", password: pwd, name: "فيصل السليمان", role: Role.MANAGER, orgId: org.id } });
-  await prisma.user.update({ where: { id: headStrategy.user.id }, data: { managerId: ceo.user.id, title: "Head of Strategy" } });
+  const admin = await prisma.user.create({
+    data: {
+      email: "admin@almousa.local",
+      name: "مدير النظام",
+      role: Role.ADMIN,
+      orgId: org.id,
+      managerId: ceo.id,
+      title: "Administrator",
+      emailVerified: true,
+    },
+  });
 
-  const headInvest = await auth.api.signUpEmail({ body: { email: "invest@almousa.local", password: pwd, name: "محمد العتيبي", role: Role.MANAGER, orgId: org.id } });
-  await prisma.user.update({ where: { id: headInvest.user.id }, data: { managerId: cfo.user.id, title: "Head of Investment" } });
+  await prisma.account.create({
+    data: {
+      userId: admin.id,
+      accountId: admin.email,
+      providerId: "credential",
+      password: hashedPassword,
+    },
+  });
 
-  const headFinance = await auth.api.signUpEmail({ body: { email: "finance@almousa.local", password: pwd, name: "سارة الدوسري", role: Role.MANAGER, orgId: org.id } });
-  await prisma.user.update({ where: { id: headFinance.user.id }, data: { managerId: cfo.user.id, title: "Head of Finance" } });
-
-  const headMarketing = await auth.api.signUpEmail({ body: { email: "marketing@almousa.local", password: pwd, name: "نورة القحطاني", role: Role.MANAGER, orgId: org.id } });
-  await prisma.user.update({ where: { id: headMarketing.user.id }, data: { managerId: ceo.user.id, title: "Head of Marketing" } });
-
-  const headHR = await auth.api.signUpEmail({ body: { email: "hr@almousa.local", password: pwd, name: "أحمد الشهري", role: Role.MANAGER, orgId: org.id } });
-  await prisma.user.update({ where: { id: headHR.user.id }, data: { managerId: ceo.user.id, title: "Head of HR" } });
-
-  const analyst1 = await auth.api.signUpEmail({ body: { email: "analyst1@almousa.local", password: pwd, name: "عبدالرحمن المطيري", role: Role.MANAGER, orgId: org.id } });
-  await prisma.user.update({ where: { id: analyst1.user.id }, data: { managerId: headStrategy.user.id, title: "Strategy Analyst" } });
-
-  const analyst2 = await auth.api.signUpEmail({ body: { email: "analyst2@almousa.local", password: pwd, name: "ليلى العنزي", role: Role.MANAGER, orgId: org.id } });
-  await prisma.user.update({ where: { id: analyst2.user.id }, data: { managerId: headInvest.user.id, title: "Investment Analyst" } });
-
-  console.log("✅ Users created");
-
-  // Pillars
-  const p1 = await prisma.entity.create({ data: { orgId: org.id, orgEntityTypeId: etPillar.id, key: "P1", title: "Investment Leadership & Portfolio Diversification", titleAr: "الريادة الاستثمارية وتنويع المحفظة", ownerUserId: ceo.user.id, status: Status.ACTIVE, sourceType: KpiSourceType.CALCULATED, formula: "(get('OBJ1') + get('OBJ2') + get('OBJ3')) / 3" } });
-  
-  const p2 = await prisma.entity.create({ data: { orgId: org.id, orgEntityTypeId: etPillar.id, key: "P2", title: "Financial Sustainability", titleAr: "الاستدامة المالية", ownerUserId: cfo.user.id, status: Status.ACTIVE, sourceType: KpiSourceType.CALCULATED, formula: "get('OBJ4')" } });
-  
-  const p3 = await prisma.entity.create({ data: { orgId: org.id, orgEntityTypeId: etPillar.id, key: "P3", title: "Governance & Excellence", titleAr: "الحوكمة والتميز", ownerUserId: headStrategy.user.id, status: Status.ACTIVE, sourceType: KpiSourceType.CALCULATED, formula: "(get('OBJ5') + get('OBJ6')) / 2" } });
-  
-  const p4 = await prisma.entity.create({ data: { orgId: org.id, orgEntityTypeId: etPillar.id, key: "P4", title: "Brand Excellence", titleAr: "التميز في العلامة التجارية", ownerUserId: headMarketing.user.id, status: Status.ACTIVE, sourceType: KpiSourceType.CALCULATED, formula: "(get('OBJ7') + get('OBJ8')) / 2" } });
-
-  console.log("✅ Pillars created");
-
-  // Objectives
-  const obj1 = await prisma.entity.create({ data: { orgId: org.id, orgEntityTypeId: etObjective.id, key: "OBJ1", title: "Expand portfolio to 7 new sectors by 2028 with 12% CAGR", titleAr: "توسيع المحفظة إلى 7 قطاعات جديدة بحلول 2028 بنمو 12٪", ownerUserId: headInvest.user.id, status: Status.ACTIVE, sourceType: KpiSourceType.CALCULATED, formula: "(get('KPI_NEW_SECTORS') + get('KPI_CAGR') + get('KPI_PORTFOLIO_CONTRIB')) / 3" } });
-  
-  const obj2 = await prisma.entity.create({ data: { orgId: org.id, orgEntityTypeId: etObjective.id, key: "OBJ2", title: "Achieve 15% above market returns by 2028", titleAr: "تحقيق عوائد أعلى من السوق بنسبة 15٪ بحلول 2028", ownerUserId: headInvest.user.id, status: Status.ACTIVE, sourceType: KpiSourceType.CALCULATED, formula: "(get('KPI_ROI') + get('KPI_ANNUAL_RETURN')) / 2" } });
-  
-  const obj3 = await prisma.entity.create({ data: { orgId: org.id, orgEntityTypeId: etObjective.id, key: "OBJ3", title: "Raise group revenues to target by 2028", titleAr: "رفع إيرادات المجموعة للمستهدف بحلول 2028", ownerUserId: cfo.user.id, status: Status.ACTIVE, sourceType: KpiSourceType.CALCULATED, formula: "(get('KPI_TOTAL_REVENUE') + get('KPI_REVENUE_GROWTH')) / 2" } });
-  
-  const obj4 = await prisma.entity.create({ data: { orgId: org.id, orgEntityTypeId: etObjective.id, key: "OBJ4", title: "Reduce financial deviations by 10% by 2026", titleAr: "خفض الانحرافات المالية بنسبة 10٪ بحلول 2026", ownerUserId: headFinance.user.id, status: Status.ACTIVE, sourceType: KpiSourceType.CALCULATED, formula: "(get('KPI_FIN_DEVIATIONS') + get('KPI_BUDGET_COMPLIANCE')) / 2" } });
-  
-  const obj5 = await prisma.entity.create({ data: { orgId: org.id, orgEntityTypeId: etObjective.id, key: "OBJ5", title: "Achieve listing readiness by 2026", titleAr: "تحقيق الجاهزية للإدراج بحلول 2026", ownerUserId: headStrategy.user.id, status: Status.ACTIVE, sourceType: KpiSourceType.CALCULATED, formula: "(get('KPI_GOVERNANCE') + get('KPI_OPERATIONAL_MODEL')) / 2" } });
-  
-  const obj6 = await prisma.entity.create({ data: { orgId: org.id, orgEntityTypeId: etObjective.id, key: "OBJ6", title: "Raise employee productivity to 85% by 2027", titleAr: "رفع إنتاجية الموظفين إلى 85٪ بحلول 2027", ownerUserId: headHR.user.id, status: Status.ACTIVE, sourceType: KpiSourceType.CALCULATED, formula: "(get('KPI_EMPLOYEE_PROD') + get('KPI_TRAINING')) / 2" } });
-  
-  const obj7 = await prisma.entity.create({ data: { orgId: org.id, orgEntityTypeId: etObjective.id, key: "OBJ7", title: "Raise nominal value by target % over 3 years", titleAr: "رفع القيمة الاسمية بالنسبة المستهدفة على مدى 3 سنوات", ownerUserId: cfo.user.id, status: Status.ACTIVE, sourceType: KpiSourceType.CALCULATED, formula: "get('KPI_NOMINAL_VALUE')" } });
-  
-  const obj8 = await prisma.entity.create({ data: { orgId: org.id, orgEntityTypeId: etObjective.id, key: "OBJ8", title: "Enhance brand awareness by target % by 2028", titleAr: "تعزيز الوعي بالعلامة التجارية بالنسبة المستهدفة بحلول 2028", ownerUserId: headMarketing.user.id, status: Status.ACTIVE, sourceType: KpiSourceType.CALCULATED, formula: "(get('KPI_BRAND_AWARENESS') + get('KPI_DIGITAL_ENGAGE')) / 2" } });
-
-  console.log("✅ Objectives created");
-
-  // Departments
-  const deptStrategy = await prisma.entity.create({ data: { orgId: org.id, orgEntityTypeId: etDepartment.id, key: "DEPT_STRATEGY", title: "Strategy & Excellence", titleAr: "الاستراتيجية والتميز", ownerUserId: headStrategy.user.id, status: Status.ACTIVE, sourceType: KpiSourceType.CALCULATED, formula: "get('INIT3')" } });
-  
-  const deptInvest = await prisma.entity.create({ data: { orgId: org.id, orgEntityTypeId: etDepartment.id, key: "DEPT_INVEST", title: "Investment", titleAr: "الاستثمار", ownerUserId: headInvest.user.id, status: Status.ACTIVE, sourceType: KpiSourceType.CALCULATED, formula: "get('INIT1')" } });
-  
-  const deptFinance = await prisma.entity.create({ data: { orgId: org.id, orgEntityTypeId: etDepartment.id, key: "DEPT_FINANCE", title: "Finance", titleAr: "المالية", ownerUserId: headFinance.user.id, status: Status.ACTIVE, sourceType: KpiSourceType.CALCULATED, formula: "get('INIT2')" } });
-  
-  const deptMarketing = await prisma.entity.create({ data: { orgId: org.id, orgEntityTypeId: etDepartment.id, key: "DEPT_MARKETING", title: "Marketing", titleAr: "التسويق", ownerUserId: headMarketing.user.id, status: Status.ACTIVE, sourceType: KpiSourceType.CALCULATED, formula: "get('INIT4')" } });
-  
-  const deptHR = await prisma.entity.create({ data: { orgId: org.id, orgEntityTypeId: etDepartment.id, key: "DEPT_HR", title: "Human Resources", titleAr: "الموارد البشرية", ownerUserId: headHR.user.id, status: Status.PLANNED, sourceType: KpiSourceType.CALCULATED, formula: "get('INIT5')" } });
-
-  console.log("✅ Departments created");
-
-  // Initiatives
-  const init1 = await prisma.entity.create({ data: { orgId: org.id, orgEntityTypeId: etInitiative.id, key: "INIT1", title: "New Sectors Entry Program", titleAr: "برنامج الدخول في القطاعات الجديدة", ownerUserId: headInvest.user.id, status: Status.ACTIVE, sourceType: KpiSourceType.CALCULATED, formula: "(get('KPI_NEW_SECTORS') + get('KPI_PARTNERSHIPS')) / 2" } });
-  
-  const init2 = await prisma.entity.create({ data: { orgId: org.id, orgEntityTypeId: etInitiative.id, key: "INIT2", title: "Unified Financial System", titleAr: "النظام المالي الموحد", ownerUserId: headFinance.user.id, status: Status.ACTIVE, sourceType: KpiSourceType.CALCULATED, formula: "(get('KPI_SYSTEM_ADOPTION') + get('KPI_FIN_DEVIATIONS')) / 2" } });
-  
-  const init3 = await prisma.entity.create({ data: { orgId: org.id, orgEntityTypeId: etInitiative.id, key: "INIT3", title: "Governance Excellence Program", titleAr: "برنامج التميز في الحوكمة", ownerUserId: headStrategy.user.id, status: Status.ACTIVE, sourceType: KpiSourceType.CALCULATED, formula: "get('KPI_GOVERNANCE')" } });
-  
-  const init4 = await prisma.entity.create({ data: { orgId: org.id, orgEntityTypeId: etInitiative.id, key: "INIT4", title: "Brand Positioning Campaign", titleAr: "حملة تعزيز العلامة التجارية", ownerUserId: headMarketing.user.id, status: Status.ACTIVE, sourceType: KpiSourceType.CALCULATED, formula: "(get('KPI_BRAND_AWARENESS') + get('KPI_CAMPAIGNS')) / 2" } });
-  
-  const init5 = await prisma.entity.create({ data: { orgId: org.id, orgEntityTypeId: etInitiative.id, key: "INIT5", title: "Workforce Development", titleAr: "تطوير القوى العاملة", ownerUserId: headHR.user.id, status: Status.PLANNED, sourceType: KpiSourceType.CALCULATED, formula: "(get('KPI_TRAINING') + get('KPI_EMPLOYEE_PROD')) / 2" } });
-
-  console.log("✅ Initiatives created");
-
-  // KPIs with Variables (continuing...)
-
-  // KPIs
-  const kpi1 = await prisma.entity.create({ data: { orgId: org.id, orgEntityTypeId: etKPI.id, key: "KPI_NEW_SECTORS", title: "Number of New Sectors", titleAr: "عدد القطاعات الجديدة", ownerUserId: headInvest.user.id, status: Status.ACTIVE, sourceType: KpiSourceType.MANUAL, periodType: KpiPeriodType.YEARLY, unit: "sectors", unitAr: "قطاع", direction: KpiDirection.INCREASE_IS_GOOD, aggregation: KpiAggregationMethod.LAST_VALUE, baselineValue: 0, targetValue: 7, weight: 100 } });
-  await prisma.entityVariable.create({ data: { entityId: kpi1.id, code: "count", displayName: "Sectors Count", nameAr: "عدد القطاعات", dataType: KpiVariableDataType.NUMBER, isRequired: true } });
-
-  const kpi2 = await prisma.entity.create({ data: { orgId: org.id, orgEntityTypeId: etKPI.id, key: "KPI_CAGR", title: "CAGR", titleAr: "معدل النمو المركب", ownerUserId: headInvest.user.id, status: Status.ACTIVE, sourceType: KpiSourceType.CALCULATED, periodType: KpiPeriodType.YEARLY, unit: "%", unitAr: "٪", direction: KpiDirection.INCREASE_IS_GOOD, aggregation: KpiAggregationMethod.LAST_VALUE, baselineValue: 0, targetValue: 12, weight: 100, formula: "(Math.pow(final_val / initial_val, 1 / years) - 1) * 100" } });
-  const v2a = await prisma.entityVariable.create({ data: { entityId: kpi2.id, code: "initial_val", displayName: "Initial Value", nameAr: "القيمة الابتدائية", dataType: KpiVariableDataType.NUMBER, isRequired: true } });
-  const v2b = await prisma.entityVariable.create({ data: { entityId: kpi2.id, code: "final_val", displayName: "Final Value", nameAr: "القيمة النهائية", dataType: KpiVariableDataType.NUMBER, isRequired: true } });
-  const v2c = await prisma.entityVariable.create({ data: { entityId: kpi2.id, code: "years", displayName: "Years", nameAr: "السنوات", dataType: KpiVariableDataType.NUMBER, isRequired: true, isStatic: true, staticValue: 3 } });
-
-  const kpi3 = await prisma.entity.create({ data: { orgId: org.id, orgEntityTypeId: etKPI.id, key: "KPI_PORTFOLIO_CONTRIB", title: "Portfolio Contribution %", titleAr: "مساهمة المحفظة ٪", ownerUserId: headInvest.user.id, status: Status.ACTIVE, sourceType: KpiSourceType.CALCULATED, periodType: KpiPeriodType.QUARTERLY, unit: "%", unitAr: "٪", direction: KpiDirection.INCREASE_IS_GOOD, aggregation: KpiAggregationMethod.LAST_VALUE, baselineValue: 0, targetValue: 25, weight: 80, formula: "(new_inv / total) * 100" } });
-  const v3a = await prisma.entityVariable.create({ data: { entityId: kpi3.id, code: "new_inv", displayName: "New Investments", nameAr: "الاستثمارات الجديدة", dataType: KpiVariableDataType.NUMBER, isRequired: true } });
-  const v3b = await prisma.entityVariable.create({ data: { entityId: kpi3.id, code: "total", displayName: "Total Portfolio", nameAr: "إجمالي المحفظة", dataType: KpiVariableDataType.NUMBER, isRequired: true } });
-
-  const kpi4 = await prisma.entity.create({ data: { orgId: org.id, orgEntityTypeId: etKPI.id, key: "KPI_PARTNERSHIPS", title: "New Partnerships", titleAr: "الشراكات الجديدة", ownerUserId: headInvest.user.id, status: Status.ACTIVE, sourceType: KpiSourceType.MANUAL, periodType: KpiPeriodType.YEARLY, unit: "partnerships", unitAr: "شراكة", direction: KpiDirection.INCREASE_IS_GOOD, aggregation: KpiAggregationMethod.SUM, baselineValue: 0, targetValue: 15, weight: 60 } });
-  await prisma.entityVariable.create({ data: { entityId: kpi4.id, code: "count", displayName: "Count", nameAr: "العدد", dataType: KpiVariableDataType.NUMBER, isRequired: true } });
-
-  const kpi5 = await prisma.entity.create({ data: { orgId: org.id, orgEntityTypeId: etKPI.id, key: "KPI_ROI", title: "ROI %", titleAr: "العائد على الاستثمار ٪", ownerUserId: cfo.user.id, status: Status.ACTIVE, sourceType: KpiSourceType.CALCULATED, periodType: KpiPeriodType.QUARTERLY, unit: "%", unitAr: "٪", direction: KpiDirection.INCREASE_IS_GOOD, aggregation: KpiAggregationMethod.LAST_VALUE, baselineValue: 8, targetValue: 15, weight: 100, formula: "(profit / investment) * 100" } });
-  const v5a = await prisma.entityVariable.create({ data: { entityId: kpi5.id, code: "profit", displayName: "Net Profit", nameAr: "صافي الربح", dataType: KpiVariableDataType.NUMBER, isRequired: true } });
-  const v5b = await prisma.entityVariable.create({ data: { entityId: kpi5.id, code: "investment", displayName: "Total Investment", nameAr: "إجمالي الاستثمار", dataType: KpiVariableDataType.NUMBER, isRequired: true } });
-
-  const kpi6 = await prisma.entity.create({ data: { orgId: org.id, orgEntityTypeId: etKPI.id, key: "KPI_ANNUAL_RETURN", title: "Annual Return %", titleAr: "العائد السنوي ٪", ownerUserId: cfo.user.id, status: Status.ACTIVE, sourceType: KpiSourceType.CALCULATED, periodType: KpiPeriodType.YEARLY, unit: "%", unitAr: "٪", direction: KpiDirection.INCREASE_IS_GOOD, aggregation: KpiAggregationMethod.LAST_VALUE, baselineValue: 7, targetValue: 12, weight: 90, formula: "(Math.pow(end_val / begin_val, 1 / years) - 1) * 100" } });
-  await prisma.entityVariable.create({ data: { entityId: kpi6.id, code: "begin_val", displayName: "Beginning Value", nameAr: "القيمة الابتدائية", dataType: KpiVariableDataType.NUMBER, isRequired: true } });
-  await prisma.entityVariable.create({ data: { entityId: kpi6.id, code: "end_val", displayName: "Ending Value", nameAr: "القيمة النهائية", dataType: KpiVariableDataType.NUMBER, isRequired: true } });
-  await prisma.entityVariable.create({ data: { entityId: kpi6.id, code: "years", displayName: "Years", nameAr: "السنوات", dataType: KpiVariableDataType.NUMBER, isRequired: true, isStatic: true, staticValue: 1 } });
-
-  const kpi7 = await prisma.entity.create({ data: { orgId: org.id, orgEntityTypeId: etKPI.id, key: "KPI_TOTAL_REVENUE", title: "Total Revenue", titleAr: "إجمالي الإيرادات", ownerUserId: cfo.user.id, status: Status.ACTIVE, sourceType: KpiSourceType.MANUAL, periodType: KpiPeriodType.YEARLY, unit: "SAR M", unitAr: "م ريال", direction: KpiDirection.INCREASE_IS_GOOD, aggregation: KpiAggregationMethod.SUM, baselineValue: 850, targetValue: 1500, weight: 100 } });
-  await prisma.entityVariable.create({ data: { entityId: kpi7.id, code: "revenue", displayName: "Revenue", nameAr: "الإيرادات", dataType: KpiVariableDataType.NUMBER, isRequired: true } });
-
-  const kpi8 = await prisma.entity.create({ data: { orgId: org.id, orgEntityTypeId: etKPI.id, key: "KPI_REVENUE_GROWTH", title: "Revenue Growth %", titleAr: "نمو الإيرادات ٪", ownerUserId: cfo.user.id, status: Status.ACTIVE, sourceType: KpiSourceType.CALCULATED, periodType: KpiPeriodType.YEARLY, unit: "%", unitAr: "٪", direction: KpiDirection.INCREASE_IS_GOOD, aggregation: KpiAggregationMethod.LAST_VALUE, baselineValue: 5, targetValue: 15, weight: 85, formula: "((current - previous) / previous) * 100" } });
-  await prisma.entityVariable.create({ data: { entityId: kpi8.id, code: "current", displayName: "Current Revenue", nameAr: "الإيرادات الحالية", dataType: KpiVariableDataType.NUMBER, isRequired: true } });
-  await prisma.entityVariable.create({ data: { entityId: kpi8.id, code: "previous", displayName: "Previous Revenue", nameAr: "الإيرادات السابقة", dataType: KpiVariableDataType.NUMBER, isRequired: true } });
-
-  const kpi9 = await prisma.entity.create({ data: { orgId: org.id, orgEntityTypeId: etKPI.id, key: "KPI_FIN_DEVIATIONS", title: "Financial Deviations %", titleAr: "الانحرافات المالية ٪", ownerUserId: headFinance.user.id, status: Status.ACTIVE, sourceType: KpiSourceType.CALCULATED, periodType: KpiPeriodType.QUARTERLY, unit: "%", unitAr: "٪", direction: KpiDirection.DECREASE_IS_GOOD, aggregation: KpiAggregationMethod.AVERAGE, baselineValue: 15, targetValue: 5, weight: 100, formula: "Math.abs(((actual - budget) / budget) * 100)" } });
-  const v9a = await prisma.entityVariable.create({ data: { entityId: kpi9.id, code: "actual", displayName: "Actual Spending", nameAr: "الإنفاق الفعلي", dataType: KpiVariableDataType.NUMBER, isRequired: true } });
-  const v9b = await prisma.entityVariable.create({ data: { entityId: kpi9.id, code: "budget", displayName: "Budget", nameAr: "الميزانية", dataType: KpiVariableDataType.NUMBER, isRequired: true } });
-
-  const kpi10 = await prisma.entity.create({ data: { orgId: org.id, orgEntityTypeId: etKPI.id, key: "KPI_BUDGET_COMPLIANCE", title: "Budget Compliance %", titleAr: "الالتزام بالميزانية ٪", ownerUserId: headFinance.user.id, status: Status.ACTIVE, sourceType: KpiSourceType.CALCULATED, periodType: KpiPeriodType.QUARTERLY, unit: "%", unitAr: "٪", direction: KpiDirection.INCREASE_IS_GOOD, aggregation: KpiAggregationMethod.AVERAGE, baselineValue: 70, targetValue: 95, weight: 85, formula: "(compliant / total) * 100" } });
-  await prisma.entityVariable.create({ data: { entityId: kpi10.id, code: "compliant", displayName: "Compliant Depts", nameAr: "الأقسام الملتزمة", dataType: KpiVariableDataType.NUMBER, isRequired: true } });
-  await prisma.entityVariable.create({ data: { entityId: kpi10.id, code: "total", displayName: "Total Depts", nameAr: "إجمالي الأقسام", dataType: KpiVariableDataType.NUMBER, isRequired: true, isStatic: true, staticValue: 5 } });
-
-  const kpi11 = await prisma.entity.create({ data: { orgId: org.id, orgEntityTypeId: etKPI.id, key: "KPI_SYSTEM_ADOPTION", title: "System Adoption %", titleAr: "تبني النظام ٪", ownerUserId: headFinance.user.id, status: Status.ACTIVE, sourceType: KpiSourceType.MANUAL, periodType: KpiPeriodType.QUARTERLY, unit: "%", unitAr: "٪", direction: KpiDirection.INCREASE_IS_GOOD, aggregation: KpiAggregationMethod.LAST_VALUE, baselineValue: 20, targetValue: 100, weight: 70 } });
-  await prisma.entityVariable.create({ data: { entityId: kpi11.id, code: "adoption_rate", displayName: "Adoption Rate", nameAr: "معدل التبني", dataType: KpiVariableDataType.NUMBER, isRequired: true } });
-
-  const kpi12 = await prisma.entity.create({ data: { orgId: org.id, orgEntityTypeId: etKPI.id, key: "KPI_GOVERNANCE", title: "Governance Compliance %", titleAr: "الامتثال للحوكمة ٪", ownerUserId: headStrategy.user.id, status: Status.ACTIVE, sourceType: KpiSourceType.MANUAL, periodType: KpiPeriodType.QUARTERLY, unit: "%", unitAr: "٪", direction: KpiDirection.INCREASE_IS_GOOD, aggregation: KpiAggregationMethod.LAST_VALUE, baselineValue: 60, targetValue: 100, weight: 100 } });
-  await prisma.entityVariable.create({ data: { entityId: kpi12.id, code: "compliance", displayName: "Compliance %", nameAr: "نسبة الامتثال", dataType: KpiVariableDataType.NUMBER, isRequired: true } });
-
-  const kpi13 = await prisma.entity.create({ data: { orgId: org.id, orgEntityTypeId: etKPI.id, key: "KPI_OPERATIONAL_MODEL", title: "Operational Model Activation %", titleAr: "تفعيل النموذج التشغيلي ٪", ownerUserId: headStrategy.user.id, status: Status.ACTIVE, sourceType: KpiSourceType.MANUAL, periodType: KpiPeriodType.QUARTERLY, unit: "%", unitAr: "٪", direction: KpiDirection.INCREASE_IS_GOOD, aggregation: KpiAggregationMethod.LAST_VALUE, baselineValue: 40, targetValue: 100, weight: 90 } });
-  await prisma.entityVariable.create({ data: { entityId: kpi13.id, code: "activation", displayName: "Activation %", nameAr: "نسبة التفعيل", dataType: KpiVariableDataType.NUMBER, isRequired: true } });
-
-  const kpi14 = await prisma.entity.create({ data: { orgId: org.id, orgEntityTypeId: etKPI.id, key: "KPI_EMPLOYEE_PROD", title: "Employee Productivity %", titleAr: "إنتاجية الموظفين ٪", ownerUserId: headHR.user.id, status: Status.ACTIVE, sourceType: KpiSourceType.MANUAL, periodType: KpiPeriodType.QUARTERLY, unit: "%", unitAr: "٪", direction: KpiDirection.INCREASE_IS_GOOD, aggregation: KpiAggregationMethod.AVERAGE, baselineValue: 65, targetValue: 85, weight: 100 } });
-  await prisma.entityVariable.create({ data: { entityId: kpi14.id, code: "productivity", displayName: "Productivity %", nameAr: "نسبة الإنتاجية", dataType: KpiVariableDataType.NUMBER, isRequired: true } });
-
-  const kpi15 = await prisma.entity.create({ data: { orgId: org.id, orgEntityTypeId: etKPI.id, key: "KPI_TRAINING", title: "Training Participation %", titleAr: "المشاركة في التدريب ٪", ownerUserId: headHR.user.id, status: Status.ACTIVE, sourceType: KpiSourceType.MANUAL, periodType: KpiPeriodType.QUARTERLY, unit: "%", unitAr: "٪", direction: KpiDirection.INCREASE_IS_GOOD, aggregation: KpiAggregationMethod.AVERAGE, baselineValue: 40, targetValue: 90, weight: 70 } });
-  await prisma.entityVariable.create({ data: { entityId: kpi15.id, code: "participation", displayName: "Participation %", nameAr: "نسبة المشاركة", dataType: KpiVariableDataType.NUMBER, isRequired: true } });
-
-  const kpi16 = await prisma.entity.create({ data: { orgId: org.id, orgEntityTypeId: etKPI.id, key: "KPI_NOMINAL_VALUE", title: "Nominal Value Growth %", titleAr: "نمو القيمة الاسمية ٪", ownerUserId: cfo.user.id, status: Status.ACTIVE, sourceType: KpiSourceType.CALCULATED, periodType: KpiPeriodType.YEARLY, unit: "%", unitAr: "٪", direction: KpiDirection.INCREASE_IS_GOOD, aggregation: KpiAggregationMethod.LAST_VALUE, baselineValue: 0, targetValue: 20, weight: 100, formula: "((end_val - start_val) / start_val) * 100" } });
-  await prisma.entityVariable.create({ data: { entityId: kpi16.id, code: "start_val", displayName: "Starting Value", nameAr: "القيمة الابتدائية", dataType: KpiVariableDataType.NUMBER, isRequired: true } });
-  await prisma.entityVariable.create({ data: { entityId: kpi16.id, code: "end_val", displayName: "Ending Value", nameAr: "القيمة النهائية", dataType: KpiVariableDataType.NUMBER, isRequired: true } });
-
-  const kpi17 = await prisma.entity.create({ data: { orgId: org.id, orgEntityTypeId: etKPI.id, key: "KPI_BRAND_AWARENESS", title: "Brand Awareness Index", titleAr: "مؤشر الوعي بالعلامة", ownerUserId: headMarketing.user.id, status: Status.ACTIVE, sourceType: KpiSourceType.CALCULATED, periodType: KpiPeriodType.QUARTERLY, unit: "%", unitAr: "٪", direction: KpiDirection.INCREASE_IS_GOOD, aggregation: KpiAggregationMethod.LAST_VALUE, baselineValue: 30, targetValue: 70, weight: 100, formula: "(aware / target_audience) * 100" } });
-  await prisma.entityVariable.create({ data: { entityId: kpi17.id, code: "aware", displayName: "Aware Audience", nameAr: "الجمهور الواعي", dataType: KpiVariableDataType.NUMBER, isRequired: true } });
-  await prisma.entityVariable.create({ data: { entityId: kpi17.id, code: "target_audience", displayName: "Target Audience", nameAr: "الجمهور المستهدف", dataType: KpiVariableDataType.NUMBER, isRequired: true } });
-
-  const kpi18 = await prisma.entity.create({ data: { orgId: org.id, orgEntityTypeId: etKPI.id, key: "KPI_DIGITAL_ENGAGE", title: "Digital Engagement Rate", titleAr: "معدل التفاعل الرقمي", ownerUserId: headMarketing.user.id, status: Status.ACTIVE, sourceType: KpiSourceType.CALCULATED, periodType: KpiPeriodType.MONTHLY, unit: "%", unitAr: "٪", direction: KpiDirection.INCREASE_IS_GOOD, aggregation: KpiAggregationMethod.AVERAGE, baselineValue: 2, targetValue: 8, weight: 80, formula: "(engagements / followers) * 100" } });
-  await prisma.entityVariable.create({ data: { entityId: kpi18.id, code: "engagements", displayName: "Engagements", nameAr: "التفاعلات", dataType: KpiVariableDataType.NUMBER, isRequired: true } });
-  await prisma.entityVariable.create({ data: { entityId: kpi18.id, code: "followers", displayName: "Followers", nameAr: "المتابعون", dataType: KpiVariableDataType.NUMBER, isRequired: true } });
-
-  const kpi19 = await prisma.entity.create({ data: { orgId: org.id, orgEntityTypeId: etKPI.id, key: "KPI_CAMPAIGNS", title: "Marketing Campaigns Count", titleAr: "عدد الحملات التسويقية", ownerUserId: headMarketing.user.id, status: Status.ACTIVE, sourceType: KpiSourceType.MANUAL, periodType: KpiPeriodType.YEARLY, unit: "campaigns", unitAr: "حملة", direction: KpiDirection.INCREASE_IS_GOOD, aggregation: KpiAggregationMethod.SUM, baselineValue: 5, targetValue: 20, weight: 60 } });
-  await prisma.entityVariable.create({ data: { entityId: kpi19.id, code: "count", displayName: "Campaigns Count", nameAr: "عدد الحملات", dataType: KpiVariableDataType.NUMBER, isRequired: true } });
-
-  console.log("✅ KPIs created");
-
-  // User Assignments
-  await prisma.userEntityAssignment.createMany({ data: [
-    { userId: headInvest.user.id, entityId: kpi1.id },
-    { userId: headInvest.user.id, entityId: kpi2.id },
-    { userId: headInvest.user.id, entityId: kpi3.id },
-    { userId: headInvest.user.id, entityId: kpi4.id },
-    { userId: analyst2.user.id, entityId: kpi1.id },
-    { userId: analyst2.user.id, entityId: kpi4.id },
-    { userId: cfo.user.id, entityId: kpi5.id },
-    { userId: cfo.user.id, entityId: kpi6.id },
-    { userId: cfo.user.id, entityId: kpi7.id },
-    { userId: cfo.user.id, entityId: kpi8.id },
-    { userId: headFinance.user.id, entityId: kpi9.id },
-    { userId: headFinance.user.id, entityId: kpi10.id },
-    { userId: headFinance.user.id, entityId: kpi11.id },
-    { userId: headStrategy.user.id, entityId: kpi12.id },
-    { userId: headStrategy.user.id, entityId: kpi13.id },
-    { userId: analyst1.user.id, entityId: kpi12.id },
-    { userId: headHR.user.id, entityId: kpi14.id },
-    { userId: headHR.user.id, entityId: kpi15.id },
-    { userId: headMarketing.user.id, entityId: kpi17.id },
-    { userId: headMarketing.user.id, entityId: kpi18.id },
-    { userId: headMarketing.user.id, entityId: kpi19.id },
-  ]});
-
-  console.log("✅ User assignments created");
-
-  // Sample data for some KPIs (Q4 2024)
   const now = new Date();
-  const q4Start = new Date(now.getFullYear(), 9, 1);
-  const q4End = new Date(now.getFullYear(), 12, 0, 23, 59, 59, 999);
 
-  // KPI 3: Portfolio Contribution
-  const period3 = await prisma.entityValuePeriod.create({ data: { entityId: kpi3.id, periodStart: q4Start, periodEnd: q4End, actualValue: null, calculatedValue: 12.5, finalValue: 12.5, status: KpiValueStatus.DRAFT, enteredBy: headInvest.user.id } });
-  await prisma.entityVariableValue.createMany({ data: [
-    { entityValueId: period3.id, entityVariableId: v3a.id, value: 125000000 },
-    { entityValueId: period3.id, entityVariableId: v3b.id, value: 1000000000 },
-  ]});
+  const kpisFile = await readSeedJson<KpiSeedRow>("kpis.json");
+  const initiativesFile = await readSeedJson<InitiativeSeedRow>("initiatives.json");
+  const departmentsFile = await readSeedJson<DepartmentSeedRow>("departments.json");
+  const objectivesFile = await readSeedJson<ObjectiveSeedRow>("objectives.json");
+  const pillarsFile = await readSeedJson<PillarSeedRow>("pillars.json");
 
-  // KPI 5: ROI
-  const period5 = await prisma.entityValuePeriod.create({ data: { entityId: kpi5.id, periodStart: q4Start, periodEnd: q4End, actualValue: null, calculatedValue: 11.2, finalValue: 11.2, status: KpiValueStatus.SUBMITTED, enteredBy: cfo.user.id, submittedBy: cfo.user.id, submittedAt: new Date(now.getTime() - 3600000) } });
-  await prisma.entityVariableValue.createMany({ data: [
-    { entityValueId: period5.id, entityVariableId: v5a.id, value: 112000000 },
-    { entityValueId: period5.id, entityVariableId: v5b.id, value: 1000000000 },
-  ]});
+  const kpis = kpisFile.data;
+  const initiatives = initiativesFile.data;
+  const departments = departmentsFile.data;
+  const objectives = objectivesFile.data;
+  const pillars = pillarsFile.data;
 
-  // KPI 9: Financial Deviations
-  const period9 = await prisma.entityValuePeriod.create({ data: { entityId: kpi9.id, periodStart: q4Start, periodEnd: q4End, actualValue: null, calculatedValue: 8.3, finalValue: 8.3, status: KpiValueStatus.APPROVED, enteredBy: headFinance.user.id, submittedBy: headFinance.user.id, submittedAt: new Date(now.getTime() - 7200000), approvedBy: cfo.user.id, approvedAt: new Date(now.getTime() - 1800000) } });
-  await prisma.entityVariableValue.createMany({ data: [
-    { entityValueId: period9.id, entityVariableId: v9a.id, value: 108300000 },
-    { entityValueId: period9.id, entityVariableId: v9b.id, value: 100000000 },
-  ]});
+  console.log("✅ Seeding KPIs...");
+  for (const row of kpis) {
+    const key = toEntityKey("KPI", row.id);
+    const periodType = mapPeriodTypeFromFrequency(row.frequency);
+    const baselineValue = safeNumber(row.baselineValue);
+    const targetValue = safeNumber(row.targetValue);
+    const currentValue = safeNumber(row.currentValue);
+    const direction = typeof baselineValue === "number" && typeof targetValue === "number" && targetValue < baselineValue
+      ? KpiDirection.DECREASE_IS_GOOD
+      : KpiDirection.INCREASE_IS_GOOD;
 
-  console.log("✅ Sample data values created");
+    const ent = await prisma.entity.create({
+      data: {
+        orgId: org.id,
+        orgEntityTypeId: etKPI.id,
+        key,
+        title: row.nameEn,
+        titleAr: row.nameAr,
+        description: row.descriptionEn ?? null,
+        descriptionAr: row.descriptionAr ?? null,
+        ownerUserId: admin.id,
+        status: row.isActive ? Status.ACTIVE : Status.PLANNED,
+        sourceType: KpiSourceType.MANUAL,
+        periodType,
+        unit: row.unit ?? null,
+        direction,
+        aggregation: KpiAggregationMethod.LAST_VALUE,
+        baselineValue: baselineValue ?? null,
+        targetValue: targetValue ?? null,
+        formula: null,
+      },
+      select: { id: true, key: true, periodType: true },
+    });
 
-  console.log("🎉 Al-Mousa comprehensive seed completed successfully!");
+    const range = resolvePeriodRange({ now, periodType });
+    const achievementValue = evaluateAchievementFormula({
+      achievementFormula: row.achievementFormula,
+      baselineValue,
+      currentValue,
+      targetValue,
+    });
+
+    await prisma.entityValuePeriod.upsert({
+      where: { entity_period_unique: { entityId: ent.id, periodStart: range.start, periodEnd: range.end } },
+      create: {
+        entityId: ent.id,
+        periodStart: range.start,
+        periodEnd: range.end,
+        actualValue: currentValue,
+        calculatedValue: currentValue,
+        finalValue: currentValue,
+        achievementValue,
+        status: KpiValueStatus.DRAFT,
+        enteredBy: admin.id,
+      },
+      update: {
+        actualValue: currentValue,
+        calculatedValue: currentValue,
+        finalValue: currentValue,
+        achievementValue,
+        status: KpiValueStatus.DRAFT,
+        enteredBy: admin.id,
+      },
+    });
+  }
+
+  console.log("✅ Seeding initiatives...");
+  for (const row of initiatives) {
+    const key = toEntityKey("INIT", row.id);
+    const kpiKeys = kpis
+      .filter((k) => k.initiativeId === row.id)
+      .map((k) => toEntityKey("KPI", k.id));
+    const formula = kpiKeys.length
+      ? `return (${kpiKeys.map((k) => `get('${k}')`).join(" + ")}) / ${kpiKeys.length};`
+      : null;
+
+    const ent = await prisma.entity.create({
+      data: {
+        orgId: org.id,
+        orgEntityTypeId: etInitiative.id,
+        key,
+        title: row.nameEn,
+        titleAr: row.nameAr,
+        description: row.descriptionEn ?? null,
+        descriptionAr: row.descriptionAr ?? null,
+        ownerUserId: admin.id,
+        status: mapStatus(row.status, row.isActive ? Status.ACTIVE : Status.PLANNED),
+        sourceType: KpiSourceType.CALCULATED,
+        periodType: KpiPeriodType.MONTHLY,
+        unit: "%",
+        direction: KpiDirection.INCREASE_IS_GOOD,
+        aggregation: KpiAggregationMethod.LAST_VALUE,
+        baselineValue: 0,
+        targetValue: 100,
+        formula,
+      },
+      select: { id: true, key: true },
+    });
+    const range = resolvePeriodRange({ now, periodType: KpiPeriodType.MONTHLY });
+    const seedValue = typeof row.progress === "number" && Number.isFinite(row.progress) ? row.progress : 0;
+    await prisma.entityValuePeriod.upsert({
+      where: { entity_period_unique: { entityId: ent.id, periodStart: range.start, periodEnd: range.end } },
+      create: {
+        entityId: ent.id,
+        periodStart: range.start,
+        periodEnd: range.end,
+        actualValue: null,
+        calculatedValue: seedValue,
+        finalValue: seedValue,
+        achievementValue: seedValue,
+        status: KpiValueStatus.DRAFT,
+        enteredBy: admin.id,
+      },
+      update: {
+        actualValue: null,
+        calculatedValue: seedValue,
+        finalValue: seedValue,
+        achievementValue: seedValue,
+        status: KpiValueStatus.DRAFT,
+        enteredBy: admin.id,
+      },
+    });
+  }
+
+  console.log("✅ Seeding departments...");
+  for (const row of departments) {
+    const key = toEntityKey("DEPT", row.id);
+    const objectiveKeys = (row.relatedObjectives ?? []).map((id) => toEntityKey("OBJ", id));
+    const formula = objectiveKeys.length
+      ? `return (${objectiveKeys.map((k) => `get('${k}')`).join(" + ")}) / ${objectiveKeys.length};`
+      : null;
+
+    const ent = await prisma.entity.create({
+      data: {
+        orgId: org.id,
+        orgEntityTypeId: etDepartment.id,
+        key,
+        title: row.nameEn,
+        titleAr: row.nameAr,
+        description: row.descriptionEn ?? null,
+        descriptionAr: row.descriptionAr ?? null,
+        ownerUserId: admin.id,
+        status: row.isActive ? Status.ACTIVE : Status.PLANNED,
+        sourceType: KpiSourceType.CALCULATED,
+        periodType: KpiPeriodType.MONTHLY,
+        unit: "%",
+        direction: KpiDirection.INCREASE_IS_GOOD,
+        aggregation: KpiAggregationMethod.LAST_VALUE,
+        baselineValue: 0,
+        targetValue: 100,
+        formula,
+      },
+      select: { id: true, key: true },
+    });
+    const range = resolvePeriodRange({ now, periodType: KpiPeriodType.MONTHLY });
+    await prisma.entityValuePeriod.upsert({
+      where: { entity_period_unique: { entityId: ent.id, periodStart: range.start, periodEnd: range.end } },
+      create: {
+        entityId: ent.id,
+        periodStart: range.start,
+        periodEnd: range.end,
+        actualValue: null,
+        calculatedValue: 0,
+        finalValue: 0,
+        achievementValue: 0,
+        status: KpiValueStatus.DRAFT,
+        enteredBy: admin.id,
+      },
+      update: { enteredBy: admin.id },
+    });
+  }
+
+  console.log("✅ Seeding objectives...");
+  for (const row of objectives) {
+    const key = toEntityKey("OBJ", row.id);
+
+    const initKeys = initiatives
+      .filter((i) => i.objectiveId === row.id)
+      .map((i) => toEntityKey("INIT", i.id));
+
+    const seedProgress = progressPercent(safeNumber(row.currentValue), safeNumber(row.targetValue));
+    const formula = initKeys.length
+      ? `return (${initKeys.map((k) => `get('${k}')`).join(" + ")}) / ${initKeys.length};`
+      : null;
+
+    const ent = await prisma.entity.create({
+      data: {
+        orgId: org.id,
+        orgEntityTypeId: etObjective.id,
+        key,
+        title: row.nameEn,
+        titleAr: row.nameAr,
+        description: row.descriptionEn ?? null,
+        descriptionAr: row.descriptionAr ?? null,
+        ownerUserId: admin.id,
+        status: row.isActive ? Status.ACTIVE : Status.PLANNED,
+        sourceType: KpiSourceType.CALCULATED,
+        periodType: KpiPeriodType.MONTHLY,
+        unit: "%",
+        direction: KpiDirection.INCREASE_IS_GOOD,
+        aggregation: KpiAggregationMethod.LAST_VALUE,
+        baselineValue: 0,
+        targetValue: 100,
+        weight: safeNumber(row.weight) ?? null,
+        formula,
+      },
+      select: { id: true, key: true },
+    });
+
+    const range = resolvePeriodRange({ now, periodType: KpiPeriodType.MONTHLY });
+    await prisma.entityValuePeriod.upsert({
+      where: { entity_period_unique: { entityId: ent.id, periodStart: range.start, periodEnd: range.end } },
+      create: {
+        entityId: ent.id,
+        periodStart: range.start,
+        periodEnd: range.end,
+        actualValue: null,
+        calculatedValue: seedProgress,
+        finalValue: seedProgress,
+        achievementValue: seedProgress,
+        status: KpiValueStatus.DRAFT,
+        enteredBy: admin.id,
+      },
+      update: {
+        actualValue: null,
+        calculatedValue: seedProgress,
+        finalValue: seedProgress,
+        achievementValue: seedProgress,
+        status: KpiValueStatus.DRAFT,
+        enteredBy: admin.id,
+      },
+    });
+  }
+
+  console.log("✅ Seeding pillars...");
+  for (const row of pillars) {
+    const key = toEntityKey("PILLAR", row.id);
+    const relatedObjectives = objectives
+      .filter((o) => o.pillarId === row.id)
+      .map((o) => ({ key: toEntityKey("OBJ", o.id), weight: safeNumber(o.weight) }));
+
+    let formula: string | null = null;
+    if (relatedObjectives.length) {
+      const numerator = relatedObjectives
+        .map((o) => `get('${o.key}') * ${typeof o.weight === "number" && Number.isFinite(o.weight) ? o.weight : 1}`)
+        .join(" + ");
+      const denom = relatedObjectives.reduce((sum, o) => sum + (typeof o.weight === "number" && Number.isFinite(o.weight) ? o.weight : 1), 0);
+      formula = `return (${numerator}) / ${denom};`;
+    }
+
+    const ent = await prisma.entity.create({
+      data: {
+        orgId: org.id,
+        orgEntityTypeId: etPillar.id,
+        key,
+        title: row.nameEn,
+        titleAr: row.nameAr,
+        description: row.descriptionEn ?? null,
+        descriptionAr: row.descriptionAr ?? null,
+        ownerUserId: admin.id,
+        status: row.isActive ? Status.ACTIVE : Status.PLANNED,
+        sourceType: KpiSourceType.CALCULATED,
+        periodType: KpiPeriodType.MONTHLY,
+        unit: "%",
+        direction: KpiDirection.INCREASE_IS_GOOD,
+        aggregation: KpiAggregationMethod.LAST_VALUE,
+        baselineValue: 0,
+        targetValue: 100,
+        weight: safeNumber(row.weight) ?? null,
+        formula,
+      },
+      select: { id: true, key: true },
+    });
+
+    const range = resolvePeriodRange({ now, periodType: KpiPeriodType.MONTHLY });
+    await prisma.entityValuePeriod.upsert({
+      where: { entity_period_unique: { entityId: ent.id, periodStart: range.start, periodEnd: range.end } },
+      create: {
+        entityId: ent.id,
+        periodStart: range.start,
+        periodEnd: range.end,
+        actualValue: null,
+        calculatedValue: 0,
+        finalValue: 0,
+        achievementValue: 0,
+        status: KpiValueStatus.DRAFT,
+        enteredBy: admin.id,
+      },
+      update: { enteredBy: admin.id },
+    });
+  }
+
+  console.log("🧮 Recalculating derived entities...");
+  const cacheByKey = new Map<string, number>();
+  const visiting = new Set<string>();
+
+  async function computeKeyValue(key: string): Promise<number> {
+    const normalized = normalizeKey(key);
+    if (!normalized) return 0;
+    if (cacheByKey.has(normalized)) return cacheByKey.get(normalized) ?? 0;
+    if (visiting.has(normalized)) return 0;
+
+    visiting.add(normalized);
+
+    const ent = await prisma.entity.findFirst({
+      where: { orgId: org.id, deletedAt: null, key: { equals: normalized, mode: "insensitive" } },
+      select: {
+        id: true,
+        key: true,
+        orgEntityType: { select: { code: true } },
+        formula: true,
+        values: {
+          orderBy: [{ periodEnd: "desc" }],
+          take: 1,
+          select: { actualValue: true, calculatedValue: true, finalValue: true, achievementValue: true },
+        },
+      },
+    });
+
+    if (!ent) {
+      cacheByKey.set(normalized, 0);
+      visiting.delete(normalized);
+      return 0;
+    }
+
+    const latest = ent.values?.[0] ?? null;
+
+    // When rolling up progress, prefer KPI achievement percent if present.
+    const isKpi = String(ent.orgEntityType?.code ?? "").toUpperCase() === "KPI";
+    const kpiAchievement = isKpi && typeof latest?.achievementValue === "number" ? Number(latest.achievementValue) : null;
+
+    const stored =
+      typeof kpiAchievement === "number"
+        ? kpiAchievement
+        : typeof latest?.finalValue === "number"
+        ? Number(latest.finalValue)
+        : typeof latest?.calculatedValue === "number"
+          ? Number(latest.calculatedValue)
+          : typeof latest?.actualValue === "number"
+            ? Number(latest.actualValue)
+            : 0;
+
+    const formulaRaw = ent.formula?.trim() ? String(ent.formula).trim() : "";
+    if (!formulaRaw) {
+      cacheByKey.set(normalized, stored);
+      visiting.delete(normalized);
+      return stored;
+    }
+
+    const deps = extractGetKeys(formulaRaw);
+    const depValues: Record<string, number> = {};
+    for (const d of deps) depValues[d] = await computeKeyValue(d);
+
+    const res = evaluateJs({
+      code: formulaRaw,
+      get: (k: string) => depValues[normalizeKey(String(k ?? ""))] ?? 0,
+    });
+
+    const computed = res.ok ? res.value : stored;
+    cacheByKey.set(normalized, computed);
+    visiting.delete(normalized);
+    return computed;
+  }
+
+  const range = resolvePeriodRange({ now, periodType: KpiPeriodType.MONTHLY });
+  const nonKpiEntities = await prisma.entity.findMany({
+    where: {
+      orgId: org.id,
+      deletedAt: null,
+      orgEntityType: { code: { in: ["INITIATIVE", "DEPARTMENT", "OBJECTIVE", "PILLAR"] } },
+    },
+    select: { id: true, key: true },
+  });
+
+  for (const e of nonKpiEntities) {
+    const key = normalizeKey(String(e.key ?? ""));
+    if (!key) continue;
+    const value = await computeKeyValue(key);
+    await prisma.entityValuePeriod.upsert({
+      where: { entity_period_unique: { entityId: e.id, periodStart: range.start, periodEnd: range.end } },
+      create: {
+        entityId: e.id,
+        periodStart: range.start,
+        periodEnd: range.end,
+        actualValue: null,
+        calculatedValue: value,
+        finalValue: value,
+        achievementValue: value,
+        status: KpiValueStatus.DRAFT,
+        enteredBy: admin.id,
+      },
+      update: {
+        actualValue: null,
+        calculatedValue: value,
+        finalValue: value,
+        achievementValue: value,
+        status: KpiValueStatus.DRAFT,
+        enteredBy: admin.id,
+      },
+    });
+  }
+
+  console.log("🎉 Al-Mousa JSON seed completed successfully!");
 }
 
 main()

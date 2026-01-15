@@ -7,9 +7,10 @@
   },
   "dependencies": {
     "@prisma/client": "^6.19.1",
+    "bcryptjs": "^3.0.3",
     "better-auth": "^1.4.10"
   },
   "prisma": {
-    "seed": "tsx prisma/seed-mousa.ts"
+    "seed": "ts-node prisma/seed-mousa.ts"
   }
 }
