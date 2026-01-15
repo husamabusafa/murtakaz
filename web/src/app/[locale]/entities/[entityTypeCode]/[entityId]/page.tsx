@@ -22,6 +22,7 @@ import {
   deleteOrgEntity,
   getOrgEntityDetail,
   saveOrgEntityKpiValuesDraft,
+  getOrgEntitiesByKeys,
 } from "@/actions/entities";
 import {
   submitEntityForApproval,
@@ -32,6 +33,8 @@ import {
 type EntityDetail = Awaited<ReturnType<typeof getOrgEntityDetail>>;
 
 type EntityVariableRow = NonNullable<EntityDetail>["entity"]["variables"][number];
+
+type ReferencedEntity = Awaited<ReturnType<typeof getOrgEntitiesByKeys>>[number];
 
 
 function toNumberOrUndefined(raw: string) {
@@ -49,6 +52,24 @@ function periodValue(period: {
   if (typeof period.finalValue === "number") return period.finalValue;
   if (typeof period.calculatedValue === "number") return period.calculatedValue;
   if (typeof period.actualValue === "number") return period.actualValue;
+  return null;
+}
+
+function extractFormulaKeys(formula: string): string[] {
+  const keys: string[] = [];
+  const re = /get\(\s*["']([^"']+)["']\s*\)/g;
+  for (const match of formula.matchAll(re)) {
+    const key = String(match[1] ?? "").toUpperCase().trim();
+    if (key) keys.push(key);
+  }
+  return Array.from(new Set(keys));
+}
+
+function latestEntityValue(values: { actualValue: number | null; calculatedValue: number | null; finalValue: number | null } | null) {
+  if (!values) return null;
+  if (typeof values.finalValue === "number") return values.finalValue;
+  if (typeof values.calculatedValue === "number") return values.calculatedValue;
+  if (typeof values.actualValue === "number") return values.actualValue;
   return null;
 }
 
@@ -83,6 +104,9 @@ export default function EntityDetailPage() {
   const [rejecting, setRejecting] = useState(false);
   const [approvalError, setApprovalError] = useState<string | null>(null);
   
+  const [referencedEntities, setReferencedEntities] = useState<ReferencedEntity[]>([]);
+  const [loadingRefs, setLoadingRefs] = useState(false);
+  
   const [calculating, setCalculating] = useState(false);
   const [calculateError, setCalculateError] = useState<string | null>(null);
 
@@ -105,6 +129,22 @@ export default function EntityDetailPage() {
       const mv = current ? periodValue(current) : null;
       if (typeof mv === "number") {
         setManualValue(String(mv));
+      }
+
+      // Load referenced entities from formula
+      if (result?.entity?.formula) {
+        const keys = extractFormulaKeys(result.entity.formula);
+        if (keys.length > 0) {
+          setLoadingRefs(true);
+          try {
+            const refs = await getOrgEntitiesByKeys({ keys });
+            setReferencedEntities(refs);
+          } catch (err) {
+            console.error("Failed to load referenced entities:", err);
+          } finally {
+            setLoadingRefs(false);
+          }
+        }
       }
 
     } catch (error: unknown) {
@@ -690,6 +730,69 @@ export default function EntityDetailPage() {
         </Card>
       ) : null}
 
+      {/* Referenced Entities Section */}
+      {entity.formula && referencedEntities.length > 0 && (
+        <Card className="bg-card/70 backdrop-blur shadow-sm">
+          <CardHeader>
+            <CardTitle className="text-base">{tr("Formula Dependencies", "اعتماديات الصيغة")}</CardTitle>
+            <CardDescription>
+              {tr("Click on any entity below to view its details.", "انقر على أي كيان أدناه لعرض تفاصيله.")}
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+              {referencedEntities.map((ref) => {
+                const refValue = latestEntityValue(ref.latestValue);
+                const refUnit = df(ref.unit, ref.unitAr);
+                return (
+                  <Link
+                    key={ref.id}
+                    href={`/${locale}/entities/${ref.entityType.code.toLowerCase()}/${ref.id}`}
+                    className="block group"
+                  >
+                    <Card className="h-full transition-all hover:shadow-lg hover:scale-[1.02] cursor-pointer border-2 hover:border-primary/50">
+                      <CardHeader className="pb-3">
+                        <div className="flex items-start justify-between gap-2">
+                          <div className="flex-1 min-w-0">
+                            <div className="text-xs font-medium text-primary/70 uppercase tracking-wide">
+                              {df(ref.entityType.name, ref.entityType.nameAr)}
+                            </div>
+                            <div className="mt-1 text-sm font-semibold text-foreground truncate group-hover:text-primary transition-colors">
+                              {df(ref.title, ref.titleAr)}
+                            </div>
+                            <div className="mt-1 text-xs text-muted-foreground font-mono">
+                              {ref.key}
+                            </div>
+                          </div>
+                          <div className="shrink-0">
+                            <svg 
+                              className="h-5 w-5 text-muted-foreground group-hover:text-primary transition-colors" 
+                              fill="none" 
+                              viewBox="0 0 24 24" 
+                              stroke="currentColor"
+                            >
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                            </svg>
+                          </div>
+                        </div>
+                      </CardHeader>
+                      <CardContent className="pt-0">
+                        <KpiGauge 
+                          value={refValue} 
+                          target={ref.targetValue} 
+                          unit={refUnit || undefined}
+                          height={160}
+                          withCard={false}
+                        />
+                      </CardContent>
+                    </Card>
+                  </Link>
+                );
+              })}
+            </div>
+          </CardContent>
+        </Card>
+      )}
 
       <Dialog
         open={deleteOpen}

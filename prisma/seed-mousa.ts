@@ -217,6 +217,33 @@ function extractGetKeys(code: string) {
   return Array.from(new Set(keys));
 }
 
+function extractVariableNames(formula: string): string[] {
+  // Remove return statement, spaces, and common operators to get variable names
+  const cleaned = formula
+    .replace(/\breturn\b/g, '')
+    .replace(/\bconst\b/g, '')
+    .replace(/\blet\b/g, '')
+    .replace(/\bvar\b/g, '');
+  
+  // Match JavaScript identifiers (variable names)
+  const identifierPattern = /\b([a-zA-Z_][a-zA-Z0-9_]*)\b/g;
+  const matches = Array.from(cleaned.matchAll(identifierPattern));
+  
+  // Filter out JavaScript keywords and common function names
+  const jsKeywords = new Set([
+    'return', 'if', 'else', 'for', 'while', 'do', 'switch', 'case', 'break',
+    'continue', 'function', 'var', 'let', 'const', 'true', 'false', 'null',
+    'undefined', 'this', 'new', 'typeof', 'instanceof', 'get', 'Math', 'Number',
+    'String', 'Boolean', 'Array', 'Object', 'Date', 'console', 'log'
+  ]);
+  
+  const variables = matches
+    .map(m => m[1])
+    .filter(v => !jsKeywords.has(v) && v.length > 0);
+  
+  return Array.from(new Set(variables));
+}
+
 function evaluateJs(input: { code: string; get: (key: string) => number }) {
   const raw = String(input.code ?? "").trim();
   if (!raw) return { ok: false as const, error: "emptyFormula" };

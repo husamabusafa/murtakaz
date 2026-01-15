@@ -132,6 +132,54 @@ function extractGetKeys(code: string) {
   return Array.from(new Set(keys));
 }
 
+export async function getOrgEntitiesByKeys(input: { keys: string[] }) {
+  const session = await requireOrgMember();
+  const orgId = session.user.orgId;
+  if (!orgId) return [];
+
+  const normalizedKeys = input.keys.map(k => normalizeEntityKey(k)).filter(Boolean);
+  if (normalizedKeys.length === 0) return [];
+
+  const entities = await prisma.entity.findMany({
+    where: {
+      orgId,
+      deletedAt: null,
+      key: { in: normalizedKeys },
+    },
+    include: {
+      orgEntityType: {
+        select: {
+          code: true,
+          name: true,
+          nameAr: true,
+        },
+      },
+      values: {
+        orderBy: { periodStart: "desc" },
+        take: 1,
+        select: {
+          actualValue: true,
+          calculatedValue: true,
+          finalValue: true,
+          status: true,
+        },
+      },
+    },
+  });
+
+  return entities.map(e => ({
+    id: e.id,
+    key: e.key,
+    title: e.title,
+    titleAr: e.titleAr,
+    unit: e.unit,
+    unitAr: e.unitAr,
+    targetValue: e.targetValue,
+    entityType: e.orgEntityType,
+    latestValue: e.values[0] || null,
+  }));
+}
+
 async function findDependentEntities(input: { orgId: string; dependsOnKey: string }) {
   const entities = await prisma.entity.findMany({
     where: {
