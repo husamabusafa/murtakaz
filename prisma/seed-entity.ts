@@ -463,19 +463,32 @@ import {
  }
 
  function sampleValueForVar(code: string, offset: number) {
-  const lower = code.toLowerCase();
-
-  if (lower.includes("total") || lower.includes("max") || lower.includes("_planned")) return 100;
-  if (lower.includes("count") || lower.includes("_done")) return offset === 0 ? 12 : 8;
-  if (lower.includes("days")) return offset === 0 ? 120 : 180;
-  if (lower.includes("baseline")) return 200;
-  if (lower.includes("current")) return offset === 0 ? 160 : 180;
-  if (lower.includes("error")) return offset === 0 ? 10 : 25;
-  if (lower.includes("impressions")) return offset === 0 ? 10000 : 8000;
-  if (lower.includes("engagements")) return offset === 0 ? 1200 : 900;
-
-  return offset === 0 ? 100 : 70;
- }
+  switch (code) {
+    case "value":
+      return offset === 0 ? 68.5 : 62.3;
+    
+    case "impressions":
+      return offset === 0 ? 85000 : 72000;
+    
+    case "engagements":
+      return offset === 0 ? 3400 : 2880;
+    
+    case "participants":
+      return offset === 0 ? 215 : 192;
+    
+    case "employees_total":
+      return offset === 0 ? 280 : 275;
+    
+    case "subsidiaries_adopted":
+      return offset === 0 ? 7 : 6;
+    
+    case "subsidiaries_total":
+      return offset === 0 ? 10 : 10;
+    
+    default:
+      return offset === 0 ? 100 : 80;
+  }
+} 
 
  async function seed() {
   await assertEntitySystemReady();

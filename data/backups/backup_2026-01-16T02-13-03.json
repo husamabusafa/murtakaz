@@ -1,0 +1,4566 @@
+{
+  "timestamp": "2026-01-16T02-13-03",
+  "version": "1.0",
+  "data": {
+    "organization": {
+      "id": "10f903a3-95f6-460f-962a-382effde87b7",
+      "name": "Musa Bin Abdulaziz Al-Mousa & Sons Holding Group",
+      "nameAr": "مجموعة موسى بن عبدالعزيز الموسى وأولاده القابضة",
+      "domain": "almousa.local",
+      "kpiApprovalLevel": "MANAGER",
+      "createdAt": "2026-01-16T02:05:38.008Z",
+      "updatedAt": "2026-01-16T02:05:38.008Z",
+      "deletedAt": null,
+      "logoUrl": null,
+      "mission": "We invest in vital sectors with economic impact to create sustainable value that embodies the Group's efficiency and leadership.",
+      "missionAr": "نستثمر في القطاعات الحيوية ذات الأثر الاقتصادي لخلق قيمة مستدامة تجسد كفاءة المجموعة وريادتها",
+      "vision": "An ambitious investment group with efficiency that builds growth sustainability in vital sectors.",
+      "visionAr": "مجموعة استثمارية طموحة ذات كفاءه تبني استدامة النمو في قطاعات حيوية",
+      "about": null,
+      "aboutAr": null,
+      "contacts": {
+        "email": "info@almousa.local",
+        "phone": "+966 11 000 0000"
+      }
+    },
+    "orgEntityTypes": [
+      {
+        "id": "1e5698e5-f1b2-4908-89c8-ede85061fdc1",
+        "orgId": "10f903a3-95f6-460f-962a-382effde87b7",
+        "code": "KPI",
+        "name": "KPI",
+        "nameAr": "مؤشر أداء",
+        "sortOrder": 1,
+        "createdAt": "2026-01-16T02:05:38.009Z",
+        "updatedAt": "2026-01-16T02:05:38.009Z"
+      }
+    ],
+    "users": [
+      {
+        "id": "3a837a8c-5aef-4c30-978a-88090549ebdb",
+        "orgId": "10f903a3-95f6-460f-962a-382effde87b7",
+        "email": "ceo@almousa.local",
+        "emailVerified": true,
+        "name": "عبدالله الموسى",
+        "role": "EXECUTIVE",
+        "managerId": null,
+        "title": "Group CEO",
+        "image": null,
+        "hashedPassword": null,
+        "createdAt": "2026-01-16T02:05:38.093Z",
+        "updatedAt": "2026-01-16T02:05:38.093Z",
+        "deletedAt": null,
+        "password": "[REDACTED]"
+      },
+      {
+        "id": "6126be2a-d8ac-45b1-8d81-880f3250508b",
+        "orgId": "10f903a3-95f6-460f-962a-382effde87b7",
+        "email": "admin@almousa.local",
+        "emailVerified": true,
+        "name": "مدير النظام",
+        "role": "ADMIN",
+        "managerId": "3a837a8c-5aef-4c30-978a-88090549ebdb",
+        "title": "Administrator",
+        "image": null,
+        "hashedPassword": null,
+        "createdAt": "2026-01-16T02:05:38.097Z",
+        "updatedAt": "2026-01-16T02:05:38.097Z",
+        "deletedAt": null,
+        "password": "[REDACTED]"
+      }
+    ],
+    "entities": [
+      {
+        "id": "6c9b847c-e572-4e95-a51c-a6696f052a8d",
+        "orgId": "10f903a3-95f6-460f-962a-382effde87b7",
+        "key": "KPI_3_5_2",
+        "orgEntityTypeId": "1e5698e5-f1b2-4908-89c8-ede85061fdc1",
+        "title": "Security Incidents Count",
+        "titleAr": "عدد الحوادث الأمنية",
+        "description": "Number of cybersecurity breach incidents",
+        "descriptionAr": "عدد حوادث اختراق الأمن السيبراني",
+        "ownerUserId": "6126be2a-d8ac-45b1-8d81-880f3250508b",
+        "status": "ACTIVE",
+        "sourceType": "CALCULATED",
+        "periodType": "MONTHLY",
+        "unit": "حادثة",
+        "unitAr": null,
+        "direction": "DECREASE_IS_GOOD",
+        "aggregation": "LAST_VALUE",
+        "baselineValue": 8,
+        "targetValue": 0,
+        "weight": null,
+        "formula": "return securityIncidentsCount;",
+        "createdAt": "2026-01-16T02:05:38.199Z",
+        "updatedAt": "2026-01-16T02:05:38.199Z",
+        "deletedAt": null,
+        "variables": [
+          {
+            "id": "942b4ac1-1e9d-4bb3-b137-4d21703bd32b",
+            "entityId": "6c9b847c-e572-4e95-a51c-a6696f052a8d",
+            "code": "SECURITYINCIDENTSCOUNT",
+            "displayName": "security Incidents Count",
+            "nameAr": "securityIncidentsCount",
+            "dataType": "NUMBER",
+            "isRequired": true,
+            "isStatic": false,
+            "staticValue": null,
+            "values": [
+              {
+                "id": "859bfd4c-451b-4411-9d65-51a19b098fee",
+                "entityValueId": "c45c1e73-019d-4530-b305-9f6dea0b0e3a",
+                "entityVariableId": "942b4ac1-1e9d-4bb3-b137-4d21703bd32b",
+                "value": 1
+              }
+            ]
+          }
+        ],
+        "values": [
+          {
+            "id": "c45c1e73-019d-4530-b305-9f6dea0b0e3a",
+            "entityId": "6c9b847c-e572-4e95-a51c-a6696f052a8d",
+            "periodStart": "2026-01-01T00:00:00.000Z",
+            "periodEnd": "2026-01-31T23:59:59.999Z",
+            "actualValue": 1,
+            "calculatedValue": 1,
+            "finalValue": 1,
+            "achievementValue": 87.5,
+            "status": "DRAFT",
+            "approvalType": null,
+            "note": null,
+            "enteredBy": "6126be2a-d8ac-45b1-8d81-880f3250508b",
+            "submittedBy": null,
+            "approvedBy": null,
+            "submittedAt": null,
+            "approvedAt": null,
+            "lockedAt": null,
+            "createdAt": "2026-01-16T02:05:38.200Z",
+            "updatedAt": "2026-01-16T02:05:38.200Z"
+          }
+        ]
+      },
+      {
+        "id": "c8825541-b025-4ea6-a18c-39ed85f0ffd0",
+        "orgId": "10f903a3-95f6-460f-962a-382effde87b7",
+        "key": "KPI_3_5_3",
+        "orgEntityTypeId": "1e5698e5-f1b2-4908-89c8-ede85061fdc1",
+        "title": "Average Threat Response Time",
+        "titleAr": "متوسط وقت الاستجابة للتهديدات",
+        "description": "Average time to respond to security threats",
+        "descriptionAr": "متوسط الوقت للاستجابة للتهديدات الأمنية",
+        "ownerUserId": "6126be2a-d8ac-45b1-8d81-880f3250508b",
+        "status": "ACTIVE",
+        "sourceType": "CALCULATED",
+        "periodType": "MONTHLY",
+        "unit": "دقيقة",
+        "unitAr": null,
+        "direction": "DECREASE_IS_GOOD",
+        "aggregation": "LAST_VALUE",
+        "baselineValue": 120,
+        "targetValue": 15,
+        "weight": null,
+        "formula": "return sum(responseTime) / threatsCount;",
+        "createdAt": "2026-01-16T02:05:38.201Z",
+        "updatedAt": "2026-01-16T02:05:38.201Z",
+        "deletedAt": null,
+        "variables": [
+          {
+            "id": "b4a07732-8c72-430f-a1ba-9db1ff36971f",
+            "entityId": "c8825541-b025-4ea6-a18c-39ed85f0ffd0",
+            "code": "RESPONSETIME",
+            "displayName": "response Time",
+            "nameAr": "responseTime",
+            "dataType": "NUMBER",
+            "isRequired": true,
+            "isStatic": false,
+            "staticValue": null,
+            "values": [
+              {
+                "id": "4939fb18-9fb1-4de3-be1a-c3a33f2d9d68",
+                "entityValueId": "538f85a3-84f1-4536-9b3c-6d64a4d6e6ba",
+                "entityVariableId": "b4a07732-8c72-430f-a1ba-9db1ff36971f",
+                "value": 42.07288400955397
+              }
+            ]
+          },
+          {
+            "id": "d01855ec-c469-4d5d-be8a-a5374b363489",
+            "entityId": "c8825541-b025-4ea6-a18c-39ed85f0ffd0",
+            "code": "THREATSCOUNT",
+            "displayName": "threats Count",
+            "nameAr": "threatsCount",
+            "dataType": "NUMBER",
+            "isRequired": true,
+            "isStatic": false,
+            "staticValue": null,
+            "values": [
+              {
+                "id": "29deae1b-9656-4f8a-8ed3-afdfe737f144",
+                "entityValueId": "538f85a3-84f1-4536-9b3c-6d64a4d6e6ba",
+                "entityVariableId": "d01855ec-c469-4d5d-be8a-a5374b363489",
+                "value": 42
+              }
+            ]
+          }
+        ],
+        "values": [
+          {
+            "id": "538f85a3-84f1-4536-9b3c-6d64a4d6e6ba",
+            "entityId": "c8825541-b025-4ea6-a18c-39ed85f0ffd0",
+            "periodStart": "2026-01-01T00:00:00.000Z",
+            "periodEnd": "2026-01-31T23:59:59.999Z",
+            "actualValue": 1.001735333560809,
+            "calculatedValue": 1.001735333560809,
+            "finalValue": 1.001735333560809,
+            "achievementValue": 113.331680634704,
+            "status": "DRAFT",
+            "approvalType": null,
+            "note": null,
+            "enteredBy": "6126be2a-d8ac-45b1-8d81-880f3250508b",
+            "submittedBy": null,
+            "approvedBy": null,
+            "submittedAt": null,
+            "approvedAt": null,
+            "lockedAt": null,
+            "createdAt": "2026-01-16T02:05:38.202Z",
+            "updatedAt": "2026-01-16T02:05:38.202Z"
+          }
+        ]
+      },
+      {
+        "id": "e92c1451-6553-45e1-a503-1f8b20c6ace5",
+        "orgId": "10f903a3-95f6-460f-962a-382effde87b7",
+        "key": "KPI_4_1_1",
+        "orgEntityTypeId": "1e5698e5-f1b2-4908-89c8-ede85061fdc1",
+        "title": "Number of New Hires",
+        "titleAr": "عدد الموظفين الجدد",
+        "description": "Number of newly hired employees",
+        "descriptionAr": "عدد الموظفين المعينين حديثاً",
+        "ownerUserId": "6126be2a-d8ac-45b1-8d81-880f3250508b",
+        "status": "ACTIVE",
+        "sourceType": "CALCULATED",
+        "periodType": "MONTHLY",
+        "unit": "موظف",
+        "unitAr": null,
+        "direction": "INCREASE_IS_GOOD",
+        "aggregation": "LAST_VALUE",
+        "baselineValue": 0,
+        "targetValue": 150,
+        "weight": null,
+        "formula": "return newHiresCount;",
+        "createdAt": "2026-01-16T02:05:38.204Z",
+        "updatedAt": "2026-01-16T02:05:38.204Z",
+        "deletedAt": null,
+        "variables": [
+          {
+            "id": "354288c4-bf0d-4d80-907a-d34a477852a3",
+            "entityId": "e92c1451-6553-45e1-a503-1f8b20c6ace5",
+            "code": "NEWHIRESCOUNT",
+            "displayName": "new Hires Count",
+            "nameAr": "newHiresCount",
+            "dataType": "NUMBER",
+            "isRequired": true,
+            "isStatic": false,
+            "staticValue": null,
+            "values": [
+              {
+                "id": "76c7ac9e-5644-46f8-bd03-620e82cc04e8",
+                "entityValueId": "48ab9357-e7d5-45a1-9dad-edda0c74556d",
+                "entityVariableId": "354288c4-bf0d-4d80-907a-d34a477852a3",
+                "value": 36
+              }
+            ]
+          }
+        ],
+        "values": [
+          {
+            "id": "48ab9357-e7d5-45a1-9dad-edda0c74556d",
+            "entityId": "e92c1451-6553-45e1-a503-1f8b20c6ace5",
+            "periodStart": "2026-01-01T00:00:00.000Z",
+            "periodEnd": "2026-01-31T23:59:59.999Z",
+            "actualValue": 36,
+            "calculatedValue": 36,
+            "finalValue": 36,
+            "achievementValue": 24,
+            "status": "DRAFT",
+            "approvalType": null,
+            "note": null,
+            "enteredBy": "6126be2a-d8ac-45b1-8d81-880f3250508b",
+            "submittedBy": null,
+            "approvedBy": null,
+            "submittedAt": null,
+            "approvedAt": null,
+            "lockedAt": null,
+            "createdAt": "2026-01-16T02:05:38.204Z",
+            "updatedAt": "2026-01-16T02:05:38.204Z"
+          }
+        ]
+      },
+      {
+        "id": "14dac2fd-c80a-4166-9586-4f8084dff33e",
+        "orgId": "10f903a3-95f6-460f-962a-382effde87b7",
+        "key": "KPI_4_1_2",
+        "orgEntityTypeId": "1e5698e5-f1b2-4908-89c8-ede85061fdc1",
+        "title": "Average Time to Hire",
+        "titleAr": "متوسط وقت التوظيف",
+        "description": "Average time from job posting to hiring",
+        "descriptionAr": "متوسط الوقت من نشر الوظيفة حتى التعيين",
+        "ownerUserId": "6126be2a-d8ac-45b1-8d81-880f3250508b",
+        "status": "ACTIVE",
+        "sourceType": "CALCULATED",
+        "periodType": "MONTHLY",
+        "unit": "يوم",
+        "unitAr": null,
+        "direction": "DECREASE_IS_GOOD",
+        "aggregation": "LAST_VALUE",
+        "baselineValue": 65,
+        "targetValue": 30,
+        "weight": null,
+        "formula": "return sum(hiringTime) / hiresCount;",
+        "createdAt": "2026-01-16T02:05:38.205Z",
+        "updatedAt": "2026-01-16T02:05:38.205Z",
+        "deletedAt": null,
+        "variables": [
+          {
+            "id": "ca7cb36f-11cd-4803-8fbe-685f63f00b01",
+            "entityId": "14dac2fd-c80a-4166-9586-4f8084dff33e",
+            "code": "HIRINGTIME",
+            "displayName": "hiring Time",
+            "nameAr": "hiringTime",
+            "dataType": "NUMBER",
+            "isRequired": true,
+            "isStatic": false,
+            "staticValue": null,
+            "values": [
+              {
+                "id": "c544613f-ff83-48af-8749-65b655de9d7d",
+                "entityValueId": "8fa7880f-0978-439b-8d6a-7495070f4755",
+                "entityVariableId": "ca7cb36f-11cd-4803-8fbe-685f63f00b01",
+                "value": 52.87742849349966
+              }
+            ]
+          },
+          {
+            "id": "1f3aa6df-4b90-4e22-8c0e-5760682d8060",
+            "entityId": "14dac2fd-c80a-4166-9586-4f8084dff33e",
+            "code": "HIRESCOUNT",
+            "displayName": "hires Count",
+            "nameAr": "hiresCount",
+            "dataType": "NUMBER",
+            "isRequired": true,
+            "isStatic": false,
+            "staticValue": null,
+            "values": [
+              {
+                "id": "54f69042-6cc4-473f-862f-0f8e45117ce5",
+                "entityValueId": "8fa7880f-0978-439b-8d6a-7495070f4755",
+                "entityVariableId": "1f3aa6df-4b90-4e22-8c0e-5760682d8060",
+                "value": 51
+              }
+            ]
+          }
+        ],
+        "values": [
+          {
+            "id": "8fa7880f-0978-439b-8d6a-7495070f4755",
+            "entityId": "14dac2fd-c80a-4166-9586-4f8084dff33e",
+            "periodStart": "2026-01-01T00:00:00.000Z",
+            "periodEnd": "2026-01-31T23:59:59.999Z",
+            "actualValue": 1.036812323401954,
+            "calculatedValue": 1.036812323401954,
+            "finalValue": 1.036812323401954,
+            "achievementValue": 182.7519647902801,
+            "status": "DRAFT",
+            "approvalType": null,
+            "note": null,
+            "enteredBy": "6126be2a-d8ac-45b1-8d81-880f3250508b",
+            "submittedBy": null,
+            "approvedBy": null,
+            "submittedAt": null,
+            "approvedAt": null,
+            "lockedAt": null,
+            "createdAt": "2026-01-16T02:05:38.206Z",
+            "updatedAt": "2026-01-16T02:05:38.206Z"
+          }
+        ]
+      },
+      {
+        "id": "c5a4b27d-6f58-4432-8eaa-dcabd9bc3ab2",
+        "orgId": "10f903a3-95f6-460f-962a-382effde87b7",
+        "key": "KPI_4_2_1",
+        "orgEntityTypeId": "1e5698e5-f1b2-4908-89c8-ede85061fdc1",
+        "title": "Training Hours per Employee",
+        "titleAr": "ساعات التدريب لكل موظف",
+        "description": "Average annual training hours per employee",
+        "descriptionAr": "متوسط ساعات التدريب السنوية لكل موظف",
+        "ownerUserId": "6126be2a-d8ac-45b1-8d81-880f3250508b",
+        "status": "ACTIVE",
+        "sourceType": "CALCULATED",
+        "periodType": "MONTHLY",
+        "unit": "ساعة",
+        "unitAr": null,
+        "direction": "INCREASE_IS_GOOD",
+        "aggregation": "LAST_VALUE",
+        "baselineValue": 12,
+        "targetValue": 40,
+        "weight": null,
+        "formula": "return totalTrainingHours / employeeCount;",
+        "createdAt": "2026-01-16T02:05:38.208Z",
+        "updatedAt": "2026-01-16T02:05:38.208Z",
+        "deletedAt": null,
+        "variables": [
+          {
+            "id": "9e3cd8b1-22e4-4c7a-aaed-fb6b947d603f",
+            "entityId": "c5a4b27d-6f58-4432-8eaa-dcabd9bc3ab2",
+            "code": "TOTALTRAININGHOURS",
+            "displayName": "total Training Hours",
+            "nameAr": "totalTrainingHours",
+            "dataType": "NUMBER",
+            "isRequired": true,
+            "isStatic": false,
+            "staticValue": null,
+            "values": [
+              {
+                "id": "6438b3cd-e55a-471f-84b4-a34593923915",
+                "entityValueId": "d89ced7d-de01-438b-b89a-fc5d7bbc314e",
+                "entityVariableId": "9e3cd8b1-22e4-4c7a-aaed-fb6b947d603f",
+                "value": 18
+              }
+            ]
+          },
+          {
+            "id": "6ec95669-d0c7-462b-9f9f-b462b17315d7",
+            "entityId": "c5a4b27d-6f58-4432-8eaa-dcabd9bc3ab2",
+            "code": "EMPLOYEECOUNT",
+            "displayName": "employee Count",
+            "nameAr": "employeeCount",
+            "dataType": "NUMBER",
+            "isRequired": true,
+            "isStatic": false,
+            "staticValue": null,
+            "values": [
+              {
+                "id": "e10fb5f3-1e68-4d58-b485-78029eb005ae",
+                "entityValueId": "d89ced7d-de01-438b-b89a-fc5d7bbc314e",
+                "entityVariableId": "6ec95669-d0c7-462b-9f9f-b462b17315d7",
+                "value": 19
+              }
+            ]
+          }
+        ],
+        "values": [
+          {
+            "id": "d89ced7d-de01-438b-b89a-fc5d7bbc314e",
+            "entityId": "c5a4b27d-6f58-4432-8eaa-dcabd9bc3ab2",
+            "periodStart": "2026-01-01T00:00:00.000Z",
+            "periodEnd": "2026-01-31T23:59:59.999Z",
+            "actualValue": 0.9473684210526315,
+            "calculatedValue": 0.9473684210526315,
+            "finalValue": 0.9473684210526315,
+            "achievementValue": 2.368421052631579,
+            "status": "DRAFT",
+            "approvalType": null,
+            "note": null,
+            "enteredBy": "6126be2a-d8ac-45b1-8d81-880f3250508b",
+            "submittedBy": null,
+            "approvedBy": null,
+            "submittedAt": null,
+            "approvedAt": null,
+            "lockedAt": null,
+            "createdAt": "2026-01-16T02:05:38.209Z",
+            "updatedAt": "2026-01-16T02:05:38.209Z"
+          }
+        ]
+      },
+      {
+        "id": "7d200435-2a86-4adf-a3db-c2a895a17bd7",
+        "orgId": "10f903a3-95f6-460f-962a-382effde87b7",
+        "key": "KPI_4_2_2",
+        "orgEntityTypeId": "1e5698e5-f1b2-4908-89c8-ede85061fdc1",
+        "title": "Number of Training Programs",
+        "titleAr": "عدد البرامج التدريبية",
+        "description": "Number of training programs delivered",
+        "descriptionAr": "عدد البرامج التدريبية المنفذة",
+        "ownerUserId": "6126be2a-d8ac-45b1-8d81-880f3250508b",
+        "status": "ACTIVE",
+        "sourceType": "CALCULATED",
+        "periodType": "QUARTERLY",
+        "unit": "برنامج",
+        "unitAr": null,
+        "direction": "INCREASE_IS_GOOD",
+        "aggregation": "LAST_VALUE",
+        "baselineValue": 15,
+        "targetValue": 50,
+        "weight": null,
+        "formula": "return deliveredProgramsCount;",
+        "createdAt": "2026-01-16T02:05:38.210Z",
+        "updatedAt": "2026-01-16T02:05:38.210Z",
+        "deletedAt": null,
+        "variables": [
+          {
+            "id": "64dc5a29-186f-4e0d-ad09-daccd95694ba",
+            "entityId": "7d200435-2a86-4adf-a3db-c2a895a17bd7",
+            "code": "DELIVEREDPROGRAMSCOUNT",
+            "displayName": "delivered Programs Count",
+            "nameAr": "deliveredProgramsCount",
+            "dataType": "NUMBER",
+            "isRequired": true,
+            "isStatic": false,
+            "staticValue": null,
+            "values": [
+              {
+                "id": "3832fea7-ddaf-4611-b89c-58ede7b82ca8",
+                "entityValueId": "2ea20db9-ae07-4e43-a825-11d0e47c90fc",
+                "entityVariableId": "64dc5a29-186f-4e0d-ad09-daccd95694ba",
+                "value": 25
+              }
+            ]
+          }
+        ],
+        "values": [
+          {
+            "id": "2ea20db9-ae07-4e43-a825-11d0e47c90fc",
+            "entityId": "7d200435-2a86-4adf-a3db-c2a895a17bd7",
+            "periodStart": "2026-01-01T00:00:00.000Z",
+            "periodEnd": "2026-03-31T23:59:59.999Z",
+            "actualValue": 25,
+            "calculatedValue": 25,
+            "finalValue": 25,
+            "achievementValue": 50,
+            "status": "DRAFT",
+            "approvalType": null,
+            "note": null,
+            "enteredBy": "6126be2a-d8ac-45b1-8d81-880f3250508b",
+            "submittedBy": null,
+            "approvedBy": null,
+            "submittedAt": null,
+            "approvedAt": null,
+            "lockedAt": null,
+            "createdAt": "2026-01-16T02:05:38.211Z",
+            "updatedAt": "2026-01-16T02:05:38.211Z"
+          }
+        ]
+      },
+      {
+        "id": "06cf0ca0-4690-42a8-8a08-41a1bffd8aa3",
+        "orgId": "10f903a3-95f6-460f-962a-382effde87b7",
+        "key": "KPI_4_3_1",
+        "orgEntityTypeId": "1e5698e5-f1b2-4908-89c8-ede85061fdc1",
+        "title": "Employee Satisfaction Index",
+        "titleAr": "مؤشر رضا الموظفين",
+        "description": "Employee satisfaction index from annual survey",
+        "descriptionAr": "مؤشر رضا الموظفين من الاستبيان السنوي",
+        "ownerUserId": "6126be2a-d8ac-45b1-8d81-880f3250508b",
+        "status": "ACTIVE",
+        "sourceType": "CALCULATED",
+        "periodType": "QUARTERLY",
+        "unit": "%",
+        "unitAr": null,
+        "direction": "INCREASE_IS_GOOD",
+        "aggregation": "LAST_VALUE",
+        "baselineValue": 65,
+        "targetValue": 85,
+        "weight": null,
+        "formula": "return (satisfiedEmployees / totalRespondents);",
+        "createdAt": "2026-01-16T02:05:38.212Z",
+        "updatedAt": "2026-01-16T02:05:38.212Z",
+        "deletedAt": null,
+        "variables": [
+          {
+            "id": "f68b895a-aa43-4c3c-9b94-517c75df1225",
+            "entityId": "06cf0ca0-4690-42a8-8a08-41a1bffd8aa3",
+            "code": "SATISFIEDEMPLOYEES",
+            "displayName": "satisfied Employees",
+            "nameAr": "satisfiedEmployees",
+            "dataType": "NUMBER",
+            "isRequired": true,
+            "isStatic": false,
+            "staticValue": null,
+            "values": [
+              {
+                "id": "29c3c550-e3b0-44d3-a9ab-896a441be5eb",
+                "entityValueId": "72e49b6b-05c0-43cc-b037-2ccc5002e046",
+                "entityVariableId": "f68b895a-aa43-4c3c-9b94-517c75df1225",
+                "value": 928
+              }
+            ]
+          },
+          {
+            "id": "c713c9ee-51f9-4da2-87f0-6c694130d9af",
+            "entityId": "06cf0ca0-4690-42a8-8a08-41a1bffd8aa3",
+            "code": "TOTALRESPONDENTS",
+            "displayName": "total Respondents",
+            "nameAr": "totalRespondents",
+            "dataType": "NUMBER",
+            "isRequired": true,
+            "isStatic": false,
+            "staticValue": null,
+            "values": [
+              {
+                "id": "8880808a-db2f-4167-8292-6637e582160a",
+                "entityValueId": "72e49b6b-05c0-43cc-b037-2ccc5002e046",
+                "entityVariableId": "c713c9ee-51f9-4da2-87f0-6c694130d9af",
+                "value": 727
+              }
+            ]
+          }
+        ],
+        "values": [
+          {
+            "id": "72e49b6b-05c0-43cc-b037-2ccc5002e046",
+            "entityId": "06cf0ca0-4690-42a8-8a08-41a1bffd8aa3",
+            "periodStart": "2026-01-01T00:00:00.000Z",
+            "periodEnd": "2026-03-31T23:59:59.999Z",
+            "actualValue": 1.276478679504814,
+            "calculatedValue": 1.276478679504814,
+            "finalValue": 1.276478679504814,
+            "achievementValue": 1.50173962294684,
+            "status": "DRAFT",
+            "approvalType": null,
+            "note": null,
+            "enteredBy": "6126be2a-d8ac-45b1-8d81-880f3250508b",
+            "submittedBy": null,
+            "approvedBy": null,
+            "submittedAt": null,
+            "approvedAt": null,
+            "lockedAt": null,
+            "createdAt": "2026-01-16T02:05:38.213Z",
+            "updatedAt": "2026-01-16T02:05:38.213Z"
+          }
+        ]
+      },
+      {
+        "id": "905c6d18-6bfa-4d67-96f6-3f1a4ff86141",
+        "orgId": "10f903a3-95f6-460f-962a-382effde87b7",
+        "key": "KPI_4_3_2",
+        "orgEntityTypeId": "1e5698e5-f1b2-4908-89c8-ede85061fdc1",
+        "title": "Employee Turnover Rate",
+        "titleAr": "معدل دوران الموظفين",
+        "description": "Percentage of employees leaving annually",
+        "descriptionAr": "نسبة الموظفين المغادرين سنوياً",
+        "ownerUserId": "6126be2a-d8ac-45b1-8d81-880f3250508b",
+        "status": "ACTIVE",
+        "sourceType": "CALCULATED",
+        "periodType": "MONTHLY",
+        "unit": "%",
+        "unitAr": null,
+        "direction": "DECREASE_IS_GOOD",
+        "aggregation": "LAST_VALUE",
+        "baselineValue": 18,
+        "targetValue": 8,
+        "weight": null,
+        "formula": "return (leavingEmployees / averageEmployeeCount);",
+        "createdAt": "2026-01-16T02:05:38.214Z",
+        "updatedAt": "2026-01-16T02:05:38.214Z",
+        "deletedAt": null,
+        "variables": [
+          {
+            "id": "1b4f4804-80ca-445e-be65-88d679737e69",
+            "entityId": "905c6d18-6bfa-4d67-96f6-3f1a4ff86141",
+            "code": "LEAVINGEMPLOYEES",
+            "displayName": "leaving Employees",
+            "nameAr": "leavingEmployees",
+            "dataType": "NUMBER",
+            "isRequired": true,
+            "isStatic": false,
+            "staticValue": null,
+            "values": [
+              {
+                "id": "1c5b926f-3586-4a12-b47c-73cb1d35effa",
+                "entityValueId": "cbfb9f9c-dece-4d35-960b-f566333281ec",
+                "entityVariableId": "1b4f4804-80ca-445e-be65-88d679737e69",
+                "value": 72
+              }
+            ]
+          },
+          {
+            "id": "32f47e82-b990-4d11-a86d-1b3be8d62550",
+            "entityId": "905c6d18-6bfa-4d67-96f6-3f1a4ff86141",
+            "code": "AVERAGEEMPLOYEECOUNT",
+            "displayName": "average Employee Count",
+            "nameAr": "averageEmployeeCount",
+            "dataType": "NUMBER",
+            "isRequired": true,
+            "isStatic": false,
+            "staticValue": null,
+            "values": [
+              {
+                "id": "c62458c6-8e1e-4301-a7b8-09659cb12c72",
+                "entityValueId": "cbfb9f9c-dece-4d35-960b-f566333281ec",
+                "entityVariableId": "32f47e82-b990-4d11-a86d-1b3be8d62550",
+                "value": 150
+              }
+            ]
+          }
+        ],
+        "values": [
+          {
+            "id": "cbfb9f9c-dece-4d35-960b-f566333281ec",
+            "entityId": "905c6d18-6bfa-4d67-96f6-3f1a4ff86141",
+            "periodStart": "2026-01-01T00:00:00.000Z",
+            "periodEnd": "2026-01-31T23:59:59.999Z",
+            "actualValue": 0.48,
+            "calculatedValue": 0.48,
+            "finalValue": 0.48,
+            "achievementValue": 175.2,
+            "status": "DRAFT",
+            "approvalType": null,
+            "note": null,
+            "enteredBy": "6126be2a-d8ac-45b1-8d81-880f3250508b",
+            "submittedBy": null,
+            "approvedBy": null,
+            "submittedAt": null,
+            "approvedAt": null,
+            "lockedAt": null,
+            "createdAt": "2026-01-16T02:05:38.216Z",
+            "updatedAt": "2026-01-16T02:05:38.216Z"
+          }
+        ]
+      },
+      {
+        "id": "b8f58a34-4c68-4a7c-be48-342ec9d68e4f",
+        "orgId": "10f903a3-95f6-460f-962a-382effde87b7",
+        "key": "KPI_4_4_1",
+        "orgEntityTypeId": "1e5698e5-f1b2-4908-89c8-ede85061fdc1",
+        "title": "Number of Developed Leaders",
+        "titleAr": "عدد القادة المطورين",
+        "description": "Number of leaders developed in the program",
+        "descriptionAr": "عدد القادة الذين تم تطويرهم في البرنامج",
+        "ownerUserId": "6126be2a-d8ac-45b1-8d81-880f3250508b",
+        "status": "ACTIVE",
+        "sourceType": "CALCULATED",
+        "periodType": "QUARTERLY",
+        "unit": "قائد",
+        "unitAr": null,
+        "direction": "INCREASE_IS_GOOD",
+        "aggregation": "LAST_VALUE",
+        "baselineValue": 5,
+        "targetValue": 30,
+        "weight": null,
+        "formula": "return developedLeadersCount;",
+        "createdAt": "2026-01-16T02:05:38.217Z",
+        "updatedAt": "2026-01-16T02:05:38.217Z",
+        "deletedAt": null,
+        "variables": [
+          {
+            "id": "7d342f66-c3b6-404a-b8cd-8d0c89896322",
+            "entityId": "b8f58a34-4c68-4a7c-be48-342ec9d68e4f",
+            "code": "DEVELOPEDLEADERSCOUNT",
+            "displayName": "developed Leaders Count",
+            "nameAr": "developedLeadersCount",
+            "dataType": "NUMBER",
+            "isRequired": true,
+            "isStatic": false,
+            "staticValue": null,
+            "values": [
+              {
+                "id": "81144665-a6f0-48e7-822d-df1a111fae28",
+                "entityValueId": "c6ad6c5d-ba55-4735-9c92-41ddf7bd1e4d",
+                "entityVariableId": "7d342f66-c3b6-404a-b8cd-8d0c89896322",
+                "value": 13
+              }
+            ]
+          }
+        ],
+        "values": [
+          {
+            "id": "c6ad6c5d-ba55-4735-9c92-41ddf7bd1e4d",
+            "entityId": "b8f58a34-4c68-4a7c-be48-342ec9d68e4f",
+            "periodStart": "2026-01-01T00:00:00.000Z",
+            "periodEnd": "2026-03-31T23:59:59.999Z",
+            "actualValue": 13,
+            "calculatedValue": 13,
+            "finalValue": 13,
+            "achievementValue": 43.33333333333334,
+            "status": "DRAFT",
+            "approvalType": null,
+            "note": null,
+            "enteredBy": "6126be2a-d8ac-45b1-8d81-880f3250508b",
+            "submittedBy": null,
+            "approvedBy": null,
+            "submittedAt": null,
+            "approvedAt": null,
+            "lockedAt": null,
+            "createdAt": "2026-01-16T02:05:38.218Z",
+            "updatedAt": "2026-01-16T02:05:38.218Z"
+          }
+        ]
+      },
+      {
+        "id": "28487475-20d4-4a6b-bc89-b87089391044",
+        "orgId": "10f903a3-95f6-460f-962a-382effde87b7",
+        "key": "KPI_4_4_2",
+        "orgEntityTypeId": "1e5698e5-f1b2-4908-89c8-ede85061fdc1",
+        "title": "Internal Promotion Rate",
+        "titleAr": "نسبة الترقيات الداخلية",
+        "description": "Percentage of leadership positions filled internally",
+        "descriptionAr": "نسبة الوظائف القيادية التي ملئت داخلياً",
+        "ownerUserId": "6126be2a-d8ac-45b1-8d81-880f3250508b",
+        "status": "ACTIVE",
+        "sourceType": "CALCULATED",
+        "periodType": "QUARTERLY",
+        "unit": "%",
+        "unitAr": null,
+        "direction": "INCREASE_IS_GOOD",
+        "aggregation": "LAST_VALUE",
+        "baselineValue": 35,
+        "targetValue": 70,
+        "weight": null,
+        "formula": "return (internalPromotions / totalLeadershipPositions);",
+        "createdAt": "2026-01-16T02:05:38.218Z",
+        "updatedAt": "2026-01-16T02:05:38.218Z",
+        "deletedAt": null,
+        "variables": [
+          {
+            "id": "2530fed7-07b1-4bff-860c-05b49c3c47fc",
+            "entityId": "28487475-20d4-4a6b-bc89-b87089391044",
+            "code": "INTERNALPROMOTIONS",
+            "displayName": "internal Promotions",
+            "nameAr": "internalPromotions",
+            "dataType": "NUMBER",
+            "isRequired": true,
+            "isStatic": false,
+            "staticValue": null,
+            "values": [
+              {
+                "id": "db9a6823-6f93-4da5-992a-80baa7f0e271",
+                "entityValueId": "b6e17445-f13f-4c52-9e1f-8faff33851db",
+                "entityVariableId": "2530fed7-07b1-4bff-860c-05b49c3c47fc",
+                "value": 624
+              }
+            ]
+          },
+          {
+            "id": "aeb64176-2aaa-42cd-8fd2-66c78e207253",
+            "entityId": "28487475-20d4-4a6b-bc89-b87089391044",
+            "code": "TOTALLEADERSHIPPOSITIONS",
+            "displayName": "total Leadership Positions",
+            "nameAr": "totalLeadershipPositions",
+            "dataType": "NUMBER",
+            "isRequired": true,
+            "isStatic": false,
+            "staticValue": null,
+            "values": [
+              {
+                "id": "100e1679-2d0a-4349-ae5e-b420f5c76d2a",
+                "entityValueId": "b6e17445-f13f-4c52-9e1f-8faff33851db",
+                "entityVariableId": "aeb64176-2aaa-42cd-8fd2-66c78e207253",
+                "value": 431
+              }
+            ]
+          }
+        ],
+        "values": [
+          {
+            "id": "b6e17445-f13f-4c52-9e1f-8faff33851db",
+            "entityId": "28487475-20d4-4a6b-bc89-b87089391044",
+            "periodStart": "2026-01-01T00:00:00.000Z",
+            "periodEnd": "2026-03-31T23:59:59.999Z",
+            "actualValue": 1.447795823665893,
+            "calculatedValue": 1.447795823665893,
+            "finalValue": 1.447795823665893,
+            "achievementValue": 2.068279748094133,
+            "status": "DRAFT",
+            "approvalType": null,
+            "note": null,
+            "enteredBy": "6126be2a-d8ac-45b1-8d81-880f3250508b",
+            "submittedBy": null,
+            "approvedBy": null,
+            "submittedAt": null,
+            "approvedAt": null,
+            "lockedAt": null,
+            "createdAt": "2026-01-16T02:05:38.219Z",
+            "updatedAt": "2026-01-16T02:05:38.219Z"
+          }
+        ]
+      },
+      {
+        "id": "e7e34d9e-726b-4d40-86a0-bf84b2e87154",
+        "orgId": "10f903a3-95f6-460f-962a-382effde87b7",
+        "key": "KPI_4_5_1",
+        "orgEntityTypeId": "1e5698e5-f1b2-4908-89c8-ede85061fdc1",
+        "title": "Localization Rate",
+        "titleAr": "نسبة التوطين",
+        "description": "Percentage of Saudi employees from total employees",
+        "descriptionAr": "نسبة الموظفين السعوديين من إجمالي الموظفين",
+        "ownerUserId": "6126be2a-d8ac-45b1-8d81-880f3250508b",
+        "status": "ACTIVE",
+        "sourceType": "CALCULATED",
+        "periodType": "MONTHLY",
+        "unit": "%",
+        "unitAr": null,
+        "direction": "INCREASE_IS_GOOD",
+        "aggregation": "LAST_VALUE",
+        "baselineValue": 45,
+        "targetValue": 70,
+        "weight": null,
+        "formula": "return (saudiEmployees / totalEmployees);",
+        "createdAt": "2026-01-16T02:05:38.220Z",
+        "updatedAt": "2026-01-16T02:05:38.220Z",
+        "deletedAt": null,
+        "variables": [
+          {
+            "id": "ebf4ef8f-0654-4203-8832-45a071557ecf",
+            "entityId": "e7e34d9e-726b-4d40-86a0-bf84b2e87154",
+            "code": "SAUDIEMPLOYEES",
+            "displayName": "saudi Employees",
+            "nameAr": "saudiEmployees",
+            "dataType": "NUMBER",
+            "isRequired": true,
+            "isStatic": false,
+            "staticValue": null,
+            "values": [
+              {
+                "id": "1e0e745d-8194-401c-b40e-9aad1ec9bc5b",
+                "entityValueId": "3bdf40b3-13a2-4fb4-867f-34ea0f5df330",
+                "entityVariableId": "ebf4ef8f-0654-4203-8832-45a071557ecf",
+                "value": 785
+              }
+            ]
+          },
+          {
+            "id": "da0e9bb3-8626-4636-a226-f26ef12af88a",
+            "entityId": "e7e34d9e-726b-4d40-86a0-bf84b2e87154",
+            "code": "TOTALEMPLOYEES",
+            "displayName": "total Employees",
+            "nameAr": "totalEmployees",
+            "dataType": "NUMBER",
+            "isRequired": true,
+            "isStatic": false,
+            "staticValue": null,
+            "values": [
+              {
+                "id": "a42b98cd-331f-4c67-ae6a-3a4c3c557dd5",
+                "entityValueId": "3bdf40b3-13a2-4fb4-867f-34ea0f5df330",
+                "entityVariableId": "da0e9bb3-8626-4636-a226-f26ef12af88a",
+                "value": 531
+              }
+            ]
+          }
+        ],
+        "values": [
+          {
+            "id": "3bdf40b3-13a2-4fb4-867f-34ea0f5df330",
+            "entityId": "e7e34d9e-726b-4d40-86a0-bf84b2e87154",
+            "periodStart": "2026-01-01T00:00:00.000Z",
+            "periodEnd": "2026-01-31T23:59:59.999Z",
+            "actualValue": 1.47834274952919,
+            "calculatedValue": 1.47834274952919,
+            "finalValue": 1.47834274952919,
+            "achievementValue": 2.111918213613129,
+            "status": "DRAFT",
+            "approvalType": null,
+            "note": null,
+            "enteredBy": "6126be2a-d8ac-45b1-8d81-880f3250508b",
+            "submittedBy": null,
+            "approvedBy": null,
+            "submittedAt": null,
+            "approvedAt": null,
+            "lockedAt": null,
+            "createdAt": "2026-01-16T02:05:38.221Z",
+            "updatedAt": "2026-01-16T02:05:38.221Z"
+          }
+        ]
+      },
+      {
+        "id": "3fcb1afb-387a-4c6b-a00e-7874b9c653df",
+        "orgId": "10f903a3-95f6-460f-962a-382effde87b7",
+        "key": "KPI_4_5_2",
+        "orgEntityTypeId": "1e5698e5-f1b2-4908-89c8-ede85061fdc1",
+        "title": "Saudis in Leadership Positions",
+        "titleAr": "نسبة السعوديين في المناصب القيادية",
+        "description": "Percentage of Saudis in leadership positions",
+        "descriptionAr": "نسبة السعوديين في المناصب القيادية",
+        "ownerUserId": "6126be2a-d8ac-45b1-8d81-880f3250508b",
+        "status": "ACTIVE",
+        "sourceType": "CALCULATED",
+        "periodType": "QUARTERLY",
+        "unit": "%",
+        "unitAr": null,
+        "direction": "INCREASE_IS_GOOD",
+        "aggregation": "LAST_VALUE",
+        "baselineValue": 30,
+        "targetValue": 60,
+        "weight": null,
+        "formula": "return (saudiLeaders / totalLeaders);",
+        "createdAt": "2026-01-16T02:05:38.223Z",
+        "updatedAt": "2026-01-16T02:05:38.223Z",
+        "deletedAt": null,
+        "variables": [
+          {
+            "id": "42732abb-64c8-4d71-81dd-ee502fb77ee8",
+            "entityId": "3fcb1afb-387a-4c6b-a00e-7874b9c653df",
+            "code": "SAUDILEADERS",
+            "displayName": "saudi Leaders",
+            "nameAr": "saudiLeaders",
+            "dataType": "NUMBER",
+            "isRequired": true,
+            "isStatic": false,
+            "staticValue": null,
+            "values": [
+              {
+                "id": "955d4ec6-1671-4c90-9411-7a88323fc464",
+                "entityValueId": "b845dab8-f1d5-4e59-bfce-1eb21d956ade",
+                "entityVariableId": "42732abb-64c8-4d71-81dd-ee502fb77ee8",
+                "value": 637
+              }
+            ]
+          },
+          {
+            "id": "1683382a-5b93-4ad2-9c2f-2028599e9fc4",
+            "entityId": "3fcb1afb-387a-4c6b-a00e-7874b9c653df",
+            "code": "TOTALLEADERS",
+            "displayName": "total Leaders",
+            "nameAr": "totalLeaders",
+            "dataType": "NUMBER",
+            "isRequired": true,
+            "isStatic": false,
+            "staticValue": null,
+            "values": [
+              {
+                "id": "23c08ca3-fff3-498e-9f78-5c0178f3947d",
+                "entityValueId": "b845dab8-f1d5-4e59-bfce-1eb21d956ade",
+                "entityVariableId": "1683382a-5b93-4ad2-9c2f-2028599e9fc4",
+                "value": 395
+              }
+            ]
+          }
+        ],
+        "values": [
+          {
+            "id": "b845dab8-f1d5-4e59-bfce-1eb21d956ade",
+            "entityId": "3fcb1afb-387a-4c6b-a00e-7874b9c653df",
+            "periodStart": "2026-01-01T00:00:00.000Z",
+            "periodEnd": "2026-03-31T23:59:59.999Z",
+            "actualValue": 1.612658227848101,
+            "calculatedValue": 1.612658227848101,
+            "finalValue": 1.612658227848101,
+            "achievementValue": 2.687763713080169,
+            "status": "DRAFT",
+            "approvalType": null,
+            "note": null,
+            "enteredBy": "6126be2a-d8ac-45b1-8d81-880f3250508b",
+            "submittedBy": null,
+            "approvedBy": null,
+            "submittedAt": null,
+            "approvedAt": null,
+            "lockedAt": null,
+            "createdAt": "2026-01-16T02:05:38.224Z",
+            "updatedAt": "2026-01-16T02:05:38.224Z"
+          }
+        ]
+      },
+      {
+        "id": "6cdf0736-e65a-4f66-9ceb-08bbbe027548",
+        "orgId": "10f903a3-95f6-460f-962a-382effde87b7",
+        "key": "KPI_5_1_1",
+        "orgEntityTypeId": "1e5698e5-f1b2-4908-89c8-ede85061fdc1",
+        "title": "Carbon Emissions",
+        "titleAr": "انبعاثات الكربون",
+        "description": "Amount of carbon dioxide emissions",
+        "descriptionAr": "كمية انبعاثات ثاني أكسيد الكربون",
+        "ownerUserId": "6126be2a-d8ac-45b1-8d81-880f3250508b",
+        "status": "ACTIVE",
+        "sourceType": "CALCULATED",
+        "periodType": "MONTHLY",
+        "unit": "طن",
+        "unitAr": null,
+        "direction": "DECREASE_IS_GOOD",
+        "aggregation": "LAST_VALUE",
+        "baselineValue": 10000,
+        "targetValue": 7000,
+        "weight": null,
+        "formula": "return totalCarbonEmissions;",
+        "createdAt": "2026-01-16T02:05:38.225Z",
+        "updatedAt": "2026-01-16T02:05:38.225Z",
+        "deletedAt": null,
+        "variables": [
+          {
+            "id": "28e04df1-197d-490b-bb45-ebba291b27ef",
+            "entityId": "6cdf0736-e65a-4f66-9ceb-08bbbe027548",
+            "code": "TOTALCARBONEMISSIONS",
+            "displayName": "total Carbon Emissions",
+            "nameAr": "totalCarbonEmissions",
+            "dataType": "NUMBER",
+            "isRequired": true,
+            "isStatic": false,
+            "staticValue": null,
+            "values": [
+              {
+                "id": "c106a9ee-3935-4d43-b26f-9246e26625cd",
+                "entityValueId": "0b70cb6a-c026-4a8e-8518-ffaf3a550587",
+                "entityVariableId": "28e04df1-197d-490b-bb45-ebba291b27ef",
+                "value": 9451
+              }
+            ]
+          }
+        ],
+        "values": [
+          {
+            "id": "0b70cb6a-c026-4a8e-8518-ffaf3a550587",
+            "entityId": "6cdf0736-e65a-4f66-9ceb-08bbbe027548",
+            "periodStart": "2026-01-01T00:00:00.000Z",
+            "periodEnd": "2026-01-31T23:59:59.999Z",
+            "actualValue": 9451,
+            "calculatedValue": 9451,
+            "finalValue": 9451,
+            "achievementValue": 18.3,
+            "status": "DRAFT",
+            "approvalType": null,
+            "note": null,
+            "enteredBy": "6126be2a-d8ac-45b1-8d81-880f3250508b",
+            "submittedBy": null,
+            "approvedBy": null,
+            "submittedAt": null,
+            "approvedAt": null,
+            "lockedAt": null,
+            "createdAt": "2026-01-16T02:05:38.225Z",
+            "updatedAt": "2026-01-16T02:05:38.225Z"
+          }
+        ]
+      },
+      {
+        "id": "1a49d56c-bf65-4404-9c06-9e7fb965ee88",
+        "orgId": "10f903a3-95f6-460f-962a-382effde87b7",
+        "key": "KPI_5_1_2",
+        "orgEntityTypeId": "1e5698e5-f1b2-4908-89c8-ede85061fdc1",
+        "title": "Energy Consumption",
+        "titleAr": "استهلاك الطاقة",
+        "description": "Electrical energy consumption",
+        "descriptionAr": "استهلاك الطاقة الكهربائية",
+        "ownerUserId": "6126be2a-d8ac-45b1-8d81-880f3250508b",
+        "status": "ACTIVE",
+        "sourceType": "CALCULATED",
+        "periodType": "MONTHLY",
+        "unit": "ميجاوات",
+        "unitAr": null,
+        "direction": "DECREASE_IS_GOOD",
+        "aggregation": "LAST_VALUE",
+        "baselineValue": 21000,
+        "targetValue": 15000,
+        "weight": null,
+        "formula": "return totalEnergyConsumption;",
+        "createdAt": "2026-01-16T02:05:38.226Z",
+        "updatedAt": "2026-01-16T02:05:38.226Z",
+        "deletedAt": null,
+        "variables": [
+          {
+            "id": "724e09d2-8231-4241-8543-dcb393590827",
+            "entityId": "1a49d56c-bf65-4404-9c06-9e7fb965ee88",
+            "code": "TOTALENERGYCONSUMPTION",
+            "displayName": "total Energy Consumption",
+            "nameAr": "totalEnergyConsumption",
+            "dataType": "NUMBER",
+            "isRequired": true,
+            "isStatic": false,
+            "staticValue": null,
+            "values": [
+              {
+                "id": "50a465ac-4fdc-40fe-9740-a086a6f90860",
+                "entityValueId": "14f6da43-9d0d-40ee-843d-b342faa4a03b",
+                "entityVariableId": "724e09d2-8231-4241-8543-dcb393590827",
+                "value": 19092
+              }
+            ]
+          }
+        ],
+        "values": [
+          {
+            "id": "14f6da43-9d0d-40ee-843d-b342faa4a03b",
+            "entityId": "1a49d56c-bf65-4404-9c06-9e7fb965ee88",
+            "periodStart": "2026-01-01T00:00:00.000Z",
+            "periodEnd": "2026-01-31T23:59:59.999Z",
+            "actualValue": 19092,
+            "calculatedValue": 19092,
+            "finalValue": 19092,
+            "achievementValue": 31.8,
+            "status": "DRAFT",
+            "approvalType": null,
+            "note": null,
+            "enteredBy": "6126be2a-d8ac-45b1-8d81-880f3250508b",
+            "submittedBy": null,
+            "approvedBy": null,
+            "submittedAt": null,
+            "approvedAt": null,
+            "lockedAt": null,
+            "createdAt": "2026-01-16T02:05:38.227Z",
+            "updatedAt": "2026-01-16T02:05:38.227Z"
+          }
+        ]
+      },
+      {
+        "id": "30e227c5-c40f-4556-8156-4e88f6218c74",
+        "orgId": "10f903a3-95f6-460f-962a-382effde87b7",
+        "key": "KPI_5_1_3",
+        "orgEntityTypeId": "1e5698e5-f1b2-4908-89c8-ede85061fdc1",
+        "title": "Water Consumption",
+        "titleAr": "استهلاك المياه",
+        "description": "Water consumption in operations",
+        "descriptionAr": "استهلاك المياه في العمليات",
+        "ownerUserId": "6126be2a-d8ac-45b1-8d81-880f3250508b",
+        "status": "ACTIVE",
+        "sourceType": "CALCULATED",
+        "periodType": "MONTHLY",
+        "unit": "متر مكعب",
+        "unitAr": null,
+        "direction": "DECREASE_IS_GOOD",
+        "aggregation": "LAST_VALUE",
+        "baselineValue": 120000,
+        "targetValue": 80000,
+        "weight": null,
+        "formula": "return totalWaterConsumption;",
+        "createdAt": "2026-01-16T02:05:38.227Z",
+        "updatedAt": "2026-01-16T02:05:38.227Z",
+        "deletedAt": null,
+        "variables": [
+          {
+            "id": "012ec959-d2be-4389-a282-7d1368b60cfd",
+            "entityId": "30e227c5-c40f-4556-8156-4e88f6218c74",
+            "code": "TOTALWATERCONSUMPTION",
+            "displayName": "total Water Consumption",
+            "nameAr": "totalWaterConsumption",
+            "dataType": "NUMBER",
+            "isRequired": true,
+            "isStatic": false,
+            "staticValue": null,
+            "values": [
+              {
+                "id": "671b8e24-1854-4a12-b863-231aec27e7ac",
+                "entityValueId": "5bd176ec-b4b3-41b5-9b4c-b476d7fea9f3",
+                "entityVariableId": "012ec959-d2be-4389-a282-7d1368b60cfd",
+                "value": 105896
+              }
+            ]
+          }
+        ],
+        "values": [
+          {
+            "id": "5bd176ec-b4b3-41b5-9b4c-b476d7fea9f3",
+            "entityId": "30e227c5-c40f-4556-8156-4e88f6218c74",
+            "periodStart": "2026-01-01T00:00:00.000Z",
+            "periodEnd": "2026-01-31T23:59:59.999Z",
+            "actualValue": 105896,
+            "calculatedValue": 105896,
+            "finalValue": 105896,
+            "achievementValue": 35.26000000000001,
+            "status": "DRAFT",
+            "approvalType": null,
+            "note": null,
+            "enteredBy": "6126be2a-d8ac-45b1-8d81-880f3250508b",
+            "submittedBy": null,
+            "approvedBy": null,
+            "submittedAt": null,
+            "approvedAt": null,
+            "lockedAt": null,
+            "createdAt": "2026-01-16T02:05:38.228Z",
+            "updatedAt": "2026-01-16T02:05:38.228Z"
+          }
+        ]
+      },
+      {
+        "id": "c2bcd1b4-17e2-41a3-9b09-4d1603c2dbb2",
+        "orgId": "10f903a3-95f6-460f-962a-382effde87b7",
+        "key": "KPI_5_2_1",
+        "orgEntityTypeId": "1e5698e5-f1b2-4908-89c8-ede85061fdc1",
+        "title": "CSR Programs Count",
+        "titleAr": "عدد برامج المسؤولية الاجتماعية",
+        "description": "Number of CSR programs implemented",
+        "descriptionAr": "عدد برامج المسؤولية الاجتماعية المنفذة",
+        "ownerUserId": "6126be2a-d8ac-45b1-8d81-880f3250508b",
+        "status": "ACTIVE",
+        "sourceType": "CALCULATED",
+        "periodType": "QUARTERLY",
+        "unit": "برنامج",
+        "unitAr": null,
+        "direction": "INCREASE_IS_GOOD",
+        "aggregation": "LAST_VALUE",
+        "baselineValue": 2,
+        "targetValue": 15,
+        "weight": null,
+        "formula": "return csrProgramsCount;",
+        "createdAt": "2026-01-16T02:05:38.229Z",
+        "updatedAt": "2026-01-16T02:05:38.229Z",
+        "deletedAt": null,
+        "variables": [
+          {
+            "id": "3dd7c7fa-ee7e-4609-b2e0-c56f4a557fc7",
+            "entityId": "c2bcd1b4-17e2-41a3-9b09-4d1603c2dbb2",
+            "code": "CSRPROGRAMSCOUNT",
+            "displayName": "csr Programs Count",
+            "nameAr": "csrProgramsCount",
+            "dataType": "NUMBER",
+            "isRequired": true,
+            "isStatic": false,
+            "staticValue": null,
+            "values": [
+              {
+                "id": "05ac3776-9818-4271-95cb-41a4e8cbfb7c",
+                "entityValueId": "d284c228-0388-4336-857d-fe87816153be",
+                "entityVariableId": "3dd7c7fa-ee7e-4609-b2e0-c56f4a557fc7",
+                "value": 5
+              }
+            ]
+          }
+        ],
+        "values": [
+          {
+            "id": "d284c228-0388-4336-857d-fe87816153be",
+            "entityId": "c2bcd1b4-17e2-41a3-9b09-4d1603c2dbb2",
+            "periodStart": "2026-01-01T00:00:00.000Z",
+            "periodEnd": "2026-03-31T23:59:59.999Z",
+            "actualValue": 5,
+            "calculatedValue": 5,
+            "finalValue": 5,
+            "achievementValue": 33.33333333333333,
+            "status": "DRAFT",
+            "approvalType": null,
+            "note": null,
+            "enteredBy": "6126be2a-d8ac-45b1-8d81-880f3250508b",
+            "submittedBy": null,
+            "approvedBy": null,
+            "submittedAt": null,
+            "approvedAt": null,
+            "lockedAt": null,
+            "createdAt": "2026-01-16T02:05:38.230Z",
+            "updatedAt": "2026-01-16T02:05:38.230Z"
+          }
+        ]
+      },
+      {
+        "id": "a644b53a-504e-4206-bc39-181a2f0930de",
+        "orgId": "10f903a3-95f6-460f-962a-382effde87b7",
+        "key": "KPI_5_2_2",
+        "orgEntityTypeId": "1e5698e5-f1b2-4908-89c8-ede85061fdc1",
+        "title": "Program Beneficiaries Count",
+        "titleAr": "عدد المستفيدين من البرامج",
+        "description": "Number of individuals benefiting from CSR programs",
+        "descriptionAr": "عدد الأفراد المستفيدين من برامج المسؤولية الاجتماعية",
+        "ownerUserId": "6126be2a-d8ac-45b1-8d81-880f3250508b",
+        "status": "ACTIVE",
+        "sourceType": "CALCULATED",
+        "periodType": "QUARTERLY",
+        "unit": "فرد",
+        "unitAr": null,
+        "direction": "INCREASE_IS_GOOD",
+        "aggregation": "LAST_VALUE",
+        "baselineValue": 800,
+        "targetValue": 10000,
+        "weight": null,
+        "formula": "return beneficiariesCount;",
+        "createdAt": "2026-01-16T02:05:38.230Z",
+        "updatedAt": "2026-01-16T02:05:38.230Z",
+        "deletedAt": null,
+        "variables": [
+          {
+            "id": "4bdb79ca-bb18-4ffb-9dcb-2d28f0a29591",
+            "entityId": "a644b53a-504e-4206-bc39-181a2f0930de",
+            "code": "BENEFICIARIESCOUNT",
+            "displayName": "beneficiaries Count",
+            "nameAr": "beneficiariesCount",
+            "dataType": "NUMBER",
+            "isRequired": true,
+            "isStatic": false,
+            "staticValue": null,
+            "values": [
+              {
+                "id": "2eaea9bb-96a8-40b5-9244-ad3614b5e5b0",
+                "entityValueId": "56edf287-402c-41c5-9b90-80bce92daf9c",
+                "entityVariableId": "4bdb79ca-bb18-4ffb-9dcb-2d28f0a29591",
+                "value": 3771
+              }
+            ]
+          }
+        ],
+        "values": [
+          {
+            "id": "56edf287-402c-41c5-9b90-80bce92daf9c",
+            "entityId": "a644b53a-504e-4206-bc39-181a2f0930de",
+            "periodStart": "2026-01-01T00:00:00.000Z",
+            "periodEnd": "2026-03-31T23:59:59.999Z",
+            "actualValue": 3771,
+            "calculatedValue": 3771,
+            "finalValue": 3771,
+            "achievementValue": 37.71,
+            "status": "DRAFT",
+            "approvalType": null,
+            "note": null,
+            "enteredBy": "6126be2a-d8ac-45b1-8d81-880f3250508b",
+            "submittedBy": null,
+            "approvedBy": null,
+            "submittedAt": null,
+            "approvedAt": null,
+            "lockedAt": null,
+            "createdAt": "2026-01-16T02:05:38.231Z",
+            "updatedAt": "2026-01-16T02:05:38.231Z"
+          }
+        ]
+      },
+      {
+        "id": "63f0e719-e74e-4d2a-932b-6f766ab49709",
+        "orgId": "10f903a3-95f6-460f-962a-382effde87b7",
+        "key": "KPI_5_3_1",
+        "orgEntityTypeId": "1e5698e5-f1b2-4908-89c8-ede85061fdc1",
+        "title": "Renewable Energy Percentage",
+        "titleAr": "نسبة الطاقة المتجددة",
+        "description": "Renewable energy percentage of total energy used",
+        "descriptionAr": "نسبة الطاقة المتجددة من إجمالي الطاقة المستخدمة",
+        "ownerUserId": "6126be2a-d8ac-45b1-8d81-880f3250508b",
+        "status": "ACTIVE",
+        "sourceType": "CALCULATED",
+        "periodType": "MONTHLY",
+        "unit": "%",
+        "unitAr": null,
+        "direction": "INCREASE_IS_GOOD",
+        "aggregation": "LAST_VALUE",
+        "baselineValue": 0,
+        "targetValue": 40,
+        "weight": null,
+        "formula": "return (renewableEnergy / totalEnergy);",
+        "createdAt": "2026-01-16T02:05:38.232Z",
+        "updatedAt": "2026-01-16T02:05:38.232Z",
+        "deletedAt": null,
+        "variables": [
+          {
+            "id": "4cd3ea1f-c92d-45b9-a5e6-e4e973b46d55",
+            "entityId": "63f0e719-e74e-4d2a-932b-6f766ab49709",
+            "code": "RENEWABLEENERGY",
+            "displayName": "renewable Energy",
+            "nameAr": "renewableEnergy",
+            "dataType": "NUMBER",
+            "isRequired": true,
+            "isStatic": false,
+            "staticValue": null,
+            "values": [
+              {
+                "id": "ba8ff5f4-fbf8-4ecd-b751-0679f0a8a7a6",
+                "entityValueId": "ae73c532-280d-437d-8e19-61af99b39a2f",
+                "entityVariableId": "4cd3ea1f-c92d-45b9-a5e6-e4e973b46d55",
+                "value": 392
+              }
+            ]
+          },
+          {
+            "id": "9959c06e-41c3-400a-8c3b-775f47ebc847",
+            "entityId": "63f0e719-e74e-4d2a-932b-6f766ab49709",
+            "code": "TOTALENERGY",
+            "displayName": "total Energy",
+            "nameAr": "totalEnergy",
+            "dataType": "NUMBER",
+            "isRequired": true,
+            "isStatic": false,
+            "staticValue": null,
+            "values": [
+              {
+                "id": "578a2ff1-7e9e-41f8-8e82-a37b54514d8d",
+                "entityValueId": "ae73c532-280d-437d-8e19-61af99b39a2f",
+                "entityVariableId": "9959c06e-41c3-400a-8c3b-775f47ebc847",
+                "value": 100
+              }
+            ]
+          }
+        ],
+        "values": [
+          {
+            "id": "ae73c532-280d-437d-8e19-61af99b39a2f",
+            "entityId": "63f0e719-e74e-4d2a-932b-6f766ab49709",
+            "periodStart": "2026-01-01T00:00:00.000Z",
+            "periodEnd": "2026-01-31T23:59:59.999Z",
+            "actualValue": 3.92,
+            "calculatedValue": 3.92,
+            "finalValue": 3.92,
+            "achievementValue": 9.8,
+            "status": "DRAFT",
+            "approvalType": null,
+            "note": null,
+            "enteredBy": "6126be2a-d8ac-45b1-8d81-880f3250508b",
+            "submittedBy": null,
+            "approvedBy": null,
+            "submittedAt": null,
+            "approvedAt": null,
+            "lockedAt": null,
+            "createdAt": "2026-01-16T02:05:38.233Z",
+            "updatedAt": "2026-01-16T02:05:38.233Z"
+          }
+        ]
+      },
+      {
+        "id": "f62c9d0a-0943-4ec3-95a5-534b3c8526d5",
+        "orgId": "10f903a3-95f6-460f-962a-382effde87b7",
+        "key": "KPI_5_3_2",
+        "orgEntityTypeId": "1e5698e5-f1b2-4908-89c8-ede85061fdc1",
+        "title": "Solar Energy Capacity",
+        "titleAr": "القدرة الإنتاجية للطاقة الشمسية",
+        "description": "Installed solar energy production capacity",
+        "descriptionAr": "القدرة الإنتاجية المركبة للطاقة الشمسية",
+        "ownerUserId": "6126be2a-d8ac-45b1-8d81-880f3250508b",
+        "status": "ACTIVE",
+        "sourceType": "CALCULATED",
+        "periodType": "QUARTERLY",
+        "unit": "ميجاوات",
+        "unitAr": null,
+        "direction": "INCREASE_IS_GOOD",
+        "aggregation": "LAST_VALUE",
+        "baselineValue": 0,
+        "targetValue": 10,
+        "weight": null,
+        "formula": "return installedSolarCapacity;",
+        "createdAt": "2026-01-16T02:05:38.234Z",
+        "updatedAt": "2026-01-16T02:05:38.234Z",
+        "deletedAt": null,
+        "variables": [
+          {
+            "id": "47085116-a9c8-4637-955f-b7aa0bff9078",
+            "entityId": "f62c9d0a-0943-4ec3-95a5-534b3c8526d5",
+            "code": "INSTALLEDSOLARCAPACITY",
+            "displayName": "installed Solar Capacity",
+            "nameAr": "installedSolarCapacity",
+            "dataType": "NUMBER",
+            "isRequired": true,
+            "isStatic": false,
+            "staticValue": null,
+            "values": [
+              {
+                "id": "f7c8e057-795e-47b9-84d5-81d50c9357b4",
+                "entityValueId": "4e6ddfd4-85eb-4bb5-951a-d03feb1fb009",
+                "entityVariableId": "47085116-a9c8-4637-955f-b7aa0bff9078",
+                "value": 2.167064544753159
+              }
+            ]
+          }
+        ],
+        "values": [
+          {
+            "id": "4e6ddfd4-85eb-4bb5-951a-d03feb1fb009",
+            "entityId": "f62c9d0a-0943-4ec3-95a5-534b3c8526d5",
+            "periodStart": "2026-01-01T00:00:00.000Z",
+            "periodEnd": "2026-03-31T23:59:59.999Z",
+            "actualValue": 2.167064544753159,
+            "calculatedValue": 2.167064544753159,
+            "finalValue": 2.167064544753159,
+            "achievementValue": 21.67064544753159,
+            "status": "DRAFT",
+            "approvalType": null,
+            "note": null,
+            "enteredBy": "6126be2a-d8ac-45b1-8d81-880f3250508b",
+            "submittedBy": null,
+            "approvedBy": null,
+            "submittedAt": null,
+            "approvedAt": null,
+            "lockedAt": null,
+            "createdAt": "2026-01-16T02:05:38.234Z",
+            "updatedAt": "2026-01-16T02:05:38.234Z"
+          }
+        ]
+      },
+      {
+        "id": "582b8342-38cb-494e-9f9d-e9c0df6c6e8a",
+        "orgId": "10f903a3-95f6-460f-962a-382effde87b7",
+        "key": "KPI_5_4_1",
+        "orgEntityTypeId": "1e5698e5-f1b2-4908-89c8-ede85061fdc1",
+        "title": "Recycling Rate",
+        "titleAr": "نسبة إعادة التدوير",
+        "description": "Percentage of recycled waste",
+        "descriptionAr": "نسبة النفايات المعاد تدويرها",
+        "ownerUserId": "6126be2a-d8ac-45b1-8d81-880f3250508b",
+        "status": "ACTIVE",
+        "sourceType": "CALCULATED",
+        "periodType": "MONTHLY",
+        "unit": "%",
+        "unitAr": null,
+        "direction": "INCREASE_IS_GOOD",
+        "aggregation": "LAST_VALUE",
+        "baselineValue": 15,
+        "targetValue": 60,
+        "weight": null,
+        "formula": "return (recycledWaste / totalWaste);",
+        "createdAt": "2026-01-16T02:05:38.235Z",
+        "updatedAt": "2026-01-16T02:05:38.235Z",
+        "deletedAt": null,
+        "variables": [
+          {
+            "id": "6c4eedde-9850-4c47-b433-c527141c9b32",
+            "entityId": "582b8342-38cb-494e-9f9d-e9c0df6c6e8a",
+            "code": "RECYCLEDWASTE",
+            "displayName": "recycled Waste",
+            "nameAr": "recycledWaste",
+            "dataType": "NUMBER",
+            "isRequired": true,
+            "isStatic": false,
+            "staticValue": null,
+            "values": [
+              {
+                "id": "009e5d3d-272d-4d0c-abbc-80c40d7bc1b3",
+                "entityValueId": "5510adaa-b7d0-488c-a327-d38fb7e3e778",
+                "entityVariableId": "6c4eedde-9850-4c47-b433-c527141c9b32",
+                "value": 580
+              }
+            ]
+          },
+          {
+            "id": "05f58b00-bc0d-4473-ab8c-6d996fe81adb",
+            "entityId": "582b8342-38cb-494e-9f9d-e9c0df6c6e8a",
+            "code": "TOTALWASTE",
+            "displayName": "total Waste",
+            "nameAr": "totalWaste",
+            "dataType": "NUMBER",
+            "isRequired": true,
+            "isStatic": false,
+            "staticValue": null,
+            "values": [
+              {
+                "id": "1bdeef5a-8b62-45cc-8872-bc2e8236379d",
+                "entityValueId": "5510adaa-b7d0-488c-a327-d38fb7e3e778",
+                "entityVariableId": "05f58b00-bc0d-4473-ab8c-6d996fe81adb",
+                "value": 264
+              }
+            ]
+          }
+        ],
+        "values": [
+          {
+            "id": "5510adaa-b7d0-488c-a327-d38fb7e3e778",
+            "entityId": "582b8342-38cb-494e-9f9d-e9c0df6c6e8a",
+            "periodStart": "2026-01-01T00:00:00.000Z",
+            "periodEnd": "2026-01-31T23:59:59.999Z",
+            "actualValue": 2.196969696969697,
+            "calculatedValue": 2.196969696969697,
+            "finalValue": 2.196969696969697,
+            "achievementValue": 3.661616161616162,
+            "status": "DRAFT",
+            "approvalType": null,
+            "note": null,
+            "enteredBy": "6126be2a-d8ac-45b1-8d81-880f3250508b",
+            "submittedBy": null,
+            "approvedBy": null,
+            "submittedAt": null,
+            "approvedAt": null,
+            "lockedAt": null,
+            "createdAt": "2026-01-16T02:05:38.236Z",
+            "updatedAt": "2026-01-16T02:05:38.236Z"
+          }
+        ]
+      },
+      {
+        "id": "46892da5-1c25-4183-9a56-dbd7c8e26692",
+        "orgId": "10f903a3-95f6-460f-962a-382effde87b7",
+        "key": "KPI_5_4_2",
+        "orgEntityTypeId": "1e5698e5-f1b2-4908-89c8-ede85061fdc1",
+        "title": "Recycled Waste Quantity",
+        "titleAr": "كمية النفايات المعاد تدويرها",
+        "description": "Monthly quantity of recycled waste",
+        "descriptionAr": "الكمية الشهرية للنفايات المعاد تدويرها",
+        "ownerUserId": "6126be2a-d8ac-45b1-8d81-880f3250508b",
+        "status": "ACTIVE",
+        "sourceType": "CALCULATED",
+        "periodType": "MONTHLY",
+        "unit": "طن",
+        "unitAr": null,
+        "direction": "INCREASE_IS_GOOD",
+        "aggregation": "LAST_VALUE",
+        "baselineValue": 38,
+        "targetValue": 150,
+        "weight": null,
+        "formula": "return recycledWasteQuantity;",
+        "createdAt": "2026-01-16T02:05:38.237Z",
+        "updatedAt": "2026-01-16T02:05:38.237Z",
+        "deletedAt": null,
+        "variables": [
+          {
+            "id": "ee3c49c3-9c60-4500-98ee-d79b355471b9",
+            "entityId": "46892da5-1c25-4183-9a56-dbd7c8e26692",
+            "code": "RECYCLEDWASTEQUANTITY",
+            "displayName": "recycled Waste Quantity",
+            "nameAr": "recycledWasteQuantity",
+            "dataType": "NUMBER",
+            "isRequired": true,
+            "isStatic": false,
+            "staticValue": null,
+            "values": [
+              {
+                "id": "412b2710-f94f-469b-ad49-1a55c3731e0e",
+                "entityValueId": "b434ab66-3185-407c-90a2-077a902a1a40",
+                "entityVariableId": "ee3c49c3-9c60-4500-98ee-d79b355471b9",
+                "value": 56.99438267358157
+              }
+            ]
+          }
+        ],
+        "values": [
+          {
+            "id": "b434ab66-3185-407c-90a2-077a902a1a40",
+            "entityId": "46892da5-1c25-4183-9a56-dbd7c8e26692",
+            "periodStart": "2026-01-01T00:00:00.000Z",
+            "periodEnd": "2026-01-31T23:59:59.999Z",
+            "actualValue": 56.99438267358157,
+            "calculatedValue": 56.99438267358157,
+            "finalValue": 56.99438267358157,
+            "achievementValue": 37.99625511572104,
+            "status": "DRAFT",
+            "approvalType": null,
+            "note": null,
+            "enteredBy": "6126be2a-d8ac-45b1-8d81-880f3250508b",
+            "submittedBy": null,
+            "approvedBy": null,
+            "submittedAt": null,
+            "approvedAt": null,
+            "lockedAt": null,
+            "createdAt": "2026-01-16T02:05:38.238Z",
+            "updatedAt": "2026-01-16T02:05:38.238Z"
+          }
+        ]
+      },
+      {
+        "id": "4f0526af-5122-4b17-b46b-02c34b204adc",
+        "orgId": "10f903a3-95f6-460f-962a-382effde87b7",
+        "key": "KPI_1_1_1",
+        "orgEntityTypeId": "1e5698e5-f1b2-4908-89c8-ede85061fdc1",
+        "title": "Overall Equipment Effectiveness (OEE)",
+        "titleAr": "معدل كفاءة المعدات الإجمالي OEE",
+        "description": "Measure overall effectiveness of production equipment",
+        "descriptionAr": "قياس الكفاءة الإجمالية للمعدات الإنتاجية",
+        "ownerUserId": "6126be2a-d8ac-45b1-8d81-880f3250508b",
+        "status": "ACTIVE",
+        "sourceType": "CALCULATED",
+        "periodType": "MONTHLY",
+        "unit": "%",
+        "unitAr": null,
+        "direction": "INCREASE_IS_GOOD",
+        "aggregation": "LAST_VALUE",
+        "baselineValue": 68,
+        "targetValue": 85,
+        "weight": null,
+        "formula": "return (availability * performance * quality);",
+        "createdAt": "2026-01-16T02:05:38.100Z",
+        "updatedAt": "2026-01-16T02:05:38.100Z",
+        "deletedAt": null,
+        "variables": [
+          {
+            "id": "3a2f6105-3d17-4cd0-8901-0087da389869",
+            "entityId": "4f0526af-5122-4b17-b46b-02c34b204adc",
+            "code": "AVAILABILITY",
+            "displayName": "availability",
+            "nameAr": "availability",
+            "dataType": "NUMBER",
+            "isRequired": true,
+            "isStatic": false,
+            "staticValue": null,
+            "values": [
+              {
+                "id": "39d33ff6-56e4-42e1-9ba2-ee6933034aaa",
+                "entityValueId": "6a58f13f-6683-431c-a725-e57cd66b03e0",
+                "entityVariableId": "3a2f6105-3d17-4cd0-8901-0087da389869",
+                "value": 0.95
+              }
+            ]
+          },
+          {
+            "id": "4038022b-ed6c-44cc-b699-d48758575818",
+            "entityId": "4f0526af-5122-4b17-b46b-02c34b204adc",
+            "code": "PERFORMANCE",
+            "displayName": "performance",
+            "nameAr": "performance",
+            "dataType": "NUMBER",
+            "isRequired": true,
+            "isStatic": false,
+            "staticValue": null,
+            "values": [
+              {
+                "id": "5fbf0d0f-ee0b-47bb-890e-583f9caac9a6",
+                "entityValueId": "6a58f13f-6683-431c-a725-e57cd66b03e0",
+                "entityVariableId": "4038022b-ed6c-44cc-b699-d48758575818",
+                "value": 0.95
+              }
+            ]
+          },
+          {
+            "id": "285cd00c-189f-4b0e-86fc-32cd1f951ebb",
+            "entityId": "4f0526af-5122-4b17-b46b-02c34b204adc",
+            "code": "QUALITY",
+            "displayName": "quality",
+            "nameAr": "quality",
+            "dataType": "NUMBER",
+            "isRequired": true,
+            "isStatic": false,
+            "staticValue": null,
+            "values": [
+              {
+                "id": "27e262ce-c5a8-46b3-91fb-70a041849b62",
+                "entityValueId": "6a58f13f-6683-431c-a725-e57cd66b03e0",
+                "entityVariableId": "285cd00c-189f-4b0e-86fc-32cd1f951ebb",
+                "value": 0.95
+              }
+            ]
+          }
+        ],
+        "values": [
+          {
+            "id": "6a58f13f-6683-431c-a725-e57cd66b03e0",
+            "entityId": "4f0526af-5122-4b17-b46b-02c34b204adc",
+            "periodStart": "2026-01-01T00:00:00.000Z",
+            "periodEnd": "2026-01-31T23:59:59.999Z",
+            "actualValue": 0.8573749999999999,
+            "calculatedValue": 0.8573749999999999,
+            "finalValue": 0.8573749999999999,
+            "achievementValue": 1.008676470588235,
+            "status": "DRAFT",
+            "approvalType": null,
+            "note": null,
+            "enteredBy": "6126be2a-d8ac-45b1-8d81-880f3250508b",
+            "submittedBy": null,
+            "approvedBy": null,
+            "submittedAt": null,
+            "approvedAt": null,
+            "lockedAt": null,
+            "createdAt": "2026-01-16T02:05:38.107Z",
+            "updatedAt": "2026-01-16T02:05:38.107Z"
+          }
+        ]
+      },
+      {
+        "id": "c36a85fc-0b6a-4d0e-b197-8b7c9fdbf66e",
+        "orgId": "10f903a3-95f6-460f-962a-382effde87b7",
+        "key": "KPI_1_1_2",
+        "orgEntityTypeId": "1e5698e5-f1b2-4908-89c8-ede85061fdc1",
+        "title": "Waste Rate",
+        "titleAr": "معدل الهدر والفاقد",
+        "description": "Percentage of waste from total materials used",
+        "descriptionAr": "نسبة الهدر من إجمالي المواد المستخدمة",
+        "ownerUserId": "6126be2a-d8ac-45b1-8d81-880f3250508b",
+        "status": "ACTIVE",
+        "sourceType": "CALCULATED",
+        "periodType": "MONTHLY",
+        "unit": "%",
+        "unitAr": null,
+        "direction": "DECREASE_IS_GOOD",
+        "aggregation": "LAST_VALUE",
+        "baselineValue": 6,
+        "targetValue": 2,
+        "weight": null,
+        "formula": "return (wasteQuantity / totalMaterialsUsed);",
+        "createdAt": "2026-01-16T02:05:38.111Z",
+        "updatedAt": "2026-01-16T02:05:38.111Z",
+        "deletedAt": null,
+        "variables": [
+          {
+            "id": "518e1bc0-690e-4d98-a391-f0d009ac68de",
+            "entityId": "c36a85fc-0b6a-4d0e-b197-8b7c9fdbf66e",
+            "code": "WASTEQUANTITY",
+            "displayName": "waste Quantity",
+            "nameAr": "wasteQuantity",
+            "dataType": "NUMBER",
+            "isRequired": true,
+            "isStatic": false,
+            "staticValue": null,
+            "values": [
+              {
+                "id": "37ea8232-ecd7-4d44-9965-307df9cb23d4",
+                "entityValueId": "50c76aab-3013-4e73-9f00-f1992c1d84b3",
+                "entityVariableId": "518e1bc0-690e-4d98-a391-f0d009ac68de",
+                "value": 21
+              }
+            ]
+          },
+          {
+            "id": "dfe06d34-7695-4a79-9686-c50ec73ded88",
+            "entityId": "c36a85fc-0b6a-4d0e-b197-8b7c9fdbf66e",
+            "code": "TOTALMATERIALSUSED",
+            "displayName": "total Materials Used",
+            "nameAr": "totalMaterialsUsed",
+            "dataType": "NUMBER",
+            "isRequired": true,
+            "isStatic": false,
+            "staticValue": null,
+            "values": [
+              {
+                "id": "30089f7a-cfa6-4429-b0f0-13badbbf5c51",
+                "entityValueId": "50c76aab-3013-4e73-9f00-f1992c1d84b3",
+                "entityVariableId": "dfe06d34-7695-4a79-9686-c50ec73ded88",
+                "value": 100
+              }
+            ]
+          }
+        ],
+        "values": [
+          {
+            "id": "50c76aab-3013-4e73-9f00-f1992c1d84b3",
+            "entityId": "c36a85fc-0b6a-4d0e-b197-8b7c9fdbf66e",
+            "periodStart": "2026-01-01T00:00:00.000Z",
+            "periodEnd": "2026-01-31T23:59:59.999Z",
+            "actualValue": 0.21,
+            "calculatedValue": 0.21,
+            "finalValue": 0.21,
+            "achievementValue": 144.75,
+            "status": "DRAFT",
+            "approvalType": null,
+            "note": null,
+            "enteredBy": "6126be2a-d8ac-45b1-8d81-880f3250508b",
+            "submittedBy": null,
+            "approvedBy": null,
+            "submittedAt": null,
+            "approvedAt": null,
+            "lockedAt": null,
+            "createdAt": "2026-01-16T02:05:38.114Z",
+            "updatedAt": "2026-01-16T02:05:38.114Z"
+          }
+        ]
+      },
+      {
+        "id": "be80ef58-c8f1-4085-938a-5de9bbf70894",
+        "orgId": "10f903a3-95f6-460f-962a-382effde87b7",
+        "key": "KPI_1_1_3",
+        "orgEntityTypeId": "1e5698e5-f1b2-4908-89c8-ede85061fdc1",
+        "title": "Production Cycle Time",
+        "titleAr": "وقت دورة الإنتاج",
+        "description": "Average time taken to produce one unit",
+        "descriptionAr": "متوسط الوقت المستغرق لإنتاج وحدة واحدة",
+        "ownerUserId": "6126be2a-d8ac-45b1-8d81-880f3250508b",
+        "status": "ACTIVE",
+        "sourceType": "CALCULATED",
+        "periodType": "MONTHLY",
+        "unit": "دقيقة",
+        "unitAr": null,
+        "direction": "DECREASE_IS_GOOD",
+        "aggregation": "LAST_VALUE",
+        "baselineValue": 28,
+        "targetValue": 15,
+        "weight": null,
+        "formula": "return totalProductionTime / unitsProduced;",
+        "createdAt": "2026-01-16T02:05:38.117Z",
+        "updatedAt": "2026-01-16T02:05:38.117Z",
+        "deletedAt": null,
+        "variables": [
+          {
+            "id": "8c51311b-5dbc-44e5-884b-7c2fc3651c12",
+            "entityId": "be80ef58-c8f1-4085-938a-5de9bbf70894",
+            "code": "TOTALPRODUCTIONTIME",
+            "displayName": "total Production Time",
+            "nameAr": "totalProductionTime",
+            "dataType": "NUMBER",
+            "isRequired": true,
+            "isStatic": false,
+            "staticValue": null,
+            "values": [
+              {
+                "id": "0338dbed-d383-42d5-9d2b-9b1f186fb81b",
+                "entityValueId": "f3cbd54a-3d9c-4371-b688-796cd872a646",
+                "entityVariableId": "8c51311b-5dbc-44e5-884b-7c2fc3651c12",
+                "value": 21
+              }
+            ]
+          },
+          {
+            "id": "88b8324c-b3a2-4ba4-9b6b-bc7860c6a5f1",
+            "entityId": "be80ef58-c8f1-4085-938a-5de9bbf70894",
+            "code": "UNITSPRODUCED",
+            "displayName": "units Produced",
+            "nameAr": "unitsProduced",
+            "dataType": "NUMBER",
+            "isRequired": true,
+            "isStatic": false,
+            "staticValue": null,
+            "values": [
+              {
+                "id": "9ea1f47b-7d57-484f-b536-10bb6b2ab220",
+                "entityValueId": "f3cbd54a-3d9c-4371-b688-796cd872a646",
+                "entityVariableId": "88b8324c-b3a2-4ba4-9b6b-bc7860c6a5f1",
+                "value": 22
+              }
+            ]
+          }
+        ],
+        "values": [
+          {
+            "id": "f3cbd54a-3d9c-4371-b688-796cd872a646",
+            "entityId": "be80ef58-c8f1-4085-938a-5de9bbf70894",
+            "periodStart": "2026-01-01T00:00:00.000Z",
+            "periodEnd": "2026-01-31T23:59:59.999Z",
+            "actualValue": 0.9545454545454546,
+            "calculatedValue": 0.9545454545454546,
+            "finalValue": 0.9545454545454546,
+            "achievementValue": 208.0419580419581,
+            "status": "DRAFT",
+            "approvalType": null,
+            "note": null,
+            "enteredBy": "6126be2a-d8ac-45b1-8d81-880f3250508b",
+            "submittedBy": null,
+            "approvedBy": null,
+            "submittedAt": null,
+            "approvedAt": null,
+            "lockedAt": null,
+            "createdAt": "2026-01-16T02:05:38.119Z",
+            "updatedAt": "2026-01-16T02:05:38.119Z"
+          }
+        ]
+      },
+      {
+        "id": "0dc4866a-03b8-4294-b851-8fbe847c27d3",
+        "orgId": "10f903a3-95f6-460f-962a-382effde87b7",
+        "key": "KPI_1_2_1",
+        "orgEntityTypeId": "1e5698e5-f1b2-4908-89c8-ede85061fdc1",
+        "title": "Defect Rate",
+        "titleAr": "معدل العيوب",
+        "description": "Percentage of defective products from total production",
+        "descriptionAr": "نسبة المنتجات المعيبة من إجمالي الإنتاج",
+        "ownerUserId": "6126be2a-d8ac-45b1-8d81-880f3250508b",
+        "status": "ACTIVE",
+        "sourceType": "CALCULATED",
+        "periodType": "MONTHLY",
+        "unit": "%",
+        "unitAr": null,
+        "direction": "DECREASE_IS_GOOD",
+        "aggregation": "LAST_VALUE",
+        "baselineValue": 4.8,
+        "targetValue": 0.5,
+        "weight": null,
+        "formula": "return (defectiveUnits / totalUnitsProduced);",
+        "createdAt": "2026-01-16T02:05:38.120Z",
+        "updatedAt": "2026-01-16T02:05:38.120Z",
+        "deletedAt": null,
+        "variables": [
+          {
+            "id": "e8540fdc-3b98-4e72-8cb7-df885ed60422",
+            "entityId": "0dc4866a-03b8-4294-b851-8fbe847c27d3",
+            "code": "DEFECTIVEUNITS",
+            "displayName": "defective Units",
+            "nameAr": "defectiveUnits",
+            "dataType": "NUMBER",
+            "isRequired": true,
+            "isStatic": false,
+            "staticValue": null,
+            "values": [
+              {
+                "id": "4bb19699-293a-4178-8036-50f1e343ccd8",
+                "entityValueId": "c02c4012-d139-47a5-962c-cc9764045660",
+                "entityVariableId": "e8540fdc-3b98-4e72-8cb7-df885ed60422",
+                "value": 100
+              }
+            ]
+          },
+          {
+            "id": "d6b60255-8f5b-4031-b397-110bb89f8760",
+            "entityId": "0dc4866a-03b8-4294-b851-8fbe847c27d3",
+            "code": "TOTALUNITSPRODUCED",
+            "displayName": "total Units Produced",
+            "nameAr": "totalUnitsProduced",
+            "dataType": "NUMBER",
+            "isRequired": true,
+            "isStatic": false,
+            "staticValue": null,
+            "values": [
+              {
+                "id": "732ede08-67be-4b52-b213-cf4d0c6b5c73",
+                "entityValueId": "c02c4012-d139-47a5-962c-cc9764045660",
+                "entityVariableId": "d6b60255-8f5b-4031-b397-110bb89f8760",
+                "value": 100
+              }
+            ]
+          }
+        ],
+        "values": [
+          {
+            "id": "c02c4012-d139-47a5-962c-cc9764045660",
+            "entityId": "0dc4866a-03b8-4294-b851-8fbe847c27d3",
+            "periodStart": "2026-01-01T00:00:00.000Z",
+            "periodEnd": "2026-01-31T23:59:59.999Z",
+            "actualValue": 1,
+            "calculatedValue": 1,
+            "finalValue": 1,
+            "achievementValue": 88.37209302325581,
+            "status": "DRAFT",
+            "approvalType": null,
+            "note": null,
+            "enteredBy": "6126be2a-d8ac-45b1-8d81-880f3250508b",
+            "submittedBy": null,
+            "approvedBy": null,
+            "submittedAt": null,
+            "approvedAt": null,
+            "lockedAt": null,
+            "createdAt": "2026-01-16T02:05:38.122Z",
+            "updatedAt": "2026-01-16T02:05:38.122Z"
+          }
+        ]
+      },
+      {
+        "id": "6126c4a3-7d07-4ccf-a8ad-da1df653f98a",
+        "orgId": "10f903a3-95f6-460f-962a-382effde87b7",
+        "key": "KPI_1_2_2",
+        "orgEntityTypeId": "1e5698e5-f1b2-4908-89c8-ede85061fdc1",
+        "title": "Customer Return Rate",
+        "titleAr": "معدل الإرجاع من العملاء",
+        "description": "Percentage of products returned by customers",
+        "descriptionAr": "نسبة المنتجات المرتجعة من العملاء",
+        "ownerUserId": "6126be2a-d8ac-45b1-8d81-880f3250508b",
+        "status": "ACTIVE",
+        "sourceType": "CALCULATED",
+        "periodType": "MONTHLY",
+        "unit": "%",
+        "unitAr": null,
+        "direction": "DECREASE_IS_GOOD",
+        "aggregation": "LAST_VALUE",
+        "baselineValue": 2.5,
+        "targetValue": 0.3,
+        "weight": null,
+        "formula": "return (returnedUnits / soldUnits);",
+        "createdAt": "2026-01-16T02:05:38.123Z",
+        "updatedAt": "2026-01-16T02:05:38.123Z",
+        "deletedAt": null,
+        "variables": [
+          {
+            "id": "c15f0b71-891c-4b52-b239-ab0a780a7c33",
+            "entityId": "6126c4a3-7d07-4ccf-a8ad-da1df653f98a",
+            "code": "RETURNEDUNITS",
+            "displayName": "returned Units",
+            "nameAr": "returnedUnits",
+            "dataType": "NUMBER",
+            "isRequired": true,
+            "isStatic": false,
+            "staticValue": null,
+            "values": [
+              {
+                "id": "fcb3928d-762a-4e1d-b451-449a42ed8c50",
+                "entityValueId": "f045f64b-6afd-42c8-99bf-dbb1cec370d9",
+                "entityVariableId": "c15f0b71-891c-4b52-b239-ab0a780a7c33",
+                "value": 100
+              }
+            ]
+          },
+          {
+            "id": "f87e3ebf-8945-40a8-a7fa-581898d48645",
+            "entityId": "6126c4a3-7d07-4ccf-a8ad-da1df653f98a",
+            "code": "SOLDUNITS",
+            "displayName": "sold Units",
+            "nameAr": "soldUnits",
+            "dataType": "NUMBER",
+            "isRequired": true,
+            "isStatic": false,
+            "staticValue": null,
+            "values": [
+              {
+                "id": "3116d369-8dcc-4468-b362-ba8931ea3a2d",
+                "entityValueId": "f045f64b-6afd-42c8-99bf-dbb1cec370d9",
+                "entityVariableId": "f87e3ebf-8945-40a8-a7fa-581898d48645",
+                "value": 100
+              }
+            ]
+          }
+        ],
+        "values": [
+          {
+            "id": "f045f64b-6afd-42c8-99bf-dbb1cec370d9",
+            "entityId": "6126c4a3-7d07-4ccf-a8ad-da1df653f98a",
+            "periodStart": "2026-01-01T00:00:00.000Z",
+            "periodEnd": "2026-01-31T23:59:59.999Z",
+            "actualValue": 1,
+            "calculatedValue": 1,
+            "finalValue": 1,
+            "achievementValue": 68.18181818181817,
+            "status": "DRAFT",
+            "approvalType": null,
+            "note": null,
+            "enteredBy": "6126be2a-d8ac-45b1-8d81-880f3250508b",
+            "submittedBy": null,
+            "approvedBy": null,
+            "submittedAt": null,
+            "approvedAt": null,
+            "lockedAt": null,
+            "createdAt": "2026-01-16T02:05:38.124Z",
+            "updatedAt": "2026-01-16T02:05:38.124Z"
+          }
+        ]
+      },
+      {
+        "id": "522c1b3d-f884-42b2-ad23-c872071d601c",
+        "orgId": "10f903a3-95f6-460f-962a-382effde87b7",
+        "key": "KPI_1_2_3",
+        "orgEntityTypeId": "1e5698e5-f1b2-4908-89c8-ede85061fdc1",
+        "title": "Inspection Pass Rate",
+        "titleAr": "معدل اجتياز الفحوصات",
+        "description": "Percentage of products passing quality inspections first time",
+        "descriptionAr": "نسبة المنتجات التي تجتاز فحوصات الجودة من المرة الأولى",
+        "ownerUserId": "6126be2a-d8ac-45b1-8d81-880f3250508b",
+        "status": "ACTIVE",
+        "sourceType": "CALCULATED",
+        "periodType": "MONTHLY",
+        "unit": "%",
+        "unitAr": null,
+        "direction": "INCREASE_IS_GOOD",
+        "aggregation": "LAST_VALUE",
+        "baselineValue": 92,
+        "targetValue": 99,
+        "weight": null,
+        "formula": "return (passedInspections / totalInspections);",
+        "createdAt": "2026-01-16T02:05:38.126Z",
+        "updatedAt": "2026-01-16T02:05:38.126Z",
+        "deletedAt": null,
+        "variables": [
+          {
+            "id": "1d6b86ea-e051-4321-9f2d-35ce858bc3c4",
+            "entityId": "522c1b3d-f884-42b2-ad23-c872071d601c",
+            "code": "PASSEDINSPECTIONS",
+            "displayName": "passed Inspections",
+            "nameAr": "passedInspections",
+            "dataType": "NUMBER",
+            "isRequired": true,
+            "isStatic": false,
+            "staticValue": null,
+            "values": [
+              {
+                "id": "625fc261-9d9d-4908-8c20-fac61075bf14",
+                "entityValueId": "e371ca6b-98de-4632-8911-03c37afed355",
+                "entityVariableId": "1d6b86ea-e051-4321-9f2d-35ce858bc3c4",
+                "value": 971
+              }
+            ]
+          },
+          {
+            "id": "b927c1bb-5f8f-4bc4-b620-38fca502df7c",
+            "entityId": "522c1b3d-f884-42b2-ad23-c872071d601c",
+            "code": "TOTALINSPECTIONS",
+            "displayName": "total Inspections",
+            "nameAr": "totalInspections",
+            "dataType": "NUMBER",
+            "isRequired": true,
+            "isStatic": false,
+            "staticValue": null,
+            "values": [
+              {
+                "id": "3bf3da6b-56ab-43b7-81f9-d96dbb47d982",
+                "entityValueId": "e371ca6b-98de-4632-8911-03c37afed355",
+                "entityVariableId": "b927c1bb-5f8f-4bc4-b620-38fca502df7c",
+                "value": 995
+              }
+            ]
+          }
+        ],
+        "values": [
+          {
+            "id": "e371ca6b-98de-4632-8911-03c37afed355",
+            "entityId": "522c1b3d-f884-42b2-ad23-c872071d601c",
+            "periodStart": "2026-01-01T00:00:00.000Z",
+            "periodEnd": "2026-01-31T23:59:59.999Z",
+            "actualValue": 0.9758793969849247,
+            "calculatedValue": 0.9758793969849247,
+            "finalValue": 0.9758793969849247,
+            "achievementValue": 0.985736764631237,
+            "status": "DRAFT",
+            "approvalType": null,
+            "note": null,
+            "enteredBy": "6126be2a-d8ac-45b1-8d81-880f3250508b",
+            "submittedBy": null,
+            "approvedBy": null,
+            "submittedAt": null,
+            "approvedAt": null,
+            "lockedAt": null,
+            "createdAt": "2026-01-16T02:05:38.127Z",
+            "updatedAt": "2026-01-16T02:05:38.127Z"
+          }
+        ]
+      },
+      {
+        "id": "37fce8c9-9ebc-4b97-ac7a-34e29be4f643",
+        "orgId": "10f903a3-95f6-460f-962a-382effde87b7",
+        "key": "KPI_1_3_1",
+        "orgEntityTypeId": "1e5698e5-f1b2-4908-89c8-ede85061fdc1",
+        "title": "Inventory Accuracy",
+        "titleAr": "دقة المخزون",
+        "description": "Accuracy percentage of actual inventory compared to system",
+        "descriptionAr": "نسبة دقة بيانات المخزون الفعلي مقارنة بالنظام",
+        "ownerUserId": "6126be2a-d8ac-45b1-8d81-880f3250508b",
+        "status": "ACTIVE",
+        "sourceType": "CALCULATED",
+        "periodType": "MONTHLY",
+        "unit": "%",
+        "unitAr": null,
+        "direction": "INCREASE_IS_GOOD",
+        "aggregation": "LAST_VALUE",
+        "baselineValue": 78,
+        "targetValue": 99,
+        "weight": null,
+        "formula": "return (accurateItems / totalItems);",
+        "createdAt": "2026-01-16T02:05:38.129Z",
+        "updatedAt": "2026-01-16T02:05:38.129Z",
+        "deletedAt": null,
+        "variables": [
+          {
+            "id": "47fb386b-affb-48b0-80b6-be7d22241eed",
+            "entityId": "37fce8c9-9ebc-4b97-ac7a-34e29be4f643",
+            "code": "ACCURATEITEMS",
+            "displayName": "accurate Items",
+            "nameAr": "accurateItems",
+            "dataType": "NUMBER",
+            "isRequired": true,
+            "isStatic": false,
+            "staticValue": null,
+            "values": [
+              {
+                "id": "0ef5ab96-63b0-46ff-8782-1d5099151a99",
+                "entityValueId": "0be37177-2ba5-40fc-9061-d459b8e363cf",
+                "entityVariableId": "47fb386b-affb-48b0-80b6-be7d22241eed",
+                "value": 876
+              }
+            ]
+          },
+          {
+            "id": "8b9d67d4-b3d4-473f-beaf-287e1cc661ac",
+            "entityId": "37fce8c9-9ebc-4b97-ac7a-34e29be4f643",
+            "code": "TOTALITEMS",
+            "displayName": "total Items",
+            "nameAr": "totalItems",
+            "dataType": "NUMBER",
+            "isRequired": true,
+            "isStatic": false,
+            "staticValue": null,
+            "values": [
+              {
+                "id": "49c19aad-2c9c-4f82-808a-a9859e1ed6c8",
+                "entityValueId": "0be37177-2ba5-40fc-9061-d459b8e363cf",
+                "entityVariableId": "8b9d67d4-b3d4-473f-beaf-287e1cc661ac",
+                "value": 940
+              }
+            ]
+          }
+        ],
+        "values": [
+          {
+            "id": "0be37177-2ba5-40fc-9061-d459b8e363cf",
+            "entityId": "37fce8c9-9ebc-4b97-ac7a-34e29be4f643",
+            "periodStart": "2026-01-01T00:00:00.000Z",
+            "periodEnd": "2026-01-31T23:59:59.999Z",
+            "actualValue": 0.9319148936170213,
+            "calculatedValue": 0.9319148936170213,
+            "finalValue": 0.9319148936170213,
+            "achievementValue": 0.9413281753707287,
+            "status": "DRAFT",
+            "approvalType": null,
+            "note": null,
+            "enteredBy": "6126be2a-d8ac-45b1-8d81-880f3250508b",
+            "submittedBy": null,
+            "approvedBy": null,
+            "submittedAt": null,
+            "approvedAt": null,
+            "lockedAt": null,
+            "createdAt": "2026-01-16T02:05:38.132Z",
+            "updatedAt": "2026-01-16T02:05:38.132Z"
+          }
+        ]
+      },
+      {
+        "id": "78123216-c26d-40d6-9605-05454742ba38",
+        "orgId": "10f903a3-95f6-460f-962a-382effde87b7",
+        "key": "KPI_1_3_2",
+        "orgEntityTypeId": "1e5698e5-f1b2-4908-89c8-ede85061fdc1",
+        "title": "Inventory Turnover Rate",
+        "titleAr": "معدل دوران المخزون",
+        "description": "Number of times inventory turns annually",
+        "descriptionAr": "عدد مرات دوران المخزون سنوياً",
+        "ownerUserId": "6126be2a-d8ac-45b1-8d81-880f3250508b",
+        "status": "ACTIVE",
+        "sourceType": "CALCULATED",
+        "periodType": "MONTHLY",
+        "unit": "مرة/سنة",
+        "unitAr": null,
+        "direction": "INCREASE_IS_GOOD",
+        "aggregation": "LAST_VALUE",
+        "baselineValue": 6,
+        "targetValue": 12,
+        "weight": null,
+        "formula": "return costOfGoodsSold / averageInventoryValue;",
+        "createdAt": "2026-01-16T02:05:38.133Z",
+        "updatedAt": "2026-01-16T02:05:38.133Z",
+        "deletedAt": null,
+        "variables": [
+          {
+            "id": "1a29aafb-74ca-4497-8b2d-93f6cea03802",
+            "entityId": "78123216-c26d-40d6-9605-05454742ba38",
+            "code": "COSTOFGOODSSOLD",
+            "displayName": "cost Of Goods Sold",
+            "nameAr": "costOfGoodsSold",
+            "dataType": "NUMBER",
+            "isRequired": true,
+            "isStatic": false,
+            "staticValue": null,
+            "values": [
+              {
+                "id": "addc49bc-a409-4dc1-8102-5181b46b9725",
+                "entityValueId": "9f886cd8-0b8e-44ba-be03-5ad11743b3c0",
+                "entityVariableId": "1a29aafb-74ca-4497-8b2d-93f6cea03802",
+                "value": 8.545412368803502
+              }
+            ]
+          },
+          {
+            "id": "b15a633c-1a7e-4025-9808-e33bf0bc2905",
+            "entityId": "78123216-c26d-40d6-9605-05454742ba38",
+            "code": "AVERAGEINVENTORYVALUE",
+            "displayName": "average Inventory Value",
+            "nameAr": "averageInventoryValue",
+            "dataType": "NUMBER",
+            "isRequired": true,
+            "isStatic": false,
+            "staticValue": null,
+            "values": [
+              {
+                "id": "7d99f8a7-39f4-49b0-87d4-fe923b05170e",
+                "entityValueId": "9f886cd8-0b8e-44ba-be03-5ad11743b3c0",
+                "entityVariableId": "b15a633c-1a7e-4025-9808-e33bf0bc2905",
+                "value": 8.304468521978778
+              }
+            ]
+          }
+        ],
+        "values": [
+          {
+            "id": "9f886cd8-0b8e-44ba-be03-5ad11743b3c0",
+            "entityId": "78123216-c26d-40d6-9605-05454742ba38",
+            "periodStart": "2026-01-01T00:00:00.000Z",
+            "periodEnd": "2026-01-31T23:59:59.999Z",
+            "actualValue": 1.02901375881997,
+            "calculatedValue": 1.02901375881997,
+            "finalValue": 1.02901375881997,
+            "achievementValue": 8.575114656833083,
+            "status": "DRAFT",
+            "approvalType": null,
+            "note": null,
+            "enteredBy": "6126be2a-d8ac-45b1-8d81-880f3250508b",
+            "submittedBy": null,
+            "approvedBy": null,
+            "submittedAt": null,
+            "approvedAt": null,
+            "lockedAt": null,
+            "createdAt": "2026-01-16T02:05:38.135Z",
+            "updatedAt": "2026-01-16T02:05:38.135Z"
+          }
+        ]
+      },
+      {
+        "id": "4f5a0d63-3951-4a1f-9090-2a7f0eca8a7f",
+        "orgId": "10f903a3-95f6-460f-962a-382effde87b7",
+        "key": "KPI_1_3_3",
+        "orgEntityTypeId": "1e5698e5-f1b2-4908-89c8-ede85061fdc1",
+        "title": "Supplier On-Time Delivery",
+        "titleAr": "التزام الموردين بالمواعيد",
+        "description": "Percentage of deliveries on scheduled time",
+        "descriptionAr": "نسبة التسليمات في الموعد المحدد",
+        "ownerUserId": "6126be2a-d8ac-45b1-8d81-880f3250508b",
+        "status": "ACTIVE",
+        "sourceType": "CALCULATED",
+        "periodType": "MONTHLY",
+        "unit": "%",
+        "unitAr": null,
+        "direction": "INCREASE_IS_GOOD",
+        "aggregation": "LAST_VALUE",
+        "baselineValue": 75,
+        "targetValue": 95,
+        "weight": null,
+        "formula": "return (onTimeDeliveries / totalDeliveries);",
+        "createdAt": "2026-01-16T02:05:38.135Z",
+        "updatedAt": "2026-01-16T02:05:38.135Z",
+        "deletedAt": null,
+        "variables": [
+          {
+            "id": "e98eb826-15bf-4a7a-bfaf-0d0d0f56459d",
+            "entityId": "4f5a0d63-3951-4a1f-9090-2a7f0eca8a7f",
+            "code": "ONTIMEDELIVERIES",
+            "displayName": "on Time Deliveries",
+            "nameAr": "onTimeDeliveries",
+            "dataType": "NUMBER",
+            "isRequired": true,
+            "isStatic": false,
+            "staticValue": null,
+            "values": [
+              {
+                "id": "e02f49b3-64db-4e7b-8c1e-071704fae6c9",
+                "entityValueId": "a125bf78-7222-417a-aaa6-6f10552c34e2",
+                "entityVariableId": "e98eb826-15bf-4a7a-bfaf-0d0d0f56459d",
+                "value": 881
+              }
+            ]
+          },
+          {
+            "id": "fbb27548-bb90-4b70-abf1-0ea6b29fcc6e",
+            "entityId": "4f5a0d63-3951-4a1f-9090-2a7f0eca8a7f",
+            "code": "TOTALDELIVERIES",
+            "displayName": "total Deliveries",
+            "nameAr": "totalDeliveries",
+            "dataType": "NUMBER",
+            "isRequired": true,
+            "isStatic": false,
+            "staticValue": null,
+            "values": [
+              {
+                "id": "95e78dfc-4084-48ef-b747-19ffe3eb260e",
+                "entityValueId": "a125bf78-7222-417a-aaa6-6f10552c34e2",
+                "entityVariableId": "fbb27548-bb90-4b70-abf1-0ea6b29fcc6e",
+                "value": 815
+              }
+            ]
+          }
+        ],
+        "values": [
+          {
+            "id": "a125bf78-7222-417a-aaa6-6f10552c34e2",
+            "entityId": "4f5a0d63-3951-4a1f-9090-2a7f0eca8a7f",
+            "periodStart": "2026-01-01T00:00:00.000Z",
+            "periodEnd": "2026-01-31T23:59:59.999Z",
+            "actualValue": 1.080981595092025,
+            "calculatedValue": 1.080981595092025,
+            "finalValue": 1.080981595092025,
+            "achievementValue": 1.137875363254763,
+            "status": "DRAFT",
+            "approvalType": null,
+            "note": null,
+            "enteredBy": "6126be2a-d8ac-45b1-8d81-880f3250508b",
+            "submittedBy": null,
+            "approvedBy": null,
+            "submittedAt": null,
+            "approvedAt": null,
+            "lockedAt": null,
+            "createdAt": "2026-01-16T02:05:38.137Z",
+            "updatedAt": "2026-01-16T02:05:38.137Z"
+          }
+        ]
+      },
+      {
+        "id": "202e6ad6-46d5-46e1-9f38-39934f5e358f",
+        "orgId": "10f903a3-95f6-460f-962a-382effde87b7",
+        "key": "KPI_1_3_4",
+        "orgEntityTypeId": "1e5698e5-f1b2-4908-89c8-ede85061fdc1",
+        "title": "Order Fulfillment Time",
+        "titleAr": "وقت تنفيذ الطلب",
+        "description": "Average time from order receipt to delivery",
+        "descriptionAr": "متوسط الوقت من استلام الطلب حتى التسليم",
+        "ownerUserId": "6126be2a-d8ac-45b1-8d81-880f3250508b",
+        "status": "ACTIVE",
+        "sourceType": "CALCULATED",
+        "periodType": "MONTHLY",
+        "unit": "يوم",
+        "unitAr": null,
+        "direction": "DECREASE_IS_GOOD",
+        "aggregation": "LAST_VALUE",
+        "baselineValue": 7,
+        "targetValue": 2,
+        "weight": null,
+        "formula": "return sum(deliveryTime - orderTime) / totalOrders;",
+        "createdAt": "2026-01-16T02:05:38.138Z",
+        "updatedAt": "2026-01-16T02:05:38.138Z",
+        "deletedAt": null,
+        "variables": [
+          {
+            "id": "24f9ee0d-6988-45d1-bae5-318f25ea1383",
+            "entityId": "202e6ad6-46d5-46e1-9f38-39934f5e358f",
+            "code": "DELIVERYTIME",
+            "displayName": "delivery Time",
+            "nameAr": "deliveryTime",
+            "dataType": "NUMBER",
+            "isRequired": true,
+            "isStatic": false,
+            "staticValue": null,
+            "values": [
+              {
+                "id": "2064f31c-1d6b-4937-a4a0-f90657a70397",
+                "entityValueId": "3b3eed10-d75b-453d-9193-f60d9bc17c3d",
+                "entityVariableId": "24f9ee0d-6988-45d1-bae5-318f25ea1383",
+                "value": 5.265844275492316
+              }
+            ]
+          },
+          {
+            "id": "5eded317-a9c4-4cf3-94ff-916940a2fc33",
+            "entityId": "202e6ad6-46d5-46e1-9f38-39934f5e358f",
+            "code": "ORDERTIME",
+            "displayName": "order Time",
+            "nameAr": "orderTime",
+            "dataType": "NUMBER",
+            "isRequired": true,
+            "isStatic": false,
+            "staticValue": null,
+            "values": [
+              {
+                "id": "12aac344-0cf0-4b14-8ef8-b010b52cc27e",
+                "entityValueId": "3b3eed10-d75b-453d-9193-f60d9bc17c3d",
+                "entityVariableId": "5eded317-a9c4-4cf3-94ff-916940a2fc33",
+                "value": 4.817806472315854
+              }
+            ]
+          },
+          {
+            "id": "b7c329ca-660d-4e6e-af69-e9d4fcfb716d",
+            "entityId": "202e6ad6-46d5-46e1-9f38-39934f5e358f",
+            "code": "TOTALORDERS",
+            "displayName": "total Orders",
+            "nameAr": "totalOrders",
+            "dataType": "NUMBER",
+            "isRequired": true,
+            "isStatic": false,
+            "staticValue": null,
+            "values": [
+              {
+                "id": "837a4afa-a410-4e2d-ba8a-d134d09b1356",
+                "entityValueId": "3b3eed10-d75b-453d-9193-f60d9bc17c3d",
+                "entityVariableId": "b7c329ca-660d-4e6e-af69-e9d4fcfb716d",
+                "value": 2
+              }
+            ]
+          }
+        ],
+        "values": [
+          {
+            "id": "3b3eed10-d75b-453d-9193-f60d9bc17c3d",
+            "entityId": "202e6ad6-46d5-46e1-9f38-39934f5e358f",
+            "periodStart": "2026-01-01T00:00:00.000Z",
+            "periodEnd": "2026-01-31T23:59:59.999Z",
+            "actualValue": 0.2240189015882312,
+            "calculatedValue": 0.2240189015882312,
+            "finalValue": 0.2240189015882312,
+            "achievementValue": 135.5196219682354,
+            "status": "DRAFT",
+            "approvalType": null,
+            "note": null,
+            "enteredBy": "6126be2a-d8ac-45b1-8d81-880f3250508b",
+            "submittedBy": null,
+            "approvedBy": null,
+            "submittedAt": null,
+            "approvedAt": null,
+            "lockedAt": null,
+            "createdAt": "2026-01-16T02:05:38.139Z",
+            "updatedAt": "2026-01-16T02:05:38.139Z"
+          }
+        ]
+      },
+      {
+        "id": "92b24a72-49f4-4001-8af0-fe3803c4c7fc",
+        "orgId": "10f903a3-95f6-460f-962a-382effde87b7",
+        "key": "KPI_1_4_1",
+        "orgEntityTypeId": "1e5698e5-f1b2-4908-89c8-ede85061fdc1",
+        "title": "Customer Satisfaction Score (CSAT)",
+        "titleAr": "درجة رضا العملاء CSAT",
+        "description": "Average customer satisfaction score from surveys",
+        "descriptionAr": "متوسط درجة رضا العملاء من الاستبيانات",
+        "ownerUserId": "6126be2a-d8ac-45b1-8d81-880f3250508b",
+        "status": "ACTIVE",
+        "sourceType": "CALCULATED",
+        "periodType": "MONTHLY",
+        "unit": "%",
+        "unitAr": null,
+        "direction": "INCREASE_IS_GOOD",
+        "aggregation": "LAST_VALUE",
+        "baselineValue": 78,
+        "targetValue": 90,
+        "weight": null,
+        "formula": "return (satisfiedCustomers / totalResponses);",
+        "createdAt": "2026-01-16T02:05:38.141Z",
+        "updatedAt": "2026-01-16T02:05:38.141Z",
+        "deletedAt": null,
+        "variables": [
+          {
+            "id": "aff3a5f1-8cb4-4d38-b7dc-9aff02499399",
+            "entityId": "92b24a72-49f4-4001-8af0-fe3803c4c7fc",
+            "code": "SATISFIEDCUSTOMERS",
+            "displayName": "satisfied Customers",
+            "nameAr": "satisfiedCustomers",
+            "dataType": "NUMBER",
+            "isRequired": true,
+            "isStatic": false,
+            "staticValue": null,
+            "values": [
+              {
+                "id": "e6aa1d88-a83c-4868-9140-066ec9b084ea",
+                "entityValueId": "a710769f-6f6a-40e2-8011-cc0a1f45ca06",
+                "entityVariableId": "aff3a5f1-8cb4-4d38-b7dc-9aff02499399",
+                "value": 878
+              }
+            ]
+          },
+          {
+            "id": "89d380c7-62bb-4d51-baf6-ecd498eb7c57",
+            "entityId": "92b24a72-49f4-4001-8af0-fe3803c4c7fc",
+            "code": "TOTALRESPONSES",
+            "displayName": "total Responses",
+            "nameAr": "totalResponses",
+            "dataType": "NUMBER",
+            "isRequired": true,
+            "isStatic": false,
+            "staticValue": null,
+            "values": [
+              {
+                "id": "cd23998c-8988-4c09-a373-210c35e85074",
+                "entityValueId": "a710769f-6f6a-40e2-8011-cc0a1f45ca06",
+                "entityVariableId": "89d380c7-62bb-4d51-baf6-ecd498eb7c57",
+                "value": 831
+              }
+            ]
+          }
+        ],
+        "values": [
+          {
+            "id": "a710769f-6f6a-40e2-8011-cc0a1f45ca06",
+            "entityId": "92b24a72-49f4-4001-8af0-fe3803c4c7fc",
+            "periodStart": "2026-01-01T00:00:00.000Z",
+            "periodEnd": "2026-01-31T23:59:59.999Z",
+            "actualValue": 1.056558363417569,
+            "calculatedValue": 1.056558363417569,
+            "finalValue": 1.056558363417569,
+            "achievementValue": 1.173953737130633,
+            "status": "DRAFT",
+            "approvalType": null,
+            "note": null,
+            "enteredBy": "6126be2a-d8ac-45b1-8d81-880f3250508b",
+            "submittedBy": null,
+            "approvedBy": null,
+            "submittedAt": null,
+            "approvedAt": null,
+            "lockedAt": null,
+            "createdAt": "2026-01-16T02:05:38.142Z",
+            "updatedAt": "2026-01-16T02:05:38.142Z"
+          }
+        ]
+      },
+      {
+        "id": "f9b24eb3-25af-42de-b15b-928e1b5c7035",
+        "orgId": "10f903a3-95f6-460f-962a-382effde87b7",
+        "key": "KPI_1_4_2",
+        "orgEntityTypeId": "1e5698e5-f1b2-4908-89c8-ede85061fdc1",
+        "title": "Net Promoter Score (NPS)",
+        "titleAr": "مؤشر صافي الترويج NPS",
+        "description": "Score indicating customer willingness to promote company",
+        "descriptionAr": "مؤشر استعداد العملاء للترويج للشركة",
+        "ownerUserId": "6126be2a-d8ac-45b1-8d81-880f3250508b",
+        "status": "ACTIVE",
+        "sourceType": "CALCULATED",
+        "periodType": "QUARTERLY",
+        "unit": "نقطة",
+        "unitAr": null,
+        "direction": "INCREASE_IS_GOOD",
+        "aggregation": "LAST_VALUE",
+        "baselineValue": 28,
+        "targetValue": 50,
+        "weight": null,
+        "formula": "return promotersPercent - detractorsPercent;",
+        "createdAt": "2026-01-16T02:05:38.143Z",
+        "updatedAt": "2026-01-16T02:05:38.143Z",
+        "deletedAt": null,
+        "variables": [
+          {
+            "id": "dac77bd0-1d66-45b5-8f9b-551c069157c8",
+            "entityId": "f9b24eb3-25af-42de-b15b-928e1b5c7035",
+            "code": "PROMOTERSPERCENT",
+            "displayName": "promoters Percent",
+            "nameAr": "promotersPercent",
+            "dataType": "NUMBER",
+            "isRequired": true,
+            "isStatic": false,
+            "staticValue": null,
+            "values": [
+              {
+                "id": "196760d5-6190-44ed-b82d-709d5f37b4cc",
+                "entityValueId": "5a64c9b7-b972-4a42-88e4-ddea8474dd3f",
+                "entityVariableId": "dac77bd0-1d66-45b5-8f9b-551c069157c8",
+                "value": 36.51060243722596
+              }
+            ]
+          },
+          {
+            "id": "76c912e7-bee3-436e-bcc5-c6f359b79b64",
+            "entityId": "f9b24eb3-25af-42de-b15b-928e1b5c7035",
+            "code": "DETRACTORSPERCENT",
+            "displayName": "detractors Percent",
+            "nameAr": "detractorsPercent",
+            "dataType": "NUMBER",
+            "isRequired": true,
+            "isStatic": false,
+            "staticValue": null,
+            "values": [
+              {
+                "id": "e0f2e60a-821f-4154-a25f-1d07229b55ff",
+                "entityValueId": "5a64c9b7-b972-4a42-88e4-ddea8474dd3f",
+                "entityVariableId": "76c912e7-bee3-436e-bcc5-c6f359b79b64",
+                "value": 34.43874254716885
+              }
+            ]
+          }
+        ],
+        "values": [
+          {
+            "id": "5a64c9b7-b972-4a42-88e4-ddea8474dd3f",
+            "entityId": "f9b24eb3-25af-42de-b15b-928e1b5c7035",
+            "periodStart": "2026-01-01T00:00:00.000Z",
+            "periodEnd": "2026-03-31T23:59:59.999Z",
+            "actualValue": 2.071859890057105,
+            "calculatedValue": 2.071859890057105,
+            "finalValue": 2.071859890057105,
+            "achievementValue": 4.14371978011421,
+            "status": "DRAFT",
+            "approvalType": null,
+            "note": null,
+            "enteredBy": "6126be2a-d8ac-45b1-8d81-880f3250508b",
+            "submittedBy": null,
+            "approvedBy": null,
+            "submittedAt": null,
+            "approvedAt": null,
+            "lockedAt": null,
+            "createdAt": "2026-01-16T02:05:38.144Z",
+            "updatedAt": "2026-01-16T02:05:38.144Z"
+          }
+        ]
+      },
+      {
+        "id": "f510c249-0910-4e39-b5ba-5649f0e419e1",
+        "orgId": "10f903a3-95f6-460f-962a-382effde87b7",
+        "key": "KPI_1_4_3",
+        "orgEntityTypeId": "1e5698e5-f1b2-4908-89c8-ede85061fdc1",
+        "title": "Customer Response Time",
+        "titleAr": "وقت الاستجابة للعملاء",
+        "description": "Average time to respond to customer inquiries",
+        "descriptionAr": "متوسط وقت الرد على استفسارات العملاء",
+        "ownerUserId": "6126be2a-d8ac-45b1-8d81-880f3250508b",
+        "status": "ACTIVE",
+        "sourceType": "CALCULATED",
+        "periodType": "MONTHLY",
+        "unit": "ساعة",
+        "unitAr": null,
+        "direction": "DECREASE_IS_GOOD",
+        "aggregation": "LAST_VALUE",
+        "baselineValue": 12,
+        "targetValue": 2,
+        "weight": null,
+        "formula": "return sum(responseTime) / totalInquiries;",
+        "createdAt": "2026-01-16T02:05:38.145Z",
+        "updatedAt": "2026-01-16T02:05:38.145Z",
+        "deletedAt": null,
+        "variables": [
+          {
+            "id": "c4ea183c-f68c-4100-b8e6-0ed7eac95021",
+            "entityId": "f510c249-0910-4e39-b5ba-5649f0e419e1",
+            "code": "RESPONSETIME",
+            "displayName": "response Time",
+            "nameAr": "responseTime",
+            "dataType": "NUMBER",
+            "isRequired": true,
+            "isStatic": false,
+            "staticValue": null,
+            "values": [
+              {
+                "id": "d022ba8b-ed99-4cf8-a424-f3bc6b953083",
+                "entityValueId": "d5876eed-d064-4952-a6eb-9e6ae684ee7c",
+                "entityVariableId": "c4ea183c-f68c-4100-b8e6-0ed7eac95021",
+                "value": 7.813083783675302
+              }
+            ]
+          },
+          {
+            "id": "e2808a0f-beef-4618-a5b2-bd0e018716c3",
+            "entityId": "f510c249-0910-4e39-b5ba-5649f0e419e1",
+            "code": "TOTALINQUIRIES",
+            "displayName": "total Inquiries",
+            "nameAr": "totalInquiries",
+            "dataType": "NUMBER",
+            "isRequired": true,
+            "isStatic": false,
+            "staticValue": null,
+            "values": [
+              {
+                "id": "49f275da-24bf-4e2f-9c6b-dd8d39f8f6f3",
+                "entityValueId": "d5876eed-d064-4952-a6eb-9e6ae684ee7c",
+                "entityVariableId": "e2808a0f-beef-4618-a5b2-bd0e018716c3",
+                "value": 2
+              }
+            ]
+          }
+        ],
+        "values": [
+          {
+            "id": "d5876eed-d064-4952-a6eb-9e6ae684ee7c",
+            "entityId": "f510c249-0910-4e39-b5ba-5649f0e419e1",
+            "periodStart": "2026-01-01T00:00:00.000Z",
+            "periodEnd": "2026-01-31T23:59:59.999Z",
+            "actualValue": 3.906541891837651,
+            "calculatedValue": 3.906541891837651,
+            "finalValue": 3.906541891837651,
+            "achievementValue": 80.93458108162348,
+            "status": "DRAFT",
+            "approvalType": null,
+            "note": null,
+            "enteredBy": "6126be2a-d8ac-45b1-8d81-880f3250508b",
+            "submittedBy": null,
+            "approvedBy": null,
+            "submittedAt": null,
+            "approvedAt": null,
+            "lockedAt": null,
+            "createdAt": "2026-01-16T02:05:38.146Z",
+            "updatedAt": "2026-01-16T02:05:38.146Z"
+          }
+        ]
+      },
+      {
+        "id": "0446af95-4a1d-4032-9dd7-d25754bc91d7",
+        "orgId": "10f903a3-95f6-460f-962a-382effde87b7",
+        "key": "KPI_2_1_1",
+        "orgEntityTypeId": "1e5698e5-f1b2-4908-89c8-ede85061fdc1",
+        "title": "Market Share",
+        "titleAr": "الحصة السوقية",
+        "description": "Our sales percentage of total market",
+        "descriptionAr": "نسبة مبيعاتنا من إجمالي السوق",
+        "ownerUserId": "6126be2a-d8ac-45b1-8d81-880f3250508b",
+        "status": "ACTIVE",
+        "sourceType": "CALCULATED",
+        "periodType": "QUARTERLY",
+        "unit": "%",
+        "unitAr": null,
+        "direction": "INCREASE_IS_GOOD",
+        "aggregation": "LAST_VALUE",
+        "baselineValue": 15,
+        "targetValue": 25,
+        "weight": null,
+        "formula": "return (ourSales / totalMarketSales);",
+        "createdAt": "2026-01-16T02:05:38.147Z",
+        "updatedAt": "2026-01-16T02:05:38.147Z",
+        "deletedAt": null,
+        "variables": [
+          {
+            "id": "d2de4ef2-b8b2-4119-8f87-44ef6f84be6a",
+            "entityId": "0446af95-4a1d-4032-9dd7-d25754bc91d7",
+            "code": "OURSALES",
+            "displayName": "our Sales",
+            "nameAr": "ourSales",
+            "dataType": "NUMBER",
+            "isRequired": true,
+            "isStatic": false,
+            "staticValue": null,
+            "values": [
+              {
+                "id": "438bb9d3-2969-4ede-a902-788e9e498d2f",
+                "entityValueId": "7d2ca708-8711-4f09-a17a-9ccfcb295c54",
+                "entityVariableId": "d2de4ef2-b8b2-4119-8f87-44ef6f84be6a",
+                "value": 214
+              }
+            ]
+          },
+          {
+            "id": "92c4fa74-8419-46ba-95d6-305f77298f4d",
+            "entityId": "0446af95-4a1d-4032-9dd7-d25754bc91d7",
+            "code": "TOTALMARKETSALES",
+            "displayName": "total Market Sales",
+            "nameAr": "totalMarketSales",
+            "dataType": "NUMBER",
+            "isRequired": true,
+            "isStatic": false,
+            "staticValue": null,
+            "values": [
+              {
+                "id": "6269ac0a-eb88-4819-b537-11a5d8399dec",
+                "entityValueId": "7d2ca708-8711-4f09-a17a-9ccfcb295c54",
+                "entityVariableId": "92c4fa74-8419-46ba-95d6-305f77298f4d",
+                "value": 165
+              }
+            ]
+          }
+        ],
+        "values": [
+          {
+            "id": "7d2ca708-8711-4f09-a17a-9ccfcb295c54",
+            "entityId": "0446af95-4a1d-4032-9dd7-d25754bc91d7",
+            "periodStart": "2026-01-01T00:00:00.000Z",
+            "periodEnd": "2026-03-31T23:59:59.999Z",
+            "actualValue": 1.296969696969697,
+            "calculatedValue": 1.296969696969697,
+            "finalValue": 1.296969696969697,
+            "achievementValue": 5.187878787878788,
+            "status": "DRAFT",
+            "approvalType": null,
+            "note": null,
+            "enteredBy": "6126be2a-d8ac-45b1-8d81-880f3250508b",
+            "submittedBy": null,
+            "approvedBy": null,
+            "submittedAt": null,
+            "approvedAt": null,
+            "lockedAt": null,
+            "createdAt": "2026-01-16T02:05:38.149Z",
+            "updatedAt": "2026-01-16T02:05:38.149Z"
+          }
+        ]
+      },
+      {
+        "id": "c207e349-4b85-4c1a-9ff3-b2e472de6ae3",
+        "orgId": "10f903a3-95f6-460f-962a-382effde87b7",
+        "key": "KPI_2_1_2",
+        "orgEntityTypeId": "1e5698e5-f1b2-4908-89c8-ede85061fdc1",
+        "title": "Brand Awareness",
+        "titleAr": "الوعي بالعلامة التجارية",
+        "description": "Percentage of target audience aware of our brand",
+        "descriptionAr": "نسبة المستهدفين الذين يعرفون علامتنا التجارية",
+        "ownerUserId": "6126be2a-d8ac-45b1-8d81-880f3250508b",
+        "status": "ACTIVE",
+        "sourceType": "CALCULATED",
+        "periodType": "QUARTERLY",
+        "unit": "%",
+        "unitAr": null,
+        "direction": "INCREASE_IS_GOOD",
+        "aggregation": "LAST_VALUE",
+        "baselineValue": 45,
+        "targetValue": 75,
+        "weight": null,
+        "formula": "return (awareRespondents / totalRespondents);",
+        "createdAt": "2026-01-16T02:05:38.150Z",
+        "updatedAt": "2026-01-16T02:05:38.150Z",
+        "deletedAt": null,
+        "variables": [
+          {
+            "id": "b172f507-b1ab-4382-9375-dac034305174",
+            "entityId": "c207e349-4b85-4c1a-9ff3-b2e472de6ae3",
+            "code": "AWARERESPONDENTS",
+            "displayName": "aware Respondents",
+            "nameAr": "awareRespondents",
+            "dataType": "NUMBER",
+            "isRequired": true,
+            "isStatic": false,
+            "staticValue": null,
+            "values": [
+              {
+                "id": "673ad788-0e46-4bba-9408-ccdc8f8ea844",
+                "entityValueId": "99ea86cf-3f0d-4296-a628-132d37ee1d52",
+                "entityVariableId": "b172f507-b1ab-4382-9375-dac034305174",
+                "value": 704
+              }
+            ]
+          },
+          {
+            "id": "990eccfb-9583-47b9-880b-d56b7deb83ba",
+            "entityId": "c207e349-4b85-4c1a-9ff3-b2e472de6ae3",
+            "code": "TOTALRESPONDENTS",
+            "displayName": "total Respondents",
+            "nameAr": "totalRespondents",
+            "dataType": "NUMBER",
+            "isRequired": true,
+            "isStatic": false,
+            "staticValue": null,
+            "values": [
+              {
+                "id": "3f251790-b836-41b5-bfdc-3e30188dcfaa",
+                "entityValueId": "99ea86cf-3f0d-4296-a628-132d37ee1d52",
+                "entityVariableId": "990eccfb-9583-47b9-880b-d56b7deb83ba",
+                "value": 535
+              }
+            ]
+          }
+        ],
+        "values": [
+          {
+            "id": "99ea86cf-3f0d-4296-a628-132d37ee1d52",
+            "entityId": "c207e349-4b85-4c1a-9ff3-b2e472de6ae3",
+            "periodStart": "2026-01-01T00:00:00.000Z",
+            "periodEnd": "2026-03-31T23:59:59.999Z",
+            "actualValue": 1.31588785046729,
+            "calculatedValue": 1.31588785046729,
+            "finalValue": 1.31588785046729,
+            "achievementValue": 1.754517133956386,
+            "status": "DRAFT",
+            "approvalType": null,
+            "note": null,
+            "enteredBy": "6126be2a-d8ac-45b1-8d81-880f3250508b",
+            "submittedBy": null,
+            "approvedBy": null,
+            "submittedAt": null,
+            "approvedAt": null,
+            "lockedAt": null,
+            "createdAt": "2026-01-16T02:05:38.151Z",
+            "updatedAt": "2026-01-16T02:05:38.151Z"
+          }
+        ]
+      },
+      {
+        "id": "0986bfcf-a0b1-427c-af11-1c2293ff4a38",
+        "orgId": "10f903a3-95f6-460f-962a-382effde87b7",
+        "key": "KPI_2_1_3",
+        "orgEntityTypeId": "1e5698e5-f1b2-4908-89c8-ede85061fdc1",
+        "title": "Customer Retention Rate",
+        "titleAr": "معدل الاحتفاظ بالعملاء",
+        "description": "Percentage of customers who continue purchasing",
+        "descriptionAr": "نسبة العملاء الذين يواصلون الشراء",
+        "ownerUserId": "6126be2a-d8ac-45b1-8d81-880f3250508b",
+        "status": "ACTIVE",
+        "sourceType": "CALCULATED",
+        "periodType": "MONTHLY",
+        "unit": "%",
+        "unitAr": null,
+        "direction": "INCREASE_IS_GOOD",
+        "aggregation": "LAST_VALUE",
+        "baselineValue": 68,
+        "targetValue": 85,
+        "weight": null,
+        "formula": "return (retainedCustomers / totalCustomers);",
+        "createdAt": "2026-01-16T02:05:38.152Z",
+        "updatedAt": "2026-01-16T02:05:38.152Z",
+        "deletedAt": null,
+        "variables": [
+          {
+            "id": "2811d2d7-eaed-4bf2-a02c-8f46e7ed2916",
+            "entityId": "0986bfcf-a0b1-427c-af11-1c2293ff4a38",
+            "code": "RETAINEDCUSTOMERS",
+            "displayName": "retained Customers",
+            "nameAr": "retainedCustomers",
+            "dataType": "NUMBER",
+            "isRequired": true,
+            "isStatic": false,
+            "staticValue": null,
+            "values": [
+              {
+                "id": "be17d23d-4914-4254-8397-6cdf31f3f07e",
+                "entityValueId": "57bb3846-7e54-49a6-ab36-48eb015b6eb6",
+                "entityVariableId": "2811d2d7-eaed-4bf2-a02c-8f46e7ed2916",
+                "value": 906
+              }
+            ]
+          },
+          {
+            "id": "1d014482-5996-4d50-a63e-caf143cee0d2",
+            "entityId": "0986bfcf-a0b1-427c-af11-1c2293ff4a38",
+            "code": "TOTALCUSTOMERS",
+            "displayName": "total Customers",
+            "nameAr": "totalCustomers",
+            "dataType": "NUMBER",
+            "isRequired": true,
+            "isStatic": false,
+            "staticValue": null,
+            "values": [
+              {
+                "id": "263b5ed0-c379-4bc5-9d0d-bffed9812c30",
+                "entityValueId": "57bb3846-7e54-49a6-ab36-48eb015b6eb6",
+                "entityVariableId": "1d014482-5996-4d50-a63e-caf143cee0d2",
+                "value": 789
+              }
+            ]
+          }
+        ],
+        "values": [
+          {
+            "id": "57bb3846-7e54-49a6-ab36-48eb015b6eb6",
+            "entityId": "0986bfcf-a0b1-427c-af11-1c2293ff4a38",
+            "periodStart": "2026-01-01T00:00:00.000Z",
+            "periodEnd": "2026-01-31T23:59:59.999Z",
+            "actualValue": 1.14828897338403,
+            "calculatedValue": 1.14828897338403,
+            "finalValue": 1.14828897338403,
+            "achievementValue": 1.350928203981212,
+            "status": "DRAFT",
+            "approvalType": null,
+            "note": null,
+            "enteredBy": "6126be2a-d8ac-45b1-8d81-880f3250508b",
+            "submittedBy": null,
+            "approvedBy": null,
+            "submittedAt": null,
+            "approvedAt": null,
+            "lockedAt": null,
+            "createdAt": "2026-01-16T02:05:38.153Z",
+            "updatedAt": "2026-01-16T02:05:38.153Z"
+          }
+        ]
+      },
+      {
+        "id": "146dfb29-18b1-42e3-8a8d-3872117dfcd3",
+        "orgId": "10f903a3-95f6-460f-962a-382effde87b7",
+        "key": "KPI_2_2_1",
+        "orgEntityTypeId": "1e5698e5-f1b2-4908-89c8-ede85061fdc1",
+        "title": "Number of New Branches",
+        "titleAr": "عدد الفروع الجديدة",
+        "description": "Number of opened branches and distribution centers",
+        "descriptionAr": "عدد الفروع ومراكز التوزيع المفتتحة",
+        "ownerUserId": "6126be2a-d8ac-45b1-8d81-880f3250508b",
+        "status": "ACTIVE",
+        "sourceType": "CALCULATED",
+        "periodType": "QUARTERLY",
+        "unit": "فرع",
+        "unitAr": null,
+        "direction": "INCREASE_IS_GOOD",
+        "aggregation": "LAST_VALUE",
+        "baselineValue": 2,
+        "targetValue": 8,
+        "weight": null,
+        "formula": "return totalActiveBranches - baselineBranches;",
+        "createdAt": "2026-01-16T02:05:38.154Z",
+        "updatedAt": "2026-01-16T02:05:38.154Z",
+        "deletedAt": null,
+        "variables": [
+          {
+            "id": "83b745d1-5fd2-4cb2-8e54-69212a589eeb",
+            "entityId": "146dfb29-18b1-42e3-8a8d-3872117dfcd3",
+            "code": "TOTALACTIVEBRANCHES",
+            "displayName": "total Active Branches",
+            "nameAr": "totalActiveBranches",
+            "dataType": "NUMBER",
+            "isRequired": true,
+            "isStatic": false,
+            "staticValue": null,
+            "values": [
+              {
+                "id": "211213d9-d5ae-4226-8f56-1f8ca246bf9e",
+                "entityValueId": "8c523001-68e8-4cde-a778-3ef509a4b67e",
+                "entityVariableId": "83b745d1-5fd2-4cb2-8e54-69212a589eeb",
+                "value": 8
+              }
+            ]
+          },
+          {
+            "id": "75d491c4-0379-42a9-ba54-77542fb0b478",
+            "entityId": "146dfb29-18b1-42e3-8a8d-3872117dfcd3",
+            "code": "BASELINEBRANCHES",
+            "displayName": "baseline Branches",
+            "nameAr": "baselineBranches",
+            "dataType": "NUMBER",
+            "isRequired": true,
+            "isStatic": false,
+            "staticValue": null,
+            "values": [
+              {
+                "id": "d3444603-6017-407d-9202-027ca22b36d8",
+                "entityValueId": "8c523001-68e8-4cde-a778-3ef509a4b67e",
+                "entityVariableId": "75d491c4-0379-42a9-ba54-77542fb0b478",
+                "value": 7
+              }
+            ]
+          }
+        ],
+        "values": [
+          {
+            "id": "8c523001-68e8-4cde-a778-3ef509a4b67e",
+            "entityId": "146dfb29-18b1-42e3-8a8d-3872117dfcd3",
+            "periodStart": "2026-01-01T00:00:00.000Z",
+            "periodEnd": "2026-03-31T23:59:59.999Z",
+            "actualValue": 1,
+            "calculatedValue": 1,
+            "finalValue": 1,
+            "achievementValue": 12.5,
+            "status": "DRAFT",
+            "approvalType": null,
+            "note": null,
+            "enteredBy": "6126be2a-d8ac-45b1-8d81-880f3250508b",
+            "submittedBy": null,
+            "approvedBy": null,
+            "submittedAt": null,
+            "approvedAt": null,
+            "lockedAt": null,
+            "createdAt": "2026-01-16T02:05:38.155Z",
+            "updatedAt": "2026-01-16T02:05:38.155Z"
+          }
+        ]
+      },
+      {
+        "id": "0309acae-3f66-4ce7-9c03-f22a9ae2950e",
+        "orgId": "10f903a3-95f6-460f-962a-382effde87b7",
+        "key": "KPI_2_2_2",
+        "orgEntityTypeId": "1e5698e5-f1b2-4908-89c8-ede85061fdc1",
+        "title": "International Sales",
+        "titleAr": "المبيعات الدولية",
+        "description": "Sales percentage from international markets",
+        "descriptionAr": "نسبة المبيعات من الأسواق الدولية",
+        "ownerUserId": "6126be2a-d8ac-45b1-8d81-880f3250508b",
+        "status": "ACTIVE",
+        "sourceType": "CALCULATED",
+        "periodType": "MONTHLY",
+        "unit": "%",
+        "unitAr": null,
+        "direction": "INCREASE_IS_GOOD",
+        "aggregation": "LAST_VALUE",
+        "baselineValue": 10,
+        "targetValue": 35,
+        "weight": null,
+        "formula": "return (internationalSales / totalSales);",
+        "createdAt": "2026-01-16T02:05:38.156Z",
+        "updatedAt": "2026-01-16T02:05:38.156Z",
+        "deletedAt": null,
+        "variables": [
+          {
+            "id": "db2689d7-7d23-4536-bd3b-75cfd41be2fc",
+            "entityId": "0309acae-3f66-4ce7-9c03-f22a9ae2950e",
+            "code": "INTERNATIONALSALES",
+            "displayName": "international Sales",
+            "nameAr": "internationalSales",
+            "dataType": "NUMBER",
+            "isRequired": true,
+            "isStatic": false,
+            "staticValue": null,
+            "values": [
+              {
+                "id": "aa878f71-6f93-428e-b94b-695e15cdad0a",
+                "entityValueId": "024fbc4b-193c-44a8-b14b-267dc0c2e6de",
+                "entityVariableId": "db2689d7-7d23-4536-bd3b-75cfd41be2fc",
+                "value": 327
+              }
+            ]
+          },
+          {
+            "id": "02b340a3-3479-46db-8374-28175a2d0ca7",
+            "entityId": "0309acae-3f66-4ce7-9c03-f22a9ae2950e",
+            "code": "TOTALSALES",
+            "displayName": "total Sales",
+            "nameAr": "totalSales",
+            "dataType": "NUMBER",
+            "isRequired": true,
+            "isStatic": false,
+            "staticValue": null,
+            "values": [
+              {
+                "id": "e6fbe2c4-b271-479a-bb7a-9905710b5c52",
+                "entityValueId": "024fbc4b-193c-44a8-b14b-267dc0c2e6de",
+                "entityVariableId": "02b340a3-3479-46db-8374-28175a2d0ca7",
+                "value": 160
+              }
+            ]
+          }
+        ],
+        "values": [
+          {
+            "id": "024fbc4b-193c-44a8-b14b-267dc0c2e6de",
+            "entityId": "0309acae-3f66-4ce7-9c03-f22a9ae2950e",
+            "periodStart": "2026-01-01T00:00:00.000Z",
+            "periodEnd": "2026-01-31T23:59:59.999Z",
+            "actualValue": 2.04375,
+            "calculatedValue": 2.04375,
+            "finalValue": 2.04375,
+            "achievementValue": 5.839285714285715,
+            "status": "DRAFT",
+            "approvalType": null,
+            "note": null,
+            "enteredBy": "6126be2a-d8ac-45b1-8d81-880f3250508b",
+            "submittedBy": null,
+            "approvedBy": null,
+            "submittedAt": null,
+            "approvedAt": null,
+            "lockedAt": null,
+            "createdAt": "2026-01-16T02:05:38.157Z",
+            "updatedAt": "2026-01-16T02:05:38.157Z"
+          }
+        ]
+      },
+      {
+        "id": "80c9d9c2-76df-403e-815b-fa1298fcb2a7",
+        "orgId": "10f903a3-95f6-460f-962a-382effde87b7",
+        "key": "KPI_2_3_1",
+        "orgEntityTypeId": "1e5698e5-f1b2-4908-89c8-ede85061fdc1",
+        "title": "Number of New Products",
+        "titleAr": "عدد المنتجات الجديدة",
+        "description": "Number of new products launched in market",
+        "descriptionAr": "عدد المنتجات الجديدة المطلقة في السوق",
+        "ownerUserId": "6126be2a-d8ac-45b1-8d81-880f3250508b",
+        "status": "ACTIVE",
+        "sourceType": "CALCULATED",
+        "periodType": "QUARTERLY",
+        "unit": "منتج",
+        "unitAr": null,
+        "direction": "INCREASE_IS_GOOD",
+        "aggregation": "LAST_VALUE",
+        "baselineValue": 2,
+        "targetValue": 12,
+        "weight": null,
+        "formula": "return launchedProducts;",
+        "createdAt": "2026-01-16T02:05:38.158Z",
+        "updatedAt": "2026-01-16T02:05:38.158Z",
+        "deletedAt": null,
+        "variables": [
+          {
+            "id": "c5b7e4a5-bdbc-4694-a4a1-8f65d670b0ec",
+            "entityId": "80c9d9c2-76df-403e-815b-fa1298fcb2a7",
+            "code": "LAUNCHEDPRODUCTS",
+            "displayName": "launched Products",
+            "nameAr": "launchedProducts",
+            "dataType": "NUMBER",
+            "isRequired": true,
+            "isStatic": false,
+            "staticValue": null,
+            "values": [
+              {
+                "id": "824a1657-8c3c-42c7-8976-1d420cc64bf3",
+                "entityValueId": "a26703a4-98b7-4354-8609-76f80ceadfe6",
+                "entityVariableId": "c5b7e4a5-bdbc-4694-a4a1-8f65d670b0ec",
+                "value": 4
+              }
+            ]
+          }
+        ],
+        "values": [
+          {
+            "id": "a26703a4-98b7-4354-8609-76f80ceadfe6",
+            "entityId": "80c9d9c2-76df-403e-815b-fa1298fcb2a7",
+            "periodStart": "2026-01-01T00:00:00.000Z",
+            "periodEnd": "2026-03-31T23:59:59.999Z",
+            "actualValue": 4,
+            "calculatedValue": 4,
+            "finalValue": 4,
+            "achievementValue": 33.33333333333333,
+            "status": "DRAFT",
+            "approvalType": null,
+            "note": null,
+            "enteredBy": "6126be2a-d8ac-45b1-8d81-880f3250508b",
+            "submittedBy": null,
+            "approvedBy": null,
+            "submittedAt": null,
+            "approvedAt": null,
+            "lockedAt": null,
+            "createdAt": "2026-01-16T02:05:38.159Z",
+            "updatedAt": "2026-01-16T02:05:38.159Z"
+          }
+        ]
+      },
+      {
+        "id": "770ad841-f382-4a07-9a6c-51d15f5ae433",
+        "orgId": "10f903a3-95f6-460f-962a-382effde87b7",
+        "key": "KPI_2_3_2",
+        "orgEntityTypeId": "1e5698e5-f1b2-4908-89c8-ede85061fdc1",
+        "title": "New Products Sales",
+        "titleAr": "مبيعات المنتجات الجديدة",
+        "description": "New products sales percentage of total sales",
+        "descriptionAr": "نسبة مبيعات المنتجات الجديدة من إجمالي المبيعات",
+        "ownerUserId": "6126be2a-d8ac-45b1-8d81-880f3250508b",
+        "status": "ACTIVE",
+        "sourceType": "CALCULATED",
+        "periodType": "MONTHLY",
+        "unit": "%",
+        "unitAr": null,
+        "direction": "INCREASE_IS_GOOD",
+        "aggregation": "LAST_VALUE",
+        "baselineValue": 5,
+        "targetValue": 20,
+        "weight": null,
+        "formula": "return (newProductsSales / totalSales);",
+        "createdAt": "2026-01-16T02:05:38.160Z",
+        "updatedAt": "2026-01-16T02:05:38.160Z",
+        "deletedAt": null,
+        "variables": [
+          {
+            "id": "cfbcd154-b619-4e1d-bb25-b381c12c3fad",
+            "entityId": "770ad841-f382-4a07-9a6c-51d15f5ae433",
+            "code": "NEWPRODUCTSSALES",
+            "displayName": "new Products Sales",
+            "nameAr": "newProductsSales",
+            "dataType": "NUMBER",
+            "isRequired": true,
+            "isStatic": false,
+            "staticValue": null,
+            "values": [
+              {
+                "id": "ace9b57f-6fdf-42c2-8892-484d9c3dbd09",
+                "entityValueId": "79af5312-bc25-4d26-9145-4354a37080f2",
+                "entityVariableId": "cfbcd154-b619-4e1d-bb25-b381c12c3fad",
+                "value": 221
+              }
+            ]
+          },
+          {
+            "id": "8db50799-4fd0-493e-b454-05dc1a1b37b3",
+            "entityId": "770ad841-f382-4a07-9a6c-51d15f5ae433",
+            "code": "TOTALSALES",
+            "displayName": "total Sales",
+            "nameAr": "totalSales",
+            "dataType": "NUMBER",
+            "isRequired": true,
+            "isStatic": false,
+            "staticValue": null,
+            "values": [
+              {
+                "id": "561d0745-1a36-4b30-919d-717bee4b2ccf",
+                "entityValueId": "79af5312-bc25-4d26-9145-4354a37080f2",
+                "entityVariableId": "8db50799-4fd0-493e-b454-05dc1a1b37b3",
+                "value": 100
+              }
+            ]
+          }
+        ],
+        "values": [
+          {
+            "id": "79af5312-bc25-4d26-9145-4354a37080f2",
+            "entityId": "770ad841-f382-4a07-9a6c-51d15f5ae433",
+            "periodStart": "2026-01-01T00:00:00.000Z",
+            "periodEnd": "2026-01-31T23:59:59.999Z",
+            "actualValue": 2.21,
+            "calculatedValue": 2.21,
+            "finalValue": 2.21,
+            "achievementValue": 11.05,
+            "status": "DRAFT",
+            "approvalType": null,
+            "note": null,
+            "enteredBy": "6126be2a-d8ac-45b1-8d81-880f3250508b",
+            "submittedBy": null,
+            "approvedBy": null,
+            "submittedAt": null,
+            "approvedAt": null,
+            "lockedAt": null,
+            "createdAt": "2026-01-16T02:05:38.161Z",
+            "updatedAt": "2026-01-16T02:05:38.161Z"
+          }
+        ]
+      },
+      {
+        "id": "2bf7d4e4-d9ee-4db8-9487-6b0f6fbff156",
+        "orgId": "10f903a3-95f6-460f-962a-382effde87b7",
+        "key": "KPI_2_4_1",
+        "orgEntityTypeId": "1e5698e5-f1b2-4908-89c8-ede85061fdc1",
+        "title": "Annual Revenue",
+        "titleAr": "الإيرادات السنوية",
+        "description": "Total annual revenue",
+        "descriptionAr": "إجمالي الإيرادات السنوية",
+        "ownerUserId": "6126be2a-d8ac-45b1-8d81-880f3250508b",
+        "status": "ACTIVE",
+        "sourceType": "CALCULATED",
+        "periodType": "MONTHLY",
+        "unit": "مليون ريال",
+        "unitAr": null,
+        "direction": "INCREASE_IS_GOOD",
+        "aggregation": "LAST_VALUE",
+        "baselineValue": 280,
+        "targetValue": 500,
+        "weight": null,
+        "formula": "return sum(monthlyRevenue);",
+        "createdAt": "2026-01-16T02:05:38.162Z",
+        "updatedAt": "2026-01-16T02:05:38.162Z",
+        "deletedAt": null,
+        "variables": [
+          {
+            "id": "92747f9a-babb-43d6-9e7e-419f8b52037d",
+            "entityId": "2bf7d4e4-d9ee-4db8-9487-6b0f6fbff156",
+            "code": "MONTHLYREVENUE",
+            "displayName": "monthly Revenue",
+            "nameAr": "monthlyRevenue",
+            "dataType": "NUMBER",
+            "isRequired": true,
+            "isStatic": false,
+            "staticValue": null,
+            "values": [
+              {
+                "id": "b009352e-fdfa-4ae9-a7aa-c0bfdf5f129a",
+                "entityValueId": "2de4ef84-5549-468d-a624-2ab13a9aade1",
+                "entityVariableId": "92747f9a-babb-43d6-9e7e-419f8b52037d",
+                "value": 314.911
+              }
+            ]
+          }
+        ],
+        "values": [
+          {
+            "id": "2de4ef84-5549-468d-a624-2ab13a9aade1",
+            "entityId": "2bf7d4e4-d9ee-4db8-9487-6b0f6fbff156",
+            "periodStart": "2026-01-01T00:00:00.000Z",
+            "periodEnd": "2026-01-31T23:59:59.999Z",
+            "actualValue": null,
+            "calculatedValue": 314.911,
+            "finalValue": 314.911,
+            "achievementValue": 62.98219282125126,
+            "status": "DRAFT",
+            "approvalType": null,
+            "note": null,
+            "enteredBy": "6126be2a-d8ac-45b1-8d81-880f3250508b",
+            "submittedBy": null,
+            "approvedBy": null,
+            "submittedAt": null,
+            "approvedAt": null,
+            "lockedAt": null,
+            "createdAt": "2026-01-16T02:05:38.163Z",
+            "updatedAt": "2026-01-16T02:09:46.571Z"
+          }
+        ]
+      },
+      {
+        "id": "7a8a53f6-8f97-46b2-9217-07bcc5a90764",
+        "orgId": "10f903a3-95f6-460f-962a-382effde87b7",
+        "key": "KPI_2_4_2",
+        "orgEntityTypeId": "1e5698e5-f1b2-4908-89c8-ede85061fdc1",
+        "title": "Annual Growth Rate",
+        "titleAr": "معدل النمو السنوي",
+        "description": "Revenue growth rate compared to previous year",
+        "descriptionAr": "معدل نمو الإيرادات مقارنة بالعام السابق",
+        "ownerUserId": "6126be2a-d8ac-45b1-8d81-880f3250508b",
+        "status": "ACTIVE",
+        "sourceType": "CALCULATED",
+        "periodType": "YEARLY",
+        "unit": "%",
+        "unitAr": null,
+        "direction": "INCREASE_IS_GOOD",
+        "aggregation": "LAST_VALUE",
+        "baselineValue": 10,
+        "targetValue": 25,
+        "weight": null,
+        "formula": "return ((currentYearRevenue - previousYearRevenue) / previousYearRevenue);",
+        "createdAt": "2026-01-16T02:05:38.163Z",
+        "updatedAt": "2026-01-16T02:05:38.163Z",
+        "deletedAt": null,
+        "variables": [
+          {
+            "id": "8754127e-ce62-4558-a17f-d5ced6d7c648",
+            "entityId": "7a8a53f6-8f97-46b2-9217-07bcc5a90764",
+            "code": "CURRENTYEARREVENUE",
+            "displayName": "current Year Revenue",
+            "nameAr": "currentYearRevenue",
+            "dataType": "NUMBER",
+            "isRequired": true,
+            "isStatic": false,
+            "staticValue": null,
+            "values": [
+              {
+                "id": "6766aeb3-11c5-49b2-855d-3e2f74482d7a",
+                "entityValueId": "796984e4-9212-4f66-82f1-7620238c9409",
+                "entityVariableId": "8754127e-ce62-4558-a17f-d5ced6d7c648",
+                "value": 234
+              }
+            ]
+          },
+          {
+            "id": "823b0944-01c7-4fbe-9cc3-887b51214e0d",
+            "entityId": "7a8a53f6-8f97-46b2-9217-07bcc5a90764",
+            "code": "PREVIOUSYEARREVENUE",
+            "displayName": "previous Year Revenue",
+            "nameAr": "previousYearRevenue",
+            "dataType": "NUMBER",
+            "isRequired": true,
+            "isStatic": false,
+            "staticValue": null,
+            "values": [
+              {
+                "id": "fda41746-dcf0-4fb4-985d-e3c63f90edcb",
+                "entityValueId": "796984e4-9212-4f66-82f1-7620238c9409",
+                "entityVariableId": "823b0944-01c7-4fbe-9cc3-887b51214e0d",
+                "value": 285
+              }
+            ]
+          }
+        ],
+        "values": [
+          {
+            "id": "796984e4-9212-4f66-82f1-7620238c9409",
+            "entityId": "7a8a53f6-8f97-46b2-9217-07bcc5a90764",
+            "periodStart": "2026-01-01T00:00:00.000Z",
+            "periodEnd": "2026-12-31T23:59:59.999Z",
+            "actualValue": -0.1789473684210526,
+            "calculatedValue": -0.1789473684210526,
+            "finalValue": -0.1789473684210526,
+            "achievementValue": -0.7157894736842105,
+            "status": "DRAFT",
+            "approvalType": null,
+            "note": null,
+            "enteredBy": "6126be2a-d8ac-45b1-8d81-880f3250508b",
+            "submittedBy": null,
+            "approvedBy": null,
+            "submittedAt": null,
+            "approvedAt": null,
+            "lockedAt": null,
+            "createdAt": "2026-01-16T02:05:38.164Z",
+            "updatedAt": "2026-01-16T02:05:38.164Z"
+          }
+        ]
+      },
+      {
+        "id": "1de7a113-bc6c-4895-8146-d4457db37903",
+        "orgId": "10f903a3-95f6-460f-962a-382effde87b7",
+        "key": "KPI_2_4_3",
+        "orgEntityTypeId": "1e5698e5-f1b2-4908-89c8-ede85061fdc1",
+        "title": "Gross Profit Margin",
+        "titleAr": "هامش الربح الإجمالي",
+        "description": "Gross profit percentage of sales",
+        "descriptionAr": "نسبة الربح الإجمالي من المبيعات",
+        "ownerUserId": "6126be2a-d8ac-45b1-8d81-880f3250508b",
+        "status": "ACTIVE",
+        "sourceType": "CALCULATED",
+        "periodType": "MONTHLY",
+        "unit": "%",
+        "unitAr": null,
+        "direction": "INCREASE_IS_GOOD",
+        "aggregation": "LAST_VALUE",
+        "baselineValue": 25,
+        "targetValue": 35,
+        "weight": null,
+        "formula": "return ((revenue - costOfGoodsSold) / revenue);",
+        "createdAt": "2026-01-16T02:05:38.166Z",
+        "updatedAt": "2026-01-16T02:05:38.166Z",
+        "deletedAt": null,
+        "variables": [
+          {
+            "id": "647dd33e-3b7d-489d-9c42-478349624fcc",
+            "entityId": "1de7a113-bc6c-4895-8146-d4457db37903",
+            "code": "REVENUE",
+            "displayName": "revenue",
+            "nameAr": "revenue",
+            "dataType": "NUMBER",
+            "isRequired": true,
+            "isStatic": false,
+            "staticValue": null,
+            "values": [
+              {
+                "id": "c7acb9c9-a782-4f4d-af74-1532c9f7ac6e",
+                "entityValueId": "6fb7271b-19cb-4c09-be78-b8e706db46d7",
+                "entityVariableId": "647dd33e-3b7d-489d-9c42-478349624fcc",
+                "value": 357
+              }
+            ]
+          },
+          {
+            "id": "1434c452-aa8b-4efc-a504-eb9d8d80360b",
+            "entityId": "1de7a113-bc6c-4895-8146-d4457db37903",
+            "code": "COSTOFGOODSSOLD",
+            "displayName": "cost Of Goods Sold",
+            "nameAr": "costOfGoodsSold",
+            "dataType": "NUMBER",
+            "isRequired": true,
+            "isStatic": false,
+            "staticValue": null,
+            "values": [
+              {
+                "id": "3dd5833b-b493-457f-bd6a-9fbc6056734f",
+                "entityValueId": "6fb7271b-19cb-4c09-be78-b8e706db46d7",
+                "entityVariableId": "1434c452-aa8b-4efc-a504-eb9d8d80360b",
+                "value": 387
+              }
+            ]
+          }
+        ],
+        "values": [
+          {
+            "id": "6fb7271b-19cb-4c09-be78-b8e706db46d7",
+            "entityId": "1de7a113-bc6c-4895-8146-d4457db37903",
+            "periodStart": "2026-01-01T00:00:00.000Z",
+            "periodEnd": "2026-01-31T23:59:59.999Z",
+            "actualValue": -0.08403361344537816,
+            "calculatedValue": -0.08403361344537816,
+            "finalValue": -0.08403361344537816,
+            "achievementValue": -0.2400960384153662,
+            "status": "DRAFT",
+            "approvalType": null,
+            "note": null,
+            "enteredBy": "6126be2a-d8ac-45b1-8d81-880f3250508b",
+            "submittedBy": null,
+            "approvedBy": null,
+            "submittedAt": null,
+            "approvedAt": null,
+            "lockedAt": null,
+            "createdAt": "2026-01-16T02:05:38.167Z",
+            "updatedAt": "2026-01-16T02:05:38.167Z"
+          }
+        ]
+      },
+      {
+        "id": "99ad2c15-7a98-485e-bcfb-eba3b3652b11",
+        "orgId": "10f903a3-95f6-460f-962a-382effde87b7",
+        "key": "KPI_3_1_1",
+        "orgEntityTypeId": "1e5698e5-f1b2-4908-89c8-ede85061fdc1",
+        "title": "ERP Implementation Progress",
+        "titleAr": "نسبة إنجاز تطبيق ERP",
+        "description": "Percentage of ERP implementation project completion",
+        "descriptionAr": "نسبة إنجاز مشروع تطبيق نظام ERP",
+        "ownerUserId": "6126be2a-d8ac-45b1-8d81-880f3250508b",
+        "status": "ACTIVE",
+        "sourceType": "CALCULATED",
+        "periodType": "MONTHLY",
+        "unit": "%",
+        "unitAr": null,
+        "direction": "INCREASE_IS_GOOD",
+        "aggregation": "LAST_VALUE",
+        "baselineValue": 0,
+        "targetValue": 100,
+        "weight": null,
+        "formula": "return (completedModules / totalModules);",
+        "createdAt": "2026-01-16T02:05:38.168Z",
+        "updatedAt": "2026-01-16T02:05:38.168Z",
+        "deletedAt": null,
+        "variables": [
+          {
+            "id": "c7f22a28-8f11-4340-8b27-b823ba7792ec",
+            "entityId": "99ad2c15-7a98-485e-bcfb-eba3b3652b11",
+            "code": "COMPLETEDMODULES",
+            "displayName": "completed Modules",
+            "nameAr": "completedModules",
+            "dataType": "NUMBER",
+            "isRequired": true,
+            "isStatic": false,
+            "staticValue": null,
+            "values": [
+              {
+                "id": "ddb2a067-b35a-46df-ac39-86e8ab9167a1",
+                "entityValueId": "4d191125-f3ad-4ac3-ba20-ac465bebc1b0",
+                "entityVariableId": "c7f22a28-8f11-4340-8b27-b823ba7792ec",
+                "value": 984
+              }
+            ]
+          },
+          {
+            "id": "47d3c6e5-96de-4fb8-b275-1333a8fe2439",
+            "entityId": "99ad2c15-7a98-485e-bcfb-eba3b3652b11",
+            "code": "TOTALMODULES",
+            "displayName": "total Modules",
+            "nameAr": "totalModules",
+            "dataType": "NUMBER",
+            "isRequired": true,
+            "isStatic": false,
+            "staticValue": null,
+            "values": [
+              {
+                "id": "5e768e92-1167-43eb-a1a4-41dfd7be6afa",
+                "entityValueId": "4d191125-f3ad-4ac3-ba20-ac465bebc1b0",
+                "entityVariableId": "47d3c6e5-96de-4fb8-b275-1333a8fe2439",
+                "value": 483
+              }
+            ]
+          }
+        ],
+        "values": [
+          {
+            "id": "4d191125-f3ad-4ac3-ba20-ac465bebc1b0",
+            "entityId": "99ad2c15-7a98-485e-bcfb-eba3b3652b11",
+            "periodStart": "2026-01-01T00:00:00.000Z",
+            "periodEnd": "2026-01-31T23:59:59.999Z",
+            "actualValue": 2.037267080745341,
+            "calculatedValue": 2.037267080745341,
+            "finalValue": 2.037267080745341,
+            "achievementValue": 2.037267080745341,
+            "status": "DRAFT",
+            "approvalType": null,
+            "note": null,
+            "enteredBy": "6126be2a-d8ac-45b1-8d81-880f3250508b",
+            "submittedBy": null,
+            "approvedBy": null,
+            "submittedAt": null,
+            "approvedAt": null,
+            "lockedAt": null,
+            "createdAt": "2026-01-16T02:05:38.170Z",
+            "updatedAt": "2026-01-16T02:05:38.170Z"
+          }
+        ]
+      },
+      {
+        "id": "c8af6ff2-f065-4ea3-91c1-ddc77a6789d2",
+        "orgId": "10f903a3-95f6-460f-962a-382effde87b7",
+        "key": "KPI_3_1_2",
+        "orgEntityTypeId": "1e5698e5-f1b2-4908-89c8-ede85061fdc1",
+        "title": "Number of Integrated Systems",
+        "titleAr": "عدد الأنظمة المتكاملة",
+        "description": "Number of systems integrated with ERP",
+        "descriptionAr": "عدد الأنظمة المربوطة مع ERP",
+        "ownerUserId": "6126be2a-d8ac-45b1-8d81-880f3250508b",
+        "status": "ACTIVE",
+        "sourceType": "CALCULATED",
+        "periodType": "MONTHLY",
+        "unit": "نظام",
+        "unitAr": null,
+        "direction": "INCREASE_IS_GOOD",
+        "aggregation": "LAST_VALUE",
+        "baselineValue": 3,
+        "targetValue": 15,
+        "weight": null,
+        "formula": "return integratedSystemsCount;",
+        "createdAt": "2026-01-16T02:05:38.171Z",
+        "updatedAt": "2026-01-16T02:05:38.171Z",
+        "deletedAt": null,
+        "variables": [
+          {
+            "id": "2a944a78-e366-4203-94ce-9c50e1643885",
+            "entityId": "c8af6ff2-f065-4ea3-91c1-ddc77a6789d2",
+            "code": "INTEGRATEDSYSTEMSCOUNT",
+            "displayName": "integrated Systems Count",
+            "nameAr": "integratedSystemsCount",
+            "dataType": "NUMBER",
+            "isRequired": true,
+            "isStatic": false,
+            "staticValue": null,
+            "values": [
+              {
+                "id": "c763228b-acc3-43ad-a322-93096157ac12",
+                "entityValueId": "f62a93c1-f2b3-4641-a889-95f31510f4f1",
+                "entityVariableId": "2a944a78-e366-4203-94ce-9c50e1643885",
+                "value": 7
+              }
+            ]
+          }
+        ],
+        "values": [
+          {
+            "id": "f62a93c1-f2b3-4641-a889-95f31510f4f1",
+            "entityId": "c8af6ff2-f065-4ea3-91c1-ddc77a6789d2",
+            "periodStart": "2026-01-01T00:00:00.000Z",
+            "periodEnd": "2026-01-31T23:59:59.999Z",
+            "actualValue": 7,
+            "calculatedValue": 7,
+            "finalValue": 7,
+            "achievementValue": 46.66666666666666,
+            "status": "DRAFT",
+            "approvalType": null,
+            "note": null,
+            "enteredBy": "6126be2a-d8ac-45b1-8d81-880f3250508b",
+            "submittedBy": null,
+            "approvedBy": null,
+            "submittedAt": null,
+            "approvedAt": null,
+            "lockedAt": null,
+            "createdAt": "2026-01-16T02:05:38.172Z",
+            "updatedAt": "2026-01-16T02:05:38.172Z"
+          }
+        ]
+      },
+      {
+        "id": "4f1b0c5c-de62-4018-a079-a1ad6bacd087",
+        "orgId": "10f903a3-95f6-460f-962a-382effde87b7",
+        "key": "KPI_3_2_1",
+        "orgEntityTypeId": "1e5698e5-f1b2-4908-89c8-ede85061fdc1",
+        "title": "E-commerce Sales",
+        "titleAr": "مبيعات التجارة الإلكترونية",
+        "description": "Sales percentage through electronic channels",
+        "descriptionAr": "نسبة المبيعات عبر القنوات الإلكترونية",
+        "ownerUserId": "6126be2a-d8ac-45b1-8d81-880f3250508b",
+        "status": "ACTIVE",
+        "sourceType": "CALCULATED",
+        "periodType": "MONTHLY",
+        "unit": "%",
+        "unitAr": null,
+        "direction": "INCREASE_IS_GOOD",
+        "aggregation": "LAST_VALUE",
+        "baselineValue": 3,
+        "targetValue": 30,
+        "weight": null,
+        "formula": "return (onlineSales / totalSales);",
+        "createdAt": "2026-01-16T02:05:38.173Z",
+        "updatedAt": "2026-01-16T02:05:38.173Z",
+        "deletedAt": null,
+        "variables": [
+          {
+            "id": "3448936d-b6a5-41de-baac-97ae08ce6111",
+            "entityId": "4f1b0c5c-de62-4018-a079-a1ad6bacd087",
+            "code": "ONLINESALES",
+            "displayName": "online Sales",
+            "nameAr": "onlineSales",
+            "dataType": "NUMBER",
+            "isRequired": true,
+            "isStatic": false,
+            "staticValue": null,
+            "values": [
+              {
+                "id": "4ed4aff1-2c63-4718-bd6a-da4f79e9647c",
+                "entityValueId": "146d132b-4a43-4cce-a99e-cda72ed61bba",
+                "entityVariableId": "3448936d-b6a5-41de-baac-97ae08ce6111",
+                "value": 328
+              }
+            ]
+          },
+          {
+            "id": "64f2d141-9a52-4bc2-aa5d-7c4e00eca7f6",
+            "entityId": "4f1b0c5c-de62-4018-a079-a1ad6bacd087",
+            "code": "TOTALSALES",
+            "displayName": "total Sales",
+            "nameAr": "totalSales",
+            "dataType": "NUMBER",
+            "isRequired": true,
+            "isStatic": false,
+            "staticValue": null,
+            "values": [
+              {
+                "id": "ffb990dd-09c5-4d7b-9a8e-80081d806901",
+                "entityValueId": "146d132b-4a43-4cce-a99e-cda72ed61bba",
+                "entityVariableId": "64f2d141-9a52-4bc2-aa5d-7c4e00eca7f6",
+                "value": 100
+              }
+            ]
+          }
+        ],
+        "values": [
+          {
+            "id": "146d132b-4a43-4cce-a99e-cda72ed61bba",
+            "entityId": "4f1b0c5c-de62-4018-a079-a1ad6bacd087",
+            "periodStart": "2026-01-01T00:00:00.000Z",
+            "periodEnd": "2026-01-31T23:59:59.999Z",
+            "actualValue": 3.28,
+            "calculatedValue": 3.28,
+            "finalValue": 3.28,
+            "achievementValue": 10.93333333333333,
+            "status": "DRAFT",
+            "approvalType": null,
+            "note": null,
+            "enteredBy": "6126be2a-d8ac-45b1-8d81-880f3250508b",
+            "submittedBy": null,
+            "approvedBy": null,
+            "submittedAt": null,
+            "approvedAt": null,
+            "lockedAt": null,
+            "createdAt": "2026-01-16T02:05:38.174Z",
+            "updatedAt": "2026-01-16T02:05:38.174Z"
+          }
+        ]
+      },
+      {
+        "id": "a048241e-ffe0-425b-8e6e-9de48372a2d2",
+        "orgId": "10f903a3-95f6-460f-962a-382effde87b7",
+        "key": "KPI_3_2_2",
+        "orgEntityTypeId": "1e5698e5-f1b2-4908-89c8-ede85061fdc1",
+        "title": "Registered Users Count",
+        "titleAr": "عدد المستخدمين المسجلين",
+        "description": "Number of registered users on electronic platform",
+        "descriptionAr": "عدد المستخدمين المسجلين في المنصة الإلكترونية",
+        "ownerUserId": "6126be2a-d8ac-45b1-8d81-880f3250508b",
+        "status": "ACTIVE",
+        "sourceType": "CALCULATED",
+        "periodType": "MONTHLY",
+        "unit": "مستخدم",
+        "unitAr": null,
+        "direction": "INCREASE_IS_GOOD",
+        "aggregation": "LAST_VALUE",
+        "baselineValue": 0,
+        "targetValue": 100000,
+        "weight": null,
+        "formula": "return registeredUsersCount;",
+        "createdAt": "2026-01-16T02:05:38.175Z",
+        "updatedAt": "2026-01-16T02:05:38.175Z",
+        "deletedAt": null,
+        "variables": [
+          {
+            "id": "aeb55d90-b998-4cba-9e96-1ba14d83275e",
+            "entityId": "a048241e-ffe0-425b-8e6e-9de48372a2d2",
+            "code": "REGISTEREDUSERSCOUNT",
+            "displayName": "registered Users Count",
+            "nameAr": "registeredUsersCount",
+            "dataType": "NUMBER",
+            "isRequired": true,
+            "isStatic": false,
+            "staticValue": null,
+            "values": [
+              {
+                "id": "0522c3d2-b072-48a4-a340-77e92d815b91",
+                "entityValueId": "e5595805-fe52-4afd-abb7-78ff150496b9",
+                "entityVariableId": "aeb55d90-b998-4cba-9e96-1ba14d83275e",
+                "value": 21685
+              }
+            ]
+          }
+        ],
+        "values": [
+          {
+            "id": "e5595805-fe52-4afd-abb7-78ff150496b9",
+            "entityId": "a048241e-ffe0-425b-8e6e-9de48372a2d2",
+            "periodStart": "2026-01-01T00:00:00.000Z",
+            "periodEnd": "2026-01-31T23:59:59.999Z",
+            "actualValue": 21685,
+            "calculatedValue": 21685,
+            "finalValue": 21685,
+            "achievementValue": 21.685,
+            "status": "DRAFT",
+            "approvalType": null,
+            "note": null,
+            "enteredBy": "6126be2a-d8ac-45b1-8d81-880f3250508b",
+            "submittedBy": null,
+            "approvedBy": null,
+            "submittedAt": null,
+            "approvedAt": null,
+            "lockedAt": null,
+            "createdAt": "2026-01-16T02:05:38.176Z",
+            "updatedAt": "2026-01-16T02:05:38.176Z"
+          }
+        ]
+      },
+      {
+        "id": "5fd229c1-0397-4f7e-a1d1-382ede294ca6",
+        "orgId": "10f903a3-95f6-460f-962a-382effde87b7",
+        "key": "KPI_3_2_3",
+        "orgEntityTypeId": "1e5698e5-f1b2-4908-89c8-ede85061fdc1",
+        "title": "Conversion Rate",
+        "titleAr": "معدل تحويل الزيارات",
+        "description": "Percentage of visits converting to sales",
+        "descriptionAr": "نسبة الزيارات التي تتحول لمبيعات",
+        "ownerUserId": "6126be2a-d8ac-45b1-8d81-880f3250508b",
+        "status": "ACTIVE",
+        "sourceType": "CALCULATED",
+        "periodType": "MONTHLY",
+        "unit": "%",
+        "unitAr": null,
+        "direction": "INCREASE_IS_GOOD",
+        "aggregation": "LAST_VALUE",
+        "baselineValue": 1.2,
+        "targetValue": 3.5,
+        "weight": null,
+        "formula": "return (orders / visits);",
+        "createdAt": "2026-01-16T02:05:38.177Z",
+        "updatedAt": "2026-01-16T02:05:38.177Z",
+        "deletedAt": null,
+        "variables": [
+          {
+            "id": "cfd9956c-bd90-4b61-91e3-563f97ddf4dd",
+            "entityId": "5fd229c1-0397-4f7e-a1d1-382ede294ca6",
+            "code": "ORDERS",
+            "displayName": "orders",
+            "nameAr": "orders",
+            "dataType": "NUMBER",
+            "isRequired": true,
+            "isStatic": false,
+            "staticValue": null,
+            "values": [
+              {
+                "id": "4f567f28-a4c9-4927-9a8d-3ec5ae2a06c9",
+                "entityValueId": "ba8fcef2-53ef-417c-ab2b-929dd03fe6d6",
+                "entityVariableId": "cfd9956c-bd90-4b61-91e3-563f97ddf4dd",
+                "value": 40
+              }
+            ]
+          },
+          {
+            "id": "bc6100f5-065f-4811-869d-4a42df8992d8",
+            "entityId": "5fd229c1-0397-4f7e-a1d1-382ede294ca6",
+            "code": "VISITS",
+            "displayName": "visits",
+            "nameAr": "visits",
+            "dataType": "NUMBER",
+            "isRequired": true,
+            "isStatic": false,
+            "staticValue": null,
+            "values": [
+              {
+                "id": "738e5d48-cca3-440b-b464-38194f6f3206",
+                "entityValueId": "ba8fcef2-53ef-417c-ab2b-929dd03fe6d6",
+                "entityVariableId": "bc6100f5-065f-4811-869d-4a42df8992d8",
+                "value": 39
+              }
+            ]
+          }
+        ],
+        "values": [
+          {
+            "id": "ba8fcef2-53ef-417c-ab2b-929dd03fe6d6",
+            "entityId": "5fd229c1-0397-4f7e-a1d1-382ede294ca6",
+            "periodStart": "2026-01-01T00:00:00.000Z",
+            "periodEnd": "2026-01-31T23:59:59.999Z",
+            "actualValue": 1.025641025641026,
+            "calculatedValue": 1.025641025641026,
+            "finalValue": 1.025641025641026,
+            "achievementValue": 29.3040293040293,
+            "status": "DRAFT",
+            "approvalType": null,
+            "note": null,
+            "enteredBy": "6126be2a-d8ac-45b1-8d81-880f3250508b",
+            "submittedBy": null,
+            "approvedBy": null,
+            "submittedAt": null,
+            "approvedAt": null,
+            "lockedAt": null,
+            "createdAt": "2026-01-16T02:05:38.179Z",
+            "updatedAt": "2026-01-16T02:05:38.179Z"
+          }
+        ]
+      },
+      {
+        "id": "006c2cae-bb8b-4a76-84a0-3d0405eecc05",
+        "orgId": "10f903a3-95f6-460f-962a-382effde87b7",
+        "key": "KPI_3_3_1",
+        "orgEntityTypeId": "1e5698e5-f1b2-4908-89c8-ede85061fdc1",
+        "title": "Demand Forecast Accuracy",
+        "titleAr": "دقة التنبؤ بالطلب",
+        "description": "AI system accuracy in demand forecasting",
+        "descriptionAr": "دقة نظام الذكاء الاصطناعي في التنبؤ بالطلب",
+        "ownerUserId": "6126be2a-d8ac-45b1-8d81-880f3250508b",
+        "status": "ACTIVE",
+        "sourceType": "CALCULATED",
+        "periodType": "MONTHLY",
+        "unit": "%",
+        "unitAr": null,
+        "direction": "INCREASE_IS_GOOD",
+        "aggregation": "LAST_VALUE",
+        "baselineValue": 60,
+        "targetValue": 90,
+        "weight": null,
+        "formula": "return 100 - (abs(forecastedDemand - actualDemand) / actualDemand * 100);",
+        "createdAt": "2026-01-16T02:05:38.181Z",
+        "updatedAt": "2026-01-16T02:05:38.181Z",
+        "deletedAt": null,
+        "variables": [
+          {
+            "id": "a82cb68a-d299-421a-9c6d-bada53b19901",
+            "entityId": "006c2cae-bb8b-4a76-84a0-3d0405eecc05",
+            "code": "FORECASTEDDEMAND",
+            "displayName": "forecasted Demand",
+            "nameAr": "forecastedDemand",
+            "dataType": "NUMBER",
+            "isRequired": true,
+            "isStatic": false,
+            "staticValue": null,
+            "values": [
+              {
+                "id": "6305ce7d-12ec-40d7-8517-ebbb8407d090",
+                "entityValueId": "cd0fc8a0-6749-4770-b164-288c41ad686c",
+                "entityVariableId": "a82cb68a-d299-421a-9c6d-bada53b19901",
+                "value": 68.20398655141383
+              }
+            ]
+          },
+          {
+            "id": "2d56bbd3-5914-4d85-8b64-226ef6e68061",
+            "entityId": "006c2cae-bb8b-4a76-84a0-3d0405eecc05",
+            "code": "ACTUALDEMAND",
+            "displayName": "actual Demand",
+            "nameAr": "actualDemand",
+            "dataType": "NUMBER",
+            "isRequired": true,
+            "isStatic": false,
+            "staticValue": null,
+            "values": [
+              {
+                "id": "e567fa1a-824c-4a45-8d3b-0fdc5152321f",
+                "entityValueId": "cd0fc8a0-6749-4770-b164-288c41ad686c",
+                "entityVariableId": "2d56bbd3-5914-4d85-8b64-226ef6e68061",
+                "value": 71.56066543112391
+              }
+            ]
+          }
+        ],
+        "values": [
+          {
+            "id": "cd0fc8a0-6749-4770-b164-288c41ad686c",
+            "entityId": "006c2cae-bb8b-4a76-84a0-3d0405eecc05",
+            "periodStart": "2026-01-01T00:00:00.000Z",
+            "periodEnd": "2026-01-31T23:59:59.999Z",
+            "actualValue": 95.3093241105467,
+            "calculatedValue": 95.3093241105467,
+            "finalValue": 95.3093241105467,
+            "achievementValue": 105.8992490117185,
+            "status": "DRAFT",
+            "approvalType": null,
+            "note": null,
+            "enteredBy": "6126be2a-d8ac-45b1-8d81-880f3250508b",
+            "submittedBy": null,
+            "approvedBy": null,
+            "submittedAt": null,
+            "approvedAt": null,
+            "lockedAt": null,
+            "createdAt": "2026-01-16T02:05:38.183Z",
+            "updatedAt": "2026-01-16T02:05:38.183Z"
+          }
+        ]
+      },
+      {
+        "id": "c6628237-89de-441d-b561-4efa4024cf7b",
+        "orgId": "10f903a3-95f6-460f-962a-382effde87b7",
+        "key": "KPI_3_3_2",
+        "orgEntityTypeId": "1e5698e5-f1b2-4908-89c8-ede85061fdc1",
+        "title": "Automatic Defect Detection Accuracy",
+        "titleAr": "دقة كشف العيوب تلقائياً",
+        "description": "AI system accuracy in defect detection",
+        "descriptionAr": "دقة نظام الذكاء الاصطناعي في كشف العيوب",
+        "ownerUserId": "6126be2a-d8ac-45b1-8d81-880f3250508b",
+        "status": "ACTIVE",
+        "sourceType": "CALCULATED",
+        "periodType": "MONTHLY",
+        "unit": "%",
+        "unitAr": null,
+        "direction": "INCREASE_IS_GOOD",
+        "aggregation": "LAST_VALUE",
+        "baselineValue": 0,
+        "targetValue": 95,
+        "weight": null,
+        "formula": "return (correctDetections / totalInspections);",
+        "createdAt": "2026-01-16T02:05:38.184Z",
+        "updatedAt": "2026-01-16T02:05:38.184Z",
+        "deletedAt": null,
+        "variables": [
+          {
+            "id": "284e36e6-540d-435d-a496-1ebcf19b90de",
+            "entityId": "c6628237-89de-441d-b561-4efa4024cf7b",
+            "code": "CORRECTDETECTIONS",
+            "displayName": "correct Detections",
+            "nameAr": "correctDetections",
+            "dataType": "NUMBER",
+            "isRequired": true,
+            "isStatic": false,
+            "staticValue": null,
+            "values": [
+              {
+                "id": "705fb6f4-bee7-483c-b31d-03bb2b58ef4a",
+                "entityValueId": "6206fead-4e17-42ac-aff9-4d9d101e18ce",
+                "entityVariableId": "284e36e6-540d-435d-a496-1ebcf19b90de",
+                "value": 808
+              }
+            ]
+          },
+          {
+            "id": "7ba4d4c2-ea0e-486f-906a-1e66ebc81de6",
+            "entityId": "c6628237-89de-441d-b561-4efa4024cf7b",
+            "code": "TOTALINSPECTIONS",
+            "displayName": "total Inspections",
+            "nameAr": "totalInspections",
+            "dataType": "NUMBER",
+            "isRequired": true,
+            "isStatic": false,
+            "staticValue": null,
+            "values": [
+              {
+                "id": "abfa53ca-d0e4-4a72-b612-fa3038fc9906",
+                "entityValueId": "6206fead-4e17-42ac-aff9-4d9d101e18ce",
+                "entityVariableId": "7ba4d4c2-ea0e-486f-906a-1e66ebc81de6",
+                "value": 800
+              }
+            ]
+          }
+        ],
+        "values": [
+          {
+            "id": "6206fead-4e17-42ac-aff9-4d9d101e18ce",
+            "entityId": "c6628237-89de-441d-b561-4efa4024cf7b",
+            "periodStart": "2026-01-01T00:00:00.000Z",
+            "periodEnd": "2026-01-31T23:59:59.999Z",
+            "actualValue": 1.01,
+            "calculatedValue": 1.01,
+            "finalValue": 1.01,
+            "achievementValue": 1.063157894736842,
+            "status": "DRAFT",
+            "approvalType": null,
+            "note": null,
+            "enteredBy": "6126be2a-d8ac-45b1-8d81-880f3250508b",
+            "submittedBy": null,
+            "approvedBy": null,
+            "submittedAt": null,
+            "approvedAt": null,
+            "lockedAt": null,
+            "createdAt": "2026-01-16T02:05:38.189Z",
+            "updatedAt": "2026-01-16T02:05:38.189Z"
+          }
+        ]
+      },
+      {
+        "id": "59a80651-f541-433f-a417-d62f8d935a38",
+        "orgId": "10f903a3-95f6-460f-962a-382effde87b7",
+        "key": "KPI_3_4_1",
+        "orgEntityTypeId": "1e5698e5-f1b2-4908-89c8-ede85061fdc1",
+        "title": "App Downloads Count",
+        "titleAr": "عدد تنزيلات التطبيقات",
+        "description": "Number of app downloads",
+        "descriptionAr": "عدد مرات تنزيل التطبيقات",
+        "ownerUserId": "6126be2a-d8ac-45b1-8d81-880f3250508b",
+        "status": "ACTIVE",
+        "sourceType": "CALCULATED",
+        "periodType": "MONTHLY",
+        "unit": "تنزيل",
+        "unitAr": null,
+        "direction": "INCREASE_IS_GOOD",
+        "aggregation": "LAST_VALUE",
+        "baselineValue": 0,
+        "targetValue": 50000,
+        "weight": null,
+        "formula": "return totalDownloads;",
+        "createdAt": "2026-01-16T02:05:38.190Z",
+        "updatedAt": "2026-01-16T02:05:38.190Z",
+        "deletedAt": null,
+        "variables": [
+          {
+            "id": "a6524a80-35da-4dc1-9878-fc8e06db9f3c",
+            "entityId": "59a80651-f541-433f-a417-d62f8d935a38",
+            "code": "TOTALDOWNLOADS",
+            "displayName": "total Downloads",
+            "nameAr": "totalDownloads",
+            "dataType": "NUMBER",
+            "isRequired": true,
+            "isStatic": false,
+            "staticValue": null,
+            "values": [
+              {
+                "id": "1d336aaf-72aa-43b6-8b6e-972c8b5bf743",
+                "entityValueId": "fe432b2e-be83-45b9-b6b4-3b8000d46c32",
+                "entityVariableId": "a6524a80-35da-4dc1-9878-fc8e06db9f3c",
+                "value": 29923
+              }
+            ]
+          }
+        ],
+        "values": [
+          {
+            "id": "fe432b2e-be83-45b9-b6b4-3b8000d46c32",
+            "entityId": "59a80651-f541-433f-a417-d62f8d935a38",
+            "periodStart": "2026-01-01T00:00:00.000Z",
+            "periodEnd": "2026-01-31T23:59:59.999Z",
+            "actualValue": 29923,
+            "calculatedValue": 29923,
+            "finalValue": 29923,
+            "achievementValue": 59.846,
+            "status": "DRAFT",
+            "approvalType": null,
+            "note": null,
+            "enteredBy": "6126be2a-d8ac-45b1-8d81-880f3250508b",
+            "submittedBy": null,
+            "approvedBy": null,
+            "submittedAt": null,
+            "approvedAt": null,
+            "lockedAt": null,
+            "createdAt": "2026-01-16T02:05:38.191Z",
+            "updatedAt": "2026-01-16T02:05:38.191Z"
+          }
+        ]
+      },
+      {
+        "id": "8dc5d853-fbc9-4479-b99e-a59709da2945",
+        "orgId": "10f903a3-95f6-460f-962a-382effde87b7",
+        "key": "KPI_3_4_2",
+        "orgEntityTypeId": "1e5698e5-f1b2-4908-89c8-ede85061fdc1",
+        "title": "App Rating",
+        "titleAr": "تقييم التطبيق",
+        "description": "Average app rating from users",
+        "descriptionAr": "متوسط تقييم التطبيق من المستخدمين",
+        "ownerUserId": "6126be2a-d8ac-45b1-8d81-880f3250508b",
+        "status": "ACTIVE",
+        "sourceType": "CALCULATED",
+        "periodType": "MONTHLY",
+        "unit": "نجمة",
+        "unitAr": null,
+        "direction": "INCREASE_IS_GOOD",
+        "aggregation": "LAST_VALUE",
+        "baselineValue": 0,
+        "targetValue": 4.5,
+        "weight": null,
+        "formula": "return sum(ratings) / ratingsCount;",
+        "createdAt": "2026-01-16T02:05:38.192Z",
+        "updatedAt": "2026-01-16T02:05:38.192Z",
+        "deletedAt": null,
+        "variables": [
+          {
+            "id": "b2a6452b-5afc-40b4-a82e-657460fb6b08",
+            "entityId": "8dc5d853-fbc9-4479-b99e-a59709da2945",
+            "code": "RATINGS",
+            "displayName": "ratings",
+            "nameAr": "ratings",
+            "dataType": "NUMBER",
+            "isRequired": true,
+            "isStatic": false,
+            "staticValue": null,
+            "values": [
+              {
+                "id": "f234c9c1-a13a-4b80-b757-3eecfeaf8dd3",
+                "entityValueId": "611d38e8-c8dd-45a2-9241-66ee7d41a0ce",
+                "entityVariableId": "b2a6452b-5afc-40b4-a82e-657460fb6b08",
+                "value": 4.04750853295544
+              }
+            ]
+          },
+          {
+            "id": "eda3782d-c18d-40d5-8369-7c432e15c028",
+            "entityId": "8dc5d853-fbc9-4479-b99e-a59709da2945",
+            "code": "RATINGSCOUNT",
+            "displayName": "ratings Count",
+            "nameAr": "ratingsCount",
+            "dataType": "NUMBER",
+            "isRequired": true,
+            "isStatic": false,
+            "staticValue": null,
+            "values": [
+              {
+                "id": "ceb56777-ab98-4b2d-ab2a-6c844980e18f",
+                "entityValueId": "611d38e8-c8dd-45a2-9241-66ee7d41a0ce",
+                "entityVariableId": "eda3782d-c18d-40d5-8369-7c432e15c028",
+                "value": 4
+              }
+            ]
+          }
+        ],
+        "values": [
+          {
+            "id": "611d38e8-c8dd-45a2-9241-66ee7d41a0ce",
+            "entityId": "8dc5d853-fbc9-4479-b99e-a59709da2945",
+            "periodStart": "2026-01-01T00:00:00.000Z",
+            "periodEnd": "2026-01-31T23:59:59.999Z",
+            "actualValue": 1.01187713323886,
+            "calculatedValue": 1.01187713323886,
+            "finalValue": 1.01187713323886,
+            "achievementValue": 22.48615851641911,
+            "status": "DRAFT",
+            "approvalType": null,
+            "note": null,
+            "enteredBy": "6126be2a-d8ac-45b1-8d81-880f3250508b",
+            "submittedBy": null,
+            "approvedBy": null,
+            "submittedAt": null,
+            "approvedAt": null,
+            "lockedAt": null,
+            "createdAt": "2026-01-16T02:05:38.193Z",
+            "updatedAt": "2026-01-16T02:05:38.193Z"
+          }
+        ]
+      },
+      {
+        "id": "74ba33c9-82cf-4313-ac25-607264b6c36e",
+        "orgId": "10f903a3-95f6-460f-962a-382effde87b7",
+        "key": "KPI_3_5_1",
+        "orgEntityTypeId": "1e5698e5-f1b2-4908-89c8-ede85061fdc1",
+        "title": "Information Security Score",
+        "titleAr": "درجة أمن المعلومات",
+        "description": "Compliance score for information security standards",
+        "descriptionAr": "درجة الامتثال لمعايير أمن المعلومات",
+        "ownerUserId": "6126be2a-d8ac-45b1-8d81-880f3250508b",
+        "status": "ACTIVE",
+        "sourceType": "CALCULATED",
+        "periodType": "MONTHLY",
+        "unit": "%",
+        "unitAr": null,
+        "direction": "INCREASE_IS_GOOD",
+        "aggregation": "LAST_VALUE",
+        "baselineValue": 55,
+        "targetValue": 95,
+        "weight": null,
+        "formula": "return (implementedControls / requiredControls);",
+        "createdAt": "2026-01-16T02:05:38.195Z",
+        "updatedAt": "2026-01-16T02:05:38.195Z",
+        "deletedAt": null,
+        "variables": [
+          {
+            "id": "60d12f85-d794-4ba6-b692-0127c2d72dc0",
+            "entityId": "74ba33c9-82cf-4313-ac25-607264b6c36e",
+            "code": "IMPLEMENTEDCONTROLS",
+            "displayName": "implemented Controls",
+            "nameAr": "implementedControls",
+            "dataType": "NUMBER",
+            "isRequired": true,
+            "isStatic": false,
+            "staticValue": null,
+            "values": [
+              {
+                "id": "7c144ee3-ac65-4d51-9a9f-2767fd5b042f",
+                "entityValueId": "96419ce3-e980-4523-9c24-b979be6e7c0e",
+                "entityVariableId": "60d12f85-d794-4ba6-b692-0127c2d72dc0",
+                "value": 878
+              }
+            ]
+          },
+          {
+            "id": "4d09352b-6e2e-4c4e-a5fe-0df6061c9124",
+            "entityId": "74ba33c9-82cf-4313-ac25-607264b6c36e",
+            "code": "REQUIREDCONTROLS",
+            "displayName": "required Controls",
+            "nameAr": "requiredControls",
+            "dataType": "NUMBER",
+            "isRequired": true,
+            "isStatic": false,
+            "staticValue": null,
+            "values": [
+              {
+                "id": "c5a234b3-393a-4631-9725-ca4caab9ee99",
+                "entityValueId": "96419ce3-e980-4523-9c24-b979be6e7c0e",
+                "entityVariableId": "4d09352b-6e2e-4c4e-a5fe-0df6061c9124",
+                "value": 962
+              }
+            ]
+          }
+        ],
+        "values": [
+          {
+            "id": "96419ce3-e980-4523-9c24-b979be6e7c0e",
+            "entityId": "74ba33c9-82cf-4313-ac25-607264b6c36e",
+            "periodStart": "2026-01-01T00:00:00.000Z",
+            "periodEnd": "2026-01-31T23:59:59.999Z",
+            "actualValue": 0.9126819126819127,
+            "calculatedValue": 0.9126819126819127,
+            "finalValue": 0.9126819126819127,
+            "achievementValue": 0.960717802823066,
+            "status": "DRAFT",
+            "approvalType": null,
+            "note": null,
+            "enteredBy": "6126be2a-d8ac-45b1-8d81-880f3250508b",
+            "submittedBy": null,
+            "approvedBy": null,
+            "submittedAt": null,
+            "approvedAt": null,
+            "lockedAt": null,
+            "createdAt": "2026-01-16T02:05:38.197Z",
+            "updatedAt": "2026-01-16T02:05:38.197Z"
+          }
+        ]
+      }
+    ],
+    "stats": {
+      "totalEntities": 54,
+      "totalVariables": 94,
+      "totalValues": 54
+    }
+  }
+}

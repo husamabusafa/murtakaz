@@ -18,7 +18,7 @@
       "dataSource": "نظام الإنتاج",
       "ownerDepartmentId": "dept-1",
       "isActive": true,
-      "formula": "return (availability * performance * quality) * 100;",
+      "formula": "return (availability * performance * quality);",
       "achievementFormula": "return (currentValue / targetValue) * 100;"
     },
     {
@@ -37,7 +37,7 @@
       "dataSource": "نظام الإنتاج",
       "ownerDepartmentId": "dept-1",
       "isActive": true,
-      "formula": "return (wasteQuantity / totalMaterialsUsed) * 100;",
+      "formula": "return (wasteQuantity / totalMaterialsUsed);",
       "achievementFormula": "return ((baselineValue - currentValue) / (baselineValue - targetValue)) * 100;"
     },
     {
@@ -75,7 +75,7 @@
       "dataSource": "نظام مراقبة الجودة",
       "ownerDepartmentId": "dept-1-3",
       "isActive": true,
-      "formula": "return (defectiveUnits / totalUnitsProduced) * 100;",
+      "formula": "return (defectiveUnits / totalUnitsProduced);",
       "achievementFormula": "return ((baselineValue - currentValue) / (baselineValue - targetValue)) * 100;"
     },
     {
@@ -94,7 +94,7 @@
       "dataSource": "نظام المبيعات",
       "ownerDepartmentId": "dept-3-4",
       "isActive": true,
-      "formula": "return (returnedUnits / soldUnits) * 100;",
+      "formula": "return (returnedUnits / soldUnits);",
       "achievementFormula": "return ((baselineValue - currentValue) / (baselineValue - targetValue)) * 100;"
     },
     {
@@ -113,7 +113,7 @@
       "dataSource": "نظام مراقبة الجودة",
       "ownerDepartmentId": "dept-1-3",
       "isActive": true,
-      "formula": "return (passedInspections / totalInspections) * 100;",
+      "formula": "return (passedInspections / totalInspections);",
       "achievementFormula": "return (currentValue / targetValue) * 100;"
     },
     {
@@ -132,7 +132,7 @@
       "dataSource": "نظام WMS",
       "ownerDepartmentId": "dept-2-2",
       "isActive": true,
-      "formula": "return (accurateItems / totalItems) * 100;",
+      "formula": "return (accurateItems / totalItems);",
       "achievementFormula": "return (currentValue / targetValue) * 100;"
     },
     {
@@ -170,7 +170,7 @@
       "dataSource": "نظام المشتريات",
       "ownerDepartmentId": "dept-2-1",
       "isActive": true,
-      "formula": "return (onTimeDeliveries / totalDeliveries) * 100;",
+      "formula": "return (onTimeDeliveries / totalDeliveries);",
       "achievementFormula": "return (currentValue / targetValue) * 100;"
     },
     {
@@ -208,7 +208,7 @@
       "dataSource": "نظام CRM",
       "ownerDepartmentId": "dept-3-4",
       "isActive": true,
-      "formula": "return (satisfiedCustomers / totalResponses) * 100;",
+      "formula": "return (satisfiedCustomers / totalResponses);",
       "achievementFormula": "return (currentValue / targetValue) * 100;"
     },
     {
@@ -265,7 +265,7 @@
       "dataSource": "تقارير السوق",
       "ownerDepartmentId": "dept-3",
       "isActive": true,
-      "formula": "return (ourSales / totalMarketSales) * 100;",
+      "formula": "return (ourSales / totalMarketSales);",
       "achievementFormula": "return (currentValue / targetValue) * 100;"
     },
     {
@@ -284,7 +284,7 @@
       "dataSource": "أبحاث السوق",
       "ownerDepartmentId": "dept-3-3",
       "isActive": true,
-      "formula": "return (awareRespondents / totalRespondents) * 100;",
+      "formula": "return (awareRespondents / totalRespondents);",
       "achievementFormula": "return (currentValue / targetValue) * 100;"
     },
     {
@@ -303,7 +303,7 @@
       "dataSource": "نظام CRM",
       "ownerDepartmentId": "dept-3",
       "isActive": true,
-      "formula": "return (retainedCustomers / totalCustomers) * 100;",
+      "formula": "return (retainedCustomers / totalCustomers);",
       "achievementFormula": "return (currentValue / targetValue) * 100;"
     },
     {
@@ -341,7 +341,7 @@
       "dataSource": "نظام المبيعات",
       "ownerDepartmentId": "dept-3-2",
       "isActive": true,
-      "formula": "return (internationalSales / totalSales) * 100;",
+      "formula": "return (internationalSales / totalSales);",
       "achievementFormula": "return (currentValue / targetValue) * 100;"
     },
     {
@@ -379,7 +379,7 @@
       "dataSource": "نظام المبيعات",
       "ownerDepartmentId": "dept-3",
       "isActive": true,
-      "formula": "return (newProductsSales / totalSales) * 100;",
+      "formula": "return (newProductsSales / totalSales);",
       "achievementFormula": "return (currentValue / targetValue) * 100;"
     },
     {
@@ -417,7 +417,7 @@
       "dataSource": "النظام المالي",
       "ownerDepartmentId": "dept-6",
       "isActive": true,
-      "formula": "return ((currentYearRevenue - previousYearRevenue) / previousYearRevenue) * 100;",
+      "formula": "return ((currentYearRevenue - previousYearRevenue) / previousYearRevenue);",
       "achievementFormula": "return (currentValue / targetValue) * 100;"
     },
     {
@@ -436,7 +436,7 @@
       "dataSource": "النظام المالي",
       "ownerDepartmentId": "dept-6",
       "isActive": true,
-      "formula": "return ((revenue - costOfGoodsSold) / revenue) * 100;",
+      "formula": "return ((revenue - costOfGoodsSold) / revenue);",
       "achievementFormula": "return (currentValue / targetValue) * 100;"
     },
     {
@@ -455,7 +455,7 @@
       "dataSource": "إدارة المشروع",
       "ownerDepartmentId": "dept-4",
       "isActive": true,
-      "formula": "return (completedModules / totalModules) * 100;",
+      "formula": "return (completedModules / totalModules);",
       "achievementFormula": "return currentValue;"
     },
     {
@@ -493,7 +493,7 @@
       "dataSource": "منصة التجارة الإلكترونية",
       "ownerDepartmentId": "dept-4-1",
       "isActive": true,
-      "formula": "return (onlineSales / totalSales) * 100;",
+      "formula": "return (onlineSales / totalSales);",
       "achievementFormula": "return (currentValue / targetValue) * 100;"
     },
     {
@@ -531,7 +531,7 @@
       "dataSource": "منصة التجارة الإلكترونية",
       "ownerDepartmentId": "dept-4-1",
       "isActive": true,
-      "formula": "return (orders / visits) * 100;",
+      "formula": "return (orders / visits);",
       "achievementFormula": "return (currentValue / targetValue) * 100;"
     },
     {
@@ -569,7 +569,7 @@
       "dataSource": "نظام الذكاء الاصطناعي",
       "ownerDepartmentId": "dept-7-2",
       "isActive": true,
-      "formula": "return (correctDetections / totalInspections) * 100;",
+      "formula": "return (correctDetections / totalInspections);",
       "achievementFormula": "return (currentValue / targetValue) * 100;"
     },
     {
@@ -626,7 +626,7 @@
       "dataSource": "قسم أمن المعلومات",
       "ownerDepartmentId": "dept-4-3",
       "isActive": true,
-      "formula": "return (implementedControls / requiredControls) * 100;",
+      "formula": "return (implementedControls / requiredControls);",
       "achievementFormula": "return (currentValue / targetValue) * 100;"
     },
     {
@@ -759,7 +759,7 @@
       "dataSource": "استبيان رضا الموظفين",
       "ownerDepartmentId": "dept-5",
       "isActive": true,
-      "formula": "return (satisfiedEmployees / totalRespondents) * 100;",
+      "formula": "return (satisfiedEmployees / totalRespondents);",
       "achievementFormula": "return (currentValue / targetValue) * 100;"
     },
     {
@@ -778,7 +778,7 @@
       "dataSource": "نظام الموارد البشرية",
       "ownerDepartmentId": "dept-5",
       "isActive": true,
-      "formula": "return (leavingEmployees / averageEmployeeCount) * 100;",
+      "formula": "return (leavingEmployees / averageEmployeeCount);",
       "achievementFormula": "return ((baselineValue - currentValue) / (baselineValue - targetValue)) * 100;"
     },
     {
@@ -816,7 +816,7 @@
       "dataSource": "نظام الموارد البشرية",
       "ownerDepartmentId": "dept-5",
       "isActive": true,
-      "formula": "return (internalPromotions / totalLeadershipPositions) * 100;",
+      "formula": "return (internalPromotions / totalLeadershipPositions);",
       "achievementFormula": "return (currentValue / targetValue) * 100;"
     },
     {
@@ -835,7 +835,7 @@
       "dataSource": "نظام الموارد البشرية",
       "ownerDepartmentId": "dept-5",
       "isActive": true,
-      "formula": "return (saudiEmployees / totalEmployees) * 100;",
+      "formula": "return (saudiEmployees / totalEmployees);",
       "achievementFormula": "return (currentValue / targetValue) * 100;"
     },
     {
@@ -854,7 +854,7 @@
       "dataSource": "نظام الموارد البشرية",
       "ownerDepartmentId": "dept-5",
       "isActive": true,
-      "formula": "return (saudiLeaders / totalLeaders) * 100;",
+      "formula": "return (saudiLeaders / totalLeaders);",
       "achievementFormula": "return (currentValue / targetValue) * 100;"
     },
     {
@@ -968,7 +968,7 @@
       "dataSource": "قسم الاستدامة",
       "ownerDepartmentId": "dept-8-1",
       "isActive": true,
-      "formula": "return (renewableEnergy / totalEnergy) * 100;",
+      "formula": "return (renewableEnergy / totalEnergy);",
       "achievementFormula": "return (currentValue / targetValue) * 100;"
     },
     {
@@ -1006,7 +1006,7 @@
       "dataSource": "مركز إعادة التدوير",
       "ownerDepartmentId": "dept-8-1",
       "isActive": true,
-      "formula": "return (recycledWaste / totalWaste) * 100;",
+      "formula": "return (recycledWaste / totalWaste);",
       "achievementFormula": "return (currentValue / targetValue) * 100;"
     },
     {

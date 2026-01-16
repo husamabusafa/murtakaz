@@ -188,6 +188,30 @@ function evaluateAchievementFormula(input: { achievementFormula?: string; baseli
   }
 }
 
+function clampProgress(v: number) {
+  return Math.max(0, Math.min(100, v));
+}
+
+function fallbackProgressPercent(input: { baselineValue: number | null; currentValue: number | null; targetValue: number | null; direction: KpiDirection }) {
+  const baselineValue = typeof input.baselineValue === "number" && Number.isFinite(input.baselineValue) ? input.baselineValue : null;
+  const currentValue = typeof input.currentValue === "number" && Number.isFinite(input.currentValue) ? input.currentValue : null;
+  const targetValue = typeof input.targetValue === "number" && Number.isFinite(input.targetValue) ? input.targetValue : null;
+
+  if (currentValue === null || targetValue === null) return null;
+
+  if (input.direction === KpiDirection.DECREASE_IS_GOOD) {
+    if (baselineValue === null || baselineValue === targetValue) return null;
+    return ((baselineValue - currentValue) / (baselineValue - targetValue)) * 100;
+  }
+
+  if (baselineValue !== null && baselineValue !== targetValue) {
+    return ((currentValue - baselineValue) / (targetValue - baselineValue)) * 100;
+  }
+
+  if (targetValue === 0) return null;
+  return (currentValue / targetValue) * 100;
+}
+
 async function wipeDatabase() {
   console.log("🗑️  Wiping database...");
   await prisma.entityVariableValue.deleteMany();
@@ -235,6 +259,7 @@ function extractVariableNames(formula: string): string[] {
     'continue', 'function', 'var', 'let', 'const', 'true', 'false', 'null',
     'undefined', 'this', 'new', 'typeof', 'instanceof', 'get', 'Math', 'Number',
     'String', 'Boolean', 'Array', 'Object', 'Date', 'console', 'log'
+    , 'abs', 'sum', 'avg', 'min', 'max', 'vars'
   ]);
   
   const variables = matches
@@ -244,18 +269,150 @@ function extractVariableNames(formula: string): string[] {
   return Array.from(new Set(variables));
 }
 
-function evaluateJs(input: { code: string; get: (key: string) => number }) {
+function normalizeVarName(v: string) {
+  return String(v ?? "")
+    .replace(/[^a-zA-Z0-9]+/g, "")
+    .toLowerCase();
+}
+
+function evaluateJs(input: { code: string; variables?: Record<string, number>; get?: (key: string) => number }) {
   const raw = String(input.code ?? "").trim();
   if (!raw) return { ok: false as const, error: "emptyFormula" };
   const body = /\breturn\b/.test(raw) ? raw : `return (${raw});`;
   try {
-    const result = Function("vars", "get", `"use strict";\n${body}`)({}, input.get);
+    const abs = Math.abs;
+    const sum = (...args: number[]) => args.reduce((a, b) => a + b, 0);
+    const avg = (...args: number[]) => (args.length > 0 ? sum(...args) / args.length : 0);
+    const min = Math.min;
+    const max = Math.max;
+
+    const vars = input.variables ?? {};
+    const get = input.get ?? (() => 0);
+
+    const byNormalized = new Map<string, number>();
+    const varsObj: Record<string, number> = {};
+    for (const [k, v] of Object.entries(vars)) {
+      const num = typeof v === "number" && Number.isFinite(v) ? v : 0;
+      const n = normalizeVarName(k);
+      byNormalized.set(n, num);
+      varsObj[String(k)] = num;
+      varsObj[n] = num;
+      varsObj[String(k).toLowerCase()] = num;
+    }
+
+    const varsProxy = new Proxy(varsObj, {
+      get(target, prop) {
+        if (typeof prop !== "string") return (target as unknown as Record<string, unknown>)[prop as unknown as string];
+        if (prop in target) return target[prop];
+        const n = normalizeVarName(prop);
+        if (n in target) return target[n];
+        if (byNormalized.has(n)) return byNormalized.get(n) ?? 0;
+        return 0;
+      },
+    });
+
+    const varNames = Object.keys(vars);
+    const varValues = Object.values(vars);
+    const func = Function(
+      ...varNames,
+      "vars",
+      "get",
+      "abs",
+      "sum",
+      "avg",
+      "min",
+      "max",
+      `"use strict";\n${body}`,
+    );
+    const result = func(...varValues, varsProxy, get, abs, sum, avg, min, max);
     const num = typeof result === "number" && Number.isFinite(result) ? result : NaN;
     if (!Number.isFinite(num)) return { ok: false as const, error: "invalidFormulaResult" };
     return { ok: true as const, value: num };
   } catch {
     return { ok: false as const, error: "failedToEvaluateFormula" };
   }
+}
+
+function generateSampleValuesForVariables(input: {
+  variables: string[];
+  targetValue: number | null;
+  currentValue: number | null;
+  baselineValue: number | null;
+  unit: string | null;
+  formula: string;
+}): Record<string, number> {
+  const { variables, targetValue, currentValue, baselineValue, unit, formula } = input;
+  const target = targetValue ?? 50;
+  const current = currentValue ?? target;
+  const baseline = baselineValue ?? 0;
+  const values: Record<string, number> = {};
+
+  if (variables.length === 0) return values;
+
+  const formulaLower = formula.toLowerCase();
+
+  const desired = typeof current === "number" && Number.isFinite(current) ? current : target;
+  const unitLower = String(unit ?? "").toLowerCase();
+  const isPercentageUnit = unitLower === "%" || unitLower.includes("percent") || unitLower.includes("٪");
+  const isMultiplicationFormula = formulaLower.includes("*") && !formulaLower.includes("/");
+  const isDivisionFormula = formulaLower.includes("/");
+
+  // Try to generate values that produce formula output ~= desired
+  if (isMultiplicationFormula && isPercentageUnit && desired > 0) {
+    const n = Math.max(1, variables.length);
+    const factor = Math.pow(desired, 1 / n);
+    for (const v of variables) {
+      const jitter = 0.9 + Math.random() * 0.2;
+      values[v] = Math.max(0.01, factor * jitter);
+    }
+    return values;
+  }
+
+  if (isDivisionFormula && isPercentageUnit && variables.length >= 2) {
+    const numVar = variables[0];
+    const denomVar = variables[1];
+    values[numVar] = desired;
+    values[denomVar] = 1;
+    for (const v of variables.slice(2)) {
+      values[v] = desired;
+    }
+    return values;
+  }
+
+  if (formulaLower.includes('* 100')) {
+    const numVars = variables.filter(v => !v.toLowerCase().includes('count') && !v.toLowerCase().includes('total'));
+    numVars.forEach(v => {
+      values[v] = Math.min(0.95, Math.max(0.5, (target / 100) + (Math.random() * 0.1 - 0.05)));
+    });
+  }
+
+  variables.forEach(v => {
+    if (values[v] !== undefined) return;
+    
+    const vLower = v.toLowerCase();
+    
+    if (vLower.includes('percent') || vLower.includes('rate')) {
+      values[v] = Math.min(100, Math.max(0, desired + (Math.random() * 10 - 5)));
+    } else if (vLower.includes('count') || vLower === 'totalDownloads' || vLower === 'newHiresCount' || 
+               vLower === 'launchedProducts' || vLower === 'deliveredProgramsCount' || 
+               vLower === 'developedLeadersCount' || vLower === 'integratedSystemsCount' ||
+               vLower === 'registeredUsersCount' || vLower === 'securityIncidentsCount') {
+      values[v] = Math.round(Math.max(1, desired * (0.8 + Math.random() * 0.4)));
+    } else if (vLower.includes('time') && !vLower.includes('ontime')) {
+      values[v] = Math.max(1, desired * (0.9 + Math.random() * 0.2));
+    } else if (vLower.includes('revenue') || vLower.includes('sales') || vLower.includes('cost')) {
+      values[v] = desired * (0.85 + Math.random() * 0.3);
+    } else if (vLower.includes('quantity') || vLower.includes('units') || vLower.includes('items')) {
+      values[v] = Math.round(Math.max(1, desired * 10 * (0.8 + Math.random() * 0.4)));
+    } else {
+      const lo = Math.min(baseline, target, desired);
+      const hi = Math.max(baseline, target, desired);
+      const span = hi - lo;
+      values[v] = span > 0 ? lo + span * (0.7 + Math.random() * 0.3) : desired;
+    }
+  });
+
+  return values;
 }
 
 async function main() {
@@ -366,6 +523,9 @@ async function main() {
       ? KpiDirection.DECREASE_IS_GOOD
       : KpiDirection.INCREASE_IS_GOOD;
 
+    const formula = row.formula?.trim() || null;
+    const hasFormula = Boolean(formula && formula.length > 0);
+
     const ent = await prisma.entity.create({
       data: {
         orgId: org.id,
@@ -377,48 +537,124 @@ async function main() {
         descriptionAr: row.descriptionAr ?? null,
         ownerUserId: admin.id,
         status: row.isActive ? Status.ACTIVE : Status.PLANNED,
-        sourceType: KpiSourceType.MANUAL,
+        sourceType: hasFormula ? KpiSourceType.CALCULATED : KpiSourceType.MANUAL,
         periodType,
         unit: row.unit ?? null,
         direction,
         aggregation: KpiAggregationMethod.LAST_VALUE,
         baselineValue: baselineValue ?? null,
         targetValue: targetValue ?? null,
-        formula: null,
+        formula: formula,
       },
       select: { id: true, key: true, periodType: true },
     });
 
     const range = resolvePeriodRange({ now, periodType });
+
+    // Create variables and calculate KPI value if formula exists
+    let calculatedKpiValue: number | null = null;
+    const variableRecords: Array<{ variable: any; value: number }> = [];
+    
+    if (hasFormula && formula) {
+      const variableNames = extractVariableNames(formula);
+      const sampleValues = generateSampleValuesForVariables({
+        variables: variableNames,
+        targetValue: targetValue,
+        currentValue: currentValue,
+        baselineValue: baselineValue,
+        unit: row.unit ?? null,
+        formula: formula,
+      });
+
+      for (const varName of variableNames) {
+        const variable = await prisma.entityVariable.create({
+          data: {
+            entityId: ent.id,
+            code: varName.toUpperCase(),
+            displayName: varName.replace(/([A-Z])/g, ' $1').trim(),
+            nameAr: varName,
+            dataType: KpiVariableDataType.NUMBER,
+            isRequired: true,
+            isStatic: false,
+            staticValue: null,
+          },
+        });
+        
+        variableRecords.push({
+          variable,
+          value: sampleValues[varName] ?? 0,
+        });
+      }
+
+      // Calculate KPI value using formula and variable values
+      const evalResult = evaluateJs({
+        code: formula,
+        variables: sampleValues,
+        get: (key: string) => sampleValues[key] ?? 0,
+      });
+      
+      if (evalResult.ok) {
+        calculatedKpiValue = evalResult.value;
+      }
+    }
+
     const achievementValue = evaluateAchievementFormula({
       achievementFormula: row.achievementFormula,
       baselineValue,
-      currentValue,
+      currentValue: hasFormula && calculatedKpiValue !== null ? calculatedKpiValue : currentValue,
       targetValue,
     });
 
-    await prisma.entityValuePeriod.upsert({
+    const fallbackAchievement = fallbackProgressPercent({
+      baselineValue,
+      currentValue: hasFormula && calculatedKpiValue !== null ? calculatedKpiValue : currentValue,
+      targetValue,
+      direction,
+    });
+
+    const achievementValueFinal = typeof achievementValue === "number" && Number.isFinite(achievementValue)
+      ? clampProgress(achievementValue)
+      : typeof fallbackAchievement === "number" && Number.isFinite(fallbackAchievement)
+        ? clampProgress(fallbackAchievement)
+        : null;
+
+    // Use calculated value for KPIs with formulas, currentValue for manual KPIs
+    const finalKpiValue = hasFormula && calculatedKpiValue !== null ? calculatedKpiValue : currentValue;
+    const shouldSetValue = !hasFormula || calculatedKpiValue !== null;
+
+    const valuePeriod = await prisma.entityValuePeriod.upsert({
       where: { entity_period_unique: { entityId: ent.id, periodStart: range.start, periodEnd: range.end } },
       create: {
         entityId: ent.id,
         periodStart: range.start,
         periodEnd: range.end,
-        actualValue: currentValue,
-        calculatedValue: currentValue,
-        finalValue: currentValue,
-        achievementValue,
+        actualValue: shouldSetValue ? finalKpiValue : null,
+        calculatedValue: hasFormula ? calculatedKpiValue : finalKpiValue,
+        finalValue: shouldSetValue ? finalKpiValue : null,
+        achievementValue: shouldSetValue ? achievementValueFinal : null,
         status: KpiValueStatus.DRAFT,
         enteredBy: admin.id,
       },
       update: {
-        actualValue: currentValue,
-        calculatedValue: currentValue,
-        finalValue: currentValue,
-        achievementValue,
+        actualValue: shouldSetValue ? finalKpiValue : null,
+        calculatedValue: hasFormula ? calculatedKpiValue : finalKpiValue,
+        finalValue: shouldSetValue ? finalKpiValue : null,
+        achievementValue: shouldSetValue ? achievementValueFinal : null,
         status: KpiValueStatus.DRAFT,
         enteredBy: admin.id,
       },
     });
+
+    // Create variable values linked to this period
+    for (const { variable, value } of variableRecords) {
+      await prisma.entityVariableValue.create({
+        data: {
+          entityValueId: valuePeriod.id,
+          entityVariableId: variable.id,
+          value: value,
+        },
+      });
+    }
   }
 
   console.log("✅ Seeding initiatives...");
@@ -666,6 +902,9 @@ async function main() {
         key: true,
         orgEntityType: { select: { code: true } },
         formula: true,
+        baselineValue: true,
+        targetValue: true,
+        direction: true,
         values: {
           orderBy: [{ periodEnd: "desc" }],
           take: 1,
@@ -684,18 +923,35 @@ async function main() {
 
     // When rolling up progress, prefer KPI achievement percent if present.
     const isKpi = String(ent.orgEntityType?.code ?? "").toUpperCase() === "KPI";
-    const kpiAchievement = isKpi && typeof latest?.achievementValue === "number" ? Number(latest.achievementValue) : null;
+    const kpiAchievementRaw = isKpi && typeof latest?.achievementValue === "number" ? Number(latest.achievementValue) : null;
+    const kpiAchievement = typeof kpiAchievementRaw === "number" && Number.isFinite(kpiAchievementRaw)
+      ? clampProgress(kpiAchievementRaw)
+      : null;
 
-    const stored =
-      typeof kpiAchievement === "number"
-        ? kpiAchievement
-        : typeof latest?.finalValue === "number"
+    const rawStored =
+      typeof latest?.finalValue === "number"
         ? Number(latest.finalValue)
         : typeof latest?.calculatedValue === "number"
           ? Number(latest.calculatedValue)
           : typeof latest?.actualValue === "number"
             ? Number(latest.actualValue)
             : 0;
+
+    const derivedKpiProgress = isKpi
+      ? fallbackProgressPercent({
+          baselineValue: typeof ent.baselineValue === "number" ? Number(ent.baselineValue) : null,
+          currentValue: rawStored,
+          targetValue: typeof ent.targetValue === "number" ? Number(ent.targetValue) : null,
+          direction: ent.direction ?? KpiDirection.INCREASE_IS_GOOD,
+        })
+      : null;
+
+    const stored =
+      typeof kpiAchievement === "number"
+        ? kpiAchievement
+        : typeof derivedKpiProgress === "number" && Number.isFinite(derivedKpiProgress)
+          ? clampProgress(derivedKpiProgress)
+          : rawStored;
 
     const formulaRaw = ent.formula?.trim() ? String(ent.formula).trim() : "";
     if (!formulaRaw) {

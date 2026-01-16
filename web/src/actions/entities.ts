@@ -104,14 +104,131 @@ function normalizeEntityKey(key: string) {
   return String(key ?? "").trim().toUpperCase();
 }
 
+function normalizeVarName(input: string) {
+  return String(input ?? "")
+    .replace(/[^a-zA-Z0-9_]/g, "")
+    .toUpperCase();
+}
+
+function extractJsIdentifiers(code: string): string[] {
+  const raw = String(code ?? "");
+  const declared = new Set<string>();
+  for (const m of raw.matchAll(/\b(?:const|let|var|function)\s+([a-zA-Z_][a-zA-Z0-9_]*)/g)) {
+    if (m[1]) declared.add(String(m[1]));
+  }
+
+  const keywords = new Set([
+    "return",
+    "if",
+    "else",
+    "for",
+    "while",
+    "do",
+    "switch",
+    "case",
+    "break",
+    "continue",
+    "function",
+    "var",
+    "let",
+    "const",
+    "true",
+    "false",
+    "null",
+    "undefined",
+    "this",
+    "new",
+    "typeof",
+    "instanceof",
+    "get",
+    "vars",
+    "Math",
+    "Number",
+    "String",
+    "Boolean",
+    "Array",
+    "Object",
+    "Date",
+    "console",
+  ]);
+
+  const ids: string[] = [];
+  for (const m of raw.matchAll(/\b([a-zA-Z_][a-zA-Z0-9_]*)\b/g)) {
+    const id = String(m[1] ?? "");
+    if (!id) continue;
+    if (keywords.has(id)) continue;
+    if (declared.has(id)) continue;
+    ids.push(id);
+  }
+
+  return Array.from(new Set(ids));
+}
+
 function evaluateJsFormula(input: { code: string; vars: Record<string, number>; get: (key: string) => number }) {
   const raw = input.code.trim();
   if (!raw) return { ok: false as const, error: "emptyFormula" };
 
   const body = /\breturn\b/.test(raw) ? raw : `return (${raw});`;
 
+  const vars = input.vars ?? {};
+  const varsObj: Record<string, number> = {};
+  const byNormalized = new Map<string, number>();
+  for (const [k, v] of Object.entries(vars)) {
+    const num = typeof v === "number" && Number.isFinite(v) ? v : 0;
+    const n = normalizeVarName(k);
+    byNormalized.set(n, num);
+    // Keep multiple aliases to reduce case/format mismatches across formulas
+    varsObj[String(k)] = num;
+    varsObj[n] = num;
+    varsObj[String(k).toLowerCase()] = num;
+  }
+
+  const varsProxy = new Proxy(varsObj, {
+    get(target, prop) {
+      if (typeof prop !== "string") return (target as unknown as Record<string, unknown>)[prop as unknown as string];
+      if (prop in target) return target[prop];
+      const n = normalizeVarName(prop);
+      if (n in target) return target[n];
+      if (byNormalized.has(n)) return byNormalized.get(n) ?? 0;
+      return 0;
+    },
+  });
+
+  const helperFns = {
+    sum: (...args: number[]) => args.reduce((a, b) => a + b, 0),
+    avg: (...args: number[]) => args.length > 0 ? args.reduce((a, b) => a + b, 0) / args.length : 0,
+    min: Math.min,
+    max: Math.max,
+    abs: Math.abs,
+  };
+
+  const identifiers = extractJsIdentifiers(body);
+  const params: string[] = ["vars"];
+  const args: unknown[] = [varsProxy];
+
+  for (const id of identifiers) {
+    const helperCallRe = new RegExp(`\\b${id}\\s*\\(`);
+    const isHelperCall = helperCallRe.test(body);
+
+    if (id in helperFns && isHelperCall) {
+      params.push(id);
+      args.push(helperFns[id as keyof typeof helperFns]);
+      continue;
+    }
+
+    const direct = vars[id];
+    const norm = normalizeVarName(id);
+    const mapped = byNormalized.has(norm) ? byNormalized.get(norm) : undefined;
+    const value = typeof direct === "number" && Number.isFinite(direct) ? direct : typeof mapped === "number" && Number.isFinite(mapped) ? mapped : 0;
+    params.push(id);
+    args.push(value);
+  }
+
+  params.push("get");
+  args.push(input.get);
+
   try {
-    const result = Function("vars", "get", `"use strict";\n${body}`)(input.vars, input.get);
+    const result = Function(...params, `"use strict";\n${body}`)(...args);
     const num = typeof result === "number" && Number.isFinite(result) ? result : NaN;
     if (!Number.isFinite(num)) {
       return { ok: false as const, error: "invalidFormulaResult" };
@@ -361,10 +478,11 @@ export async function getOrgFormulaReferenceOptions() {
       key: true,
       title: true,
       titleAr: true,
+      orgEntityType: { select: { code: true } },
       values: {
         orderBy: [{ periodEnd: "desc" }],
         take: 1,
-        select: { actualValue: true, calculatedValue: true, finalValue: true },
+        select: { actualValue: true, calculatedValue: true, finalValue: true, achievementValue: true },
       },
     },
   });
@@ -372,8 +490,15 @@ export async function getOrgFormulaReferenceOptions() {
   return rows
     .map((r) => {
       const v = r.values?.[0];
+      const isKpi = String(r.orgEntityType?.code ?? "").toUpperCase() === "KPI";
+      const kpiAchievementRaw = isKpi && typeof v?.achievementValue === "number" ? Number(v.achievementValue) : null;
+      const kpiAchievement = typeof kpiAchievementRaw === "number" && Number.isFinite(kpiAchievementRaw)
+        ? Math.max(0, Math.min(100, kpiAchievementRaw))
+        : null;
       const value =
-        typeof v?.finalValue === "number"
+        typeof kpiAchievement === "number"
+          ? kpiAchievement
+          : typeof v?.finalValue === "number"
           ? Number(v.finalValue)
           : typeof v?.calculatedValue === "number"
             ? Number(v.calculatedValue)
@@ -577,6 +702,7 @@ export async function getOrgEntityDetail(input: { entityId: string }) {
           select: {
             formula: true,
             periodType: true,
+            orgEntityType: { select: { code: true } },
             variables: { select: { id: true, code: true, isStatic: true, staticValue: true } },
             values: {
               orderBy: [{ periodEnd: "desc" }],
@@ -585,6 +711,7 @@ export async function getOrgEntityDetail(input: { entityId: string }) {
                 actualValue: true,
                 calculatedValue: true,
                 finalValue: true,
+                achievementValue: true,
                 variableValues: { select: { entityVariableId: true, value: true } },
               },
             },
@@ -604,14 +731,21 @@ export async function getOrgEntityDetail(input: { entityId: string }) {
         }
         
         const refLatest = ref.values?.[0] ?? null;
+        const isKpi = String(ref.orgEntityType?.code ?? "").toUpperCase() === "KPI";
+        const kpiAchievementRaw = isKpi && typeof refLatest?.achievementValue === "number" ? Number(refLatest.achievementValue) : null;
+        const kpiAchievement = typeof kpiAchievementRaw === "number" && Number.isFinite(kpiAchievementRaw)
+          ? Math.max(0, Math.min(100, kpiAchievementRaw))
+          : null;
         const stored =
-          typeof refLatest?.finalValue === "number"
-            ? Number(refLatest.finalValue)
-            : typeof refLatest?.calculatedValue === "number"
-              ? Number(refLatest.calculatedValue)
-              : typeof refLatest?.actualValue === "number"
-                ? Number(refLatest.actualValue)
-                : 0;
+          typeof kpiAchievement === "number"
+            ? kpiAchievement
+            : typeof refLatest?.finalValue === "number"
+              ? Number(refLatest.finalValue)
+              : typeof refLatest?.calculatedValue === "number"
+                ? Number(refLatest.calculatedValue)
+                : typeof refLatest?.actualValue === "number"
+                  ? Number(refLatest.actualValue)
+                  : 0;
         
         cacheByKey.set(normalized, stored);
         visiting.delete(normalized);
@@ -1083,6 +1217,7 @@ export async function saveOrgEntityKpiValuesDraft(input: z.infer<typeof saveOrgE
           select: {
             id: true,
             periodType: true,
+            orgEntityType: { select: { code: true } },
             formula: true,
             variables: {
               select: {
@@ -1099,6 +1234,7 @@ export async function saveOrgEntityKpiValuesDraft(input: z.infer<typeof saveOrgE
                 actualValue: true,
                 calculatedValue: true,
                 finalValue: true,
+                achievementValue: true,
                 variableValues: { select: { entityVariableId: true, value: true } },
               },
             },
@@ -1112,14 +1248,21 @@ export async function saveOrgEntityKpiValuesDraft(input: z.infer<typeof saveOrgE
         }
 
         const latest = ref.values?.[0] ?? null;
+        const isKpi = String(ref.orgEntityType?.code ?? "").toUpperCase() === "KPI";
+        const kpiAchievementRaw = isKpi && typeof latest?.achievementValue === "number" ? Number(latest.achievementValue) : null;
+        const kpiAchievement = typeof kpiAchievementRaw === "number" && Number.isFinite(kpiAchievementRaw)
+          ? Math.max(0, Math.min(100, kpiAchievementRaw))
+          : null;
         const stored =
-          typeof latest?.finalValue === "number"
-            ? Number(latest.finalValue)
-            : typeof latest?.calculatedValue === "number"
-              ? Number(latest.calculatedValue)
-              : typeof latest?.actualValue === "number"
-                ? Number(latest.actualValue)
-                : 0;
+          typeof kpiAchievement === "number"
+            ? kpiAchievement
+            : typeof latest?.finalValue === "number"
+              ? Number(latest.finalValue)
+              : typeof latest?.calculatedValue === "number"
+                ? Number(latest.calculatedValue)
+                : typeof latest?.actualValue === "number"
+                  ? Number(latest.actualValue)
+                  : 0;
 
         const valuesByCode: Record<string, number> = {};
         const valuesByVarId: Record<string, number> = {};

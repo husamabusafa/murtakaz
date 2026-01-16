@@ -44,6 +44,13 @@ function toNumberOrUndefined(raw: string) {
   return Number.isFinite(n) ? n : undefined;
 }
 
+function numberToInputString(value: unknown) {
+  if (typeof value !== "number" || !Number.isFinite(value)) return "";
+  if (Number.isInteger(value)) return String(value);
+  const fixed = value.toFixed(4);
+  return fixed.replace(/\.0+$/, "").replace(/(\.[0-9]*?)0+$/, "$1");
+}
+
 function periodValue(period: {
   actualValue: number | null;
   calculatedValue: number | null;
@@ -123,7 +130,7 @@ export default function EntityDetailPage() {
 
       const vv = current?.variableValues ?? [];
       const preset: Record<string, string> = {};
-      for (const row of vv) preset[String(row.entityVariableId)] = String(row.value);
+      for (const row of vv) preset[String(row.entityVariableId)] = numberToInputString(row.value);
       setValuesByVariableId(preset);
 
       const mv = current ? periodValue(current) : null;
