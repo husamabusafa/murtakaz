@@ -466,8 +466,9 @@ export async function getOrgOwnerOptions() {
   }));
 }
 
-export async function getOrgFormulaReferenceOptions() {
+export async function getOrgFormulaReferenceOptions(input?: { periodStart?: Date; periodEnd?: Date }) {
   const session = await requireOrgAdmin();
+  const now = new Date();
 
   const rows = await prisma.entity.findMany({
     where: { orgId: session.user.orgId, deletedAt: null, key: { not: null } },
@@ -478,18 +479,56 @@ export async function getOrgFormulaReferenceOptions() {
       key: true,
       title: true,
       titleAr: true,
+      periodType: true,
       orgEntityType: { select: { code: true } },
       values: {
         orderBy: [{ periodEnd: "desc" }],
-        take: 1,
-        select: { actualValue: true, calculatedValue: true, finalValue: true, achievementValue: true },
+        take: 12,
+        select: {
+          periodStart: true,
+          periodEnd: true,
+          actualValue: true,
+          calculatedValue: true,
+          finalValue: true,
+          achievementValue: true,
+        },
       },
     },
   });
 
   return rows
     .map((r) => {
-      const v = r.values?.[0];
+      let v = r.values?.[0];
+
+      if (r.periodType) {
+        if (input?.periodStart && input?.periodEnd) {
+          const matchingPeriod = r.values?.find(
+            (val) =>
+              val.periodStart.getTime() === input.periodStart!.getTime() &&
+              val.periodEnd.getTime() === input.periodEnd!.getTime()
+          );
+          if (matchingPeriod) {
+            v = matchingPeriod;
+          } else {
+            const range = resolvePeriodRange({ now, periodType: r.periodType });
+            const currentPeriod = r.values?.find(
+              (val) =>
+                val.periodStart.getTime() === range.start.getTime() &&
+                val.periodEnd.getTime() === range.end.getTime()
+            );
+            v = currentPeriod ?? v;
+          }
+        } else {
+          const range = resolvePeriodRange({ now, periodType: r.periodType });
+          const currentPeriod = r.values?.find(
+            (val) =>
+              val.periodStart.getTime() === range.start.getTime() &&
+              val.periodEnd.getTime() === range.end.getTime()
+          );
+          v = currentPeriod ?? v;
+        }
+      }
+
       const isKpi = String(r.orgEntityType?.code ?? "").toUpperCase() === "KPI";
       const kpiAchievementRaw = isKpi && typeof v?.achievementValue === "number" ? Number(v.achievementValue) : null;
       const kpiAchievement = typeof kpiAchievementRaw === "number" && Number.isFinite(kpiAchievementRaw)
@@ -1228,6 +1267,10 @@ export async function saveOrgEntityKpiValuesDraft(input: z.infer<typeof saveOrgE
               },
             },
             values: {
+              where: {
+                periodStart: range.start,
+                periodEnd: range.end,
+              },
               orderBy: [{ periodEnd: "desc" }],
               take: 1,
               select: {
@@ -1423,6 +1466,80 @@ export async function saveOrgEntityKpiValuesDraft(input: z.infer<typeof saveOrgE
   }
 }
 
+const recalculateEntitySchema = z.object({
+  entityId: uuidSchema,
+});
+
+export async function recalculateEntityValue(input: z.infer<typeof recalculateEntitySchema>) {
+  const session = await requireOrgMember();
+  const parsed = recalculateEntitySchema.safeParse(input);
+  if (!parsed.success) {
+    return { success: false as const, error: "validationFailed", issues: zodIssues(parsed.error) };
+  }
+
+  const entity = await prisma.entity.findFirst({
+    where: { id: parsed.data.entityId, orgId: session.user.orgId, deletedAt: null },
+    select: {
+      id: true,
+      key: true,
+      periodType: true,
+      formula: true,
+      variables: {
+        select: {
+          id: true,
+          code: true,
+          isStatic: true,
+          staticValue: true,
+        },
+      },
+      values: {
+        orderBy: [{ periodEnd: "desc" }],
+        take: 1,
+        select: {
+          id: true,
+          periodStart: true,
+          periodEnd: true,
+          variableValues: {
+            select: {
+              entityVariableId: true,
+              value: true,
+            },
+          },
+        },
+      },
+    },
+  });
+
+  if (!entity) return { success: false as const, error: "notFound" };
+  if (!entity.periodType) return { success: false as const, error: "notKpi" };
+  if (!entity.formula?.trim()) return { success: false as const, error: "noFormula" };
+
+  const latestValue = entity.values?.[0];
+  if (!latestValue) return { success: false as const, error: "noExistingValue" };
+
+  const variableValues: Record<string, number> = {};
+  for (const vv of latestValue.variableValues ?? []) {
+    variableValues[vv.entityVariableId] = vv.value;
+  }
+
+  try {
+    const result = await saveOrgEntityKpiValuesDraft({
+      entityId: entity.id,
+      values: variableValues,
+    });
+
+    if (!result.success) {
+      return result;
+    }
+
+    return { success: true as const };
+  } catch (error: unknown) {
+    console.error("Failed to recalculate entity value", error);
+    const errorMessage = error instanceof Error ? error.message : "failedToRecalculate";
+    return { success: false as const, error: errorMessage };
+  }
+}
+
 async function cascadeRecalculateDependents(input: {
   orgId: string;
   updatedKey: string;
@@ -1510,4 +1627,87 @@ async function cascadeRecalculateDependents(input: {
       console.error(`Failed to recalculate dependent entity ${dependent.id}:`, err);
     }
   }
+}
+
+export async function getEntityDependencyTree(input: { entityId: string; maxDepth?: number }) {
+  const session = await requireOrgMember();
+  const orgId = session.user.orgId;
+  if (!orgId) return null;
+
+  const maxDepth = input.maxDepth ?? 5;
+  const visited = new Set<string>();
+
+  interface EntityNode {
+    id: string;
+    key: string;
+    title: string;
+    titleAr: string | null;
+    formula: string | null;
+    entityType: { code: string; name: string; nameAr: string | null };
+    dependencies: EntityNode[];
+  }
+
+  async function fetchNode(entityId: string, depth: number): Promise<EntityNode | null> {
+    if (depth > maxDepth || visited.has(entityId)) {
+      return null;
+    }
+
+    visited.add(entityId);
+
+    const entity = await prisma.entity.findFirst({
+      where: {
+        id: entityId,
+        orgId,
+        deletedAt: null,
+      },
+      include: {
+        orgEntityType: {
+          select: {
+            code: true,
+            name: true,
+            nameAr: true,
+          },
+        },
+      },
+    });
+
+    if (!entity) return null;
+
+    const node: EntityNode = {
+      id: entity.id,
+      key: entity.key ?? entity.id,
+      title: entity.title,
+      titleAr: entity.titleAr,
+      formula: entity.formula,
+      entityType: entity.orgEntityType,
+      dependencies: [],
+    };
+
+    if (entity.formula) {
+      const keys = extractGetKeys(entity.formula);
+      if (keys.length > 0) {
+        const depEntities = await prisma.entity.findMany({
+          where: {
+            orgId,
+            deletedAt: null,
+            key: { in: keys },
+          },
+          select: {
+            id: true,
+          },
+        });
+
+        for (const dep of depEntities) {
+          const depNode = await fetchNode(dep.id, depth + 1);
+          if (depNode) {
+            node.dependencies.push(depNode);
+          }
+        }
+      }
+    }
+
+    return node;
+  }
+
+  return await fetchNode(input.entityId, 0);
 }

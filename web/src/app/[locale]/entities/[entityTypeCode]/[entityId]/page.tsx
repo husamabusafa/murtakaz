@@ -15,6 +15,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { EChart } from "@/components/charts/echart";
 import { KpiGauge } from "@/components/charts/kpi-gauge";
 import { EntityAssignments } from "@/components/entity-assignments";
+import { EntityDependencyDiagram } from "@/components/entity-dependency-diagram";
 import { useAuth } from "@/providers/auth-provider";
 import { useLocale } from "@/providers/locale-provider";
 import { ActionValidationIssue } from "@/types/actions";
@@ -23,6 +24,8 @@ import {
   getOrgEntityDetail,
   saveOrgEntityKpiValuesDraft,
   getOrgEntitiesByKeys,
+  recalculateEntityValue,
+  getEntityDependencyTree,
 } from "@/actions/entities";
 import {
   submitEntityForApproval,
@@ -35,6 +38,8 @@ type EntityDetail = Awaited<ReturnType<typeof getOrgEntityDetail>>;
 type EntityVariableRow = NonNullable<EntityDetail>["entity"]["variables"][number];
 
 type ReferencedEntity = Awaited<ReturnType<typeof getOrgEntitiesByKeys>>[number];
+
+type DependencyTree = Awaited<ReturnType<typeof getEntityDependencyTree>>;
 
 
 function toNumberOrUndefined(raw: string) {
@@ -114,6 +119,10 @@ export default function EntityDetailPage() {
   const [referencedEntities, setReferencedEntities] = useState<ReferencedEntity[]>([]);
   const [loadingRefs, setLoadingRefs] = useState(false);
   
+  const [dependencyTree, setDependencyTree] = useState<DependencyTree>(null);
+  const [loadingTree, setLoadingTree] = useState(false);
+  const [dependencyTreeError, setDependencyTreeError] = useState<string | null>(null);
+  
   const [calculating, setCalculating] = useState(false);
   const [calculateError, setCalculateError] = useState<string | null>(null);
 
@@ -151,6 +160,21 @@ export default function EntityDetailPage() {
           } finally {
             setLoadingRefs(false);
           }
+        }
+      }
+
+      // Load dependency tree for Mermaid diagram
+      if (result?.entity?.id) {
+        setLoadingTree(true);
+        setDependencyTreeError(null);
+        try {
+          const tree = await getEntityDependencyTree({ entityId: result.entity.id, maxDepth: 5 });
+          setDependencyTree(tree);
+        } catch (err) {
+          console.error("Failed to load dependency tree:", err);
+          setDependencyTreeError(err instanceof Error ? err.message : "Failed to load dependency tree");
+        } finally {
+          setLoadingTree(false);
         }
       }
 
@@ -244,6 +268,13 @@ export default function EntityDetailPage() {
     setCalculateError(null);
 
     try {
+      const res = await recalculateEntityValue({ entityId: entity.id });
+      if (!res.success) {
+        const translated = te(res.error) || res.error || tr("Calculation failed", "فشل الحساب");
+        setCalculateError(translated);
+        return;
+      }
+
       await reload();
       router.refresh();
     } catch (error: unknown) {
@@ -340,7 +371,7 @@ export default function EntityDetailPage() {
         periodId: data.currentPeriod.id 
       });
       if (!res.success) {
-        setApprovalError(te(res.error) || res.error || t("failedToSubmit"));
+        setApprovalError(te(res.error) || res.error || tr("Failed to submit", "فشل الإرسال"));
         return;
       }
 
@@ -350,7 +381,7 @@ export default function EntityDetailPage() {
       await reload();
       router.refresh();
     } catch (error: unknown) {
-      const message = error instanceof Error ? error.message : t("failedToSubmit");
+      const message = error instanceof Error ? error.message : tr("Failed to submit", "فشل الإرسال");
       setApprovalError(message);
     } finally {
       setSubmitting(false);
@@ -369,14 +400,14 @@ export default function EntityDetailPage() {
         periodId: data.currentPeriod.id 
       });
       if (!res.success) {
-        setApprovalError(te(res.error) || res.error || t("failedToApprove"));
+        setApprovalError(te(res.error) || res.error || tr("Failed to approve", "فشل الاعتماد"));
         return;
       }
 
       await reload();
       router.refresh();
     } catch (error: unknown) {
-      const message = error instanceof Error ? error.message : t("failedToApprove");
+      const message = error instanceof Error ? error.message : tr("Failed to approve", "فشل الاعتماد");
       setApprovalError(message);
     } finally {
       setApproving(false);
@@ -395,14 +426,14 @@ export default function EntityDetailPage() {
         periodId: data.currentPeriod.id 
       });
       if (!res.success) {
-        setApprovalError(te(res.error) || res.error || t("failedToReject"));
+        setApprovalError(te(res.error) || res.error || tr("Failed to reject", "فشل الرفض"));
         return;
       }
 
       await reload();
       router.refresh();
     } catch (error: unknown) {
-      const message = error instanceof Error ? error.message : t("failedToReject");
+      const message = error instanceof Error ? error.message : tr("Failed to reject", "فشل الرفض");
       setApprovalError(message);
     } finally {
       setRejecting(false);
@@ -733,6 +764,26 @@ export default function EntityDetailPage() {
               )}
               </div>
             )}
+          </CardContent>
+        </Card>
+      ) : null}
+
+      {/* Dependency Tree Diagram */}
+      {loadingTree || dependencyTree || dependencyTreeError ? (
+        <Card className="bg-card/70 backdrop-blur shadow-sm">
+          <CardHeader>
+            <CardTitle className="text-base">{tr("Formula Dependency Tree", "شجرة الاعتماديات")}</CardTitle>
+            <CardDescription>
+              {tr("Entity relationships based on formulas.", "علاقات الكيانات بناءً على الصيغ.")}
+            </CardDescription>
+          </CardHeader>
+          <CardContent className="space-y-3">
+            {dependencyTreeError ? (
+              <div className="rounded-xl border border-destructive/40 bg-destructive/10 px-4 py-3 text-sm text-destructive whitespace-pre-line">
+                {dependencyTreeError}
+              </div>
+            ) : null}
+            <EntityDependencyDiagram tree={dependencyTree} locale={locale} loading={loadingTree} />
           </CardContent>
         </Card>
       ) : null}
