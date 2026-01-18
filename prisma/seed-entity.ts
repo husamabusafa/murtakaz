@@ -28,7 +28,7 @@ import {
  const prismaOrgEntityType = (prisma as unknown as { orgEntityType?: Delegate }).orgEntityType;
  const prismaEntity = (prisma as unknown as { entity?: Delegate }).entity;
  const prismaEntityVariable = (prisma as unknown as { entityVariable?: Delegate }).entityVariable;
- const prismaEntityValuePeriod = (prisma as unknown as { entityValuePeriod?: Delegate }).entityValuePeriod;
+ const prismaEntityValue = (prisma as unknown as { entityValue?: Delegate }).entityValue;
  const prismaEntityVariableValue = (prisma as unknown as { entityVariableValue?: Delegate }).entityVariableValue;
 
  type OrgEntityTypeCode = "pillar" | "objective" | "department" | "initiative" | "kpi";
@@ -38,7 +38,7 @@ import {
  }
 
  async function assertEntitySystemReady() {
-  if (!prismaOrgEntityType || !prismaEntity || !prismaEntityVariable || !prismaEntityValuePeriod || !prismaEntityVariableValue) {
+  if (!prismaOrgEntityType || !prismaEntity || !prismaEntityVariable || !prismaEntityValue || !prismaEntityVariableValue) {
    throw new Error("Prisma client is missing Entity system models. Run: npx prisma generate");
   }
 
@@ -64,28 +64,6 @@ import {
   return new Date(d.getFullYear(), d.getMonth(), d.getDate(), 23, 59, 59, 999);
  }
 
- function resolvePeriodRange(periodType: KpiPeriodType, offset: number) {
-  const now = new Date();
-  const base = new Date(now.getFullYear(), now.getMonth(), 1);
-
-  if (periodType === KpiPeriodType.MONTHLY) {
-    const start = new Date(base.getFullYear(), base.getMonth() - offset, 1);
-    const end = new Date(start.getFullYear(), start.getMonth() + 1, 0);
-    return { start: dateAtStartOfDay(start), end: dateAtEndOfDay(end) };
-  }
-
-  if (periodType === KpiPeriodType.QUARTERLY) {
-    const quarterStartMonth = Math.floor(base.getMonth() / 3) * 3;
-    const quarterStart = new Date(base.getFullYear(), quarterStartMonth, 1);
-    const start = new Date(quarterStart.getFullYear(), quarterStart.getMonth() - offset * 3, 1);
-    const end = new Date(start.getFullYear(), start.getMonth() + 3, 0);
-    return { start: dateAtStartOfDay(start), end: dateAtEndOfDay(end) };
-  }
-
-  const start = new Date(base.getFullYear() - offset, 0, 1);
-  const end = new Date(start.getFullYear(), 12, 0);
-  return { start: dateAtStartOfDay(start), end: dateAtEndOfDay(end) };
- }
 
  function evaluateFormula(input: { formula: string; valuesByCode: Record<string, number> }) {
   const trimmed = input.formula.trim();
@@ -116,7 +94,7 @@ import {
 
  async function wipeDatabase() {
   await prismaEntityVariableValue?.deleteMany();
-  await prismaEntityValuePeriod?.deleteMany();
+  await prismaEntityValue?.deleteMany();
   await prismaEntityVariable?.deleteMany();
   await prismaEntity?.deleteMany();
 
@@ -367,10 +345,8 @@ import {
   return new Map(rows.map((r) => [String(r.code), String(r.id)] as const));
  }
 
- async function upsertEntityValuePeriodByVariableCodes(input: {
+ async function createEntityValueByVariableCodes(input: {
   entityId: string;
-  periodType: KpiPeriodType;
-  offset: number;
   status: KpiValueStatus;
   approvalType?: KpiApprovalType | null;
   note?: string | null;
@@ -380,8 +356,7 @@ import {
   formula: string | null;
   variableValues: Record<string, number>;
  }) {
-  const range = resolvePeriodRange(input.periodType, input.offset);
-  if (!prismaEntityVariable || !prismaEntityValuePeriod || !prismaEntityVariableValue) {
+  if (!prismaEntityVariable || !prismaEntityValue || !prismaEntityVariableValue) {
     throw new Error("Prisma client missing entity value models. Run prisma generate.");
   }
 
@@ -410,29 +385,9 @@ import {
       : null;
   const approvedAt = input.status === KpiValueStatus.APPROVED ? new Date(now.getTime() - 2 * 60 * 60 * 1000) : null;
 
-  const entityValue = (await prismaEntityValuePeriod.upsert({
-    where: {
-      entity_period_unique: {
-        entityId: input.entityId,
-        periodStart: range.start,
-        periodEnd: range.end,
-      },
-    },
-    update: {
-      actualValue: mapped.find((m) => m.entityVariableId === idByCode.get("value"))?.value ?? null,
-      status: input.status,
-      approvalType: typeof input.approvalType === "undefined" ? undefined : input.approvalType,
-      note: typeof input.note === "undefined" ? undefined : input.note,
-      enteredBy: typeof input.enteredBy === "undefined" ? undefined : input.enteredBy,
-      submittedBy: typeof input.submittedBy === "undefined" ? undefined : input.submittedBy,
-      approvedBy: typeof input.approvedBy === "undefined" ? undefined : input.approvedBy,
-      submittedAt,
-      approvedAt,
-    },
-    create: {
+  const entityValue = (await prismaEntityValue.create({
+    data: {
       entityId: input.entityId,
-      periodStart: range.start,
-      periodEnd: range.end,
       calculatedValue,
       finalValue: calculatedValue,
       status: input.status,
@@ -448,45 +403,31 @@ import {
   })) as { id: string };
 
   for (const vv of mapped) {
-    await prismaEntityVariableValue.upsert({
-      where: {
-        entity_variable_value_unique: {
-          entityValueId: entityValue.id,
-          entityVariableId: vv.entityVariableId,
-        },
-      },
-      update: { value: vv.value },
-      create: { entityValueId: entityValue.id, entityVariableId: vv.entityVariableId, value: vv.value },
+    await prismaEntityVariableValue.create({
+      data: { entityValueId: entityValue.id, entityVariableId: vv.entityVariableId, value: vv.value },
       select: { id: true },
     });
   }
  }
 
- function sampleValueForVar(code: string, offset: number) {
+ function sampleValueForVar(code: string) {
   switch (code) {
     case "value":
-      return offset === 0 ? 68.5 : 62.3;
-    
+      return 68.5;
     case "impressions":
-      return offset === 0 ? 85000 : 72000;
-    
+      return 85000;
     case "engagements":
-      return offset === 0 ? 3400 : 2880;
-    
+      return 3400;
     case "participants":
-      return offset === 0 ? 215 : 192;
-    
+      return 215;
     case "employees_total":
-      return offset === 0 ? 280 : 275;
-    
+      return 280;
     case "subsidiaries_adopted":
-      return offset === 0 ? 7 : 6;
-    
+      return 7;
     case "subsidiaries_total":
-      return offset === 0 ? 10 : 10;
-    
+      return 10;
     default:
-      return offset === 0 ? 100 : 80;
+      return 100;
   }
 } 
 
@@ -761,25 +702,20 @@ import {
       })),
     );
 
-    const offsets = spec.periodType === KpiPeriodType.YEARLY ? [0] : [1, 0];
-    for (const offset of offsets) {
-      const values: Record<string, number> = {};
-      for (const v of spec.variables) values[v.code] = sampleValueForVar(v.code, offset);
+    const values: Record<string, number> = {};
+    for (const v of spec.variables) values[v.code] = sampleValueForVar(v.code);
 
-      await upsertEntityValuePeriodByVariableCodes({
-        entityId: entity.id,
-        periodType: spec.periodType,
-        offset,
-        status: offset === 0 ? KpiValueStatus.APPROVED : KpiValueStatus.SUBMITTED,
-        approvalType: KpiApprovalType.MANUAL,
-        note: offset === 0 ? "Seeded (approved)." : "Seeded (submitted).",
-        enteredBy: superAdmin.id,
-        submittedBy: superAdmin.id,
-        approvedBy: offset === 0 ? ceo.id : null,
-        formula: spec.formula,
-        variableValues: values,
-      });
-    }
+    await createEntityValueByVariableCodes({
+      entityId: entity.id,
+      status: KpiValueStatus.APPROVED,
+      approvalType: KpiApprovalType.MANUAL,
+      note: "Seeded (approved).",
+      enteredBy: superAdmin.id,
+      submittedBy: superAdmin.id,
+      approvedBy: ceo.id,
+      formula: spec.formula,
+      variableValues: values,
+    });
   }
 
   console.log("Seed complete. You can login with:");

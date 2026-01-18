@@ -69,10 +69,10 @@ export type Entity = $Result.DefaultSelection<Prisma.$EntityPayload>
  */
 export type EntityVariable = $Result.DefaultSelection<Prisma.$EntityVariablePayload>
 /**
- * Model EntityValuePeriod
+ * Model EntityValue
  * 
  */
-export type EntityValuePeriod = $Result.DefaultSelection<Prisma.$EntityValuePeriodPayload>
+export type EntityValue = $Result.DefaultSelection<Prisma.$EntityValuePayload>
 /**
  * Model EntityVariableValue
  * 
@@ -464,14 +464,14 @@ export class PrismaClient<
   get entityVariable(): Prisma.EntityVariableDelegate<ExtArgs, ClientOptions>;
 
   /**
-   * `prisma.entityValuePeriod`: Exposes CRUD operations for the **EntityValuePeriod** model.
+   * `prisma.entityValue`: Exposes CRUD operations for the **EntityValue** model.
     * Example usage:
     * ```ts
-    * // Fetch zero or more EntityValuePeriods
-    * const entityValuePeriods = await prisma.entityValuePeriod.findMany()
+    * // Fetch zero or more EntityValues
+    * const entityValues = await prisma.entityValue.findMany()
     * ```
     */
-  get entityValuePeriod(): Prisma.EntityValuePeriodDelegate<ExtArgs, ClientOptions>;
+  get entityValue(): Prisma.EntityValueDelegate<ExtArgs, ClientOptions>;
 
   /**
    * `prisma.entityVariableValue`: Exposes CRUD operations for the **EntityVariableValue** model.
@@ -944,7 +944,7 @@ export namespace Prisma {
     ChangeApproval: 'ChangeApproval',
     Entity: 'Entity',
     EntityVariable: 'EntityVariable',
-    EntityValuePeriod: 'EntityValuePeriod',
+    EntityValue: 'EntityValue',
     EntityVariableValue: 'EntityVariableValue',
     UserEntityAssignment: 'UserEntityAssignment'
   };
@@ -965,7 +965,7 @@ export namespace Prisma {
       omit: GlobalOmitOptions
     }
     meta: {
-      modelProps: "organization" | "orgEntityType" | "user" | "account" | "session" | "verification" | "userPreference" | "changeRequest" | "changeApproval" | "entity" | "entityVariable" | "entityValuePeriod" | "entityVariableValue" | "userEntityAssignment"
+      modelProps: "organization" | "orgEntityType" | "user" | "account" | "session" | "verification" | "userPreference" | "changeRequest" | "changeApproval" | "entity" | "entityVariable" | "entityValue" | "entityVariableValue" | "userEntityAssignment"
       txIsolationLevel: Prisma.TransactionIsolationLevel
     }
     model: {
@@ -1783,77 +1783,77 @@ export namespace Prisma {
           }
         }
       }
-      EntityValuePeriod: {
-        payload: Prisma.$EntityValuePeriodPayload<ExtArgs>
-        fields: Prisma.EntityValuePeriodFieldRefs
+      EntityValue: {
+        payload: Prisma.$EntityValuePayload<ExtArgs>
+        fields: Prisma.EntityValueFieldRefs
         operations: {
           findUnique: {
-            args: Prisma.EntityValuePeriodFindUniqueArgs<ExtArgs>
-            result: $Utils.PayloadToResult<Prisma.$EntityValuePeriodPayload> | null
+            args: Prisma.EntityValueFindUniqueArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$EntityValuePayload> | null
           }
           findUniqueOrThrow: {
-            args: Prisma.EntityValuePeriodFindUniqueOrThrowArgs<ExtArgs>
-            result: $Utils.PayloadToResult<Prisma.$EntityValuePeriodPayload>
+            args: Prisma.EntityValueFindUniqueOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$EntityValuePayload>
           }
           findFirst: {
-            args: Prisma.EntityValuePeriodFindFirstArgs<ExtArgs>
-            result: $Utils.PayloadToResult<Prisma.$EntityValuePeriodPayload> | null
+            args: Prisma.EntityValueFindFirstArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$EntityValuePayload> | null
           }
           findFirstOrThrow: {
-            args: Prisma.EntityValuePeriodFindFirstOrThrowArgs<ExtArgs>
-            result: $Utils.PayloadToResult<Prisma.$EntityValuePeriodPayload>
+            args: Prisma.EntityValueFindFirstOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$EntityValuePayload>
           }
           findMany: {
-            args: Prisma.EntityValuePeriodFindManyArgs<ExtArgs>
-            result: $Utils.PayloadToResult<Prisma.$EntityValuePeriodPayload>[]
+            args: Prisma.EntityValueFindManyArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$EntityValuePayload>[]
           }
           create: {
-            args: Prisma.EntityValuePeriodCreateArgs<ExtArgs>
-            result: $Utils.PayloadToResult<Prisma.$EntityValuePeriodPayload>
+            args: Prisma.EntityValueCreateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$EntityValuePayload>
           }
           createMany: {
-            args: Prisma.EntityValuePeriodCreateManyArgs<ExtArgs>
+            args: Prisma.EntityValueCreateManyArgs<ExtArgs>
             result: BatchPayload
           }
           createManyAndReturn: {
-            args: Prisma.EntityValuePeriodCreateManyAndReturnArgs<ExtArgs>
-            result: $Utils.PayloadToResult<Prisma.$EntityValuePeriodPayload>[]
+            args: Prisma.EntityValueCreateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$EntityValuePayload>[]
           }
           delete: {
-            args: Prisma.EntityValuePeriodDeleteArgs<ExtArgs>
-            result: $Utils.PayloadToResult<Prisma.$EntityValuePeriodPayload>
+            args: Prisma.EntityValueDeleteArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$EntityValuePayload>
           }
           update: {
-            args: Prisma.EntityValuePeriodUpdateArgs<ExtArgs>
-            result: $Utils.PayloadToResult<Prisma.$EntityValuePeriodPayload>
+            args: Prisma.EntityValueUpdateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$EntityValuePayload>
           }
           deleteMany: {
-            args: Prisma.EntityValuePeriodDeleteManyArgs<ExtArgs>
+            args: Prisma.EntityValueDeleteManyArgs<ExtArgs>
             result: BatchPayload
           }
           updateMany: {
-            args: Prisma.EntityValuePeriodUpdateManyArgs<ExtArgs>
+            args: Prisma.EntityValueUpdateManyArgs<ExtArgs>
             result: BatchPayload
           }
           updateManyAndReturn: {
-            args: Prisma.EntityValuePeriodUpdateManyAndReturnArgs<ExtArgs>
-            result: $Utils.PayloadToResult<Prisma.$EntityValuePeriodPayload>[]
+            args: Prisma.EntityValueUpdateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$EntityValuePayload>[]
           }
           upsert: {
-            args: Prisma.EntityValuePeriodUpsertArgs<ExtArgs>
-            result: $Utils.PayloadToResult<Prisma.$EntityValuePeriodPayload>
+            args: Prisma.EntityValueUpsertArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$EntityValuePayload>
           }
           aggregate: {
-            args: Prisma.EntityValuePeriodAggregateArgs<ExtArgs>
-            result: $Utils.Optional<AggregateEntityValuePeriod>
+            args: Prisma.EntityValueAggregateArgs<ExtArgs>
+            result: $Utils.Optional<AggregateEntityValue>
           }
           groupBy: {
-            args: Prisma.EntityValuePeriodGroupByArgs<ExtArgs>
-            result: $Utils.Optional<EntityValuePeriodGroupByOutputType>[]
+            args: Prisma.EntityValueGroupByArgs<ExtArgs>
+            result: $Utils.Optional<EntityValueGroupByOutputType>[]
           }
           count: {
-            args: Prisma.EntityValuePeriodCountArgs<ExtArgs>
-            result: $Utils.Optional<EntityValuePeriodCountAggregateOutputType> | number
+            args: Prisma.EntityValueCountArgs<ExtArgs>
+            result: $Utils.Optional<EntityValueCountAggregateOutputType> | number
           }
         }
       }
@@ -2112,7 +2112,7 @@ export namespace Prisma {
     changeApproval?: ChangeApprovalOmit
     entity?: EntityOmit
     entityVariable?: EntityVariableOmit
-    entityValuePeriod?: EntityValuePeriodOmit
+    entityValue?: EntityValueOmit
     entityVariableValue?: EntityVariableValueOmit
     userEntityAssignment?: UserEntityAssignmentOmit
   }
@@ -2366,21 +2366,21 @@ export namespace Prisma {
    * UserCountOutputType without action
    */
   export type UserCountOutputTypeCountValuesEnteredArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    where?: EntityValuePeriodWhereInput
+    where?: EntityValueWhereInput
   }
 
   /**
    * UserCountOutputType without action
    */
   export type UserCountOutputTypeCountValuesSubmittedArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    where?: EntityValuePeriodWhereInput
+    where?: EntityValueWhereInput
   }
 
   /**
    * UserCountOutputType without action
    */
   export type UserCountOutputTypeCountValuesApprovedArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    where?: EntityValuePeriodWhereInput
+    where?: EntityValueWhereInput
   }
 
   /**
@@ -2460,7 +2460,7 @@ export namespace Prisma {
    * EntityCountOutputType without action
    */
   export type EntityCountOutputTypeCountValuesArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    where?: EntityValuePeriodWhereInput
+    where?: EntityValueWhereInput
   }
 
   /**
@@ -2503,32 +2503,32 @@ export namespace Prisma {
 
 
   /**
-   * Count Type EntityValuePeriodCountOutputType
+   * Count Type EntityValueCountOutputType
    */
 
-  export type EntityValuePeriodCountOutputType = {
+  export type EntityValueCountOutputType = {
     variableValues: number
   }
 
-  export type EntityValuePeriodCountOutputTypeSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    variableValues?: boolean | EntityValuePeriodCountOutputTypeCountVariableValuesArgs
+  export type EntityValueCountOutputTypeSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    variableValues?: boolean | EntityValueCountOutputTypeCountVariableValuesArgs
   }
 
   // Custom InputTypes
   /**
-   * EntityValuePeriodCountOutputType without action
+   * EntityValueCountOutputType without action
    */
-  export type EntityValuePeriodCountOutputTypeDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+  export type EntityValueCountOutputTypeDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     /**
-     * Select specific fields to fetch from the EntityValuePeriodCountOutputType
+     * Select specific fields to fetch from the EntityValueCountOutputType
      */
-    select?: EntityValuePeriodCountOutputTypeSelect<ExtArgs> | null
+    select?: EntityValueCountOutputTypeSelect<ExtArgs> | null
   }
 
   /**
-   * EntityValuePeriodCountOutputType without action
+   * EntityValueCountOutputType without action
    */
-  export type EntityValuePeriodCountOutputTypeCountVariableValuesArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+  export type EntityValueCountOutputTypeCountVariableValuesArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     where?: EntityVariableValueWhereInput
   }
 
@@ -5325,9 +5325,9 @@ export namespace Prisma {
       approvals: Prisma.$ChangeApprovalPayload<ExtArgs>[]
       changeRequests: Prisma.$ChangeRequestPayload<ExtArgs>[]
       ownedEntities: Prisma.$EntityPayload<ExtArgs>[]
-      valuesEntered: Prisma.$EntityValuePeriodPayload<ExtArgs>[]
-      valuesSubmitted: Prisma.$EntityValuePeriodPayload<ExtArgs>[]
-      valuesApproved: Prisma.$EntityValuePeriodPayload<ExtArgs>[]
+      valuesEntered: Prisma.$EntityValuePayload<ExtArgs>[]
+      valuesSubmitted: Prisma.$EntityValuePayload<ExtArgs>[]
+      valuesApproved: Prisma.$EntityValuePayload<ExtArgs>[]
       entityAssignments: Prisma.$UserEntityAssignmentPayload<ExtArgs>[]
     }
     scalars: $Extensions.GetPayloadResult<{
@@ -5747,9 +5747,9 @@ export namespace Prisma {
     approvals<T extends User$approvalsArgs<ExtArgs> = {}>(args?: Subset<T, User$approvalsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$ChangeApprovalPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     changeRequests<T extends User$changeRequestsArgs<ExtArgs> = {}>(args?: Subset<T, User$changeRequestsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$ChangeRequestPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     ownedEntities<T extends User$ownedEntitiesArgs<ExtArgs> = {}>(args?: Subset<T, User$ownedEntitiesArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$EntityPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
-    valuesEntered<T extends User$valuesEnteredArgs<ExtArgs> = {}>(args?: Subset<T, User$valuesEnteredArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$EntityValuePeriodPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
-    valuesSubmitted<T extends User$valuesSubmittedArgs<ExtArgs> = {}>(args?: Subset<T, User$valuesSubmittedArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$EntityValuePeriodPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
-    valuesApproved<T extends User$valuesApprovedArgs<ExtArgs> = {}>(args?: Subset<T, User$valuesApprovedArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$EntityValuePeriodPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+    valuesEntered<T extends User$valuesEnteredArgs<ExtArgs> = {}>(args?: Subset<T, User$valuesEnteredArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$EntityValuePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+    valuesSubmitted<T extends User$valuesSubmittedArgs<ExtArgs> = {}>(args?: Subset<T, User$valuesSubmittedArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$EntityValuePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+    valuesApproved<T extends User$valuesApprovedArgs<ExtArgs> = {}>(args?: Subset<T, User$valuesApprovedArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$EntityValuePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     entityAssignments<T extends User$entityAssignmentsArgs<ExtArgs> = {}>(args?: Subset<T, User$entityAssignmentsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$UserEntityAssignmentPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     /**
      * Attaches callbacks for the resolution and/or rejection of the Promise.
@@ -6375,23 +6375,23 @@ export namespace Prisma {
    */
   export type User$valuesEnteredArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     /**
-     * Select specific fields to fetch from the EntityValuePeriod
+     * Select specific fields to fetch from the EntityValue
      */
-    select?: EntityValuePeriodSelect<ExtArgs> | null
+    select?: EntityValueSelect<ExtArgs> | null
     /**
-     * Omit specific fields from the EntityValuePeriod
+     * Omit specific fields from the EntityValue
      */
-    omit?: EntityValuePeriodOmit<ExtArgs> | null
+    omit?: EntityValueOmit<ExtArgs> | null
     /**
      * Choose, which related nodes to fetch as well
      */
-    include?: EntityValuePeriodInclude<ExtArgs> | null
-    where?: EntityValuePeriodWhereInput
-    orderBy?: EntityValuePeriodOrderByWithRelationInput | EntityValuePeriodOrderByWithRelationInput[]
-    cursor?: EntityValuePeriodWhereUniqueInput
+    include?: EntityValueInclude<ExtArgs> | null
+    where?: EntityValueWhereInput
+    orderBy?: EntityValueOrderByWithRelationInput | EntityValueOrderByWithRelationInput[]
+    cursor?: EntityValueWhereUniqueInput
     take?: number
     skip?: number
-    distinct?: EntityValuePeriodScalarFieldEnum | EntityValuePeriodScalarFieldEnum[]
+    distinct?: EntityValueScalarFieldEnum | EntityValueScalarFieldEnum[]
   }
 
   /**
@@ -6399,23 +6399,23 @@ export namespace Prisma {
    */
   export type User$valuesSubmittedArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     /**
-     * Select specific fields to fetch from the EntityValuePeriod
+     * Select specific fields to fetch from the EntityValue
      */
-    select?: EntityValuePeriodSelect<ExtArgs> | null
+    select?: EntityValueSelect<ExtArgs> | null
     /**
-     * Omit specific fields from the EntityValuePeriod
+     * Omit specific fields from the EntityValue
      */
-    omit?: EntityValuePeriodOmit<ExtArgs> | null
+    omit?: EntityValueOmit<ExtArgs> | null
     /**
      * Choose, which related nodes to fetch as well
      */
-    include?: EntityValuePeriodInclude<ExtArgs> | null
-    where?: EntityValuePeriodWhereInput
-    orderBy?: EntityValuePeriodOrderByWithRelationInput | EntityValuePeriodOrderByWithRelationInput[]
-    cursor?: EntityValuePeriodWhereUniqueInput
+    include?: EntityValueInclude<ExtArgs> | null
+    where?: EntityValueWhereInput
+    orderBy?: EntityValueOrderByWithRelationInput | EntityValueOrderByWithRelationInput[]
+    cursor?: EntityValueWhereUniqueInput
     take?: number
     skip?: number
-    distinct?: EntityValuePeriodScalarFieldEnum | EntityValuePeriodScalarFieldEnum[]
+    distinct?: EntityValueScalarFieldEnum | EntityValueScalarFieldEnum[]
   }
 
   /**
@@ -6423,23 +6423,23 @@ export namespace Prisma {
    */
   export type User$valuesApprovedArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     /**
-     * Select specific fields to fetch from the EntityValuePeriod
+     * Select specific fields to fetch from the EntityValue
      */
-    select?: EntityValuePeriodSelect<ExtArgs> | null
+    select?: EntityValueSelect<ExtArgs> | null
     /**
-     * Omit specific fields from the EntityValuePeriod
+     * Omit specific fields from the EntityValue
      */
-    omit?: EntityValuePeriodOmit<ExtArgs> | null
+    omit?: EntityValueOmit<ExtArgs> | null
     /**
      * Choose, which related nodes to fetch as well
      */
-    include?: EntityValuePeriodInclude<ExtArgs> | null
-    where?: EntityValuePeriodWhereInput
-    orderBy?: EntityValuePeriodOrderByWithRelationInput | EntityValuePeriodOrderByWithRelationInput[]
-    cursor?: EntityValuePeriodWhereUniqueInput
+    include?: EntityValueInclude<ExtArgs> | null
+    where?: EntityValueWhereInput
+    orderBy?: EntityValueOrderByWithRelationInput | EntityValueOrderByWithRelationInput[]
+    cursor?: EntityValueWhereUniqueInput
     take?: number
     skip?: number
-    distinct?: EntityValuePeriodScalarFieldEnum | EntityValuePeriodScalarFieldEnum[]
+    distinct?: EntityValueScalarFieldEnum | EntityValueScalarFieldEnum[]
   }
 
   /**
@@ -13552,7 +13552,7 @@ export namespace Prisma {
       orgEntityType: Prisma.$OrgEntityTypePayload<ExtArgs>
       ownerUser: Prisma.$UserPayload<ExtArgs> | null
       variables: Prisma.$EntityVariablePayload<ExtArgs>[]
-      values: Prisma.$EntityValuePeriodPayload<ExtArgs>[]
+      values: Prisma.$EntityValuePayload<ExtArgs>[]
       assignments: Prisma.$UserEntityAssignmentPayload<ExtArgs>[]
     }
     scalars: $Extensions.GetPayloadResult<{
@@ -13977,7 +13977,7 @@ export namespace Prisma {
     orgEntityType<T extends OrgEntityTypeDefaultArgs<ExtArgs> = {}>(args?: Subset<T, OrgEntityTypeDefaultArgs<ExtArgs>>): Prisma__OrgEntityTypeClient<$Result.GetResult<Prisma.$OrgEntityTypePayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
     ownerUser<T extends Entity$ownerUserArgs<ExtArgs> = {}>(args?: Subset<T, Entity$ownerUserArgs<ExtArgs>>): Prisma__UserClient<$Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
     variables<T extends Entity$variablesArgs<ExtArgs> = {}>(args?: Subset<T, Entity$variablesArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$EntityVariablePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
-    values<T extends Entity$valuesArgs<ExtArgs> = {}>(args?: Subset<T, Entity$valuesArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$EntityValuePeriodPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+    values<T extends Entity$valuesArgs<ExtArgs> = {}>(args?: Subset<T, Entity$valuesArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$EntityValuePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     assignments<T extends Entity$assignmentsArgs<ExtArgs> = {}>(args?: Subset<T, Entity$assignmentsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$UserEntityAssignmentPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     /**
      * Attaches callbacks for the resolution and/or rejection of the Promise.
@@ -14474,23 +14474,23 @@ export namespace Prisma {
    */
   export type Entity$valuesArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     /**
-     * Select specific fields to fetch from the EntityValuePeriod
+     * Select specific fields to fetch from the EntityValue
      */
-    select?: EntityValuePeriodSelect<ExtArgs> | null
+    select?: EntityValueSelect<ExtArgs> | null
     /**
-     * Omit specific fields from the EntityValuePeriod
+     * Omit specific fields from the EntityValue
      */
-    omit?: EntityValuePeriodOmit<ExtArgs> | null
+    omit?: EntityValueOmit<ExtArgs> | null
     /**
      * Choose, which related nodes to fetch as well
      */
-    include?: EntityValuePeriodInclude<ExtArgs> | null
-    where?: EntityValuePeriodWhereInput
-    orderBy?: EntityValuePeriodOrderByWithRelationInput | EntityValuePeriodOrderByWithRelationInput[]
-    cursor?: EntityValuePeriodWhereUniqueInput
+    include?: EntityValueInclude<ExtArgs> | null
+    where?: EntityValueWhereInput
+    orderBy?: EntityValueOrderByWithRelationInput | EntityValueOrderByWithRelationInput[]
+    cursor?: EntityValueWhereUniqueInput
     take?: number
     skip?: number
-    distinct?: EntityValuePeriodScalarFieldEnum | EntityValuePeriodScalarFieldEnum[]
+    distinct?: EntityValueScalarFieldEnum | EntityValueScalarFieldEnum[]
   }
 
   /**
@@ -15711,36 +15711,34 @@ export namespace Prisma {
 
 
   /**
-   * Model EntityValuePeriod
+   * Model EntityValue
    */
 
-  export type AggregateEntityValuePeriod = {
-    _count: EntityValuePeriodCountAggregateOutputType | null
-    _avg: EntityValuePeriodAvgAggregateOutputType | null
-    _sum: EntityValuePeriodSumAggregateOutputType | null
-    _min: EntityValuePeriodMinAggregateOutputType | null
-    _max: EntityValuePeriodMaxAggregateOutputType | null
+  export type AggregateEntityValue = {
+    _count: EntityValueCountAggregateOutputType | null
+    _avg: EntityValueAvgAggregateOutputType | null
+    _sum: EntityValueSumAggregateOutputType | null
+    _min: EntityValueMinAggregateOutputType | null
+    _max: EntityValueMaxAggregateOutputType | null
   }
 
-  export type EntityValuePeriodAvgAggregateOutputType = {
+  export type EntityValueAvgAggregateOutputType = {
     actualValue: number | null
     calculatedValue: number | null
     finalValue: number | null
     achievementValue: number | null
   }
 
-  export type EntityValuePeriodSumAggregateOutputType = {
+  export type EntityValueSumAggregateOutputType = {
     actualValue: number | null
     calculatedValue: number | null
     finalValue: number | null
     achievementValue: number | null
   }
 
-  export type EntityValuePeriodMinAggregateOutputType = {
+  export type EntityValueMinAggregateOutputType = {
     id: string | null
     entityId: string | null
-    periodStart: Date | null
-    periodEnd: Date | null
     actualValue: number | null
     calculatedValue: number | null
     finalValue: number | null
@@ -15758,11 +15756,9 @@ export namespace Prisma {
     updatedAt: Date | null
   }
 
-  export type EntityValuePeriodMaxAggregateOutputType = {
+  export type EntityValueMaxAggregateOutputType = {
     id: string | null
     entityId: string | null
-    periodStart: Date | null
-    periodEnd: Date | null
     actualValue: number | null
     calculatedValue: number | null
     finalValue: number | null
@@ -15780,11 +15776,9 @@ export namespace Prisma {
     updatedAt: Date | null
   }
 
-  export type EntityValuePeriodCountAggregateOutputType = {
+  export type EntityValueCountAggregateOutputType = {
     id: number
     entityId: number
-    periodStart: number
-    periodEnd: number
     actualValue: number
     calculatedValue: number
     finalValue: number
@@ -15804,25 +15798,23 @@ export namespace Prisma {
   }
 
 
-  export type EntityValuePeriodAvgAggregateInputType = {
+  export type EntityValueAvgAggregateInputType = {
     actualValue?: true
     calculatedValue?: true
     finalValue?: true
     achievementValue?: true
   }
 
-  export type EntityValuePeriodSumAggregateInputType = {
+  export type EntityValueSumAggregateInputType = {
     actualValue?: true
     calculatedValue?: true
     finalValue?: true
     achievementValue?: true
   }
 
-  export type EntityValuePeriodMinAggregateInputType = {
+  export type EntityValueMinAggregateInputType = {
     id?: true
     entityId?: true
-    periodStart?: true
-    periodEnd?: true
     actualValue?: true
     calculatedValue?: true
     finalValue?: true
@@ -15840,11 +15832,9 @@ export namespace Prisma {
     updatedAt?: true
   }
 
-  export type EntityValuePeriodMaxAggregateInputType = {
+  export type EntityValueMaxAggregateInputType = {
     id?: true
     entityId?: true
-    periodStart?: true
-    periodEnd?: true
     actualValue?: true
     calculatedValue?: true
     finalValue?: true
@@ -15862,11 +15852,9 @@ export namespace Prisma {
     updatedAt?: true
   }
 
-  export type EntityValuePeriodCountAggregateInputType = {
+  export type EntityValueCountAggregateInputType = {
     id?: true
     entityId?: true
-    periodStart?: true
-    periodEnd?: true
     actualValue?: true
     calculatedValue?: true
     finalValue?: true
@@ -15885,97 +15873,95 @@ export namespace Prisma {
     _all?: true
   }
 
-  export type EntityValuePeriodAggregateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+  export type EntityValueAggregateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     /**
-     * Filter which EntityValuePeriod to aggregate.
+     * Filter which EntityValue to aggregate.
      */
-    where?: EntityValuePeriodWhereInput
+    where?: EntityValueWhereInput
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
      * 
-     * Determine the order of EntityValuePeriods to fetch.
+     * Determine the order of EntityValues to fetch.
      */
-    orderBy?: EntityValuePeriodOrderByWithRelationInput | EntityValuePeriodOrderByWithRelationInput[]
+    orderBy?: EntityValueOrderByWithRelationInput | EntityValueOrderByWithRelationInput[]
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
      * 
      * Sets the start position
      */
-    cursor?: EntityValuePeriodWhereUniqueInput
+    cursor?: EntityValueWhereUniqueInput
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
      * 
-     * Take `±n` EntityValuePeriods from the position of the cursor.
+     * Take `±n` EntityValues from the position of the cursor.
      */
     take?: number
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
      * 
-     * Skip the first `n` EntityValuePeriods.
+     * Skip the first `n` EntityValues.
      */
     skip?: number
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
      * 
-     * Count returned EntityValuePeriods
+     * Count returned EntityValues
     **/
-    _count?: true | EntityValuePeriodCountAggregateInputType
+    _count?: true | EntityValueCountAggregateInputType
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
      * 
      * Select which fields to average
     **/
-    _avg?: EntityValuePeriodAvgAggregateInputType
+    _avg?: EntityValueAvgAggregateInputType
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
      * 
      * Select which fields to sum
     **/
-    _sum?: EntityValuePeriodSumAggregateInputType
+    _sum?: EntityValueSumAggregateInputType
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
      * 
      * Select which fields to find the minimum value
     **/
-    _min?: EntityValuePeriodMinAggregateInputType
+    _min?: EntityValueMinAggregateInputType
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
      * 
      * Select which fields to find the maximum value
     **/
-    _max?: EntityValuePeriodMaxAggregateInputType
+    _max?: EntityValueMaxAggregateInputType
   }
 
-  export type GetEntityValuePeriodAggregateType<T extends EntityValuePeriodAggregateArgs> = {
-        [P in keyof T & keyof AggregateEntityValuePeriod]: P extends '_count' | 'count'
+  export type GetEntityValueAggregateType<T extends EntityValueAggregateArgs> = {
+        [P in keyof T & keyof AggregateEntityValue]: P extends '_count' | 'count'
       ? T[P] extends true
         ? number
-        : GetScalarType<T[P], AggregateEntityValuePeriod[P]>
-      : GetScalarType<T[P], AggregateEntityValuePeriod[P]>
+        : GetScalarType<T[P], AggregateEntityValue[P]>
+      : GetScalarType<T[P], AggregateEntityValue[P]>
   }
 
 
 
 
-  export type EntityValuePeriodGroupByArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    where?: EntityValuePeriodWhereInput
-    orderBy?: EntityValuePeriodOrderByWithAggregationInput | EntityValuePeriodOrderByWithAggregationInput[]
-    by: EntityValuePeriodScalarFieldEnum[] | EntityValuePeriodScalarFieldEnum
-    having?: EntityValuePeriodScalarWhereWithAggregatesInput
+  export type EntityValueGroupByArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: EntityValueWhereInput
+    orderBy?: EntityValueOrderByWithAggregationInput | EntityValueOrderByWithAggregationInput[]
+    by: EntityValueScalarFieldEnum[] | EntityValueScalarFieldEnum
+    having?: EntityValueScalarWhereWithAggregatesInput
     take?: number
     skip?: number
-    _count?: EntityValuePeriodCountAggregateInputType | true
-    _avg?: EntityValuePeriodAvgAggregateInputType
-    _sum?: EntityValuePeriodSumAggregateInputType
-    _min?: EntityValuePeriodMinAggregateInputType
-    _max?: EntityValuePeriodMaxAggregateInputType
+    _count?: EntityValueCountAggregateInputType | true
+    _avg?: EntityValueAvgAggregateInputType
+    _sum?: EntityValueSumAggregateInputType
+    _min?: EntityValueMinAggregateInputType
+    _max?: EntityValueMaxAggregateInputType
   }
 
-  export type EntityValuePeriodGroupByOutputType = {
+  export type EntityValueGroupByOutputType = {
     id: string
     entityId: string
-    periodStart: Date
-    periodEnd: Date
     actualValue: number | null
     calculatedValue: number | null
     finalValue: number | null
@@ -15991,32 +15977,30 @@ export namespace Prisma {
     lockedAt: Date | null
     createdAt: Date
     updatedAt: Date
-    _count: EntityValuePeriodCountAggregateOutputType | null
-    _avg: EntityValuePeriodAvgAggregateOutputType | null
-    _sum: EntityValuePeriodSumAggregateOutputType | null
-    _min: EntityValuePeriodMinAggregateOutputType | null
-    _max: EntityValuePeriodMaxAggregateOutputType | null
+    _count: EntityValueCountAggregateOutputType | null
+    _avg: EntityValueAvgAggregateOutputType | null
+    _sum: EntityValueSumAggregateOutputType | null
+    _min: EntityValueMinAggregateOutputType | null
+    _max: EntityValueMaxAggregateOutputType | null
   }
 
-  type GetEntityValuePeriodGroupByPayload<T extends EntityValuePeriodGroupByArgs> = Prisma.PrismaPromise<
+  type GetEntityValueGroupByPayload<T extends EntityValueGroupByArgs> = Prisma.PrismaPromise<
     Array<
-      PickEnumerable<EntityValuePeriodGroupByOutputType, T['by']> &
+      PickEnumerable<EntityValueGroupByOutputType, T['by']> &
         {
-          [P in ((keyof T) & (keyof EntityValuePeriodGroupByOutputType))]: P extends '_count'
+          [P in ((keyof T) & (keyof EntityValueGroupByOutputType))]: P extends '_count'
             ? T[P] extends boolean
               ? number
-              : GetScalarType<T[P], EntityValuePeriodGroupByOutputType[P]>
-            : GetScalarType<T[P], EntityValuePeriodGroupByOutputType[P]>
+              : GetScalarType<T[P], EntityValueGroupByOutputType[P]>
+            : GetScalarType<T[P], EntityValueGroupByOutputType[P]>
         }
       >
     >
 
 
-  export type EntityValuePeriodSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+  export type EntityValueSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
     id?: boolean
     entityId?: boolean
-    periodStart?: boolean
-    periodEnd?: boolean
     actualValue?: boolean
     calculatedValue?: boolean
     finalValue?: boolean
@@ -16033,18 +16017,16 @@ export namespace Prisma {
     createdAt?: boolean
     updatedAt?: boolean
     entity?: boolean | EntityDefaultArgs<ExtArgs>
-    enteredByUser?: boolean | EntityValuePeriod$enteredByUserArgs<ExtArgs>
-    submittedByUser?: boolean | EntityValuePeriod$submittedByUserArgs<ExtArgs>
-    approvedByUser?: boolean | EntityValuePeriod$approvedByUserArgs<ExtArgs>
-    variableValues?: boolean | EntityValuePeriod$variableValuesArgs<ExtArgs>
-    _count?: boolean | EntityValuePeriodCountOutputTypeDefaultArgs<ExtArgs>
-  }, ExtArgs["result"]["entityValuePeriod"]>
+    enteredByUser?: boolean | EntityValue$enteredByUserArgs<ExtArgs>
+    submittedByUser?: boolean | EntityValue$submittedByUserArgs<ExtArgs>
+    approvedByUser?: boolean | EntityValue$approvedByUserArgs<ExtArgs>
+    variableValues?: boolean | EntityValue$variableValuesArgs<ExtArgs>
+    _count?: boolean | EntityValueCountOutputTypeDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["entityValue"]>
 
-  export type EntityValuePeriodSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+  export type EntityValueSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
     id?: boolean
     entityId?: boolean
-    periodStart?: boolean
-    periodEnd?: boolean
     actualValue?: boolean
     calculatedValue?: boolean
     finalValue?: boolean
@@ -16061,16 +16043,14 @@ export namespace Prisma {
     createdAt?: boolean
     updatedAt?: boolean
     entity?: boolean | EntityDefaultArgs<ExtArgs>
-    enteredByUser?: boolean | EntityValuePeriod$enteredByUserArgs<ExtArgs>
-    submittedByUser?: boolean | EntityValuePeriod$submittedByUserArgs<ExtArgs>
-    approvedByUser?: boolean | EntityValuePeriod$approvedByUserArgs<ExtArgs>
-  }, ExtArgs["result"]["entityValuePeriod"]>
+    enteredByUser?: boolean | EntityValue$enteredByUserArgs<ExtArgs>
+    submittedByUser?: boolean | EntityValue$submittedByUserArgs<ExtArgs>
+    approvedByUser?: boolean | EntityValue$approvedByUserArgs<ExtArgs>
+  }, ExtArgs["result"]["entityValue"]>
 
-  export type EntityValuePeriodSelectUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+  export type EntityValueSelectUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
     id?: boolean
     entityId?: boolean
-    periodStart?: boolean
-    periodEnd?: boolean
     actualValue?: boolean
     calculatedValue?: boolean
     finalValue?: boolean
@@ -16087,16 +16067,14 @@ export namespace Prisma {
     createdAt?: boolean
     updatedAt?: boolean
     entity?: boolean | EntityDefaultArgs<ExtArgs>
-    enteredByUser?: boolean | EntityValuePeriod$enteredByUserArgs<ExtArgs>
-    submittedByUser?: boolean | EntityValuePeriod$submittedByUserArgs<ExtArgs>
-    approvedByUser?: boolean | EntityValuePeriod$approvedByUserArgs<ExtArgs>
-  }, ExtArgs["result"]["entityValuePeriod"]>
+    enteredByUser?: boolean | EntityValue$enteredByUserArgs<ExtArgs>
+    submittedByUser?: boolean | EntityValue$submittedByUserArgs<ExtArgs>
+    approvedByUser?: boolean | EntityValue$approvedByUserArgs<ExtArgs>
+  }, ExtArgs["result"]["entityValue"]>
 
-  export type EntityValuePeriodSelectScalar = {
+  export type EntityValueSelectScalar = {
     id?: boolean
     entityId?: boolean
-    periodStart?: boolean
-    periodEnd?: boolean
     actualValue?: boolean
     calculatedValue?: boolean
     finalValue?: boolean
@@ -16114,30 +16092,30 @@ export namespace Prisma {
     updatedAt?: boolean
   }
 
-  export type EntityValuePeriodOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "entityId" | "periodStart" | "periodEnd" | "actualValue" | "calculatedValue" | "finalValue" | "achievementValue" | "status" | "approvalType" | "note" | "enteredBy" | "submittedBy" | "approvedBy" | "submittedAt" | "approvedAt" | "lockedAt" | "createdAt" | "updatedAt", ExtArgs["result"]["entityValuePeriod"]>
-  export type EntityValuePeriodInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+  export type EntityValueOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "entityId" | "actualValue" | "calculatedValue" | "finalValue" | "achievementValue" | "status" | "approvalType" | "note" | "enteredBy" | "submittedBy" | "approvedBy" | "submittedAt" | "approvedAt" | "lockedAt" | "createdAt" | "updatedAt", ExtArgs["result"]["entityValue"]>
+  export type EntityValueInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     entity?: boolean | EntityDefaultArgs<ExtArgs>
-    enteredByUser?: boolean | EntityValuePeriod$enteredByUserArgs<ExtArgs>
-    submittedByUser?: boolean | EntityValuePeriod$submittedByUserArgs<ExtArgs>
-    approvedByUser?: boolean | EntityValuePeriod$approvedByUserArgs<ExtArgs>
-    variableValues?: boolean | EntityValuePeriod$variableValuesArgs<ExtArgs>
-    _count?: boolean | EntityValuePeriodCountOutputTypeDefaultArgs<ExtArgs>
+    enteredByUser?: boolean | EntityValue$enteredByUserArgs<ExtArgs>
+    submittedByUser?: boolean | EntityValue$submittedByUserArgs<ExtArgs>
+    approvedByUser?: boolean | EntityValue$approvedByUserArgs<ExtArgs>
+    variableValues?: boolean | EntityValue$variableValuesArgs<ExtArgs>
+    _count?: boolean | EntityValueCountOutputTypeDefaultArgs<ExtArgs>
   }
-  export type EntityValuePeriodIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+  export type EntityValueIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     entity?: boolean | EntityDefaultArgs<ExtArgs>
-    enteredByUser?: boolean | EntityValuePeriod$enteredByUserArgs<ExtArgs>
-    submittedByUser?: boolean | EntityValuePeriod$submittedByUserArgs<ExtArgs>
-    approvedByUser?: boolean | EntityValuePeriod$approvedByUserArgs<ExtArgs>
+    enteredByUser?: boolean | EntityValue$enteredByUserArgs<ExtArgs>
+    submittedByUser?: boolean | EntityValue$submittedByUserArgs<ExtArgs>
+    approvedByUser?: boolean | EntityValue$approvedByUserArgs<ExtArgs>
   }
-  export type EntityValuePeriodIncludeUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+  export type EntityValueIncludeUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     entity?: boolean | EntityDefaultArgs<ExtArgs>
-    enteredByUser?: boolean | EntityValuePeriod$enteredByUserArgs<ExtArgs>
-    submittedByUser?: boolean | EntityValuePeriod$submittedByUserArgs<ExtArgs>
-    approvedByUser?: boolean | EntityValuePeriod$approvedByUserArgs<ExtArgs>
+    enteredByUser?: boolean | EntityValue$enteredByUserArgs<ExtArgs>
+    submittedByUser?: boolean | EntityValue$submittedByUserArgs<ExtArgs>
+    approvedByUser?: boolean | EntityValue$approvedByUserArgs<ExtArgs>
   }
 
-  export type $EntityValuePeriodPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    name: "EntityValuePeriod"
+  export type $EntityValuePayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    name: "EntityValue"
     objects: {
       entity: Prisma.$EntityPayload<ExtArgs>
       enteredByUser: Prisma.$UserPayload<ExtArgs> | null
@@ -16148,8 +16126,6 @@ export namespace Prisma {
     scalars: $Extensions.GetPayloadResult<{
       id: string
       entityId: string
-      periodStart: Date
-      periodEnd: Date
       actualValue: number | null
       calculatedValue: number | null
       finalValue: number | null
@@ -16165,136 +16141,136 @@ export namespace Prisma {
       lockedAt: Date | null
       createdAt: Date
       updatedAt: Date
-    }, ExtArgs["result"]["entityValuePeriod"]>
+    }, ExtArgs["result"]["entityValue"]>
     composites: {}
   }
 
-  type EntityValuePeriodGetPayload<S extends boolean | null | undefined | EntityValuePeriodDefaultArgs> = $Result.GetResult<Prisma.$EntityValuePeriodPayload, S>
+  type EntityValueGetPayload<S extends boolean | null | undefined | EntityValueDefaultArgs> = $Result.GetResult<Prisma.$EntityValuePayload, S>
 
-  type EntityValuePeriodCountArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> =
-    Omit<EntityValuePeriodFindManyArgs, 'select' | 'include' | 'distinct' | 'omit'> & {
-      select?: EntityValuePeriodCountAggregateInputType | true
+  type EntityValueCountArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> =
+    Omit<EntityValueFindManyArgs, 'select' | 'include' | 'distinct' | 'omit'> & {
+      select?: EntityValueCountAggregateInputType | true
     }
 
-  export interface EntityValuePeriodDelegate<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> {
-    [K: symbol]: { types: Prisma.TypeMap<ExtArgs>['model']['EntityValuePeriod'], meta: { name: 'EntityValuePeriod' } }
+  export interface EntityValueDelegate<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> {
+    [K: symbol]: { types: Prisma.TypeMap<ExtArgs>['model']['EntityValue'], meta: { name: 'EntityValue' } }
     /**
-     * Find zero or one EntityValuePeriod that matches the filter.
-     * @param {EntityValuePeriodFindUniqueArgs} args - Arguments to find a EntityValuePeriod
+     * Find zero or one EntityValue that matches the filter.
+     * @param {EntityValueFindUniqueArgs} args - Arguments to find a EntityValue
      * @example
-     * // Get one EntityValuePeriod
-     * const entityValuePeriod = await prisma.entityValuePeriod.findUnique({
+     * // Get one EntityValue
+     * const entityValue = await prisma.entityValue.findUnique({
      *   where: {
      *     // ... provide filter here
      *   }
      * })
      */
-    findUnique<T extends EntityValuePeriodFindUniqueArgs>(args: SelectSubset<T, EntityValuePeriodFindUniqueArgs<ExtArgs>>): Prisma__EntityValuePeriodClient<$Result.GetResult<Prisma.$EntityValuePeriodPayload<ExtArgs>, T, "findUnique", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+    findUnique<T extends EntityValueFindUniqueArgs>(args: SelectSubset<T, EntityValueFindUniqueArgs<ExtArgs>>): Prisma__EntityValueClient<$Result.GetResult<Prisma.$EntityValuePayload<ExtArgs>, T, "findUnique", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
 
     /**
-     * Find one EntityValuePeriod that matches the filter or throw an error with `error.code='P2025'`
+     * Find one EntityValue that matches the filter or throw an error with `error.code='P2025'`
      * if no matches were found.
-     * @param {EntityValuePeriodFindUniqueOrThrowArgs} args - Arguments to find a EntityValuePeriod
+     * @param {EntityValueFindUniqueOrThrowArgs} args - Arguments to find a EntityValue
      * @example
-     * // Get one EntityValuePeriod
-     * const entityValuePeriod = await prisma.entityValuePeriod.findUniqueOrThrow({
+     * // Get one EntityValue
+     * const entityValue = await prisma.entityValue.findUniqueOrThrow({
      *   where: {
      *     // ... provide filter here
      *   }
      * })
      */
-    findUniqueOrThrow<T extends EntityValuePeriodFindUniqueOrThrowArgs>(args: SelectSubset<T, EntityValuePeriodFindUniqueOrThrowArgs<ExtArgs>>): Prisma__EntityValuePeriodClient<$Result.GetResult<Prisma.$EntityValuePeriodPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+    findUniqueOrThrow<T extends EntityValueFindUniqueOrThrowArgs>(args: SelectSubset<T, EntityValueFindUniqueOrThrowArgs<ExtArgs>>): Prisma__EntityValueClient<$Result.GetResult<Prisma.$EntityValuePayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
 
     /**
-     * Find the first EntityValuePeriod that matches the filter.
+     * Find the first EntityValue that matches the filter.
      * Note, that providing `undefined` is treated as the value not being there.
      * Read more here: https://pris.ly/d/null-undefined
-     * @param {EntityValuePeriodFindFirstArgs} args - Arguments to find a EntityValuePeriod
+     * @param {EntityValueFindFirstArgs} args - Arguments to find a EntityValue
      * @example
-     * // Get one EntityValuePeriod
-     * const entityValuePeriod = await prisma.entityValuePeriod.findFirst({
+     * // Get one EntityValue
+     * const entityValue = await prisma.entityValue.findFirst({
      *   where: {
      *     // ... provide filter here
      *   }
      * })
      */
-    findFirst<T extends EntityValuePeriodFindFirstArgs>(args?: SelectSubset<T, EntityValuePeriodFindFirstArgs<ExtArgs>>): Prisma__EntityValuePeriodClient<$Result.GetResult<Prisma.$EntityValuePeriodPayload<ExtArgs>, T, "findFirst", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+    findFirst<T extends EntityValueFindFirstArgs>(args?: SelectSubset<T, EntityValueFindFirstArgs<ExtArgs>>): Prisma__EntityValueClient<$Result.GetResult<Prisma.$EntityValuePayload<ExtArgs>, T, "findFirst", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
 
     /**
-     * Find the first EntityValuePeriod that matches the filter or
+     * Find the first EntityValue that matches the filter or
      * throw `PrismaKnownClientError` with `P2025` code if no matches were found.
      * Note, that providing `undefined` is treated as the value not being there.
      * Read more here: https://pris.ly/d/null-undefined
-     * @param {EntityValuePeriodFindFirstOrThrowArgs} args - Arguments to find a EntityValuePeriod
+     * @param {EntityValueFindFirstOrThrowArgs} args - Arguments to find a EntityValue
      * @example
-     * // Get one EntityValuePeriod
-     * const entityValuePeriod = await prisma.entityValuePeriod.findFirstOrThrow({
+     * // Get one EntityValue
+     * const entityValue = await prisma.entityValue.findFirstOrThrow({
      *   where: {
      *     // ... provide filter here
      *   }
      * })
      */
-    findFirstOrThrow<T extends EntityValuePeriodFindFirstOrThrowArgs>(args?: SelectSubset<T, EntityValuePeriodFindFirstOrThrowArgs<ExtArgs>>): Prisma__EntityValuePeriodClient<$Result.GetResult<Prisma.$EntityValuePeriodPayload<ExtArgs>, T, "findFirstOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+    findFirstOrThrow<T extends EntityValueFindFirstOrThrowArgs>(args?: SelectSubset<T, EntityValueFindFirstOrThrowArgs<ExtArgs>>): Prisma__EntityValueClient<$Result.GetResult<Prisma.$EntityValuePayload<ExtArgs>, T, "findFirstOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
 
     /**
-     * Find zero or more EntityValuePeriods that matches the filter.
+     * Find zero or more EntityValues that matches the filter.
      * Note, that providing `undefined` is treated as the value not being there.
      * Read more here: https://pris.ly/d/null-undefined
-     * @param {EntityValuePeriodFindManyArgs} args - Arguments to filter and select certain fields only.
+     * @param {EntityValueFindManyArgs} args - Arguments to filter and select certain fields only.
      * @example
-     * // Get all EntityValuePeriods
-     * const entityValuePeriods = await prisma.entityValuePeriod.findMany()
+     * // Get all EntityValues
+     * const entityValues = await prisma.entityValue.findMany()
      * 
-     * // Get first 10 EntityValuePeriods
-     * const entityValuePeriods = await prisma.entityValuePeriod.findMany({ take: 10 })
+     * // Get first 10 EntityValues
+     * const entityValues = await prisma.entityValue.findMany({ take: 10 })
      * 
      * // Only select the `id`
-     * const entityValuePeriodWithIdOnly = await prisma.entityValuePeriod.findMany({ select: { id: true } })
+     * const entityValueWithIdOnly = await prisma.entityValue.findMany({ select: { id: true } })
      * 
      */
-    findMany<T extends EntityValuePeriodFindManyArgs>(args?: SelectSubset<T, EntityValuePeriodFindManyArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$EntityValuePeriodPayload<ExtArgs>, T, "findMany", GlobalOmitOptions>>
+    findMany<T extends EntityValueFindManyArgs>(args?: SelectSubset<T, EntityValueFindManyArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$EntityValuePayload<ExtArgs>, T, "findMany", GlobalOmitOptions>>
 
     /**
-     * Create a EntityValuePeriod.
-     * @param {EntityValuePeriodCreateArgs} args - Arguments to create a EntityValuePeriod.
+     * Create a EntityValue.
+     * @param {EntityValueCreateArgs} args - Arguments to create a EntityValue.
      * @example
-     * // Create one EntityValuePeriod
-     * const EntityValuePeriod = await prisma.entityValuePeriod.create({
+     * // Create one EntityValue
+     * const EntityValue = await prisma.entityValue.create({
      *   data: {
-     *     // ... data to create a EntityValuePeriod
+     *     // ... data to create a EntityValue
      *   }
      * })
      * 
      */
-    create<T extends EntityValuePeriodCreateArgs>(args: SelectSubset<T, EntityValuePeriodCreateArgs<ExtArgs>>): Prisma__EntityValuePeriodClient<$Result.GetResult<Prisma.$EntityValuePeriodPayload<ExtArgs>, T, "create", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+    create<T extends EntityValueCreateArgs>(args: SelectSubset<T, EntityValueCreateArgs<ExtArgs>>): Prisma__EntityValueClient<$Result.GetResult<Prisma.$EntityValuePayload<ExtArgs>, T, "create", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
 
     /**
-     * Create many EntityValuePeriods.
-     * @param {EntityValuePeriodCreateManyArgs} args - Arguments to create many EntityValuePeriods.
+     * Create many EntityValues.
+     * @param {EntityValueCreateManyArgs} args - Arguments to create many EntityValues.
      * @example
-     * // Create many EntityValuePeriods
-     * const entityValuePeriod = await prisma.entityValuePeriod.createMany({
+     * // Create many EntityValues
+     * const entityValue = await prisma.entityValue.createMany({
      *   data: [
      *     // ... provide data here
      *   ]
      * })
      *     
      */
-    createMany<T extends EntityValuePeriodCreateManyArgs>(args?: SelectSubset<T, EntityValuePeriodCreateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+    createMany<T extends EntityValueCreateManyArgs>(args?: SelectSubset<T, EntityValueCreateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
 
     /**
-     * Create many EntityValuePeriods and returns the data saved in the database.
-     * @param {EntityValuePeriodCreateManyAndReturnArgs} args - Arguments to create many EntityValuePeriods.
+     * Create many EntityValues and returns the data saved in the database.
+     * @param {EntityValueCreateManyAndReturnArgs} args - Arguments to create many EntityValues.
      * @example
-     * // Create many EntityValuePeriods
-     * const entityValuePeriod = await prisma.entityValuePeriod.createManyAndReturn({
+     * // Create many EntityValues
+     * const entityValue = await prisma.entityValue.createManyAndReturn({
      *   data: [
      *     // ... provide data here
      *   ]
      * })
      * 
-     * // Create many EntityValuePeriods and only return the `id`
-     * const entityValuePeriodWithIdOnly = await prisma.entityValuePeriod.createManyAndReturn({
+     * // Create many EntityValues and only return the `id`
+     * const entityValueWithIdOnly = await prisma.entityValue.createManyAndReturn({
      *   select: { id: true },
      *   data: [
      *     // ... provide data here
@@ -16304,28 +16280,28 @@ export namespace Prisma {
      * Read more here: https://pris.ly/d/null-undefined
      * 
      */
-    createManyAndReturn<T extends EntityValuePeriodCreateManyAndReturnArgs>(args?: SelectSubset<T, EntityValuePeriodCreateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$EntityValuePeriodPayload<ExtArgs>, T, "createManyAndReturn", GlobalOmitOptions>>
+    createManyAndReturn<T extends EntityValueCreateManyAndReturnArgs>(args?: SelectSubset<T, EntityValueCreateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$EntityValuePayload<ExtArgs>, T, "createManyAndReturn", GlobalOmitOptions>>
 
     /**
-     * Delete a EntityValuePeriod.
-     * @param {EntityValuePeriodDeleteArgs} args - Arguments to delete one EntityValuePeriod.
+     * Delete a EntityValue.
+     * @param {EntityValueDeleteArgs} args - Arguments to delete one EntityValue.
      * @example
-     * // Delete one EntityValuePeriod
-     * const EntityValuePeriod = await prisma.entityValuePeriod.delete({
+     * // Delete one EntityValue
+     * const EntityValue = await prisma.entityValue.delete({
      *   where: {
-     *     // ... filter to delete one EntityValuePeriod
+     *     // ... filter to delete one EntityValue
      *   }
      * })
      * 
      */
-    delete<T extends EntityValuePeriodDeleteArgs>(args: SelectSubset<T, EntityValuePeriodDeleteArgs<ExtArgs>>): Prisma__EntityValuePeriodClient<$Result.GetResult<Prisma.$EntityValuePeriodPayload<ExtArgs>, T, "delete", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+    delete<T extends EntityValueDeleteArgs>(args: SelectSubset<T, EntityValueDeleteArgs<ExtArgs>>): Prisma__EntityValueClient<$Result.GetResult<Prisma.$EntityValuePayload<ExtArgs>, T, "delete", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
 
     /**
-     * Update one EntityValuePeriod.
-     * @param {EntityValuePeriodUpdateArgs} args - Arguments to update one EntityValuePeriod.
+     * Update one EntityValue.
+     * @param {EntityValueUpdateArgs} args - Arguments to update one EntityValue.
      * @example
-     * // Update one EntityValuePeriod
-     * const entityValuePeriod = await prisma.entityValuePeriod.update({
+     * // Update one EntityValue
+     * const entityValue = await prisma.entityValue.update({
      *   where: {
      *     // ... provide filter here
      *   },
@@ -16335,30 +16311,30 @@ export namespace Prisma {
      * })
      * 
      */
-    update<T extends EntityValuePeriodUpdateArgs>(args: SelectSubset<T, EntityValuePeriodUpdateArgs<ExtArgs>>): Prisma__EntityValuePeriodClient<$Result.GetResult<Prisma.$EntityValuePeriodPayload<ExtArgs>, T, "update", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+    update<T extends EntityValueUpdateArgs>(args: SelectSubset<T, EntityValueUpdateArgs<ExtArgs>>): Prisma__EntityValueClient<$Result.GetResult<Prisma.$EntityValuePayload<ExtArgs>, T, "update", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
 
     /**
-     * Delete zero or more EntityValuePeriods.
-     * @param {EntityValuePeriodDeleteManyArgs} args - Arguments to filter EntityValuePeriods to delete.
+     * Delete zero or more EntityValues.
+     * @param {EntityValueDeleteManyArgs} args - Arguments to filter EntityValues to delete.
      * @example
-     * // Delete a few EntityValuePeriods
-     * const { count } = await prisma.entityValuePeriod.deleteMany({
+     * // Delete a few EntityValues
+     * const { count } = await prisma.entityValue.deleteMany({
      *   where: {
      *     // ... provide filter here
      *   }
      * })
      * 
      */
-    deleteMany<T extends EntityValuePeriodDeleteManyArgs>(args?: SelectSubset<T, EntityValuePeriodDeleteManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+    deleteMany<T extends EntityValueDeleteManyArgs>(args?: SelectSubset<T, EntityValueDeleteManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
 
     /**
-     * Update zero or more EntityValuePeriods.
+     * Update zero or more EntityValues.
      * Note, that providing `undefined` is treated as the value not being there.
      * Read more here: https://pris.ly/d/null-undefined
-     * @param {EntityValuePeriodUpdateManyArgs} args - Arguments to update one or more rows.
+     * @param {EntityValueUpdateManyArgs} args - Arguments to update one or more rows.
      * @example
-     * // Update many EntityValuePeriods
-     * const entityValuePeriod = await prisma.entityValuePeriod.updateMany({
+     * // Update many EntityValues
+     * const entityValue = await prisma.entityValue.updateMany({
      *   where: {
      *     // ... provide filter here
      *   },
@@ -16368,14 +16344,14 @@ export namespace Prisma {
      * })
      * 
      */
-    updateMany<T extends EntityValuePeriodUpdateManyArgs>(args: SelectSubset<T, EntityValuePeriodUpdateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+    updateMany<T extends EntityValueUpdateManyArgs>(args: SelectSubset<T, EntityValueUpdateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
 
     /**
-     * Update zero or more EntityValuePeriods and returns the data updated in the database.
-     * @param {EntityValuePeriodUpdateManyAndReturnArgs} args - Arguments to update many EntityValuePeriods.
+     * Update zero or more EntityValues and returns the data updated in the database.
+     * @param {EntityValueUpdateManyAndReturnArgs} args - Arguments to update many EntityValues.
      * @example
-     * // Update many EntityValuePeriods
-     * const entityValuePeriod = await prisma.entityValuePeriod.updateManyAndReturn({
+     * // Update many EntityValues
+     * const entityValue = await prisma.entityValue.updateManyAndReturn({
      *   where: {
      *     // ... provide filter here
      *   },
@@ -16384,8 +16360,8 @@ export namespace Prisma {
      *   ]
      * })
      * 
-     * // Update zero or more EntityValuePeriods and only return the `id`
-     * const entityValuePeriodWithIdOnly = await prisma.entityValuePeriod.updateManyAndReturn({
+     * // Update zero or more EntityValues and only return the `id`
+     * const entityValueWithIdOnly = await prisma.entityValue.updateManyAndReturn({
      *   select: { id: true },
      *   where: {
      *     // ... provide filter here
@@ -16398,56 +16374,56 @@ export namespace Prisma {
      * Read more here: https://pris.ly/d/null-undefined
      * 
      */
-    updateManyAndReturn<T extends EntityValuePeriodUpdateManyAndReturnArgs>(args: SelectSubset<T, EntityValuePeriodUpdateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$EntityValuePeriodPayload<ExtArgs>, T, "updateManyAndReturn", GlobalOmitOptions>>
+    updateManyAndReturn<T extends EntityValueUpdateManyAndReturnArgs>(args: SelectSubset<T, EntityValueUpdateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$EntityValuePayload<ExtArgs>, T, "updateManyAndReturn", GlobalOmitOptions>>
 
     /**
-     * Create or update one EntityValuePeriod.
-     * @param {EntityValuePeriodUpsertArgs} args - Arguments to update or create a EntityValuePeriod.
+     * Create or update one EntityValue.
+     * @param {EntityValueUpsertArgs} args - Arguments to update or create a EntityValue.
      * @example
-     * // Update or create a EntityValuePeriod
-     * const entityValuePeriod = await prisma.entityValuePeriod.upsert({
+     * // Update or create a EntityValue
+     * const entityValue = await prisma.entityValue.upsert({
      *   create: {
-     *     // ... data to create a EntityValuePeriod
+     *     // ... data to create a EntityValue
      *   },
      *   update: {
      *     // ... in case it already exists, update
      *   },
      *   where: {
-     *     // ... the filter for the EntityValuePeriod we want to update
+     *     // ... the filter for the EntityValue we want to update
      *   }
      * })
      */
-    upsert<T extends EntityValuePeriodUpsertArgs>(args: SelectSubset<T, EntityValuePeriodUpsertArgs<ExtArgs>>): Prisma__EntityValuePeriodClient<$Result.GetResult<Prisma.$EntityValuePeriodPayload<ExtArgs>, T, "upsert", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+    upsert<T extends EntityValueUpsertArgs>(args: SelectSubset<T, EntityValueUpsertArgs<ExtArgs>>): Prisma__EntityValueClient<$Result.GetResult<Prisma.$EntityValuePayload<ExtArgs>, T, "upsert", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
 
 
     /**
-     * Count the number of EntityValuePeriods.
+     * Count the number of EntityValues.
      * Note, that providing `undefined` is treated as the value not being there.
      * Read more here: https://pris.ly/d/null-undefined
-     * @param {EntityValuePeriodCountArgs} args - Arguments to filter EntityValuePeriods to count.
+     * @param {EntityValueCountArgs} args - Arguments to filter EntityValues to count.
      * @example
-     * // Count the number of EntityValuePeriods
-     * const count = await prisma.entityValuePeriod.count({
+     * // Count the number of EntityValues
+     * const count = await prisma.entityValue.count({
      *   where: {
-     *     // ... the filter for the EntityValuePeriods we want to count
+     *     // ... the filter for the EntityValues we want to count
      *   }
      * })
     **/
-    count<T extends EntityValuePeriodCountArgs>(
-      args?: Subset<T, EntityValuePeriodCountArgs>,
+    count<T extends EntityValueCountArgs>(
+      args?: Subset<T, EntityValueCountArgs>,
     ): Prisma.PrismaPromise<
       T extends $Utils.Record<'select', any>
         ? T['select'] extends true
           ? number
-          : GetScalarType<T['select'], EntityValuePeriodCountAggregateOutputType>
+          : GetScalarType<T['select'], EntityValueCountAggregateOutputType>
         : number
     >
 
     /**
-     * Allows you to perform aggregations operations on a EntityValuePeriod.
+     * Allows you to perform aggregations operations on a EntityValue.
      * Note, that providing `undefined` is treated as the value not being there.
      * Read more here: https://pris.ly/d/null-undefined
-     * @param {EntityValuePeriodAggregateArgs} args - Select which aggregations you would like to apply and on what fields.
+     * @param {EntityValueAggregateArgs} args - Select which aggregations you would like to apply and on what fields.
      * @example
      * // Ordered by age ascending
      * // Where email contains prisma.io
@@ -16467,13 +16443,13 @@ export namespace Prisma {
      *   take: 10,
      * })
     **/
-    aggregate<T extends EntityValuePeriodAggregateArgs>(args: Subset<T, EntityValuePeriodAggregateArgs>): Prisma.PrismaPromise<GetEntityValuePeriodAggregateType<T>>
+    aggregate<T extends EntityValueAggregateArgs>(args: Subset<T, EntityValueAggregateArgs>): Prisma.PrismaPromise<GetEntityValueAggregateType<T>>
 
     /**
-     * Group by EntityValuePeriod.
+     * Group by EntityValue.
      * Note, that providing `undefined` is treated as the value not being there.
      * Read more here: https://pris.ly/d/null-undefined
-     * @param {EntityValuePeriodGroupByArgs} args - Group by arguments.
+     * @param {EntityValueGroupByArgs} args - Group by arguments.
      * @example
      * // Group by city, order by createdAt, get count
      * const result = await prisma.user.groupBy({
@@ -16488,14 +16464,14 @@ export namespace Prisma {
      * 
     **/
     groupBy<
-      T extends EntityValuePeriodGroupByArgs,
+      T extends EntityValueGroupByArgs,
       HasSelectOrTake extends Or<
         Extends<'skip', Keys<T>>,
         Extends<'take', Keys<T>>
       >,
       OrderByArg extends True extends HasSelectOrTake
-        ? { orderBy: EntityValuePeriodGroupByArgs['orderBy'] }
-        : { orderBy?: EntityValuePeriodGroupByArgs['orderBy'] },
+        ? { orderBy: EntityValueGroupByArgs['orderBy'] }
+        : { orderBy?: EntityValueGroupByArgs['orderBy'] },
       OrderFields extends ExcludeUnderscoreKeys<Keys<MaybeTupleToUnion<T['orderBy']>>>,
       ByFields extends MaybeTupleToUnion<T['by']>,
       ByValid extends Has<ByFields, OrderFields>,
@@ -16544,26 +16520,26 @@ export namespace Prisma {
             ? never
             : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
         }[OrderFields]
-    >(args: SubsetIntersection<T, EntityValuePeriodGroupByArgs, OrderByArg> & InputErrors): {} extends InputErrors ? GetEntityValuePeriodGroupByPayload<T> : Prisma.PrismaPromise<InputErrors>
+    >(args: SubsetIntersection<T, EntityValueGroupByArgs, OrderByArg> & InputErrors): {} extends InputErrors ? GetEntityValueGroupByPayload<T> : Prisma.PrismaPromise<InputErrors>
   /**
-   * Fields of the EntityValuePeriod model
+   * Fields of the EntityValue model
    */
-  readonly fields: EntityValuePeriodFieldRefs;
+  readonly fields: EntityValueFieldRefs;
   }
 
   /**
-   * The delegate class that acts as a "Promise-like" for EntityValuePeriod.
+   * The delegate class that acts as a "Promise-like" for EntityValue.
    * Why is this prefixed with `Prisma__`?
    * Because we want to prevent naming conflicts as mentioned in
    * https://github.com/prisma/prisma-client-js/issues/707
    */
-  export interface Prisma__EntityValuePeriodClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
+  export interface Prisma__EntityValueClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
     readonly [Symbol.toStringTag]: "PrismaPromise"
     entity<T extends EntityDefaultArgs<ExtArgs> = {}>(args?: Subset<T, EntityDefaultArgs<ExtArgs>>): Prisma__EntityClient<$Result.GetResult<Prisma.$EntityPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
-    enteredByUser<T extends EntityValuePeriod$enteredByUserArgs<ExtArgs> = {}>(args?: Subset<T, EntityValuePeriod$enteredByUserArgs<ExtArgs>>): Prisma__UserClient<$Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
-    submittedByUser<T extends EntityValuePeriod$submittedByUserArgs<ExtArgs> = {}>(args?: Subset<T, EntityValuePeriod$submittedByUserArgs<ExtArgs>>): Prisma__UserClient<$Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
-    approvedByUser<T extends EntityValuePeriod$approvedByUserArgs<ExtArgs> = {}>(args?: Subset<T, EntityValuePeriod$approvedByUserArgs<ExtArgs>>): Prisma__UserClient<$Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
-    variableValues<T extends EntityValuePeriod$variableValuesArgs<ExtArgs> = {}>(args?: Subset<T, EntityValuePeriod$variableValuesArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$EntityVariableValuePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+    enteredByUser<T extends EntityValue$enteredByUserArgs<ExtArgs> = {}>(args?: Subset<T, EntityValue$enteredByUserArgs<ExtArgs>>): Prisma__UserClient<$Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+    submittedByUser<T extends EntityValue$submittedByUserArgs<ExtArgs> = {}>(args?: Subset<T, EntityValue$submittedByUserArgs<ExtArgs>>): Prisma__UserClient<$Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+    approvedByUser<T extends EntityValue$approvedByUserArgs<ExtArgs> = {}>(args?: Subset<T, EntityValue$approvedByUserArgs<ExtArgs>>): Prisma__UserClient<$Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+    variableValues<T extends EntityValue$variableValuesArgs<ExtArgs> = {}>(args?: Subset<T, EntityValue$variableValuesArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$EntityVariableValuePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     /**
      * Attaches callbacks for the resolution and/or rejection of the Promise.
      * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -16590,427 +16566,425 @@ export namespace Prisma {
 
 
   /**
-   * Fields of the EntityValuePeriod model
+   * Fields of the EntityValue model
    */
-  interface EntityValuePeriodFieldRefs {
-    readonly id: FieldRef<"EntityValuePeriod", 'String'>
-    readonly entityId: FieldRef<"EntityValuePeriod", 'String'>
-    readonly periodStart: FieldRef<"EntityValuePeriod", 'DateTime'>
-    readonly periodEnd: FieldRef<"EntityValuePeriod", 'DateTime'>
-    readonly actualValue: FieldRef<"EntityValuePeriod", 'Float'>
-    readonly calculatedValue: FieldRef<"EntityValuePeriod", 'Float'>
-    readonly finalValue: FieldRef<"EntityValuePeriod", 'Float'>
-    readonly achievementValue: FieldRef<"EntityValuePeriod", 'Float'>
-    readonly status: FieldRef<"EntityValuePeriod", 'KpiValueStatus'>
-    readonly approvalType: FieldRef<"EntityValuePeriod", 'KpiApprovalType'>
-    readonly note: FieldRef<"EntityValuePeriod", 'String'>
-    readonly enteredBy: FieldRef<"EntityValuePeriod", 'String'>
-    readonly submittedBy: FieldRef<"EntityValuePeriod", 'String'>
-    readonly approvedBy: FieldRef<"EntityValuePeriod", 'String'>
-    readonly submittedAt: FieldRef<"EntityValuePeriod", 'DateTime'>
-    readonly approvedAt: FieldRef<"EntityValuePeriod", 'DateTime'>
-    readonly lockedAt: FieldRef<"EntityValuePeriod", 'DateTime'>
-    readonly createdAt: FieldRef<"EntityValuePeriod", 'DateTime'>
-    readonly updatedAt: FieldRef<"EntityValuePeriod", 'DateTime'>
+  interface EntityValueFieldRefs {
+    readonly id: FieldRef<"EntityValue", 'String'>
+    readonly entityId: FieldRef<"EntityValue", 'String'>
+    readonly actualValue: FieldRef<"EntityValue", 'Float'>
+    readonly calculatedValue: FieldRef<"EntityValue", 'Float'>
+    readonly finalValue: FieldRef<"EntityValue", 'Float'>
+    readonly achievementValue: FieldRef<"EntityValue", 'Float'>
+    readonly status: FieldRef<"EntityValue", 'KpiValueStatus'>
+    readonly approvalType: FieldRef<"EntityValue", 'KpiApprovalType'>
+    readonly note: FieldRef<"EntityValue", 'String'>
+    readonly enteredBy: FieldRef<"EntityValue", 'String'>
+    readonly submittedBy: FieldRef<"EntityValue", 'String'>
+    readonly approvedBy: FieldRef<"EntityValue", 'String'>
+    readonly submittedAt: FieldRef<"EntityValue", 'DateTime'>
+    readonly approvedAt: FieldRef<"EntityValue", 'DateTime'>
+    readonly lockedAt: FieldRef<"EntityValue", 'DateTime'>
+    readonly createdAt: FieldRef<"EntityValue", 'DateTime'>
+    readonly updatedAt: FieldRef<"EntityValue", 'DateTime'>
   }
     
 
   // Custom InputTypes
   /**
-   * EntityValuePeriod findUnique
+   * EntityValue findUnique
    */
-  export type EntityValuePeriodFindUniqueArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+  export type EntityValueFindUniqueArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     /**
-     * Select specific fields to fetch from the EntityValuePeriod
+     * Select specific fields to fetch from the EntityValue
      */
-    select?: EntityValuePeriodSelect<ExtArgs> | null
+    select?: EntityValueSelect<ExtArgs> | null
     /**
-     * Omit specific fields from the EntityValuePeriod
+     * Omit specific fields from the EntityValue
      */
-    omit?: EntityValuePeriodOmit<ExtArgs> | null
+    omit?: EntityValueOmit<ExtArgs> | null
     /**
      * Choose, which related nodes to fetch as well
      */
-    include?: EntityValuePeriodInclude<ExtArgs> | null
+    include?: EntityValueInclude<ExtArgs> | null
     /**
-     * Filter, which EntityValuePeriod to fetch.
+     * Filter, which EntityValue to fetch.
      */
-    where: EntityValuePeriodWhereUniqueInput
+    where: EntityValueWhereUniqueInput
   }
 
   /**
-   * EntityValuePeriod findUniqueOrThrow
+   * EntityValue findUniqueOrThrow
    */
-  export type EntityValuePeriodFindUniqueOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+  export type EntityValueFindUniqueOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     /**
-     * Select specific fields to fetch from the EntityValuePeriod
+     * Select specific fields to fetch from the EntityValue
      */
-    select?: EntityValuePeriodSelect<ExtArgs> | null
+    select?: EntityValueSelect<ExtArgs> | null
     /**
-     * Omit specific fields from the EntityValuePeriod
+     * Omit specific fields from the EntityValue
      */
-    omit?: EntityValuePeriodOmit<ExtArgs> | null
+    omit?: EntityValueOmit<ExtArgs> | null
     /**
      * Choose, which related nodes to fetch as well
      */
-    include?: EntityValuePeriodInclude<ExtArgs> | null
+    include?: EntityValueInclude<ExtArgs> | null
     /**
-     * Filter, which EntityValuePeriod to fetch.
+     * Filter, which EntityValue to fetch.
      */
-    where: EntityValuePeriodWhereUniqueInput
+    where: EntityValueWhereUniqueInput
   }
 
   /**
-   * EntityValuePeriod findFirst
+   * EntityValue findFirst
    */
-  export type EntityValuePeriodFindFirstArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+  export type EntityValueFindFirstArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     /**
-     * Select specific fields to fetch from the EntityValuePeriod
+     * Select specific fields to fetch from the EntityValue
      */
-    select?: EntityValuePeriodSelect<ExtArgs> | null
+    select?: EntityValueSelect<ExtArgs> | null
     /**
-     * Omit specific fields from the EntityValuePeriod
+     * Omit specific fields from the EntityValue
      */
-    omit?: EntityValuePeriodOmit<ExtArgs> | null
+    omit?: EntityValueOmit<ExtArgs> | null
     /**
      * Choose, which related nodes to fetch as well
      */
-    include?: EntityValuePeriodInclude<ExtArgs> | null
+    include?: EntityValueInclude<ExtArgs> | null
     /**
-     * Filter, which EntityValuePeriod to fetch.
+     * Filter, which EntityValue to fetch.
      */
-    where?: EntityValuePeriodWhereInput
+    where?: EntityValueWhereInput
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
      * 
-     * Determine the order of EntityValuePeriods to fetch.
+     * Determine the order of EntityValues to fetch.
      */
-    orderBy?: EntityValuePeriodOrderByWithRelationInput | EntityValuePeriodOrderByWithRelationInput[]
+    orderBy?: EntityValueOrderByWithRelationInput | EntityValueOrderByWithRelationInput[]
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
      * 
-     * Sets the position for searching for EntityValuePeriods.
+     * Sets the position for searching for EntityValues.
      */
-    cursor?: EntityValuePeriodWhereUniqueInput
+    cursor?: EntityValueWhereUniqueInput
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
      * 
-     * Take `±n` EntityValuePeriods from the position of the cursor.
+     * Take `±n` EntityValues from the position of the cursor.
      */
     take?: number
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
      * 
-     * Skip the first `n` EntityValuePeriods.
+     * Skip the first `n` EntityValues.
      */
     skip?: number
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
      * 
-     * Filter by unique combinations of EntityValuePeriods.
+     * Filter by unique combinations of EntityValues.
      */
-    distinct?: EntityValuePeriodScalarFieldEnum | EntityValuePeriodScalarFieldEnum[]
+    distinct?: EntityValueScalarFieldEnum | EntityValueScalarFieldEnum[]
   }
 
   /**
-   * EntityValuePeriod findFirstOrThrow
+   * EntityValue findFirstOrThrow
    */
-  export type EntityValuePeriodFindFirstOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+  export type EntityValueFindFirstOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     /**
-     * Select specific fields to fetch from the EntityValuePeriod
+     * Select specific fields to fetch from the EntityValue
      */
-    select?: EntityValuePeriodSelect<ExtArgs> | null
+    select?: EntityValueSelect<ExtArgs> | null
     /**
-     * Omit specific fields from the EntityValuePeriod
+     * Omit specific fields from the EntityValue
      */
-    omit?: EntityValuePeriodOmit<ExtArgs> | null
+    omit?: EntityValueOmit<ExtArgs> | null
     /**
      * Choose, which related nodes to fetch as well
      */
-    include?: EntityValuePeriodInclude<ExtArgs> | null
+    include?: EntityValueInclude<ExtArgs> | null
     /**
-     * Filter, which EntityValuePeriod to fetch.
+     * Filter, which EntityValue to fetch.
      */
-    where?: EntityValuePeriodWhereInput
+    where?: EntityValueWhereInput
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
      * 
-     * Determine the order of EntityValuePeriods to fetch.
+     * Determine the order of EntityValues to fetch.
      */
-    orderBy?: EntityValuePeriodOrderByWithRelationInput | EntityValuePeriodOrderByWithRelationInput[]
+    orderBy?: EntityValueOrderByWithRelationInput | EntityValueOrderByWithRelationInput[]
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
      * 
-     * Sets the position for searching for EntityValuePeriods.
+     * Sets the position for searching for EntityValues.
      */
-    cursor?: EntityValuePeriodWhereUniqueInput
+    cursor?: EntityValueWhereUniqueInput
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
      * 
-     * Take `±n` EntityValuePeriods from the position of the cursor.
+     * Take `±n` EntityValues from the position of the cursor.
      */
     take?: number
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
      * 
-     * Skip the first `n` EntityValuePeriods.
+     * Skip the first `n` EntityValues.
      */
     skip?: number
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
      * 
-     * Filter by unique combinations of EntityValuePeriods.
+     * Filter by unique combinations of EntityValues.
      */
-    distinct?: EntityValuePeriodScalarFieldEnum | EntityValuePeriodScalarFieldEnum[]
+    distinct?: EntityValueScalarFieldEnum | EntityValueScalarFieldEnum[]
   }
 
   /**
-   * EntityValuePeriod findMany
+   * EntityValue findMany
    */
-  export type EntityValuePeriodFindManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+  export type EntityValueFindManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     /**
-     * Select specific fields to fetch from the EntityValuePeriod
+     * Select specific fields to fetch from the EntityValue
      */
-    select?: EntityValuePeriodSelect<ExtArgs> | null
+    select?: EntityValueSelect<ExtArgs> | null
     /**
-     * Omit specific fields from the EntityValuePeriod
+     * Omit specific fields from the EntityValue
      */
-    omit?: EntityValuePeriodOmit<ExtArgs> | null
+    omit?: EntityValueOmit<ExtArgs> | null
     /**
      * Choose, which related nodes to fetch as well
      */
-    include?: EntityValuePeriodInclude<ExtArgs> | null
+    include?: EntityValueInclude<ExtArgs> | null
     /**
-     * Filter, which EntityValuePeriods to fetch.
+     * Filter, which EntityValues to fetch.
      */
-    where?: EntityValuePeriodWhereInput
+    where?: EntityValueWhereInput
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
      * 
-     * Determine the order of EntityValuePeriods to fetch.
+     * Determine the order of EntityValues to fetch.
      */
-    orderBy?: EntityValuePeriodOrderByWithRelationInput | EntityValuePeriodOrderByWithRelationInput[]
+    orderBy?: EntityValueOrderByWithRelationInput | EntityValueOrderByWithRelationInput[]
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
      * 
-     * Sets the position for listing EntityValuePeriods.
+     * Sets the position for listing EntityValues.
      */
-    cursor?: EntityValuePeriodWhereUniqueInput
+    cursor?: EntityValueWhereUniqueInput
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
      * 
-     * Take `±n` EntityValuePeriods from the position of the cursor.
+     * Take `±n` EntityValues from the position of the cursor.
      */
     take?: number
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
      * 
-     * Skip the first `n` EntityValuePeriods.
+     * Skip the first `n` EntityValues.
      */
     skip?: number
-    distinct?: EntityValuePeriodScalarFieldEnum | EntityValuePeriodScalarFieldEnum[]
+    distinct?: EntityValueScalarFieldEnum | EntityValueScalarFieldEnum[]
   }
 
   /**
-   * EntityValuePeriod create
+   * EntityValue create
    */
-  export type EntityValuePeriodCreateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+  export type EntityValueCreateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     /**
-     * Select specific fields to fetch from the EntityValuePeriod
+     * Select specific fields to fetch from the EntityValue
      */
-    select?: EntityValuePeriodSelect<ExtArgs> | null
+    select?: EntityValueSelect<ExtArgs> | null
     /**
-     * Omit specific fields from the EntityValuePeriod
+     * Omit specific fields from the EntityValue
      */
-    omit?: EntityValuePeriodOmit<ExtArgs> | null
+    omit?: EntityValueOmit<ExtArgs> | null
     /**
      * Choose, which related nodes to fetch as well
      */
-    include?: EntityValuePeriodInclude<ExtArgs> | null
+    include?: EntityValueInclude<ExtArgs> | null
     /**
-     * The data needed to create a EntityValuePeriod.
+     * The data needed to create a EntityValue.
      */
-    data: XOR<EntityValuePeriodCreateInput, EntityValuePeriodUncheckedCreateInput>
+    data: XOR<EntityValueCreateInput, EntityValueUncheckedCreateInput>
   }
 
   /**
-   * EntityValuePeriod createMany
+   * EntityValue createMany
    */
-  export type EntityValuePeriodCreateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+  export type EntityValueCreateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     /**
-     * The data used to create many EntityValuePeriods.
+     * The data used to create many EntityValues.
      */
-    data: EntityValuePeriodCreateManyInput | EntityValuePeriodCreateManyInput[]
+    data: EntityValueCreateManyInput | EntityValueCreateManyInput[]
     skipDuplicates?: boolean
   }
 
   /**
-   * EntityValuePeriod createManyAndReturn
+   * EntityValue createManyAndReturn
    */
-  export type EntityValuePeriodCreateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+  export type EntityValueCreateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     /**
-     * Select specific fields to fetch from the EntityValuePeriod
+     * Select specific fields to fetch from the EntityValue
      */
-    select?: EntityValuePeriodSelectCreateManyAndReturn<ExtArgs> | null
+    select?: EntityValueSelectCreateManyAndReturn<ExtArgs> | null
     /**
-     * Omit specific fields from the EntityValuePeriod
+     * Omit specific fields from the EntityValue
      */
-    omit?: EntityValuePeriodOmit<ExtArgs> | null
+    omit?: EntityValueOmit<ExtArgs> | null
     /**
-     * The data used to create many EntityValuePeriods.
+     * The data used to create many EntityValues.
      */
-    data: EntityValuePeriodCreateManyInput | EntityValuePeriodCreateManyInput[]
+    data: EntityValueCreateManyInput | EntityValueCreateManyInput[]
     skipDuplicates?: boolean
     /**
      * Choose, which related nodes to fetch as well
      */
-    include?: EntityValuePeriodIncludeCreateManyAndReturn<ExtArgs> | null
+    include?: EntityValueIncludeCreateManyAndReturn<ExtArgs> | null
   }
 
   /**
-   * EntityValuePeriod update
+   * EntityValue update
    */
-  export type EntityValuePeriodUpdateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+  export type EntityValueUpdateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     /**
-     * Select specific fields to fetch from the EntityValuePeriod
+     * Select specific fields to fetch from the EntityValue
      */
-    select?: EntityValuePeriodSelect<ExtArgs> | null
+    select?: EntityValueSelect<ExtArgs> | null
     /**
-     * Omit specific fields from the EntityValuePeriod
+     * Omit specific fields from the EntityValue
      */
-    omit?: EntityValuePeriodOmit<ExtArgs> | null
+    omit?: EntityValueOmit<ExtArgs> | null
     /**
      * Choose, which related nodes to fetch as well
      */
-    include?: EntityValuePeriodInclude<ExtArgs> | null
+    include?: EntityValueInclude<ExtArgs> | null
     /**
-     * The data needed to update a EntityValuePeriod.
+     * The data needed to update a EntityValue.
      */
-    data: XOR<EntityValuePeriodUpdateInput, EntityValuePeriodUncheckedUpdateInput>
+    data: XOR<EntityValueUpdateInput, EntityValueUncheckedUpdateInput>
     /**
-     * Choose, which EntityValuePeriod to update.
+     * Choose, which EntityValue to update.
      */
-    where: EntityValuePeriodWhereUniqueInput
+    where: EntityValueWhereUniqueInput
   }
 
   /**
-   * EntityValuePeriod updateMany
+   * EntityValue updateMany
    */
-  export type EntityValuePeriodUpdateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+  export type EntityValueUpdateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     /**
-     * The data used to update EntityValuePeriods.
+     * The data used to update EntityValues.
      */
-    data: XOR<EntityValuePeriodUpdateManyMutationInput, EntityValuePeriodUncheckedUpdateManyInput>
+    data: XOR<EntityValueUpdateManyMutationInput, EntityValueUncheckedUpdateManyInput>
     /**
-     * Filter which EntityValuePeriods to update
+     * Filter which EntityValues to update
      */
-    where?: EntityValuePeriodWhereInput
+    where?: EntityValueWhereInput
     /**
-     * Limit how many EntityValuePeriods to update.
+     * Limit how many EntityValues to update.
      */
     limit?: number
   }
 
   /**
-   * EntityValuePeriod updateManyAndReturn
+   * EntityValue updateManyAndReturn
    */
-  export type EntityValuePeriodUpdateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+  export type EntityValueUpdateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     /**
-     * Select specific fields to fetch from the EntityValuePeriod
+     * Select specific fields to fetch from the EntityValue
      */
-    select?: EntityValuePeriodSelectUpdateManyAndReturn<ExtArgs> | null
+    select?: EntityValueSelectUpdateManyAndReturn<ExtArgs> | null
     /**
-     * Omit specific fields from the EntityValuePeriod
+     * Omit specific fields from the EntityValue
      */
-    omit?: EntityValuePeriodOmit<ExtArgs> | null
+    omit?: EntityValueOmit<ExtArgs> | null
     /**
-     * The data used to update EntityValuePeriods.
+     * The data used to update EntityValues.
      */
-    data: XOR<EntityValuePeriodUpdateManyMutationInput, EntityValuePeriodUncheckedUpdateManyInput>
+    data: XOR<EntityValueUpdateManyMutationInput, EntityValueUncheckedUpdateManyInput>
     /**
-     * Filter which EntityValuePeriods to update
+     * Filter which EntityValues to update
      */
-    where?: EntityValuePeriodWhereInput
+    where?: EntityValueWhereInput
     /**
-     * Limit how many EntityValuePeriods to update.
+     * Limit how many EntityValues to update.
      */
     limit?: number
     /**
      * Choose, which related nodes to fetch as well
      */
-    include?: EntityValuePeriodIncludeUpdateManyAndReturn<ExtArgs> | null
+    include?: EntityValueIncludeUpdateManyAndReturn<ExtArgs> | null
   }
 
   /**
-   * EntityValuePeriod upsert
+   * EntityValue upsert
    */
-  export type EntityValuePeriodUpsertArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+  export type EntityValueUpsertArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     /**
-     * Select specific fields to fetch from the EntityValuePeriod
+     * Select specific fields to fetch from the EntityValue
      */
-    select?: EntityValuePeriodSelect<ExtArgs> | null
+    select?: EntityValueSelect<ExtArgs> | null
     /**
-     * Omit specific fields from the EntityValuePeriod
+     * Omit specific fields from the EntityValue
      */
-    omit?: EntityValuePeriodOmit<ExtArgs> | null
+    omit?: EntityValueOmit<ExtArgs> | null
     /**
      * Choose, which related nodes to fetch as well
      */
-    include?: EntityValuePeriodInclude<ExtArgs> | null
+    include?: EntityValueInclude<ExtArgs> | null
     /**
-     * The filter to search for the EntityValuePeriod to update in case it exists.
+     * The filter to search for the EntityValue to update in case it exists.
      */
-    where: EntityValuePeriodWhereUniqueInput
+    where: EntityValueWhereUniqueInput
     /**
-     * In case the EntityValuePeriod found by the `where` argument doesn't exist, create a new EntityValuePeriod with this data.
+     * In case the EntityValue found by the `where` argument doesn't exist, create a new EntityValue with this data.
      */
-    create: XOR<EntityValuePeriodCreateInput, EntityValuePeriodUncheckedCreateInput>
+    create: XOR<EntityValueCreateInput, EntityValueUncheckedCreateInput>
     /**
-     * In case the EntityValuePeriod was found with the provided `where` argument, update it with this data.
+     * In case the EntityValue was found with the provided `where` argument, update it with this data.
      */
-    update: XOR<EntityValuePeriodUpdateInput, EntityValuePeriodUncheckedUpdateInput>
+    update: XOR<EntityValueUpdateInput, EntityValueUncheckedUpdateInput>
   }
 
   /**
-   * EntityValuePeriod delete
+   * EntityValue delete
    */
-  export type EntityValuePeriodDeleteArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+  export type EntityValueDeleteArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     /**
-     * Select specific fields to fetch from the EntityValuePeriod
+     * Select specific fields to fetch from the EntityValue
      */
-    select?: EntityValuePeriodSelect<ExtArgs> | null
+    select?: EntityValueSelect<ExtArgs> | null
     /**
-     * Omit specific fields from the EntityValuePeriod
+     * Omit specific fields from the EntityValue
      */
-    omit?: EntityValuePeriodOmit<ExtArgs> | null
+    omit?: EntityValueOmit<ExtArgs> | null
     /**
      * Choose, which related nodes to fetch as well
      */
-    include?: EntityValuePeriodInclude<ExtArgs> | null
+    include?: EntityValueInclude<ExtArgs> | null
     /**
-     * Filter which EntityValuePeriod to delete.
+     * Filter which EntityValue to delete.
      */
-    where: EntityValuePeriodWhereUniqueInput
+    where: EntityValueWhereUniqueInput
   }
 
   /**
-   * EntityValuePeriod deleteMany
+   * EntityValue deleteMany
    */
-  export type EntityValuePeriodDeleteManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+  export type EntityValueDeleteManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     /**
-     * Filter which EntityValuePeriods to delete
+     * Filter which EntityValues to delete
      */
-    where?: EntityValuePeriodWhereInput
+    where?: EntityValueWhereInput
     /**
-     * Limit how many EntityValuePeriods to delete.
+     * Limit how many EntityValues to delete.
      */
     limit?: number
   }
 
   /**
-   * EntityValuePeriod.enteredByUser
+   * EntityValue.enteredByUser
    */
-  export type EntityValuePeriod$enteredByUserArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+  export type EntityValue$enteredByUserArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     /**
      * Select specific fields to fetch from the User
      */
@@ -17027,9 +17001,9 @@ export namespace Prisma {
   }
 
   /**
-   * EntityValuePeriod.submittedByUser
+   * EntityValue.submittedByUser
    */
-  export type EntityValuePeriod$submittedByUserArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+  export type EntityValue$submittedByUserArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     /**
      * Select specific fields to fetch from the User
      */
@@ -17046,9 +17020,9 @@ export namespace Prisma {
   }
 
   /**
-   * EntityValuePeriod.approvedByUser
+   * EntityValue.approvedByUser
    */
-  export type EntityValuePeriod$approvedByUserArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+  export type EntityValue$approvedByUserArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     /**
      * Select specific fields to fetch from the User
      */
@@ -17065,9 +17039,9 @@ export namespace Prisma {
   }
 
   /**
-   * EntityValuePeriod.variableValues
+   * EntityValue.variableValues
    */
-  export type EntityValuePeriod$variableValuesArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+  export type EntityValue$variableValuesArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     /**
      * Select specific fields to fetch from the EntityVariableValue
      */
@@ -17089,21 +17063,21 @@ export namespace Prisma {
   }
 
   /**
-   * EntityValuePeriod without action
+   * EntityValue without action
    */
-  export type EntityValuePeriodDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+  export type EntityValueDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     /**
-     * Select specific fields to fetch from the EntityValuePeriod
+     * Select specific fields to fetch from the EntityValue
      */
-    select?: EntityValuePeriodSelect<ExtArgs> | null
+    select?: EntityValueSelect<ExtArgs> | null
     /**
-     * Omit specific fields from the EntityValuePeriod
+     * Omit specific fields from the EntityValue
      */
-    omit?: EntityValuePeriodOmit<ExtArgs> | null
+    omit?: EntityValueOmit<ExtArgs> | null
     /**
      * Choose, which related nodes to fetch as well
      */
-    include?: EntityValuePeriodInclude<ExtArgs> | null
+    include?: EntityValueInclude<ExtArgs> | null
   }
 
 
@@ -17297,7 +17271,7 @@ export namespace Prisma {
     entityValueId?: boolean
     entityVariableId?: boolean
     value?: boolean
-    entityValue?: boolean | EntityValuePeriodDefaultArgs<ExtArgs>
+    entityValue?: boolean | EntityValueDefaultArgs<ExtArgs>
     entityVariable?: boolean | EntityVariableDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["entityVariableValue"]>
 
@@ -17306,7 +17280,7 @@ export namespace Prisma {
     entityValueId?: boolean
     entityVariableId?: boolean
     value?: boolean
-    entityValue?: boolean | EntityValuePeriodDefaultArgs<ExtArgs>
+    entityValue?: boolean | EntityValueDefaultArgs<ExtArgs>
     entityVariable?: boolean | EntityVariableDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["entityVariableValue"]>
 
@@ -17315,7 +17289,7 @@ export namespace Prisma {
     entityValueId?: boolean
     entityVariableId?: boolean
     value?: boolean
-    entityValue?: boolean | EntityValuePeriodDefaultArgs<ExtArgs>
+    entityValue?: boolean | EntityValueDefaultArgs<ExtArgs>
     entityVariable?: boolean | EntityVariableDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["entityVariableValue"]>
 
@@ -17328,22 +17302,22 @@ export namespace Prisma {
 
   export type EntityVariableValueOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "entityValueId" | "entityVariableId" | "value", ExtArgs["result"]["entityVariableValue"]>
   export type EntityVariableValueInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    entityValue?: boolean | EntityValuePeriodDefaultArgs<ExtArgs>
+    entityValue?: boolean | EntityValueDefaultArgs<ExtArgs>
     entityVariable?: boolean | EntityVariableDefaultArgs<ExtArgs>
   }
   export type EntityVariableValueIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    entityValue?: boolean | EntityValuePeriodDefaultArgs<ExtArgs>
+    entityValue?: boolean | EntityValueDefaultArgs<ExtArgs>
     entityVariable?: boolean | EntityVariableDefaultArgs<ExtArgs>
   }
   export type EntityVariableValueIncludeUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    entityValue?: boolean | EntityValuePeriodDefaultArgs<ExtArgs>
+    entityValue?: boolean | EntityValueDefaultArgs<ExtArgs>
     entityVariable?: boolean | EntityVariableDefaultArgs<ExtArgs>
   }
 
   export type $EntityVariableValuePayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     name: "EntityVariableValue"
     objects: {
-      entityValue: Prisma.$EntityValuePeriodPayload<ExtArgs>
+      entityValue: Prisma.$EntityValuePayload<ExtArgs>
       entityVariable: Prisma.$EntityVariablePayload<ExtArgs>
     }
     scalars: $Extensions.GetPayloadResult<{
@@ -17745,7 +17719,7 @@ export namespace Prisma {
    */
   export interface Prisma__EntityVariableValueClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
     readonly [Symbol.toStringTag]: "PrismaPromise"
-    entityValue<T extends EntityValuePeriodDefaultArgs<ExtArgs> = {}>(args?: Subset<T, EntityValuePeriodDefaultArgs<ExtArgs>>): Prisma__EntityValuePeriodClient<$Result.GetResult<Prisma.$EntityValuePeriodPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
+    entityValue<T extends EntityValueDefaultArgs<ExtArgs> = {}>(args?: Subset<T, EntityValueDefaultArgs<ExtArgs>>): Prisma__EntityValueClient<$Result.GetResult<Prisma.$EntityValuePayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
     entityVariable<T extends EntityVariableDefaultArgs<ExtArgs> = {}>(args?: Subset<T, EntityVariableDefaultArgs<ExtArgs>>): Prisma__EntityVariableClient<$Result.GetResult<Prisma.$EntityVariablePayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
     /**
      * Attaches callbacks for the resolution and/or rejection of the Promise.
@@ -19486,11 +19460,9 @@ export namespace Prisma {
   export type EntityVariableScalarFieldEnum = (typeof EntityVariableScalarFieldEnum)[keyof typeof EntityVariableScalarFieldEnum]
 
 
-  export const EntityValuePeriodScalarFieldEnum: {
+  export const EntityValueScalarFieldEnum: {
     id: 'id',
     entityId: 'entityId',
-    periodStart: 'periodStart',
-    periodEnd: 'periodEnd',
     actualValue: 'actualValue',
     calculatedValue: 'calculatedValue',
     finalValue: 'finalValue',
@@ -19508,7 +19480,7 @@ export namespace Prisma {
     updatedAt: 'updatedAt'
   };
 
-  export type EntityValuePeriodScalarFieldEnum = (typeof EntityValuePeriodScalarFieldEnum)[keyof typeof EntityValuePeriodScalarFieldEnum]
+  export type EntityValueScalarFieldEnum = (typeof EntityValueScalarFieldEnum)[keyof typeof EntityValueScalarFieldEnum]
 
 
   export const EntityVariableValueScalarFieldEnum: {
@@ -20042,9 +20014,9 @@ export namespace Prisma {
     approvals?: ChangeApprovalListRelationFilter
     changeRequests?: ChangeRequestListRelationFilter
     ownedEntities?: EntityListRelationFilter
-    valuesEntered?: EntityValuePeriodListRelationFilter
-    valuesSubmitted?: EntityValuePeriodListRelationFilter
-    valuesApproved?: EntityValuePeriodListRelationFilter
+    valuesEntered?: EntityValueListRelationFilter
+    valuesSubmitted?: EntityValueListRelationFilter
+    valuesApproved?: EntityValueListRelationFilter
     entityAssignments?: UserEntityAssignmentListRelationFilter
   }
 
@@ -20071,9 +20043,9 @@ export namespace Prisma {
     approvals?: ChangeApprovalOrderByRelationAggregateInput
     changeRequests?: ChangeRequestOrderByRelationAggregateInput
     ownedEntities?: EntityOrderByRelationAggregateInput
-    valuesEntered?: EntityValuePeriodOrderByRelationAggregateInput
-    valuesSubmitted?: EntityValuePeriodOrderByRelationAggregateInput
-    valuesApproved?: EntityValuePeriodOrderByRelationAggregateInput
+    valuesEntered?: EntityValueOrderByRelationAggregateInput
+    valuesSubmitted?: EntityValueOrderByRelationAggregateInput
+    valuesApproved?: EntityValueOrderByRelationAggregateInput
     entityAssignments?: UserEntityAssignmentOrderByRelationAggregateInput
   }
 
@@ -20104,9 +20076,9 @@ export namespace Prisma {
     approvals?: ChangeApprovalListRelationFilter
     changeRequests?: ChangeRequestListRelationFilter
     ownedEntities?: EntityListRelationFilter
-    valuesEntered?: EntityValuePeriodListRelationFilter
-    valuesSubmitted?: EntityValuePeriodListRelationFilter
-    valuesApproved?: EntityValuePeriodListRelationFilter
+    valuesEntered?: EntityValueListRelationFilter
+    valuesSubmitted?: EntityValueListRelationFilter
+    valuesApproved?: EntityValueListRelationFilter
     entityAssignments?: UserEntityAssignmentListRelationFilter
   }, "id" | "user_email_org_unique">
 
@@ -20621,7 +20593,7 @@ export namespace Prisma {
     orgEntityType?: XOR<OrgEntityTypeScalarRelationFilter, OrgEntityTypeWhereInput>
     ownerUser?: XOR<UserNullableScalarRelationFilter, UserWhereInput> | null
     variables?: EntityVariableListRelationFilter
-    values?: EntityValuePeriodListRelationFilter
+    values?: EntityValueListRelationFilter
     assignments?: UserEntityAssignmentListRelationFilter
   }
 
@@ -20653,7 +20625,7 @@ export namespace Prisma {
     orgEntityType?: OrgEntityTypeOrderByWithRelationInput
     ownerUser?: UserOrderByWithRelationInput
     variables?: EntityVariableOrderByRelationAggregateInput
-    values?: EntityValuePeriodOrderByRelationAggregateInput
+    values?: EntityValueOrderByRelationAggregateInput
     assignments?: UserEntityAssignmentOrderByRelationAggregateInput
   }
 
@@ -20689,7 +20661,7 @@ export namespace Prisma {
     orgEntityType?: XOR<OrgEntityTypeScalarRelationFilter, OrgEntityTypeWhereInput>
     ownerUser?: XOR<UserNullableScalarRelationFilter, UserWhereInput> | null
     variables?: EntityVariableListRelationFilter
-    values?: EntityValuePeriodListRelationFilter
+    values?: EntityValueListRelationFilter
     assignments?: UserEntityAssignmentListRelationFilter
   }, "id" | "entity_key_org_soft_unique">
 
@@ -20834,29 +20806,27 @@ export namespace Prisma {
     staticValue?: FloatNullableWithAggregatesFilter<"EntityVariable"> | number | null
   }
 
-  export type EntityValuePeriodWhereInput = {
-    AND?: EntityValuePeriodWhereInput | EntityValuePeriodWhereInput[]
-    OR?: EntityValuePeriodWhereInput[]
-    NOT?: EntityValuePeriodWhereInput | EntityValuePeriodWhereInput[]
-    id?: StringFilter<"EntityValuePeriod"> | string
-    entityId?: StringFilter<"EntityValuePeriod"> | string
-    periodStart?: DateTimeFilter<"EntityValuePeriod"> | Date | string
-    periodEnd?: DateTimeFilter<"EntityValuePeriod"> | Date | string
-    actualValue?: FloatNullableFilter<"EntityValuePeriod"> | number | null
-    calculatedValue?: FloatNullableFilter<"EntityValuePeriod"> | number | null
-    finalValue?: FloatNullableFilter<"EntityValuePeriod"> | number | null
-    achievementValue?: FloatNullableFilter<"EntityValuePeriod"> | number | null
-    status?: EnumKpiValueStatusFilter<"EntityValuePeriod"> | $Enums.KpiValueStatus
-    approvalType?: EnumKpiApprovalTypeNullableFilter<"EntityValuePeriod"> | $Enums.KpiApprovalType | null
-    note?: StringNullableFilter<"EntityValuePeriod"> | string | null
-    enteredBy?: StringNullableFilter<"EntityValuePeriod"> | string | null
-    submittedBy?: StringNullableFilter<"EntityValuePeriod"> | string | null
-    approvedBy?: StringNullableFilter<"EntityValuePeriod"> | string | null
-    submittedAt?: DateTimeNullableFilter<"EntityValuePeriod"> | Date | string | null
-    approvedAt?: DateTimeNullableFilter<"EntityValuePeriod"> | Date | string | null
-    lockedAt?: DateTimeNullableFilter<"EntityValuePeriod"> | Date | string | null
-    createdAt?: DateTimeFilter<"EntityValuePeriod"> | Date | string
-    updatedAt?: DateTimeFilter<"EntityValuePeriod"> | Date | string
+  export type EntityValueWhereInput = {
+    AND?: EntityValueWhereInput | EntityValueWhereInput[]
+    OR?: EntityValueWhereInput[]
+    NOT?: EntityValueWhereInput | EntityValueWhereInput[]
+    id?: StringFilter<"EntityValue"> | string
+    entityId?: StringFilter<"EntityValue"> | string
+    actualValue?: FloatNullableFilter<"EntityValue"> | number | null
+    calculatedValue?: FloatNullableFilter<"EntityValue"> | number | null
+    finalValue?: FloatNullableFilter<"EntityValue"> | number | null
+    achievementValue?: FloatNullableFilter<"EntityValue"> | number | null
+    status?: EnumKpiValueStatusFilter<"EntityValue"> | $Enums.KpiValueStatus
+    approvalType?: EnumKpiApprovalTypeNullableFilter<"EntityValue"> | $Enums.KpiApprovalType | null
+    note?: StringNullableFilter<"EntityValue"> | string | null
+    enteredBy?: StringNullableFilter<"EntityValue"> | string | null
+    submittedBy?: StringNullableFilter<"EntityValue"> | string | null
+    approvedBy?: StringNullableFilter<"EntityValue"> | string | null
+    submittedAt?: DateTimeNullableFilter<"EntityValue"> | Date | string | null
+    approvedAt?: DateTimeNullableFilter<"EntityValue"> | Date | string | null
+    lockedAt?: DateTimeNullableFilter<"EntityValue"> | Date | string | null
+    createdAt?: DateTimeFilter<"EntityValue"> | Date | string
+    updatedAt?: DateTimeFilter<"EntityValue"> | Date | string
     entity?: XOR<EntityScalarRelationFilter, EntityWhereInput>
     enteredByUser?: XOR<UserNullableScalarRelationFilter, UserWhereInput> | null
     submittedByUser?: XOR<UserNullableScalarRelationFilter, UserWhereInput> | null
@@ -20864,11 +20834,9 @@ export namespace Prisma {
     variableValues?: EntityVariableValueListRelationFilter
   }
 
-  export type EntityValuePeriodOrderByWithRelationInput = {
+  export type EntityValueOrderByWithRelationInput = {
     id?: SortOrder
     entityId?: SortOrder
-    periodStart?: SortOrder
-    periodEnd?: SortOrder
     actualValue?: SortOrderInput | SortOrder
     calculatedValue?: SortOrderInput | SortOrder
     finalValue?: SortOrderInput | SortOrder
@@ -20891,42 +20859,37 @@ export namespace Prisma {
     variableValues?: EntityVariableValueOrderByRelationAggregateInput
   }
 
-  export type EntityValuePeriodWhereUniqueInput = Prisma.AtLeast<{
+  export type EntityValueWhereUniqueInput = Prisma.AtLeast<{
     id?: string
-    entity_period_unique?: EntityValuePeriodEntity_period_uniqueCompoundUniqueInput
-    AND?: EntityValuePeriodWhereInput | EntityValuePeriodWhereInput[]
-    OR?: EntityValuePeriodWhereInput[]
-    NOT?: EntityValuePeriodWhereInput | EntityValuePeriodWhereInput[]
-    entityId?: StringFilter<"EntityValuePeriod"> | string
-    periodStart?: DateTimeFilter<"EntityValuePeriod"> | Date | string
-    periodEnd?: DateTimeFilter<"EntityValuePeriod"> | Date | string
-    actualValue?: FloatNullableFilter<"EntityValuePeriod"> | number | null
-    calculatedValue?: FloatNullableFilter<"EntityValuePeriod"> | number | null
-    finalValue?: FloatNullableFilter<"EntityValuePeriod"> | number | null
-    achievementValue?: FloatNullableFilter<"EntityValuePeriod"> | number | null
-    status?: EnumKpiValueStatusFilter<"EntityValuePeriod"> | $Enums.KpiValueStatus
-    approvalType?: EnumKpiApprovalTypeNullableFilter<"EntityValuePeriod"> | $Enums.KpiApprovalType | null
-    note?: StringNullableFilter<"EntityValuePeriod"> | string | null
-    enteredBy?: StringNullableFilter<"EntityValuePeriod"> | string | null
-    submittedBy?: StringNullableFilter<"EntityValuePeriod"> | string | null
-    approvedBy?: StringNullableFilter<"EntityValuePeriod"> | string | null
-    submittedAt?: DateTimeNullableFilter<"EntityValuePeriod"> | Date | string | null
-    approvedAt?: DateTimeNullableFilter<"EntityValuePeriod"> | Date | string | null
-    lockedAt?: DateTimeNullableFilter<"EntityValuePeriod"> | Date | string | null
-    createdAt?: DateTimeFilter<"EntityValuePeriod"> | Date | string
-    updatedAt?: DateTimeFilter<"EntityValuePeriod"> | Date | string
+    AND?: EntityValueWhereInput | EntityValueWhereInput[]
+    OR?: EntityValueWhereInput[]
+    NOT?: EntityValueWhereInput | EntityValueWhereInput[]
+    entityId?: StringFilter<"EntityValue"> | string
+    actualValue?: FloatNullableFilter<"EntityValue"> | number | null
+    calculatedValue?: FloatNullableFilter<"EntityValue"> | number | null
+    finalValue?: FloatNullableFilter<"EntityValue"> | number | null
+    achievementValue?: FloatNullableFilter<"EntityValue"> | number | null
+    status?: EnumKpiValueStatusFilter<"EntityValue"> | $Enums.KpiValueStatus
+    approvalType?: EnumKpiApprovalTypeNullableFilter<"EntityValue"> | $Enums.KpiApprovalType | null
+    note?: StringNullableFilter<"EntityValue"> | string | null
+    enteredBy?: StringNullableFilter<"EntityValue"> | string | null
+    submittedBy?: StringNullableFilter<"EntityValue"> | string | null
+    approvedBy?: StringNullableFilter<"EntityValue"> | string | null
+    submittedAt?: DateTimeNullableFilter<"EntityValue"> | Date | string | null
+    approvedAt?: DateTimeNullableFilter<"EntityValue"> | Date | string | null
+    lockedAt?: DateTimeNullableFilter<"EntityValue"> | Date | string | null
+    createdAt?: DateTimeFilter<"EntityValue"> | Date | string
+    updatedAt?: DateTimeFilter<"EntityValue"> | Date | string
     entity?: XOR<EntityScalarRelationFilter, EntityWhereInput>
     enteredByUser?: XOR<UserNullableScalarRelationFilter, UserWhereInput> | null
     submittedByUser?: XOR<UserNullableScalarRelationFilter, UserWhereInput> | null
     approvedByUser?: XOR<UserNullableScalarRelationFilter, UserWhereInput> | null
     variableValues?: EntityVariableValueListRelationFilter
-  }, "id" | "entity_period_unique">
+  }, "id">
 
-  export type EntityValuePeriodOrderByWithAggregationInput = {
+  export type EntityValueOrderByWithAggregationInput = {
     id?: SortOrder
     entityId?: SortOrder
-    periodStart?: SortOrder
-    periodEnd?: SortOrder
     actualValue?: SortOrderInput | SortOrder
     calculatedValue?: SortOrderInput | SortOrder
     finalValue?: SortOrderInput | SortOrder
@@ -20942,36 +20905,34 @@ export namespace Prisma {
     lockedAt?: SortOrderInput | SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
-    _count?: EntityValuePeriodCountOrderByAggregateInput
-    _avg?: EntityValuePeriodAvgOrderByAggregateInput
-    _max?: EntityValuePeriodMaxOrderByAggregateInput
-    _min?: EntityValuePeriodMinOrderByAggregateInput
-    _sum?: EntityValuePeriodSumOrderByAggregateInput
+    _count?: EntityValueCountOrderByAggregateInput
+    _avg?: EntityValueAvgOrderByAggregateInput
+    _max?: EntityValueMaxOrderByAggregateInput
+    _min?: EntityValueMinOrderByAggregateInput
+    _sum?: EntityValueSumOrderByAggregateInput
   }
 
-  export type EntityValuePeriodScalarWhereWithAggregatesInput = {
-    AND?: EntityValuePeriodScalarWhereWithAggregatesInput | EntityValuePeriodScalarWhereWithAggregatesInput[]
-    OR?: EntityValuePeriodScalarWhereWithAggregatesInput[]
-    NOT?: EntityValuePeriodScalarWhereWithAggregatesInput | EntityValuePeriodScalarWhereWithAggregatesInput[]
-    id?: StringWithAggregatesFilter<"EntityValuePeriod"> | string
-    entityId?: StringWithAggregatesFilter<"EntityValuePeriod"> | string
-    periodStart?: DateTimeWithAggregatesFilter<"EntityValuePeriod"> | Date | string
-    periodEnd?: DateTimeWithAggregatesFilter<"EntityValuePeriod"> | Date | string
-    actualValue?: FloatNullableWithAggregatesFilter<"EntityValuePeriod"> | number | null
-    calculatedValue?: FloatNullableWithAggregatesFilter<"EntityValuePeriod"> | number | null
-    finalValue?: FloatNullableWithAggregatesFilter<"EntityValuePeriod"> | number | null
-    achievementValue?: FloatNullableWithAggregatesFilter<"EntityValuePeriod"> | number | null
-    status?: EnumKpiValueStatusWithAggregatesFilter<"EntityValuePeriod"> | $Enums.KpiValueStatus
-    approvalType?: EnumKpiApprovalTypeNullableWithAggregatesFilter<"EntityValuePeriod"> | $Enums.KpiApprovalType | null
-    note?: StringNullableWithAggregatesFilter<"EntityValuePeriod"> | string | null
-    enteredBy?: StringNullableWithAggregatesFilter<"EntityValuePeriod"> | string | null
-    submittedBy?: StringNullableWithAggregatesFilter<"EntityValuePeriod"> | string | null
-    approvedBy?: StringNullableWithAggregatesFilter<"EntityValuePeriod"> | string | null
-    submittedAt?: DateTimeNullableWithAggregatesFilter<"EntityValuePeriod"> | Date | string | null
-    approvedAt?: DateTimeNullableWithAggregatesFilter<"EntityValuePeriod"> | Date | string | null
-    lockedAt?: DateTimeNullableWithAggregatesFilter<"EntityValuePeriod"> | Date | string | null
-    createdAt?: DateTimeWithAggregatesFilter<"EntityValuePeriod"> | Date | string
-    updatedAt?: DateTimeWithAggregatesFilter<"EntityValuePeriod"> | Date | string
+  export type EntityValueScalarWhereWithAggregatesInput = {
+    AND?: EntityValueScalarWhereWithAggregatesInput | EntityValueScalarWhereWithAggregatesInput[]
+    OR?: EntityValueScalarWhereWithAggregatesInput[]
+    NOT?: EntityValueScalarWhereWithAggregatesInput | EntityValueScalarWhereWithAggregatesInput[]
+    id?: StringWithAggregatesFilter<"EntityValue"> | string
+    entityId?: StringWithAggregatesFilter<"EntityValue"> | string
+    actualValue?: FloatNullableWithAggregatesFilter<"EntityValue"> | number | null
+    calculatedValue?: FloatNullableWithAggregatesFilter<"EntityValue"> | number | null
+    finalValue?: FloatNullableWithAggregatesFilter<"EntityValue"> | number | null
+    achievementValue?: FloatNullableWithAggregatesFilter<"EntityValue"> | number | null
+    status?: EnumKpiValueStatusWithAggregatesFilter<"EntityValue"> | $Enums.KpiValueStatus
+    approvalType?: EnumKpiApprovalTypeNullableWithAggregatesFilter<"EntityValue"> | $Enums.KpiApprovalType | null
+    note?: StringNullableWithAggregatesFilter<"EntityValue"> | string | null
+    enteredBy?: StringNullableWithAggregatesFilter<"EntityValue"> | string | null
+    submittedBy?: StringNullableWithAggregatesFilter<"EntityValue"> | string | null
+    approvedBy?: StringNullableWithAggregatesFilter<"EntityValue"> | string | null
+    submittedAt?: DateTimeNullableWithAggregatesFilter<"EntityValue"> | Date | string | null
+    approvedAt?: DateTimeNullableWithAggregatesFilter<"EntityValue"> | Date | string | null
+    lockedAt?: DateTimeNullableWithAggregatesFilter<"EntityValue"> | Date | string | null
+    createdAt?: DateTimeWithAggregatesFilter<"EntityValue"> | Date | string
+    updatedAt?: DateTimeWithAggregatesFilter<"EntityValue"> | Date | string
   }
 
   export type EntityVariableValueWhereInput = {
@@ -20982,7 +20943,7 @@ export namespace Prisma {
     entityValueId?: StringFilter<"EntityVariableValue"> | string
     entityVariableId?: StringFilter<"EntityVariableValue"> | string
     value?: FloatFilter<"EntityVariableValue"> | number
-    entityValue?: XOR<EntityValuePeriodScalarRelationFilter, EntityValuePeriodWhereInput>
+    entityValue?: XOR<EntityValueScalarRelationFilter, EntityValueWhereInput>
     entityVariable?: XOR<EntityVariableScalarRelationFilter, EntityVariableWhereInput>
   }
 
@@ -20991,7 +20952,7 @@ export namespace Prisma {
     entityValueId?: SortOrder
     entityVariableId?: SortOrder
     value?: SortOrder
-    entityValue?: EntityValuePeriodOrderByWithRelationInput
+    entityValue?: EntityValueOrderByWithRelationInput
     entityVariable?: EntityVariableOrderByWithRelationInput
   }
 
@@ -21004,7 +20965,7 @@ export namespace Prisma {
     entityValueId?: StringFilter<"EntityVariableValue"> | string
     entityVariableId?: StringFilter<"EntityVariableValue"> | string
     value?: FloatFilter<"EntityVariableValue"> | number
-    entityValue?: XOR<EntityValuePeriodScalarRelationFilter, EntityValuePeriodWhereInput>
+    entityValue?: XOR<EntityValueScalarRelationFilter, EntityValueWhereInput>
     entityVariable?: XOR<EntityVariableScalarRelationFilter, EntityVariableWhereInput>
   }, "id" | "entity_variable_value_unique">
 
@@ -21349,9 +21310,9 @@ export namespace Prisma {
     approvals?: ChangeApprovalCreateNestedManyWithoutApproverInput
     changeRequests?: ChangeRequestCreateNestedManyWithoutRequesterInput
     ownedEntities?: EntityCreateNestedManyWithoutOwnerUserInput
-    valuesEntered?: EntityValuePeriodCreateNestedManyWithoutEnteredByUserInput
-    valuesSubmitted?: EntityValuePeriodCreateNestedManyWithoutSubmittedByUserInput
-    valuesApproved?: EntityValuePeriodCreateNestedManyWithoutApprovedByUserInput
+    valuesEntered?: EntityValueCreateNestedManyWithoutEnteredByUserInput
+    valuesSubmitted?: EntityValueCreateNestedManyWithoutSubmittedByUserInput
+    valuesApproved?: EntityValueCreateNestedManyWithoutApprovedByUserInput
     entityAssignments?: UserEntityAssignmentCreateNestedManyWithoutUserInput
   }
 
@@ -21376,9 +21337,9 @@ export namespace Prisma {
     approvals?: ChangeApprovalUncheckedCreateNestedManyWithoutApproverInput
     changeRequests?: ChangeRequestUncheckedCreateNestedManyWithoutRequesterInput
     ownedEntities?: EntityUncheckedCreateNestedManyWithoutOwnerUserInput
-    valuesEntered?: EntityValuePeriodUncheckedCreateNestedManyWithoutEnteredByUserInput
-    valuesSubmitted?: EntityValuePeriodUncheckedCreateNestedManyWithoutSubmittedByUserInput
-    valuesApproved?: EntityValuePeriodUncheckedCreateNestedManyWithoutApprovedByUserInput
+    valuesEntered?: EntityValueUncheckedCreateNestedManyWithoutEnteredByUserInput
+    valuesSubmitted?: EntityValueUncheckedCreateNestedManyWithoutSubmittedByUserInput
+    valuesApproved?: EntityValueUncheckedCreateNestedManyWithoutApprovedByUserInput
     entityAssignments?: UserEntityAssignmentUncheckedCreateNestedManyWithoutUserInput
   }
 
@@ -21403,9 +21364,9 @@ export namespace Prisma {
     approvals?: ChangeApprovalUpdateManyWithoutApproverNestedInput
     changeRequests?: ChangeRequestUpdateManyWithoutRequesterNestedInput
     ownedEntities?: EntityUpdateManyWithoutOwnerUserNestedInput
-    valuesEntered?: EntityValuePeriodUpdateManyWithoutEnteredByUserNestedInput
-    valuesSubmitted?: EntityValuePeriodUpdateManyWithoutSubmittedByUserNestedInput
-    valuesApproved?: EntityValuePeriodUpdateManyWithoutApprovedByUserNestedInput
+    valuesEntered?: EntityValueUpdateManyWithoutEnteredByUserNestedInput
+    valuesSubmitted?: EntityValueUpdateManyWithoutSubmittedByUserNestedInput
+    valuesApproved?: EntityValueUpdateManyWithoutApprovedByUserNestedInput
     entityAssignments?: UserEntityAssignmentUpdateManyWithoutUserNestedInput
   }
 
@@ -21430,9 +21391,9 @@ export namespace Prisma {
     approvals?: ChangeApprovalUncheckedUpdateManyWithoutApproverNestedInput
     changeRequests?: ChangeRequestUncheckedUpdateManyWithoutRequesterNestedInput
     ownedEntities?: EntityUncheckedUpdateManyWithoutOwnerUserNestedInput
-    valuesEntered?: EntityValuePeriodUncheckedUpdateManyWithoutEnteredByUserNestedInput
-    valuesSubmitted?: EntityValuePeriodUncheckedUpdateManyWithoutSubmittedByUserNestedInput
-    valuesApproved?: EntityValuePeriodUncheckedUpdateManyWithoutApprovedByUserNestedInput
+    valuesEntered?: EntityValueUncheckedUpdateManyWithoutEnteredByUserNestedInput
+    valuesSubmitted?: EntityValueUncheckedUpdateManyWithoutSubmittedByUserNestedInput
+    valuesApproved?: EntityValueUncheckedUpdateManyWithoutApprovedByUserNestedInput
     entityAssignments?: UserEntityAssignmentUncheckedUpdateManyWithoutUserNestedInput
   }
 
@@ -21987,7 +21948,7 @@ export namespace Prisma {
     orgEntityType: OrgEntityTypeCreateNestedOneWithoutEntitiesInput
     ownerUser?: UserCreateNestedOneWithoutOwnedEntitiesInput
     variables?: EntityVariableCreateNestedManyWithoutEntityInput
-    values?: EntityValuePeriodCreateNestedManyWithoutEntityInput
+    values?: EntityValueCreateNestedManyWithoutEntityInput
     assignments?: UserEntityAssignmentCreateNestedManyWithoutEntityInput
   }
 
@@ -22016,7 +21977,7 @@ export namespace Prisma {
     updatedAt?: Date | string
     deletedAt?: Date | string | null
     variables?: EntityVariableUncheckedCreateNestedManyWithoutEntityInput
-    values?: EntityValuePeriodUncheckedCreateNestedManyWithoutEntityInput
+    values?: EntityValueUncheckedCreateNestedManyWithoutEntityInput
     assignments?: UserEntityAssignmentUncheckedCreateNestedManyWithoutEntityInput
   }
 
@@ -22045,7 +22006,7 @@ export namespace Prisma {
     orgEntityType?: OrgEntityTypeUpdateOneRequiredWithoutEntitiesNestedInput
     ownerUser?: UserUpdateOneWithoutOwnedEntitiesNestedInput
     variables?: EntityVariableUpdateManyWithoutEntityNestedInput
-    values?: EntityValuePeriodUpdateManyWithoutEntityNestedInput
+    values?: EntityValueUpdateManyWithoutEntityNestedInput
     assignments?: UserEntityAssignmentUpdateManyWithoutEntityNestedInput
   }
 
@@ -22074,7 +22035,7 @@ export namespace Prisma {
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     deletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     variables?: EntityVariableUncheckedUpdateManyWithoutEntityNestedInput
-    values?: EntityValuePeriodUncheckedUpdateManyWithoutEntityNestedInput
+    values?: EntityValueUncheckedUpdateManyWithoutEntityNestedInput
     assignments?: UserEntityAssignmentUncheckedUpdateManyWithoutEntityNestedInput
   }
 
@@ -22240,10 +22201,8 @@ export namespace Prisma {
     staticValue?: NullableFloatFieldUpdateOperationsInput | number | null
   }
 
-  export type EntityValuePeriodCreateInput = {
+  export type EntityValueCreateInput = {
     id?: string
-    periodStart: Date | string
-    periodEnd: Date | string
     actualValue?: number | null
     calculatedValue?: number | null
     finalValue?: number | null
@@ -22263,11 +22222,9 @@ export namespace Prisma {
     variableValues?: EntityVariableValueCreateNestedManyWithoutEntityValueInput
   }
 
-  export type EntityValuePeriodUncheckedCreateInput = {
+  export type EntityValueUncheckedCreateInput = {
     id?: string
     entityId: string
-    periodStart: Date | string
-    periodEnd: Date | string
     actualValue?: number | null
     calculatedValue?: number | null
     finalValue?: number | null
@@ -22286,10 +22243,8 @@ export namespace Prisma {
     variableValues?: EntityVariableValueUncheckedCreateNestedManyWithoutEntityValueInput
   }
 
-  export type EntityValuePeriodUpdateInput = {
+  export type EntityValueUpdateInput = {
     id?: StringFieldUpdateOperationsInput | string
-    periodStart?: DateTimeFieldUpdateOperationsInput | Date | string
-    periodEnd?: DateTimeFieldUpdateOperationsInput | Date | string
     actualValue?: NullableFloatFieldUpdateOperationsInput | number | null
     calculatedValue?: NullableFloatFieldUpdateOperationsInput | number | null
     finalValue?: NullableFloatFieldUpdateOperationsInput | number | null
@@ -22309,11 +22264,9 @@ export namespace Prisma {
     variableValues?: EntityVariableValueUpdateManyWithoutEntityValueNestedInput
   }
 
-  export type EntityValuePeriodUncheckedUpdateInput = {
+  export type EntityValueUncheckedUpdateInput = {
     id?: StringFieldUpdateOperationsInput | string
     entityId?: StringFieldUpdateOperationsInput | string
-    periodStart?: DateTimeFieldUpdateOperationsInput | Date | string
-    periodEnd?: DateTimeFieldUpdateOperationsInput | Date | string
     actualValue?: NullableFloatFieldUpdateOperationsInput | number | null
     calculatedValue?: NullableFloatFieldUpdateOperationsInput | number | null
     finalValue?: NullableFloatFieldUpdateOperationsInput | number | null
@@ -22332,11 +22285,9 @@ export namespace Prisma {
     variableValues?: EntityVariableValueUncheckedUpdateManyWithoutEntityValueNestedInput
   }
 
-  export type EntityValuePeriodCreateManyInput = {
+  export type EntityValueCreateManyInput = {
     id?: string
     entityId: string
-    periodStart: Date | string
-    periodEnd: Date | string
     actualValue?: number | null
     calculatedValue?: number | null
     finalValue?: number | null
@@ -22354,10 +22305,8 @@ export namespace Prisma {
     updatedAt?: Date | string
   }
 
-  export type EntityValuePeriodUpdateManyMutationInput = {
+  export type EntityValueUpdateManyMutationInput = {
     id?: StringFieldUpdateOperationsInput | string
-    periodStart?: DateTimeFieldUpdateOperationsInput | Date | string
-    periodEnd?: DateTimeFieldUpdateOperationsInput | Date | string
     actualValue?: NullableFloatFieldUpdateOperationsInput | number | null
     calculatedValue?: NullableFloatFieldUpdateOperationsInput | number | null
     finalValue?: NullableFloatFieldUpdateOperationsInput | number | null
@@ -22372,11 +22321,9 @@ export namespace Prisma {
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
-  export type EntityValuePeriodUncheckedUpdateManyInput = {
+  export type EntityValueUncheckedUpdateManyInput = {
     id?: StringFieldUpdateOperationsInput | string
     entityId?: StringFieldUpdateOperationsInput | string
-    periodStart?: DateTimeFieldUpdateOperationsInput | Date | string
-    periodEnd?: DateTimeFieldUpdateOperationsInput | Date | string
     actualValue?: NullableFloatFieldUpdateOperationsInput | number | null
     calculatedValue?: NullableFloatFieldUpdateOperationsInput | number | null
     finalValue?: NullableFloatFieldUpdateOperationsInput | number | null
@@ -22397,7 +22344,7 @@ export namespace Prisma {
   export type EntityVariableValueCreateInput = {
     id?: string
     value: number
-    entityValue: EntityValuePeriodCreateNestedOneWithoutVariableValuesInput
+    entityValue: EntityValueCreateNestedOneWithoutVariableValuesInput
     entityVariable: EntityVariableCreateNestedOneWithoutValuesInput
   }
 
@@ -22411,7 +22358,7 @@ export namespace Prisma {
   export type EntityVariableValueUpdateInput = {
     id?: StringFieldUpdateOperationsInput | string
     value?: FloatFieldUpdateOperationsInput | number
-    entityValue?: EntityValuePeriodUpdateOneRequiredWithoutVariableValuesNestedInput
+    entityValue?: EntityValueUpdateOneRequiredWithoutVariableValuesNestedInput
     entityVariable?: EntityVariableUpdateOneRequiredWithoutValuesNestedInput
   }
 
@@ -22909,10 +22856,10 @@ export namespace Prisma {
     none?: ChangeApprovalWhereInput
   }
 
-  export type EntityValuePeriodListRelationFilter = {
-    every?: EntityValuePeriodWhereInput
-    some?: EntityValuePeriodWhereInput
-    none?: EntityValuePeriodWhereInput
+  export type EntityValueListRelationFilter = {
+    every?: EntityValueWhereInput
+    some?: EntityValueWhereInput
+    none?: EntityValueWhereInput
   }
 
   export type UserEntityAssignmentListRelationFilter = {
@@ -22933,7 +22880,7 @@ export namespace Prisma {
     _count?: SortOrder
   }
 
-  export type EntityValuePeriodOrderByRelationAggregateInput = {
+  export type EntityValueOrderByRelationAggregateInput = {
     _count?: SortOrder
   }
 
@@ -23614,17 +23561,9 @@ export namespace Prisma {
     not?: NestedEnumKpiApprovalTypeNullableFilter<$PrismaModel> | $Enums.KpiApprovalType | null
   }
 
-  export type EntityValuePeriodEntity_period_uniqueCompoundUniqueInput = {
-    entityId: string
-    periodStart: Date | string
-    periodEnd: Date | string
-  }
-
-  export type EntityValuePeriodCountOrderByAggregateInput = {
+  export type EntityValueCountOrderByAggregateInput = {
     id?: SortOrder
     entityId?: SortOrder
-    periodStart?: SortOrder
-    periodEnd?: SortOrder
     actualValue?: SortOrder
     calculatedValue?: SortOrder
     finalValue?: SortOrder
@@ -23642,18 +23581,16 @@ export namespace Prisma {
     updatedAt?: SortOrder
   }
 
-  export type EntityValuePeriodAvgOrderByAggregateInput = {
+  export type EntityValueAvgOrderByAggregateInput = {
     actualValue?: SortOrder
     calculatedValue?: SortOrder
     finalValue?: SortOrder
     achievementValue?: SortOrder
   }
 
-  export type EntityValuePeriodMaxOrderByAggregateInput = {
+  export type EntityValueMaxOrderByAggregateInput = {
     id?: SortOrder
     entityId?: SortOrder
-    periodStart?: SortOrder
-    periodEnd?: SortOrder
     actualValue?: SortOrder
     calculatedValue?: SortOrder
     finalValue?: SortOrder
@@ -23671,11 +23608,9 @@ export namespace Prisma {
     updatedAt?: SortOrder
   }
 
-  export type EntityValuePeriodMinOrderByAggregateInput = {
+  export type EntityValueMinOrderByAggregateInput = {
     id?: SortOrder
     entityId?: SortOrder
-    periodStart?: SortOrder
-    periodEnd?: SortOrder
     actualValue?: SortOrder
     calculatedValue?: SortOrder
     finalValue?: SortOrder
@@ -23693,7 +23628,7 @@ export namespace Prisma {
     updatedAt?: SortOrder
   }
 
-  export type EntityValuePeriodSumOrderByAggregateInput = {
+  export type EntityValueSumOrderByAggregateInput = {
     actualValue?: SortOrder
     calculatedValue?: SortOrder
     finalValue?: SortOrder
@@ -23731,9 +23666,9 @@ export namespace Prisma {
     not?: NestedFloatFilter<$PrismaModel> | number
   }
 
-  export type EntityValuePeriodScalarRelationFilter = {
-    is?: EntityValuePeriodWhereInput
-    isNot?: EntityValuePeriodWhereInput
+  export type EntityValueScalarRelationFilter = {
+    is?: EntityValueWhereInput
+    isNot?: EntityValueWhereInput
   }
 
   export type EntityVariableScalarRelationFilter = {
@@ -24138,25 +24073,25 @@ export namespace Prisma {
     connect?: EntityWhereUniqueInput | EntityWhereUniqueInput[]
   }
 
-  export type EntityValuePeriodCreateNestedManyWithoutEnteredByUserInput = {
-    create?: XOR<EntityValuePeriodCreateWithoutEnteredByUserInput, EntityValuePeriodUncheckedCreateWithoutEnteredByUserInput> | EntityValuePeriodCreateWithoutEnteredByUserInput[] | EntityValuePeriodUncheckedCreateWithoutEnteredByUserInput[]
-    connectOrCreate?: EntityValuePeriodCreateOrConnectWithoutEnteredByUserInput | EntityValuePeriodCreateOrConnectWithoutEnteredByUserInput[]
-    createMany?: EntityValuePeriodCreateManyEnteredByUserInputEnvelope
-    connect?: EntityValuePeriodWhereUniqueInput | EntityValuePeriodWhereUniqueInput[]
+  export type EntityValueCreateNestedManyWithoutEnteredByUserInput = {
+    create?: XOR<EntityValueCreateWithoutEnteredByUserInput, EntityValueUncheckedCreateWithoutEnteredByUserInput> | EntityValueCreateWithoutEnteredByUserInput[] | EntityValueUncheckedCreateWithoutEnteredByUserInput[]
+    connectOrCreate?: EntityValueCreateOrConnectWithoutEnteredByUserInput | EntityValueCreateOrConnectWithoutEnteredByUserInput[]
+    createMany?: EntityValueCreateManyEnteredByUserInputEnvelope
+    connect?: EntityValueWhereUniqueInput | EntityValueWhereUniqueInput[]
   }
 
-  export type EntityValuePeriodCreateNestedManyWithoutSubmittedByUserInput = {
-    create?: XOR<EntityValuePeriodCreateWithoutSubmittedByUserInput, EntityValuePeriodUncheckedCreateWithoutSubmittedByUserInput> | EntityValuePeriodCreateWithoutSubmittedByUserInput[] | EntityValuePeriodUncheckedCreateWithoutSubmittedByUserInput[]
-    connectOrCreate?: EntityValuePeriodCreateOrConnectWithoutSubmittedByUserInput | EntityValuePeriodCreateOrConnectWithoutSubmittedByUserInput[]
-    createMany?: EntityValuePeriodCreateManySubmittedByUserInputEnvelope
-    connect?: EntityValuePeriodWhereUniqueInput | EntityValuePeriodWhereUniqueInput[]
+  export type EntityValueCreateNestedManyWithoutSubmittedByUserInput = {
+    create?: XOR<EntityValueCreateWithoutSubmittedByUserInput, EntityValueUncheckedCreateWithoutSubmittedByUserInput> | EntityValueCreateWithoutSubmittedByUserInput[] | EntityValueUncheckedCreateWithoutSubmittedByUserInput[]
+    connectOrCreate?: EntityValueCreateOrConnectWithoutSubmittedByUserInput | EntityValueCreateOrConnectWithoutSubmittedByUserInput[]
+    createMany?: EntityValueCreateManySubmittedByUserInputEnvelope
+    connect?: EntityValueWhereUniqueInput | EntityValueWhereUniqueInput[]
   }
 
-  export type EntityValuePeriodCreateNestedManyWithoutApprovedByUserInput = {
-    create?: XOR<EntityValuePeriodCreateWithoutApprovedByUserInput, EntityValuePeriodUncheckedCreateWithoutApprovedByUserInput> | EntityValuePeriodCreateWithoutApprovedByUserInput[] | EntityValuePeriodUncheckedCreateWithoutApprovedByUserInput[]
-    connectOrCreate?: EntityValuePeriodCreateOrConnectWithoutApprovedByUserInput | EntityValuePeriodCreateOrConnectWithoutApprovedByUserInput[]
-    createMany?: EntityValuePeriodCreateManyApprovedByUserInputEnvelope
-    connect?: EntityValuePeriodWhereUniqueInput | EntityValuePeriodWhereUniqueInput[]
+  export type EntityValueCreateNestedManyWithoutApprovedByUserInput = {
+    create?: XOR<EntityValueCreateWithoutApprovedByUserInput, EntityValueUncheckedCreateWithoutApprovedByUserInput> | EntityValueCreateWithoutApprovedByUserInput[] | EntityValueUncheckedCreateWithoutApprovedByUserInput[]
+    connectOrCreate?: EntityValueCreateOrConnectWithoutApprovedByUserInput | EntityValueCreateOrConnectWithoutApprovedByUserInput[]
+    createMany?: EntityValueCreateManyApprovedByUserInputEnvelope
+    connect?: EntityValueWhereUniqueInput | EntityValueWhereUniqueInput[]
   }
 
   export type UserEntityAssignmentCreateNestedManyWithoutUserInput = {
@@ -24214,25 +24149,25 @@ export namespace Prisma {
     connect?: EntityWhereUniqueInput | EntityWhereUniqueInput[]
   }
 
-  export type EntityValuePeriodUncheckedCreateNestedManyWithoutEnteredByUserInput = {
-    create?: XOR<EntityValuePeriodCreateWithoutEnteredByUserInput, EntityValuePeriodUncheckedCreateWithoutEnteredByUserInput> | EntityValuePeriodCreateWithoutEnteredByUserInput[] | EntityValuePeriodUncheckedCreateWithoutEnteredByUserInput[]
-    connectOrCreate?: EntityValuePeriodCreateOrConnectWithoutEnteredByUserInput | EntityValuePeriodCreateOrConnectWithoutEnteredByUserInput[]
-    createMany?: EntityValuePeriodCreateManyEnteredByUserInputEnvelope
-    connect?: EntityValuePeriodWhereUniqueInput | EntityValuePeriodWhereUniqueInput[]
+  export type EntityValueUncheckedCreateNestedManyWithoutEnteredByUserInput = {
+    create?: XOR<EntityValueCreateWithoutEnteredByUserInput, EntityValueUncheckedCreateWithoutEnteredByUserInput> | EntityValueCreateWithoutEnteredByUserInput[] | EntityValueUncheckedCreateWithoutEnteredByUserInput[]
+    connectOrCreate?: EntityValueCreateOrConnectWithoutEnteredByUserInput | EntityValueCreateOrConnectWithoutEnteredByUserInput[]
+    createMany?: EntityValueCreateManyEnteredByUserInputEnvelope
+    connect?: EntityValueWhereUniqueInput | EntityValueWhereUniqueInput[]
   }
 
-  export type EntityValuePeriodUncheckedCreateNestedManyWithoutSubmittedByUserInput = {
-    create?: XOR<EntityValuePeriodCreateWithoutSubmittedByUserInput, EntityValuePeriodUncheckedCreateWithoutSubmittedByUserInput> | EntityValuePeriodCreateWithoutSubmittedByUserInput[] | EntityValuePeriodUncheckedCreateWithoutSubmittedByUserInput[]
-    connectOrCreate?: EntityValuePeriodCreateOrConnectWithoutSubmittedByUserInput | EntityValuePeriodCreateOrConnectWithoutSubmittedByUserInput[]
-    createMany?: EntityValuePeriodCreateManySubmittedByUserInputEnvelope
-    connect?: EntityValuePeriodWhereUniqueInput | EntityValuePeriodWhereUniqueInput[]
+  export type EntityValueUncheckedCreateNestedManyWithoutSubmittedByUserInput = {
+    create?: XOR<EntityValueCreateWithoutSubmittedByUserInput, EntityValueUncheckedCreateWithoutSubmittedByUserInput> | EntityValueCreateWithoutSubmittedByUserInput[] | EntityValueUncheckedCreateWithoutSubmittedByUserInput[]
+    connectOrCreate?: EntityValueCreateOrConnectWithoutSubmittedByUserInput | EntityValueCreateOrConnectWithoutSubmittedByUserInput[]
+    createMany?: EntityValueCreateManySubmittedByUserInputEnvelope
+    connect?: EntityValueWhereUniqueInput | EntityValueWhereUniqueInput[]
   }
 
-  export type EntityValuePeriodUncheckedCreateNestedManyWithoutApprovedByUserInput = {
-    create?: XOR<EntityValuePeriodCreateWithoutApprovedByUserInput, EntityValuePeriodUncheckedCreateWithoutApprovedByUserInput> | EntityValuePeriodCreateWithoutApprovedByUserInput[] | EntityValuePeriodUncheckedCreateWithoutApprovedByUserInput[]
-    connectOrCreate?: EntityValuePeriodCreateOrConnectWithoutApprovedByUserInput | EntityValuePeriodCreateOrConnectWithoutApprovedByUserInput[]
-    createMany?: EntityValuePeriodCreateManyApprovedByUserInputEnvelope
-    connect?: EntityValuePeriodWhereUniqueInput | EntityValuePeriodWhereUniqueInput[]
+  export type EntityValueUncheckedCreateNestedManyWithoutApprovedByUserInput = {
+    create?: XOR<EntityValueCreateWithoutApprovedByUserInput, EntityValueUncheckedCreateWithoutApprovedByUserInput> | EntityValueCreateWithoutApprovedByUserInput[] | EntityValueUncheckedCreateWithoutApprovedByUserInput[]
+    connectOrCreate?: EntityValueCreateOrConnectWithoutApprovedByUserInput | EntityValueCreateOrConnectWithoutApprovedByUserInput[]
+    createMany?: EntityValueCreateManyApprovedByUserInputEnvelope
+    connect?: EntityValueWhereUniqueInput | EntityValueWhereUniqueInput[]
   }
 
   export type UserEntityAssignmentUncheckedCreateNestedManyWithoutUserInput = {
@@ -24362,46 +24297,46 @@ export namespace Prisma {
     deleteMany?: EntityScalarWhereInput | EntityScalarWhereInput[]
   }
 
-  export type EntityValuePeriodUpdateManyWithoutEnteredByUserNestedInput = {
-    create?: XOR<EntityValuePeriodCreateWithoutEnteredByUserInput, EntityValuePeriodUncheckedCreateWithoutEnteredByUserInput> | EntityValuePeriodCreateWithoutEnteredByUserInput[] | EntityValuePeriodUncheckedCreateWithoutEnteredByUserInput[]
-    connectOrCreate?: EntityValuePeriodCreateOrConnectWithoutEnteredByUserInput | EntityValuePeriodCreateOrConnectWithoutEnteredByUserInput[]
-    upsert?: EntityValuePeriodUpsertWithWhereUniqueWithoutEnteredByUserInput | EntityValuePeriodUpsertWithWhereUniqueWithoutEnteredByUserInput[]
-    createMany?: EntityValuePeriodCreateManyEnteredByUserInputEnvelope
-    set?: EntityValuePeriodWhereUniqueInput | EntityValuePeriodWhereUniqueInput[]
-    disconnect?: EntityValuePeriodWhereUniqueInput | EntityValuePeriodWhereUniqueInput[]
-    delete?: EntityValuePeriodWhereUniqueInput | EntityValuePeriodWhereUniqueInput[]
-    connect?: EntityValuePeriodWhereUniqueInput | EntityValuePeriodWhereUniqueInput[]
-    update?: EntityValuePeriodUpdateWithWhereUniqueWithoutEnteredByUserInput | EntityValuePeriodUpdateWithWhereUniqueWithoutEnteredByUserInput[]
-    updateMany?: EntityValuePeriodUpdateManyWithWhereWithoutEnteredByUserInput | EntityValuePeriodUpdateManyWithWhereWithoutEnteredByUserInput[]
-    deleteMany?: EntityValuePeriodScalarWhereInput | EntityValuePeriodScalarWhereInput[]
+  export type EntityValueUpdateManyWithoutEnteredByUserNestedInput = {
+    create?: XOR<EntityValueCreateWithoutEnteredByUserInput, EntityValueUncheckedCreateWithoutEnteredByUserInput> | EntityValueCreateWithoutEnteredByUserInput[] | EntityValueUncheckedCreateWithoutEnteredByUserInput[]
+    connectOrCreate?: EntityValueCreateOrConnectWithoutEnteredByUserInput | EntityValueCreateOrConnectWithoutEnteredByUserInput[]
+    upsert?: EntityValueUpsertWithWhereUniqueWithoutEnteredByUserInput | EntityValueUpsertWithWhereUniqueWithoutEnteredByUserInput[]
+    createMany?: EntityValueCreateManyEnteredByUserInputEnvelope
+    set?: EntityValueWhereUniqueInput | EntityValueWhereUniqueInput[]
+    disconnect?: EntityValueWhereUniqueInput | EntityValueWhereUniqueInput[]
+    delete?: EntityValueWhereUniqueInput | EntityValueWhereUniqueInput[]
+    connect?: EntityValueWhereUniqueInput | EntityValueWhereUniqueInput[]
+    update?: EntityValueUpdateWithWhereUniqueWithoutEnteredByUserInput | EntityValueUpdateWithWhereUniqueWithoutEnteredByUserInput[]
+    updateMany?: EntityValueUpdateManyWithWhereWithoutEnteredByUserInput | EntityValueUpdateManyWithWhereWithoutEnteredByUserInput[]
+    deleteMany?: EntityValueScalarWhereInput | EntityValueScalarWhereInput[]
   }
 
-  export type EntityValuePeriodUpdateManyWithoutSubmittedByUserNestedInput = {
-    create?: XOR<EntityValuePeriodCreateWithoutSubmittedByUserInput, EntityValuePeriodUncheckedCreateWithoutSubmittedByUserInput> | EntityValuePeriodCreateWithoutSubmittedByUserInput[] | EntityValuePeriodUncheckedCreateWithoutSubmittedByUserInput[]
-    connectOrCreate?: EntityValuePeriodCreateOrConnectWithoutSubmittedByUserInput | EntityValuePeriodCreateOrConnectWithoutSubmittedByUserInput[]
-    upsert?: EntityValuePeriodUpsertWithWhereUniqueWithoutSubmittedByUserInput | EntityValuePeriodUpsertWithWhereUniqueWithoutSubmittedByUserInput[]
-    createMany?: EntityValuePeriodCreateManySubmittedByUserInputEnvelope
-    set?: EntityValuePeriodWhereUniqueInput | EntityValuePeriodWhereUniqueInput[]
-    disconnect?: EntityValuePeriodWhereUniqueInput | EntityValuePeriodWhereUniqueInput[]
-    delete?: EntityValuePeriodWhereUniqueInput | EntityValuePeriodWhereUniqueInput[]
-    connect?: EntityValuePeriodWhereUniqueInput | EntityValuePeriodWhereUniqueInput[]
-    update?: EntityValuePeriodUpdateWithWhereUniqueWithoutSubmittedByUserInput | EntityValuePeriodUpdateWithWhereUniqueWithoutSubmittedByUserInput[]
-    updateMany?: EntityValuePeriodUpdateManyWithWhereWithoutSubmittedByUserInput | EntityValuePeriodUpdateManyWithWhereWithoutSubmittedByUserInput[]
-    deleteMany?: EntityValuePeriodScalarWhereInput | EntityValuePeriodScalarWhereInput[]
+  export type EntityValueUpdateManyWithoutSubmittedByUserNestedInput = {
+    create?: XOR<EntityValueCreateWithoutSubmittedByUserInput, EntityValueUncheckedCreateWithoutSubmittedByUserInput> | EntityValueCreateWithoutSubmittedByUserInput[] | EntityValueUncheckedCreateWithoutSubmittedByUserInput[]
+    connectOrCreate?: EntityValueCreateOrConnectWithoutSubmittedByUserInput | EntityValueCreateOrConnectWithoutSubmittedByUserInput[]
+    upsert?: EntityValueUpsertWithWhereUniqueWithoutSubmittedByUserInput | EntityValueUpsertWithWhereUniqueWithoutSubmittedByUserInput[]
+    createMany?: EntityValueCreateManySubmittedByUserInputEnvelope
+    set?: EntityValueWhereUniqueInput | EntityValueWhereUniqueInput[]
+    disconnect?: EntityValueWhereUniqueInput | EntityValueWhereUniqueInput[]
+    delete?: EntityValueWhereUniqueInput | EntityValueWhereUniqueInput[]
+    connect?: EntityValueWhereUniqueInput | EntityValueWhereUniqueInput[]
+    update?: EntityValueUpdateWithWhereUniqueWithoutSubmittedByUserInput | EntityValueUpdateWithWhereUniqueWithoutSubmittedByUserInput[]
+    updateMany?: EntityValueUpdateManyWithWhereWithoutSubmittedByUserInput | EntityValueUpdateManyWithWhereWithoutSubmittedByUserInput[]
+    deleteMany?: EntityValueScalarWhereInput | EntityValueScalarWhereInput[]
   }
 
-  export type EntityValuePeriodUpdateManyWithoutApprovedByUserNestedInput = {
-    create?: XOR<EntityValuePeriodCreateWithoutApprovedByUserInput, EntityValuePeriodUncheckedCreateWithoutApprovedByUserInput> | EntityValuePeriodCreateWithoutApprovedByUserInput[] | EntityValuePeriodUncheckedCreateWithoutApprovedByUserInput[]
-    connectOrCreate?: EntityValuePeriodCreateOrConnectWithoutApprovedByUserInput | EntityValuePeriodCreateOrConnectWithoutApprovedByUserInput[]
-    upsert?: EntityValuePeriodUpsertWithWhereUniqueWithoutApprovedByUserInput | EntityValuePeriodUpsertWithWhereUniqueWithoutApprovedByUserInput[]
-    createMany?: EntityValuePeriodCreateManyApprovedByUserInputEnvelope
-    set?: EntityValuePeriodWhereUniqueInput | EntityValuePeriodWhereUniqueInput[]
-    disconnect?: EntityValuePeriodWhereUniqueInput | EntityValuePeriodWhereUniqueInput[]
-    delete?: EntityValuePeriodWhereUniqueInput | EntityValuePeriodWhereUniqueInput[]
-    connect?: EntityValuePeriodWhereUniqueInput | EntityValuePeriodWhereUniqueInput[]
-    update?: EntityValuePeriodUpdateWithWhereUniqueWithoutApprovedByUserInput | EntityValuePeriodUpdateWithWhereUniqueWithoutApprovedByUserInput[]
-    updateMany?: EntityValuePeriodUpdateManyWithWhereWithoutApprovedByUserInput | EntityValuePeriodUpdateManyWithWhereWithoutApprovedByUserInput[]
-    deleteMany?: EntityValuePeriodScalarWhereInput | EntityValuePeriodScalarWhereInput[]
+  export type EntityValueUpdateManyWithoutApprovedByUserNestedInput = {
+    create?: XOR<EntityValueCreateWithoutApprovedByUserInput, EntityValueUncheckedCreateWithoutApprovedByUserInput> | EntityValueCreateWithoutApprovedByUserInput[] | EntityValueUncheckedCreateWithoutApprovedByUserInput[]
+    connectOrCreate?: EntityValueCreateOrConnectWithoutApprovedByUserInput | EntityValueCreateOrConnectWithoutApprovedByUserInput[]
+    upsert?: EntityValueUpsertWithWhereUniqueWithoutApprovedByUserInput | EntityValueUpsertWithWhereUniqueWithoutApprovedByUserInput[]
+    createMany?: EntityValueCreateManyApprovedByUserInputEnvelope
+    set?: EntityValueWhereUniqueInput | EntityValueWhereUniqueInput[]
+    disconnect?: EntityValueWhereUniqueInput | EntityValueWhereUniqueInput[]
+    delete?: EntityValueWhereUniqueInput | EntityValueWhereUniqueInput[]
+    connect?: EntityValueWhereUniqueInput | EntityValueWhereUniqueInput[]
+    update?: EntityValueUpdateWithWhereUniqueWithoutApprovedByUserInput | EntityValueUpdateWithWhereUniqueWithoutApprovedByUserInput[]
+    updateMany?: EntityValueUpdateManyWithWhereWithoutApprovedByUserInput | EntityValueUpdateManyWithWhereWithoutApprovedByUserInput[]
+    deleteMany?: EntityValueScalarWhereInput | EntityValueScalarWhereInput[]
   }
 
   export type UserEntityAssignmentUpdateManyWithoutUserNestedInput = {
@@ -24512,46 +24447,46 @@ export namespace Prisma {
     deleteMany?: EntityScalarWhereInput | EntityScalarWhereInput[]
   }
 
-  export type EntityValuePeriodUncheckedUpdateManyWithoutEnteredByUserNestedInput = {
-    create?: XOR<EntityValuePeriodCreateWithoutEnteredByUserInput, EntityValuePeriodUncheckedCreateWithoutEnteredByUserInput> | EntityValuePeriodCreateWithoutEnteredByUserInput[] | EntityValuePeriodUncheckedCreateWithoutEnteredByUserInput[]
-    connectOrCreate?: EntityValuePeriodCreateOrConnectWithoutEnteredByUserInput | EntityValuePeriodCreateOrConnectWithoutEnteredByUserInput[]
-    upsert?: EntityValuePeriodUpsertWithWhereUniqueWithoutEnteredByUserInput | EntityValuePeriodUpsertWithWhereUniqueWithoutEnteredByUserInput[]
-    createMany?: EntityValuePeriodCreateManyEnteredByUserInputEnvelope
-    set?: EntityValuePeriodWhereUniqueInput | EntityValuePeriodWhereUniqueInput[]
-    disconnect?: EntityValuePeriodWhereUniqueInput | EntityValuePeriodWhereUniqueInput[]
-    delete?: EntityValuePeriodWhereUniqueInput | EntityValuePeriodWhereUniqueInput[]
-    connect?: EntityValuePeriodWhereUniqueInput | EntityValuePeriodWhereUniqueInput[]
-    update?: EntityValuePeriodUpdateWithWhereUniqueWithoutEnteredByUserInput | EntityValuePeriodUpdateWithWhereUniqueWithoutEnteredByUserInput[]
-    updateMany?: EntityValuePeriodUpdateManyWithWhereWithoutEnteredByUserInput | EntityValuePeriodUpdateManyWithWhereWithoutEnteredByUserInput[]
-    deleteMany?: EntityValuePeriodScalarWhereInput | EntityValuePeriodScalarWhereInput[]
+  export type EntityValueUncheckedUpdateManyWithoutEnteredByUserNestedInput = {
+    create?: XOR<EntityValueCreateWithoutEnteredByUserInput, EntityValueUncheckedCreateWithoutEnteredByUserInput> | EntityValueCreateWithoutEnteredByUserInput[] | EntityValueUncheckedCreateWithoutEnteredByUserInput[]
+    connectOrCreate?: EntityValueCreateOrConnectWithoutEnteredByUserInput | EntityValueCreateOrConnectWithoutEnteredByUserInput[]
+    upsert?: EntityValueUpsertWithWhereUniqueWithoutEnteredByUserInput | EntityValueUpsertWithWhereUniqueWithoutEnteredByUserInput[]
+    createMany?: EntityValueCreateManyEnteredByUserInputEnvelope
+    set?: EntityValueWhereUniqueInput | EntityValueWhereUniqueInput[]
+    disconnect?: EntityValueWhereUniqueInput | EntityValueWhereUniqueInput[]
+    delete?: EntityValueWhereUniqueInput | EntityValueWhereUniqueInput[]
+    connect?: EntityValueWhereUniqueInput | EntityValueWhereUniqueInput[]
+    update?: EntityValueUpdateWithWhereUniqueWithoutEnteredByUserInput | EntityValueUpdateWithWhereUniqueWithoutEnteredByUserInput[]
+    updateMany?: EntityValueUpdateManyWithWhereWithoutEnteredByUserInput | EntityValueUpdateManyWithWhereWithoutEnteredByUserInput[]
+    deleteMany?: EntityValueScalarWhereInput | EntityValueScalarWhereInput[]
   }
 
-  export type EntityValuePeriodUncheckedUpdateManyWithoutSubmittedByUserNestedInput = {
-    create?: XOR<EntityValuePeriodCreateWithoutSubmittedByUserInput, EntityValuePeriodUncheckedCreateWithoutSubmittedByUserInput> | EntityValuePeriodCreateWithoutSubmittedByUserInput[] | EntityValuePeriodUncheckedCreateWithoutSubmittedByUserInput[]
-    connectOrCreate?: EntityValuePeriodCreateOrConnectWithoutSubmittedByUserInput | EntityValuePeriodCreateOrConnectWithoutSubmittedByUserInput[]
-    upsert?: EntityValuePeriodUpsertWithWhereUniqueWithoutSubmittedByUserInput | EntityValuePeriodUpsertWithWhereUniqueWithoutSubmittedByUserInput[]
-    createMany?: EntityValuePeriodCreateManySubmittedByUserInputEnvelope
-    set?: EntityValuePeriodWhereUniqueInput | EntityValuePeriodWhereUniqueInput[]
-    disconnect?: EntityValuePeriodWhereUniqueInput | EntityValuePeriodWhereUniqueInput[]
-    delete?: EntityValuePeriodWhereUniqueInput | EntityValuePeriodWhereUniqueInput[]
-    connect?: EntityValuePeriodWhereUniqueInput | EntityValuePeriodWhereUniqueInput[]
-    update?: EntityValuePeriodUpdateWithWhereUniqueWithoutSubmittedByUserInput | EntityValuePeriodUpdateWithWhereUniqueWithoutSubmittedByUserInput[]
-    updateMany?: EntityValuePeriodUpdateManyWithWhereWithoutSubmittedByUserInput | EntityValuePeriodUpdateManyWithWhereWithoutSubmittedByUserInput[]
-    deleteMany?: EntityValuePeriodScalarWhereInput | EntityValuePeriodScalarWhereInput[]
+  export type EntityValueUncheckedUpdateManyWithoutSubmittedByUserNestedInput = {
+    create?: XOR<EntityValueCreateWithoutSubmittedByUserInput, EntityValueUncheckedCreateWithoutSubmittedByUserInput> | EntityValueCreateWithoutSubmittedByUserInput[] | EntityValueUncheckedCreateWithoutSubmittedByUserInput[]
+    connectOrCreate?: EntityValueCreateOrConnectWithoutSubmittedByUserInput | EntityValueCreateOrConnectWithoutSubmittedByUserInput[]
+    upsert?: EntityValueUpsertWithWhereUniqueWithoutSubmittedByUserInput | EntityValueUpsertWithWhereUniqueWithoutSubmittedByUserInput[]
+    createMany?: EntityValueCreateManySubmittedByUserInputEnvelope
+    set?: EntityValueWhereUniqueInput | EntityValueWhereUniqueInput[]
+    disconnect?: EntityValueWhereUniqueInput | EntityValueWhereUniqueInput[]
+    delete?: EntityValueWhereUniqueInput | EntityValueWhereUniqueInput[]
+    connect?: EntityValueWhereUniqueInput | EntityValueWhereUniqueInput[]
+    update?: EntityValueUpdateWithWhereUniqueWithoutSubmittedByUserInput | EntityValueUpdateWithWhereUniqueWithoutSubmittedByUserInput[]
+    updateMany?: EntityValueUpdateManyWithWhereWithoutSubmittedByUserInput | EntityValueUpdateManyWithWhereWithoutSubmittedByUserInput[]
+    deleteMany?: EntityValueScalarWhereInput | EntityValueScalarWhereInput[]
   }
 
-  export type EntityValuePeriodUncheckedUpdateManyWithoutApprovedByUserNestedInput = {
-    create?: XOR<EntityValuePeriodCreateWithoutApprovedByUserInput, EntityValuePeriodUncheckedCreateWithoutApprovedByUserInput> | EntityValuePeriodCreateWithoutApprovedByUserInput[] | EntityValuePeriodUncheckedCreateWithoutApprovedByUserInput[]
-    connectOrCreate?: EntityValuePeriodCreateOrConnectWithoutApprovedByUserInput | EntityValuePeriodCreateOrConnectWithoutApprovedByUserInput[]
-    upsert?: EntityValuePeriodUpsertWithWhereUniqueWithoutApprovedByUserInput | EntityValuePeriodUpsertWithWhereUniqueWithoutApprovedByUserInput[]
-    createMany?: EntityValuePeriodCreateManyApprovedByUserInputEnvelope
-    set?: EntityValuePeriodWhereUniqueInput | EntityValuePeriodWhereUniqueInput[]
-    disconnect?: EntityValuePeriodWhereUniqueInput | EntityValuePeriodWhereUniqueInput[]
-    delete?: EntityValuePeriodWhereUniqueInput | EntityValuePeriodWhereUniqueInput[]
-    connect?: EntityValuePeriodWhereUniqueInput | EntityValuePeriodWhereUniqueInput[]
-    update?: EntityValuePeriodUpdateWithWhereUniqueWithoutApprovedByUserInput | EntityValuePeriodUpdateWithWhereUniqueWithoutApprovedByUserInput[]
-    updateMany?: EntityValuePeriodUpdateManyWithWhereWithoutApprovedByUserInput | EntityValuePeriodUpdateManyWithWhereWithoutApprovedByUserInput[]
-    deleteMany?: EntityValuePeriodScalarWhereInput | EntityValuePeriodScalarWhereInput[]
+  export type EntityValueUncheckedUpdateManyWithoutApprovedByUserNestedInput = {
+    create?: XOR<EntityValueCreateWithoutApprovedByUserInput, EntityValueUncheckedCreateWithoutApprovedByUserInput> | EntityValueCreateWithoutApprovedByUserInput[] | EntityValueUncheckedCreateWithoutApprovedByUserInput[]
+    connectOrCreate?: EntityValueCreateOrConnectWithoutApprovedByUserInput | EntityValueCreateOrConnectWithoutApprovedByUserInput[]
+    upsert?: EntityValueUpsertWithWhereUniqueWithoutApprovedByUserInput | EntityValueUpsertWithWhereUniqueWithoutApprovedByUserInput[]
+    createMany?: EntityValueCreateManyApprovedByUserInputEnvelope
+    set?: EntityValueWhereUniqueInput | EntityValueWhereUniqueInput[]
+    disconnect?: EntityValueWhereUniqueInput | EntityValueWhereUniqueInput[]
+    delete?: EntityValueWhereUniqueInput | EntityValueWhereUniqueInput[]
+    connect?: EntityValueWhereUniqueInput | EntityValueWhereUniqueInput[]
+    update?: EntityValueUpdateWithWhereUniqueWithoutApprovedByUserInput | EntityValueUpdateWithWhereUniqueWithoutApprovedByUserInput[]
+    updateMany?: EntityValueUpdateManyWithWhereWithoutApprovedByUserInput | EntityValueUpdateManyWithWhereWithoutApprovedByUserInput[]
+    deleteMany?: EntityValueScalarWhereInput | EntityValueScalarWhereInput[]
   }
 
   export type UserEntityAssignmentUncheckedUpdateManyWithoutUserNestedInput = {
@@ -24737,11 +24672,11 @@ export namespace Prisma {
     connect?: EntityVariableWhereUniqueInput | EntityVariableWhereUniqueInput[]
   }
 
-  export type EntityValuePeriodCreateNestedManyWithoutEntityInput = {
-    create?: XOR<EntityValuePeriodCreateWithoutEntityInput, EntityValuePeriodUncheckedCreateWithoutEntityInput> | EntityValuePeriodCreateWithoutEntityInput[] | EntityValuePeriodUncheckedCreateWithoutEntityInput[]
-    connectOrCreate?: EntityValuePeriodCreateOrConnectWithoutEntityInput | EntityValuePeriodCreateOrConnectWithoutEntityInput[]
-    createMany?: EntityValuePeriodCreateManyEntityInputEnvelope
-    connect?: EntityValuePeriodWhereUniqueInput | EntityValuePeriodWhereUniqueInput[]
+  export type EntityValueCreateNestedManyWithoutEntityInput = {
+    create?: XOR<EntityValueCreateWithoutEntityInput, EntityValueUncheckedCreateWithoutEntityInput> | EntityValueCreateWithoutEntityInput[] | EntityValueUncheckedCreateWithoutEntityInput[]
+    connectOrCreate?: EntityValueCreateOrConnectWithoutEntityInput | EntityValueCreateOrConnectWithoutEntityInput[]
+    createMany?: EntityValueCreateManyEntityInputEnvelope
+    connect?: EntityValueWhereUniqueInput | EntityValueWhereUniqueInput[]
   }
 
   export type UserEntityAssignmentCreateNestedManyWithoutEntityInput = {
@@ -24758,11 +24693,11 @@ export namespace Prisma {
     connect?: EntityVariableWhereUniqueInput | EntityVariableWhereUniqueInput[]
   }
 
-  export type EntityValuePeriodUncheckedCreateNestedManyWithoutEntityInput = {
-    create?: XOR<EntityValuePeriodCreateWithoutEntityInput, EntityValuePeriodUncheckedCreateWithoutEntityInput> | EntityValuePeriodCreateWithoutEntityInput[] | EntityValuePeriodUncheckedCreateWithoutEntityInput[]
-    connectOrCreate?: EntityValuePeriodCreateOrConnectWithoutEntityInput | EntityValuePeriodCreateOrConnectWithoutEntityInput[]
-    createMany?: EntityValuePeriodCreateManyEntityInputEnvelope
-    connect?: EntityValuePeriodWhereUniqueInput | EntityValuePeriodWhereUniqueInput[]
+  export type EntityValueUncheckedCreateNestedManyWithoutEntityInput = {
+    create?: XOR<EntityValueCreateWithoutEntityInput, EntityValueUncheckedCreateWithoutEntityInput> | EntityValueCreateWithoutEntityInput[] | EntityValueUncheckedCreateWithoutEntityInput[]
+    connectOrCreate?: EntityValueCreateOrConnectWithoutEntityInput | EntityValueCreateOrConnectWithoutEntityInput[]
+    createMany?: EntityValueCreateManyEntityInputEnvelope
+    connect?: EntityValueWhereUniqueInput | EntityValueWhereUniqueInput[]
   }
 
   export type UserEntityAssignmentUncheckedCreateNestedManyWithoutEntityInput = {
@@ -24840,18 +24775,18 @@ export namespace Prisma {
     deleteMany?: EntityVariableScalarWhereInput | EntityVariableScalarWhereInput[]
   }
 
-  export type EntityValuePeriodUpdateManyWithoutEntityNestedInput = {
-    create?: XOR<EntityValuePeriodCreateWithoutEntityInput, EntityValuePeriodUncheckedCreateWithoutEntityInput> | EntityValuePeriodCreateWithoutEntityInput[] | EntityValuePeriodUncheckedCreateWithoutEntityInput[]
-    connectOrCreate?: EntityValuePeriodCreateOrConnectWithoutEntityInput | EntityValuePeriodCreateOrConnectWithoutEntityInput[]
-    upsert?: EntityValuePeriodUpsertWithWhereUniqueWithoutEntityInput | EntityValuePeriodUpsertWithWhereUniqueWithoutEntityInput[]
-    createMany?: EntityValuePeriodCreateManyEntityInputEnvelope
-    set?: EntityValuePeriodWhereUniqueInput | EntityValuePeriodWhereUniqueInput[]
-    disconnect?: EntityValuePeriodWhereUniqueInput | EntityValuePeriodWhereUniqueInput[]
-    delete?: EntityValuePeriodWhereUniqueInput | EntityValuePeriodWhereUniqueInput[]
-    connect?: EntityValuePeriodWhereUniqueInput | EntityValuePeriodWhereUniqueInput[]
-    update?: EntityValuePeriodUpdateWithWhereUniqueWithoutEntityInput | EntityValuePeriodUpdateWithWhereUniqueWithoutEntityInput[]
-    updateMany?: EntityValuePeriodUpdateManyWithWhereWithoutEntityInput | EntityValuePeriodUpdateManyWithWhereWithoutEntityInput[]
-    deleteMany?: EntityValuePeriodScalarWhereInput | EntityValuePeriodScalarWhereInput[]
+  export type EntityValueUpdateManyWithoutEntityNestedInput = {
+    create?: XOR<EntityValueCreateWithoutEntityInput, EntityValueUncheckedCreateWithoutEntityInput> | EntityValueCreateWithoutEntityInput[] | EntityValueUncheckedCreateWithoutEntityInput[]
+    connectOrCreate?: EntityValueCreateOrConnectWithoutEntityInput | EntityValueCreateOrConnectWithoutEntityInput[]
+    upsert?: EntityValueUpsertWithWhereUniqueWithoutEntityInput | EntityValueUpsertWithWhereUniqueWithoutEntityInput[]
+    createMany?: EntityValueCreateManyEntityInputEnvelope
+    set?: EntityValueWhereUniqueInput | EntityValueWhereUniqueInput[]
+    disconnect?: EntityValueWhereUniqueInput | EntityValueWhereUniqueInput[]
+    delete?: EntityValueWhereUniqueInput | EntityValueWhereUniqueInput[]
+    connect?: EntityValueWhereUniqueInput | EntityValueWhereUniqueInput[]
+    update?: EntityValueUpdateWithWhereUniqueWithoutEntityInput | EntityValueUpdateWithWhereUniqueWithoutEntityInput[]
+    updateMany?: EntityValueUpdateManyWithWhereWithoutEntityInput | EntityValueUpdateManyWithWhereWithoutEntityInput[]
+    deleteMany?: EntityValueScalarWhereInput | EntityValueScalarWhereInput[]
   }
 
   export type UserEntityAssignmentUpdateManyWithoutEntityNestedInput = {
@@ -24882,18 +24817,18 @@ export namespace Prisma {
     deleteMany?: EntityVariableScalarWhereInput | EntityVariableScalarWhereInput[]
   }
 
-  export type EntityValuePeriodUncheckedUpdateManyWithoutEntityNestedInput = {
-    create?: XOR<EntityValuePeriodCreateWithoutEntityInput, EntityValuePeriodUncheckedCreateWithoutEntityInput> | EntityValuePeriodCreateWithoutEntityInput[] | EntityValuePeriodUncheckedCreateWithoutEntityInput[]
-    connectOrCreate?: EntityValuePeriodCreateOrConnectWithoutEntityInput | EntityValuePeriodCreateOrConnectWithoutEntityInput[]
-    upsert?: EntityValuePeriodUpsertWithWhereUniqueWithoutEntityInput | EntityValuePeriodUpsertWithWhereUniqueWithoutEntityInput[]
-    createMany?: EntityValuePeriodCreateManyEntityInputEnvelope
-    set?: EntityValuePeriodWhereUniqueInput | EntityValuePeriodWhereUniqueInput[]
-    disconnect?: EntityValuePeriodWhereUniqueInput | EntityValuePeriodWhereUniqueInput[]
-    delete?: EntityValuePeriodWhereUniqueInput | EntityValuePeriodWhereUniqueInput[]
-    connect?: EntityValuePeriodWhereUniqueInput | EntityValuePeriodWhereUniqueInput[]
-    update?: EntityValuePeriodUpdateWithWhereUniqueWithoutEntityInput | EntityValuePeriodUpdateWithWhereUniqueWithoutEntityInput[]
-    updateMany?: EntityValuePeriodUpdateManyWithWhereWithoutEntityInput | EntityValuePeriodUpdateManyWithWhereWithoutEntityInput[]
-    deleteMany?: EntityValuePeriodScalarWhereInput | EntityValuePeriodScalarWhereInput[]
+  export type EntityValueUncheckedUpdateManyWithoutEntityNestedInput = {
+    create?: XOR<EntityValueCreateWithoutEntityInput, EntityValueUncheckedCreateWithoutEntityInput> | EntityValueCreateWithoutEntityInput[] | EntityValueUncheckedCreateWithoutEntityInput[]
+    connectOrCreate?: EntityValueCreateOrConnectWithoutEntityInput | EntityValueCreateOrConnectWithoutEntityInput[]
+    upsert?: EntityValueUpsertWithWhereUniqueWithoutEntityInput | EntityValueUpsertWithWhereUniqueWithoutEntityInput[]
+    createMany?: EntityValueCreateManyEntityInputEnvelope
+    set?: EntityValueWhereUniqueInput | EntityValueWhereUniqueInput[]
+    disconnect?: EntityValueWhereUniqueInput | EntityValueWhereUniqueInput[]
+    delete?: EntityValueWhereUniqueInput | EntityValueWhereUniqueInput[]
+    connect?: EntityValueWhereUniqueInput | EntityValueWhereUniqueInput[]
+    update?: EntityValueUpdateWithWhereUniqueWithoutEntityInput | EntityValueUpdateWithWhereUniqueWithoutEntityInput[]
+    updateMany?: EntityValueUpdateManyWithWhereWithoutEntityInput | EntityValueUpdateManyWithWhereWithoutEntityInput[]
+    deleteMany?: EntityValueScalarWhereInput | EntityValueScalarWhereInput[]
   }
 
   export type UserEntityAssignmentUncheckedUpdateManyWithoutEntityNestedInput = {
@@ -25082,10 +25017,10 @@ export namespace Prisma {
     deleteMany?: EntityVariableValueScalarWhereInput | EntityVariableValueScalarWhereInput[]
   }
 
-  export type EntityValuePeriodCreateNestedOneWithoutVariableValuesInput = {
-    create?: XOR<EntityValuePeriodCreateWithoutVariableValuesInput, EntityValuePeriodUncheckedCreateWithoutVariableValuesInput>
-    connectOrCreate?: EntityValuePeriodCreateOrConnectWithoutVariableValuesInput
-    connect?: EntityValuePeriodWhereUniqueInput
+  export type EntityValueCreateNestedOneWithoutVariableValuesInput = {
+    create?: XOR<EntityValueCreateWithoutVariableValuesInput, EntityValueUncheckedCreateWithoutVariableValuesInput>
+    connectOrCreate?: EntityValueCreateOrConnectWithoutVariableValuesInput
+    connect?: EntityValueWhereUniqueInput
   }
 
   export type EntityVariableCreateNestedOneWithoutValuesInput = {
@@ -25102,12 +25037,12 @@ export namespace Prisma {
     divide?: number
   }
 
-  export type EntityValuePeriodUpdateOneRequiredWithoutVariableValuesNestedInput = {
-    create?: XOR<EntityValuePeriodCreateWithoutVariableValuesInput, EntityValuePeriodUncheckedCreateWithoutVariableValuesInput>
-    connectOrCreate?: EntityValuePeriodCreateOrConnectWithoutVariableValuesInput
-    upsert?: EntityValuePeriodUpsertWithoutVariableValuesInput
-    connect?: EntityValuePeriodWhereUniqueInput
-    update?: XOR<XOR<EntityValuePeriodUpdateToOneWithWhereWithoutVariableValuesInput, EntityValuePeriodUpdateWithoutVariableValuesInput>, EntityValuePeriodUncheckedUpdateWithoutVariableValuesInput>
+  export type EntityValueUpdateOneRequiredWithoutVariableValuesNestedInput = {
+    create?: XOR<EntityValueCreateWithoutVariableValuesInput, EntityValueUncheckedCreateWithoutVariableValuesInput>
+    connectOrCreate?: EntityValueCreateOrConnectWithoutVariableValuesInput
+    upsert?: EntityValueUpsertWithoutVariableValuesInput
+    connect?: EntityValueWhereUniqueInput
+    update?: XOR<XOR<EntityValueUpdateToOneWithWhereWithoutVariableValuesInput, EntityValueUpdateWithoutVariableValuesInput>, EntityValueUncheckedUpdateWithoutVariableValuesInput>
   }
 
   export type EntityVariableUpdateOneRequiredWithoutValuesNestedInput = {
@@ -25616,9 +25551,9 @@ export namespace Prisma {
     approvals?: ChangeApprovalCreateNestedManyWithoutApproverInput
     changeRequests?: ChangeRequestCreateNestedManyWithoutRequesterInput
     ownedEntities?: EntityCreateNestedManyWithoutOwnerUserInput
-    valuesEntered?: EntityValuePeriodCreateNestedManyWithoutEnteredByUserInput
-    valuesSubmitted?: EntityValuePeriodCreateNestedManyWithoutSubmittedByUserInput
-    valuesApproved?: EntityValuePeriodCreateNestedManyWithoutApprovedByUserInput
+    valuesEntered?: EntityValueCreateNestedManyWithoutEnteredByUserInput
+    valuesSubmitted?: EntityValueCreateNestedManyWithoutSubmittedByUserInput
+    valuesApproved?: EntityValueCreateNestedManyWithoutApprovedByUserInput
     entityAssignments?: UserEntityAssignmentCreateNestedManyWithoutUserInput
   }
 
@@ -25642,9 +25577,9 @@ export namespace Prisma {
     approvals?: ChangeApprovalUncheckedCreateNestedManyWithoutApproverInput
     changeRequests?: ChangeRequestUncheckedCreateNestedManyWithoutRequesterInput
     ownedEntities?: EntityUncheckedCreateNestedManyWithoutOwnerUserInput
-    valuesEntered?: EntityValuePeriodUncheckedCreateNestedManyWithoutEnteredByUserInput
-    valuesSubmitted?: EntityValuePeriodUncheckedCreateNestedManyWithoutSubmittedByUserInput
-    valuesApproved?: EntityValuePeriodUncheckedCreateNestedManyWithoutApprovedByUserInput
+    valuesEntered?: EntityValueUncheckedCreateNestedManyWithoutEnteredByUserInput
+    valuesSubmitted?: EntityValueUncheckedCreateNestedManyWithoutSubmittedByUserInput
+    valuesApproved?: EntityValueUncheckedCreateNestedManyWithoutApprovedByUserInput
     entityAssignments?: UserEntityAssignmentUncheckedCreateNestedManyWithoutUserInput
   }
 
@@ -25682,7 +25617,7 @@ export namespace Prisma {
     orgEntityType: OrgEntityTypeCreateNestedOneWithoutEntitiesInput
     ownerUser?: UserCreateNestedOneWithoutOwnedEntitiesInput
     variables?: EntityVariableCreateNestedManyWithoutEntityInput
-    values?: EntityValuePeriodCreateNestedManyWithoutEntityInput
+    values?: EntityValueCreateNestedManyWithoutEntityInput
     assignments?: UserEntityAssignmentCreateNestedManyWithoutEntityInput
   }
 
@@ -25710,7 +25645,7 @@ export namespace Prisma {
     updatedAt?: Date | string
     deletedAt?: Date | string | null
     variables?: EntityVariableUncheckedCreateNestedManyWithoutEntityInput
-    values?: EntityValuePeriodUncheckedCreateNestedManyWithoutEntityInput
+    values?: EntityValueUncheckedCreateNestedManyWithoutEntityInput
     assignments?: UserEntityAssignmentUncheckedCreateNestedManyWithoutEntityInput
   }
 
@@ -26010,7 +25945,7 @@ export namespace Prisma {
     org: OrganizationCreateNestedOneWithoutEntitiesInput
     ownerUser?: UserCreateNestedOneWithoutOwnedEntitiesInput
     variables?: EntityVariableCreateNestedManyWithoutEntityInput
-    values?: EntityValuePeriodCreateNestedManyWithoutEntityInput
+    values?: EntityValueCreateNestedManyWithoutEntityInput
     assignments?: UserEntityAssignmentCreateNestedManyWithoutEntityInput
   }
 
@@ -26038,7 +25973,7 @@ export namespace Prisma {
     updatedAt?: Date | string
     deletedAt?: Date | string | null
     variables?: EntityVariableUncheckedCreateNestedManyWithoutEntityInput
-    values?: EntityValuePeriodUncheckedCreateNestedManyWithoutEntityInput
+    values?: EntityValueUncheckedCreateNestedManyWithoutEntityInput
     assignments?: UserEntityAssignmentUncheckedCreateNestedManyWithoutEntityInput
   }
 
@@ -26192,9 +26127,9 @@ export namespace Prisma {
     approvals?: ChangeApprovalCreateNestedManyWithoutApproverInput
     changeRequests?: ChangeRequestCreateNestedManyWithoutRequesterInput
     ownedEntities?: EntityCreateNestedManyWithoutOwnerUserInput
-    valuesEntered?: EntityValuePeriodCreateNestedManyWithoutEnteredByUserInput
-    valuesSubmitted?: EntityValuePeriodCreateNestedManyWithoutSubmittedByUserInput
-    valuesApproved?: EntityValuePeriodCreateNestedManyWithoutApprovedByUserInput
+    valuesEntered?: EntityValueCreateNestedManyWithoutEnteredByUserInput
+    valuesSubmitted?: EntityValueCreateNestedManyWithoutSubmittedByUserInput
+    valuesApproved?: EntityValueCreateNestedManyWithoutApprovedByUserInput
     entityAssignments?: UserEntityAssignmentCreateNestedManyWithoutUserInput
   }
 
@@ -26218,9 +26153,9 @@ export namespace Prisma {
     approvals?: ChangeApprovalUncheckedCreateNestedManyWithoutApproverInput
     changeRequests?: ChangeRequestUncheckedCreateNestedManyWithoutRequesterInput
     ownedEntities?: EntityUncheckedCreateNestedManyWithoutOwnerUserInput
-    valuesEntered?: EntityValuePeriodUncheckedCreateNestedManyWithoutEnteredByUserInput
-    valuesSubmitted?: EntityValuePeriodUncheckedCreateNestedManyWithoutSubmittedByUserInput
-    valuesApproved?: EntityValuePeriodUncheckedCreateNestedManyWithoutApprovedByUserInput
+    valuesEntered?: EntityValueUncheckedCreateNestedManyWithoutEnteredByUserInput
+    valuesSubmitted?: EntityValueUncheckedCreateNestedManyWithoutSubmittedByUserInput
+    valuesApproved?: EntityValueUncheckedCreateNestedManyWithoutApprovedByUserInput
     entityAssignments?: UserEntityAssignmentUncheckedCreateNestedManyWithoutUserInput
   }
 
@@ -26249,9 +26184,9 @@ export namespace Prisma {
     approvals?: ChangeApprovalCreateNestedManyWithoutApproverInput
     changeRequests?: ChangeRequestCreateNestedManyWithoutRequesterInput
     ownedEntities?: EntityCreateNestedManyWithoutOwnerUserInput
-    valuesEntered?: EntityValuePeriodCreateNestedManyWithoutEnteredByUserInput
-    valuesSubmitted?: EntityValuePeriodCreateNestedManyWithoutSubmittedByUserInput
-    valuesApproved?: EntityValuePeriodCreateNestedManyWithoutApprovedByUserInput
+    valuesEntered?: EntityValueCreateNestedManyWithoutEnteredByUserInput
+    valuesSubmitted?: EntityValueCreateNestedManyWithoutSubmittedByUserInput
+    valuesApproved?: EntityValueCreateNestedManyWithoutApprovedByUserInput
     entityAssignments?: UserEntityAssignmentCreateNestedManyWithoutUserInput
   }
 
@@ -26275,9 +26210,9 @@ export namespace Prisma {
     approvals?: ChangeApprovalUncheckedCreateNestedManyWithoutApproverInput
     changeRequests?: ChangeRequestUncheckedCreateNestedManyWithoutRequesterInput
     ownedEntities?: EntityUncheckedCreateNestedManyWithoutOwnerUserInput
-    valuesEntered?: EntityValuePeriodUncheckedCreateNestedManyWithoutEnteredByUserInput
-    valuesSubmitted?: EntityValuePeriodUncheckedCreateNestedManyWithoutSubmittedByUserInput
-    valuesApproved?: EntityValuePeriodUncheckedCreateNestedManyWithoutApprovedByUserInput
+    valuesEntered?: EntityValueUncheckedCreateNestedManyWithoutEnteredByUserInput
+    valuesSubmitted?: EntityValueUncheckedCreateNestedManyWithoutSubmittedByUserInput
+    valuesApproved?: EntityValueUncheckedCreateNestedManyWithoutApprovedByUserInput
     entityAssignments?: UserEntityAssignmentUncheckedCreateNestedManyWithoutUserInput
   }
 
@@ -26472,7 +26407,7 @@ export namespace Prisma {
     org: OrganizationCreateNestedOneWithoutEntitiesInput
     orgEntityType: OrgEntityTypeCreateNestedOneWithoutEntitiesInput
     variables?: EntityVariableCreateNestedManyWithoutEntityInput
-    values?: EntityValuePeriodCreateNestedManyWithoutEntityInput
+    values?: EntityValueCreateNestedManyWithoutEntityInput
     assignments?: UserEntityAssignmentCreateNestedManyWithoutEntityInput
   }
 
@@ -26500,7 +26435,7 @@ export namespace Prisma {
     updatedAt?: Date | string
     deletedAt?: Date | string | null
     variables?: EntityVariableUncheckedCreateNestedManyWithoutEntityInput
-    values?: EntityValuePeriodUncheckedCreateNestedManyWithoutEntityInput
+    values?: EntityValueUncheckedCreateNestedManyWithoutEntityInput
     assignments?: UserEntityAssignmentUncheckedCreateNestedManyWithoutEntityInput
   }
 
@@ -26514,10 +26449,8 @@ export namespace Prisma {
     skipDuplicates?: boolean
   }
 
-  export type EntityValuePeriodCreateWithoutEnteredByUserInput = {
+  export type EntityValueCreateWithoutEnteredByUserInput = {
     id?: string
-    periodStart: Date | string
-    periodEnd: Date | string
     actualValue?: number | null
     calculatedValue?: number | null
     finalValue?: number | null
@@ -26536,11 +26469,9 @@ export namespace Prisma {
     variableValues?: EntityVariableValueCreateNestedManyWithoutEntityValueInput
   }
 
-  export type EntityValuePeriodUncheckedCreateWithoutEnteredByUserInput = {
+  export type EntityValueUncheckedCreateWithoutEnteredByUserInput = {
     id?: string
     entityId: string
-    periodStart: Date | string
-    periodEnd: Date | string
     actualValue?: number | null
     calculatedValue?: number | null
     finalValue?: number | null
@@ -26558,20 +26489,18 @@ export namespace Prisma {
     variableValues?: EntityVariableValueUncheckedCreateNestedManyWithoutEntityValueInput
   }
 
-  export type EntityValuePeriodCreateOrConnectWithoutEnteredByUserInput = {
-    where: EntityValuePeriodWhereUniqueInput
-    create: XOR<EntityValuePeriodCreateWithoutEnteredByUserInput, EntityValuePeriodUncheckedCreateWithoutEnteredByUserInput>
+  export type EntityValueCreateOrConnectWithoutEnteredByUserInput = {
+    where: EntityValueWhereUniqueInput
+    create: XOR<EntityValueCreateWithoutEnteredByUserInput, EntityValueUncheckedCreateWithoutEnteredByUserInput>
   }
 
-  export type EntityValuePeriodCreateManyEnteredByUserInputEnvelope = {
-    data: EntityValuePeriodCreateManyEnteredByUserInput | EntityValuePeriodCreateManyEnteredByUserInput[]
+  export type EntityValueCreateManyEnteredByUserInputEnvelope = {
+    data: EntityValueCreateManyEnteredByUserInput | EntityValueCreateManyEnteredByUserInput[]
     skipDuplicates?: boolean
   }
 
-  export type EntityValuePeriodCreateWithoutSubmittedByUserInput = {
+  export type EntityValueCreateWithoutSubmittedByUserInput = {
     id?: string
-    periodStart: Date | string
-    periodEnd: Date | string
     actualValue?: number | null
     calculatedValue?: number | null
     finalValue?: number | null
@@ -26590,11 +26519,9 @@ export namespace Prisma {
     variableValues?: EntityVariableValueCreateNestedManyWithoutEntityValueInput
   }
 
-  export type EntityValuePeriodUncheckedCreateWithoutSubmittedByUserInput = {
+  export type EntityValueUncheckedCreateWithoutSubmittedByUserInput = {
     id?: string
     entityId: string
-    periodStart: Date | string
-    periodEnd: Date | string
     actualValue?: number | null
     calculatedValue?: number | null
     finalValue?: number | null
@@ -26612,20 +26539,18 @@ export namespace Prisma {
     variableValues?: EntityVariableValueUncheckedCreateNestedManyWithoutEntityValueInput
   }
 
-  export type EntityValuePeriodCreateOrConnectWithoutSubmittedByUserInput = {
-    where: EntityValuePeriodWhereUniqueInput
-    create: XOR<EntityValuePeriodCreateWithoutSubmittedByUserInput, EntityValuePeriodUncheckedCreateWithoutSubmittedByUserInput>
+  export type EntityValueCreateOrConnectWithoutSubmittedByUserInput = {
+    where: EntityValueWhereUniqueInput
+    create: XOR<EntityValueCreateWithoutSubmittedByUserInput, EntityValueUncheckedCreateWithoutSubmittedByUserInput>
   }
 
-  export type EntityValuePeriodCreateManySubmittedByUserInputEnvelope = {
-    data: EntityValuePeriodCreateManySubmittedByUserInput | EntityValuePeriodCreateManySubmittedByUserInput[]
+  export type EntityValueCreateManySubmittedByUserInputEnvelope = {
+    data: EntityValueCreateManySubmittedByUserInput | EntityValueCreateManySubmittedByUserInput[]
     skipDuplicates?: boolean
   }
 
-  export type EntityValuePeriodCreateWithoutApprovedByUserInput = {
+  export type EntityValueCreateWithoutApprovedByUserInput = {
     id?: string
-    periodStart: Date | string
-    periodEnd: Date | string
     actualValue?: number | null
     calculatedValue?: number | null
     finalValue?: number | null
@@ -26644,11 +26569,9 @@ export namespace Prisma {
     variableValues?: EntityVariableValueCreateNestedManyWithoutEntityValueInput
   }
 
-  export type EntityValuePeriodUncheckedCreateWithoutApprovedByUserInput = {
+  export type EntityValueUncheckedCreateWithoutApprovedByUserInput = {
     id?: string
     entityId: string
-    periodStart: Date | string
-    periodEnd: Date | string
     actualValue?: number | null
     calculatedValue?: number | null
     finalValue?: number | null
@@ -26666,13 +26589,13 @@ export namespace Prisma {
     variableValues?: EntityVariableValueUncheckedCreateNestedManyWithoutEntityValueInput
   }
 
-  export type EntityValuePeriodCreateOrConnectWithoutApprovedByUserInput = {
-    where: EntityValuePeriodWhereUniqueInput
-    create: XOR<EntityValuePeriodCreateWithoutApprovedByUserInput, EntityValuePeriodUncheckedCreateWithoutApprovedByUserInput>
+  export type EntityValueCreateOrConnectWithoutApprovedByUserInput = {
+    where: EntityValueWhereUniqueInput
+    create: XOR<EntityValueCreateWithoutApprovedByUserInput, EntityValueUncheckedCreateWithoutApprovedByUserInput>
   }
 
-  export type EntityValuePeriodCreateManyApprovedByUserInputEnvelope = {
-    data: EntityValuePeriodCreateManyApprovedByUserInput | EntityValuePeriodCreateManyApprovedByUserInput[]
+  export type EntityValueCreateManyApprovedByUserInputEnvelope = {
+    data: EntityValueCreateManyApprovedByUserInput | EntityValueCreateManyApprovedByUserInput[]
     skipDuplicates?: boolean
   }
 
@@ -26790,9 +26713,9 @@ export namespace Prisma {
     approvals?: ChangeApprovalUpdateManyWithoutApproverNestedInput
     changeRequests?: ChangeRequestUpdateManyWithoutRequesterNestedInput
     ownedEntities?: EntityUpdateManyWithoutOwnerUserNestedInput
-    valuesEntered?: EntityValuePeriodUpdateManyWithoutEnteredByUserNestedInput
-    valuesSubmitted?: EntityValuePeriodUpdateManyWithoutSubmittedByUserNestedInput
-    valuesApproved?: EntityValuePeriodUpdateManyWithoutApprovedByUserNestedInput
+    valuesEntered?: EntityValueUpdateManyWithoutEnteredByUserNestedInput
+    valuesSubmitted?: EntityValueUpdateManyWithoutSubmittedByUserNestedInput
+    valuesApproved?: EntityValueUpdateManyWithoutApprovedByUserNestedInput
     entityAssignments?: UserEntityAssignmentUpdateManyWithoutUserNestedInput
   }
 
@@ -26816,9 +26739,9 @@ export namespace Prisma {
     approvals?: ChangeApprovalUncheckedUpdateManyWithoutApproverNestedInput
     changeRequests?: ChangeRequestUncheckedUpdateManyWithoutRequesterNestedInput
     ownedEntities?: EntityUncheckedUpdateManyWithoutOwnerUserNestedInput
-    valuesEntered?: EntityValuePeriodUncheckedUpdateManyWithoutEnteredByUserNestedInput
-    valuesSubmitted?: EntityValuePeriodUncheckedUpdateManyWithoutSubmittedByUserNestedInput
-    valuesApproved?: EntityValuePeriodUncheckedUpdateManyWithoutApprovedByUserNestedInput
+    valuesEntered?: EntityValueUncheckedUpdateManyWithoutEnteredByUserNestedInput
+    valuesSubmitted?: EntityValueUncheckedUpdateManyWithoutSubmittedByUserNestedInput
+    valuesApproved?: EntityValueUncheckedUpdateManyWithoutApprovedByUserNestedInput
     entityAssignments?: UserEntityAssignmentUncheckedUpdateManyWithoutUserNestedInput
   }
 
@@ -26992,77 +26915,75 @@ export namespace Prisma {
     data: XOR<EntityUpdateManyMutationInput, EntityUncheckedUpdateManyWithoutOwnerUserInput>
   }
 
-  export type EntityValuePeriodUpsertWithWhereUniqueWithoutEnteredByUserInput = {
-    where: EntityValuePeriodWhereUniqueInput
-    update: XOR<EntityValuePeriodUpdateWithoutEnteredByUserInput, EntityValuePeriodUncheckedUpdateWithoutEnteredByUserInput>
-    create: XOR<EntityValuePeriodCreateWithoutEnteredByUserInput, EntityValuePeriodUncheckedCreateWithoutEnteredByUserInput>
+  export type EntityValueUpsertWithWhereUniqueWithoutEnteredByUserInput = {
+    where: EntityValueWhereUniqueInput
+    update: XOR<EntityValueUpdateWithoutEnteredByUserInput, EntityValueUncheckedUpdateWithoutEnteredByUserInput>
+    create: XOR<EntityValueCreateWithoutEnteredByUserInput, EntityValueUncheckedCreateWithoutEnteredByUserInput>
   }
 
-  export type EntityValuePeriodUpdateWithWhereUniqueWithoutEnteredByUserInput = {
-    where: EntityValuePeriodWhereUniqueInput
-    data: XOR<EntityValuePeriodUpdateWithoutEnteredByUserInput, EntityValuePeriodUncheckedUpdateWithoutEnteredByUserInput>
+  export type EntityValueUpdateWithWhereUniqueWithoutEnteredByUserInput = {
+    where: EntityValueWhereUniqueInput
+    data: XOR<EntityValueUpdateWithoutEnteredByUserInput, EntityValueUncheckedUpdateWithoutEnteredByUserInput>
   }
 
-  export type EntityValuePeriodUpdateManyWithWhereWithoutEnteredByUserInput = {
-    where: EntityValuePeriodScalarWhereInput
-    data: XOR<EntityValuePeriodUpdateManyMutationInput, EntityValuePeriodUncheckedUpdateManyWithoutEnteredByUserInput>
+  export type EntityValueUpdateManyWithWhereWithoutEnteredByUserInput = {
+    where: EntityValueScalarWhereInput
+    data: XOR<EntityValueUpdateManyMutationInput, EntityValueUncheckedUpdateManyWithoutEnteredByUserInput>
   }
 
-  export type EntityValuePeriodScalarWhereInput = {
-    AND?: EntityValuePeriodScalarWhereInput | EntityValuePeriodScalarWhereInput[]
-    OR?: EntityValuePeriodScalarWhereInput[]
-    NOT?: EntityValuePeriodScalarWhereInput | EntityValuePeriodScalarWhereInput[]
-    id?: StringFilter<"EntityValuePeriod"> | string
-    entityId?: StringFilter<"EntityValuePeriod"> | string
-    periodStart?: DateTimeFilter<"EntityValuePeriod"> | Date | string
-    periodEnd?: DateTimeFilter<"EntityValuePeriod"> | Date | string
-    actualValue?: FloatNullableFilter<"EntityValuePeriod"> | number | null
-    calculatedValue?: FloatNullableFilter<"EntityValuePeriod"> | number | null
-    finalValue?: FloatNullableFilter<"EntityValuePeriod"> | number | null
-    achievementValue?: FloatNullableFilter<"EntityValuePeriod"> | number | null
-    status?: EnumKpiValueStatusFilter<"EntityValuePeriod"> | $Enums.KpiValueStatus
-    approvalType?: EnumKpiApprovalTypeNullableFilter<"EntityValuePeriod"> | $Enums.KpiApprovalType | null
-    note?: StringNullableFilter<"EntityValuePeriod"> | string | null
-    enteredBy?: StringNullableFilter<"EntityValuePeriod"> | string | null
-    submittedBy?: StringNullableFilter<"EntityValuePeriod"> | string | null
-    approvedBy?: StringNullableFilter<"EntityValuePeriod"> | string | null
-    submittedAt?: DateTimeNullableFilter<"EntityValuePeriod"> | Date | string | null
-    approvedAt?: DateTimeNullableFilter<"EntityValuePeriod"> | Date | string | null
-    lockedAt?: DateTimeNullableFilter<"EntityValuePeriod"> | Date | string | null
-    createdAt?: DateTimeFilter<"EntityValuePeriod"> | Date | string
-    updatedAt?: DateTimeFilter<"EntityValuePeriod"> | Date | string
+  export type EntityValueScalarWhereInput = {
+    AND?: EntityValueScalarWhereInput | EntityValueScalarWhereInput[]
+    OR?: EntityValueScalarWhereInput[]
+    NOT?: EntityValueScalarWhereInput | EntityValueScalarWhereInput[]
+    id?: StringFilter<"EntityValue"> | string
+    entityId?: StringFilter<"EntityValue"> | string
+    actualValue?: FloatNullableFilter<"EntityValue"> | number | null
+    calculatedValue?: FloatNullableFilter<"EntityValue"> | number | null
+    finalValue?: FloatNullableFilter<"EntityValue"> | number | null
+    achievementValue?: FloatNullableFilter<"EntityValue"> | number | null
+    status?: EnumKpiValueStatusFilter<"EntityValue"> | $Enums.KpiValueStatus
+    approvalType?: EnumKpiApprovalTypeNullableFilter<"EntityValue"> | $Enums.KpiApprovalType | null
+    note?: StringNullableFilter<"EntityValue"> | string | null
+    enteredBy?: StringNullableFilter<"EntityValue"> | string | null
+    submittedBy?: StringNullableFilter<"EntityValue"> | string | null
+    approvedBy?: StringNullableFilter<"EntityValue"> | string | null
+    submittedAt?: DateTimeNullableFilter<"EntityValue"> | Date | string | null
+    approvedAt?: DateTimeNullableFilter<"EntityValue"> | Date | string | null
+    lockedAt?: DateTimeNullableFilter<"EntityValue"> | Date | string | null
+    createdAt?: DateTimeFilter<"EntityValue"> | Date | string
+    updatedAt?: DateTimeFilter<"EntityValue"> | Date | string
   }
 
-  export type EntityValuePeriodUpsertWithWhereUniqueWithoutSubmittedByUserInput = {
-    where: EntityValuePeriodWhereUniqueInput
-    update: XOR<EntityValuePeriodUpdateWithoutSubmittedByUserInput, EntityValuePeriodUncheckedUpdateWithoutSubmittedByUserInput>
-    create: XOR<EntityValuePeriodCreateWithoutSubmittedByUserInput, EntityValuePeriodUncheckedCreateWithoutSubmittedByUserInput>
+  export type EntityValueUpsertWithWhereUniqueWithoutSubmittedByUserInput = {
+    where: EntityValueWhereUniqueInput
+    update: XOR<EntityValueUpdateWithoutSubmittedByUserInput, EntityValueUncheckedUpdateWithoutSubmittedByUserInput>
+    create: XOR<EntityValueCreateWithoutSubmittedByUserInput, EntityValueUncheckedCreateWithoutSubmittedByUserInput>
   }
 
-  export type EntityValuePeriodUpdateWithWhereUniqueWithoutSubmittedByUserInput = {
-    where: EntityValuePeriodWhereUniqueInput
-    data: XOR<EntityValuePeriodUpdateWithoutSubmittedByUserInput, EntityValuePeriodUncheckedUpdateWithoutSubmittedByUserInput>
+  export type EntityValueUpdateWithWhereUniqueWithoutSubmittedByUserInput = {
+    where: EntityValueWhereUniqueInput
+    data: XOR<EntityValueUpdateWithoutSubmittedByUserInput, EntityValueUncheckedUpdateWithoutSubmittedByUserInput>
   }
 
-  export type EntityValuePeriodUpdateManyWithWhereWithoutSubmittedByUserInput = {
-    where: EntityValuePeriodScalarWhereInput
-    data: XOR<EntityValuePeriodUpdateManyMutationInput, EntityValuePeriodUncheckedUpdateManyWithoutSubmittedByUserInput>
+  export type EntityValueUpdateManyWithWhereWithoutSubmittedByUserInput = {
+    where: EntityValueScalarWhereInput
+    data: XOR<EntityValueUpdateManyMutationInput, EntityValueUncheckedUpdateManyWithoutSubmittedByUserInput>
   }
 
-  export type EntityValuePeriodUpsertWithWhereUniqueWithoutApprovedByUserInput = {
-    where: EntityValuePeriodWhereUniqueInput
-    update: XOR<EntityValuePeriodUpdateWithoutApprovedByUserInput, EntityValuePeriodUncheckedUpdateWithoutApprovedByUserInput>
-    create: XOR<EntityValuePeriodCreateWithoutApprovedByUserInput, EntityValuePeriodUncheckedCreateWithoutApprovedByUserInput>
+  export type EntityValueUpsertWithWhereUniqueWithoutApprovedByUserInput = {
+    where: EntityValueWhereUniqueInput
+    update: XOR<EntityValueUpdateWithoutApprovedByUserInput, EntityValueUncheckedUpdateWithoutApprovedByUserInput>
+    create: XOR<EntityValueCreateWithoutApprovedByUserInput, EntityValueUncheckedCreateWithoutApprovedByUserInput>
   }
 
-  export type EntityValuePeriodUpdateWithWhereUniqueWithoutApprovedByUserInput = {
-    where: EntityValuePeriodWhereUniqueInput
-    data: XOR<EntityValuePeriodUpdateWithoutApprovedByUserInput, EntityValuePeriodUncheckedUpdateWithoutApprovedByUserInput>
+  export type EntityValueUpdateWithWhereUniqueWithoutApprovedByUserInput = {
+    where: EntityValueWhereUniqueInput
+    data: XOR<EntityValueUpdateWithoutApprovedByUserInput, EntityValueUncheckedUpdateWithoutApprovedByUserInput>
   }
 
-  export type EntityValuePeriodUpdateManyWithWhereWithoutApprovedByUserInput = {
-    where: EntityValuePeriodScalarWhereInput
-    data: XOR<EntityValuePeriodUpdateManyMutationInput, EntityValuePeriodUncheckedUpdateManyWithoutApprovedByUserInput>
+  export type EntityValueUpdateManyWithWhereWithoutApprovedByUserInput = {
+    where: EntityValueScalarWhereInput
+    data: XOR<EntityValueUpdateManyMutationInput, EntityValueUncheckedUpdateManyWithoutApprovedByUserInput>
   }
 
   export type UserEntityAssignmentUpsertWithWhereUniqueWithoutUserInput = {
@@ -27114,9 +27035,9 @@ export namespace Prisma {
     approvals?: ChangeApprovalCreateNestedManyWithoutApproverInput
     changeRequests?: ChangeRequestCreateNestedManyWithoutRequesterInput
     ownedEntities?: EntityCreateNestedManyWithoutOwnerUserInput
-    valuesEntered?: EntityValuePeriodCreateNestedManyWithoutEnteredByUserInput
-    valuesSubmitted?: EntityValuePeriodCreateNestedManyWithoutSubmittedByUserInput
-    valuesApproved?: EntityValuePeriodCreateNestedManyWithoutApprovedByUserInput
+    valuesEntered?: EntityValueCreateNestedManyWithoutEnteredByUserInput
+    valuesSubmitted?: EntityValueCreateNestedManyWithoutSubmittedByUserInput
+    valuesApproved?: EntityValueCreateNestedManyWithoutApprovedByUserInput
     entityAssignments?: UserEntityAssignmentCreateNestedManyWithoutUserInput
   }
 
@@ -27140,9 +27061,9 @@ export namespace Prisma {
     approvals?: ChangeApprovalUncheckedCreateNestedManyWithoutApproverInput
     changeRequests?: ChangeRequestUncheckedCreateNestedManyWithoutRequesterInput
     ownedEntities?: EntityUncheckedCreateNestedManyWithoutOwnerUserInput
-    valuesEntered?: EntityValuePeriodUncheckedCreateNestedManyWithoutEnteredByUserInput
-    valuesSubmitted?: EntityValuePeriodUncheckedCreateNestedManyWithoutSubmittedByUserInput
-    valuesApproved?: EntityValuePeriodUncheckedCreateNestedManyWithoutApprovedByUserInput
+    valuesEntered?: EntityValueUncheckedCreateNestedManyWithoutEnteredByUserInput
+    valuesSubmitted?: EntityValueUncheckedCreateNestedManyWithoutSubmittedByUserInput
+    valuesApproved?: EntityValueUncheckedCreateNestedManyWithoutApprovedByUserInput
     entityAssignments?: UserEntityAssignmentUncheckedCreateNestedManyWithoutUserInput
   }
 
@@ -27182,9 +27103,9 @@ export namespace Prisma {
     approvals?: ChangeApprovalUpdateManyWithoutApproverNestedInput
     changeRequests?: ChangeRequestUpdateManyWithoutRequesterNestedInput
     ownedEntities?: EntityUpdateManyWithoutOwnerUserNestedInput
-    valuesEntered?: EntityValuePeriodUpdateManyWithoutEnteredByUserNestedInput
-    valuesSubmitted?: EntityValuePeriodUpdateManyWithoutSubmittedByUserNestedInput
-    valuesApproved?: EntityValuePeriodUpdateManyWithoutApprovedByUserNestedInput
+    valuesEntered?: EntityValueUpdateManyWithoutEnteredByUserNestedInput
+    valuesSubmitted?: EntityValueUpdateManyWithoutSubmittedByUserNestedInput
+    valuesApproved?: EntityValueUpdateManyWithoutApprovedByUserNestedInput
     entityAssignments?: UserEntityAssignmentUpdateManyWithoutUserNestedInput
   }
 
@@ -27208,9 +27129,9 @@ export namespace Prisma {
     approvals?: ChangeApprovalUncheckedUpdateManyWithoutApproverNestedInput
     changeRequests?: ChangeRequestUncheckedUpdateManyWithoutRequesterNestedInput
     ownedEntities?: EntityUncheckedUpdateManyWithoutOwnerUserNestedInput
-    valuesEntered?: EntityValuePeriodUncheckedUpdateManyWithoutEnteredByUserNestedInput
-    valuesSubmitted?: EntityValuePeriodUncheckedUpdateManyWithoutSubmittedByUserNestedInput
-    valuesApproved?: EntityValuePeriodUncheckedUpdateManyWithoutApprovedByUserNestedInput
+    valuesEntered?: EntityValueUncheckedUpdateManyWithoutEnteredByUserNestedInput
+    valuesSubmitted?: EntityValueUncheckedUpdateManyWithoutSubmittedByUserNestedInput
+    valuesApproved?: EntityValueUncheckedUpdateManyWithoutApprovedByUserNestedInput
     entityAssignments?: UserEntityAssignmentUncheckedUpdateManyWithoutUserNestedInput
   }
 
@@ -27234,9 +27155,9 @@ export namespace Prisma {
     approvals?: ChangeApprovalCreateNestedManyWithoutApproverInput
     changeRequests?: ChangeRequestCreateNestedManyWithoutRequesterInput
     ownedEntities?: EntityCreateNestedManyWithoutOwnerUserInput
-    valuesEntered?: EntityValuePeriodCreateNestedManyWithoutEnteredByUserInput
-    valuesSubmitted?: EntityValuePeriodCreateNestedManyWithoutSubmittedByUserInput
-    valuesApproved?: EntityValuePeriodCreateNestedManyWithoutApprovedByUserInput
+    valuesEntered?: EntityValueCreateNestedManyWithoutEnteredByUserInput
+    valuesSubmitted?: EntityValueCreateNestedManyWithoutSubmittedByUserInput
+    valuesApproved?: EntityValueCreateNestedManyWithoutApprovedByUserInput
     entityAssignments?: UserEntityAssignmentCreateNestedManyWithoutUserInput
   }
 
@@ -27260,9 +27181,9 @@ export namespace Prisma {
     approvals?: ChangeApprovalUncheckedCreateNestedManyWithoutApproverInput
     changeRequests?: ChangeRequestUncheckedCreateNestedManyWithoutRequesterInput
     ownedEntities?: EntityUncheckedCreateNestedManyWithoutOwnerUserInput
-    valuesEntered?: EntityValuePeriodUncheckedCreateNestedManyWithoutEnteredByUserInput
-    valuesSubmitted?: EntityValuePeriodUncheckedCreateNestedManyWithoutSubmittedByUserInput
-    valuesApproved?: EntityValuePeriodUncheckedCreateNestedManyWithoutApprovedByUserInput
+    valuesEntered?: EntityValueUncheckedCreateNestedManyWithoutEnteredByUserInput
+    valuesSubmitted?: EntityValueUncheckedCreateNestedManyWithoutSubmittedByUserInput
+    valuesApproved?: EntityValueUncheckedCreateNestedManyWithoutApprovedByUserInput
     entityAssignments?: UserEntityAssignmentUncheckedCreateNestedManyWithoutUserInput
   }
 
@@ -27302,9 +27223,9 @@ export namespace Prisma {
     approvals?: ChangeApprovalUpdateManyWithoutApproverNestedInput
     changeRequests?: ChangeRequestUpdateManyWithoutRequesterNestedInput
     ownedEntities?: EntityUpdateManyWithoutOwnerUserNestedInput
-    valuesEntered?: EntityValuePeriodUpdateManyWithoutEnteredByUserNestedInput
-    valuesSubmitted?: EntityValuePeriodUpdateManyWithoutSubmittedByUserNestedInput
-    valuesApproved?: EntityValuePeriodUpdateManyWithoutApprovedByUserNestedInput
+    valuesEntered?: EntityValueUpdateManyWithoutEnteredByUserNestedInput
+    valuesSubmitted?: EntityValueUpdateManyWithoutSubmittedByUserNestedInput
+    valuesApproved?: EntityValueUpdateManyWithoutApprovedByUserNestedInput
     entityAssignments?: UserEntityAssignmentUpdateManyWithoutUserNestedInput
   }
 
@@ -27328,9 +27249,9 @@ export namespace Prisma {
     approvals?: ChangeApprovalUncheckedUpdateManyWithoutApproverNestedInput
     changeRequests?: ChangeRequestUncheckedUpdateManyWithoutRequesterNestedInput
     ownedEntities?: EntityUncheckedUpdateManyWithoutOwnerUserNestedInput
-    valuesEntered?: EntityValuePeriodUncheckedUpdateManyWithoutEnteredByUserNestedInput
-    valuesSubmitted?: EntityValuePeriodUncheckedUpdateManyWithoutSubmittedByUserNestedInput
-    valuesApproved?: EntityValuePeriodUncheckedUpdateManyWithoutApprovedByUserNestedInput
+    valuesEntered?: EntityValueUncheckedUpdateManyWithoutEnteredByUserNestedInput
+    valuesSubmitted?: EntityValueUncheckedUpdateManyWithoutSubmittedByUserNestedInput
+    valuesApproved?: EntityValueUncheckedUpdateManyWithoutApprovedByUserNestedInput
     entityAssignments?: UserEntityAssignmentUncheckedUpdateManyWithoutUserNestedInput
   }
 
@@ -27354,9 +27275,9 @@ export namespace Prisma {
     approvals?: ChangeApprovalCreateNestedManyWithoutApproverInput
     changeRequests?: ChangeRequestCreateNestedManyWithoutRequesterInput
     ownedEntities?: EntityCreateNestedManyWithoutOwnerUserInput
-    valuesEntered?: EntityValuePeriodCreateNestedManyWithoutEnteredByUserInput
-    valuesSubmitted?: EntityValuePeriodCreateNestedManyWithoutSubmittedByUserInput
-    valuesApproved?: EntityValuePeriodCreateNestedManyWithoutApprovedByUserInput
+    valuesEntered?: EntityValueCreateNestedManyWithoutEnteredByUserInput
+    valuesSubmitted?: EntityValueCreateNestedManyWithoutSubmittedByUserInput
+    valuesApproved?: EntityValueCreateNestedManyWithoutApprovedByUserInput
     entityAssignments?: UserEntityAssignmentCreateNestedManyWithoutUserInput
   }
 
@@ -27380,9 +27301,9 @@ export namespace Prisma {
     approvals?: ChangeApprovalUncheckedCreateNestedManyWithoutApproverInput
     changeRequests?: ChangeRequestUncheckedCreateNestedManyWithoutRequesterInput
     ownedEntities?: EntityUncheckedCreateNestedManyWithoutOwnerUserInput
-    valuesEntered?: EntityValuePeriodUncheckedCreateNestedManyWithoutEnteredByUserInput
-    valuesSubmitted?: EntityValuePeriodUncheckedCreateNestedManyWithoutSubmittedByUserInput
-    valuesApproved?: EntityValuePeriodUncheckedCreateNestedManyWithoutApprovedByUserInput
+    valuesEntered?: EntityValueUncheckedCreateNestedManyWithoutEnteredByUserInput
+    valuesSubmitted?: EntityValueUncheckedCreateNestedManyWithoutSubmittedByUserInput
+    valuesApproved?: EntityValueUncheckedCreateNestedManyWithoutApprovedByUserInput
     entityAssignments?: UserEntityAssignmentUncheckedCreateNestedManyWithoutUserInput
   }
 
@@ -27422,9 +27343,9 @@ export namespace Prisma {
     approvals?: ChangeApprovalUpdateManyWithoutApproverNestedInput
     changeRequests?: ChangeRequestUpdateManyWithoutRequesterNestedInput
     ownedEntities?: EntityUpdateManyWithoutOwnerUserNestedInput
-    valuesEntered?: EntityValuePeriodUpdateManyWithoutEnteredByUserNestedInput
-    valuesSubmitted?: EntityValuePeriodUpdateManyWithoutSubmittedByUserNestedInput
-    valuesApproved?: EntityValuePeriodUpdateManyWithoutApprovedByUserNestedInput
+    valuesEntered?: EntityValueUpdateManyWithoutEnteredByUserNestedInput
+    valuesSubmitted?: EntityValueUpdateManyWithoutSubmittedByUserNestedInput
+    valuesApproved?: EntityValueUpdateManyWithoutApprovedByUserNestedInput
     entityAssignments?: UserEntityAssignmentUpdateManyWithoutUserNestedInput
   }
 
@@ -27448,9 +27369,9 @@ export namespace Prisma {
     approvals?: ChangeApprovalUncheckedUpdateManyWithoutApproverNestedInput
     changeRequests?: ChangeRequestUncheckedUpdateManyWithoutRequesterNestedInput
     ownedEntities?: EntityUncheckedUpdateManyWithoutOwnerUserNestedInput
-    valuesEntered?: EntityValuePeriodUncheckedUpdateManyWithoutEnteredByUserNestedInput
-    valuesSubmitted?: EntityValuePeriodUncheckedUpdateManyWithoutSubmittedByUserNestedInput
-    valuesApproved?: EntityValuePeriodUncheckedUpdateManyWithoutApprovedByUserNestedInput
+    valuesEntered?: EntityValueUncheckedUpdateManyWithoutEnteredByUserNestedInput
+    valuesSubmitted?: EntityValueUncheckedUpdateManyWithoutSubmittedByUserNestedInput
+    valuesApproved?: EntityValueUncheckedUpdateManyWithoutApprovedByUserNestedInput
     entityAssignments?: UserEntityAssignmentUncheckedUpdateManyWithoutUserNestedInput
   }
 
@@ -27523,9 +27444,9 @@ export namespace Prisma {
     preferences?: UserPreferenceCreateNestedOneWithoutUserInput
     approvals?: ChangeApprovalCreateNestedManyWithoutApproverInput
     ownedEntities?: EntityCreateNestedManyWithoutOwnerUserInput
-    valuesEntered?: EntityValuePeriodCreateNestedManyWithoutEnteredByUserInput
-    valuesSubmitted?: EntityValuePeriodCreateNestedManyWithoutSubmittedByUserInput
-    valuesApproved?: EntityValuePeriodCreateNestedManyWithoutApprovedByUserInput
+    valuesEntered?: EntityValueCreateNestedManyWithoutEnteredByUserInput
+    valuesSubmitted?: EntityValueCreateNestedManyWithoutSubmittedByUserInput
+    valuesApproved?: EntityValueCreateNestedManyWithoutApprovedByUserInput
     entityAssignments?: UserEntityAssignmentCreateNestedManyWithoutUserInput
   }
 
@@ -27549,9 +27470,9 @@ export namespace Prisma {
     preferences?: UserPreferenceUncheckedCreateNestedOneWithoutUserInput
     approvals?: ChangeApprovalUncheckedCreateNestedManyWithoutApproverInput
     ownedEntities?: EntityUncheckedCreateNestedManyWithoutOwnerUserInput
-    valuesEntered?: EntityValuePeriodUncheckedCreateNestedManyWithoutEnteredByUserInput
-    valuesSubmitted?: EntityValuePeriodUncheckedCreateNestedManyWithoutSubmittedByUserInput
-    valuesApproved?: EntityValuePeriodUncheckedCreateNestedManyWithoutApprovedByUserInput
+    valuesEntered?: EntityValueUncheckedCreateNestedManyWithoutEnteredByUserInput
+    valuesSubmitted?: EntityValueUncheckedCreateNestedManyWithoutSubmittedByUserInput
+    valuesApproved?: EntityValueUncheckedCreateNestedManyWithoutApprovedByUserInput
     entityAssignments?: UserEntityAssignmentUncheckedCreateNestedManyWithoutUserInput
   }
 
@@ -27674,9 +27595,9 @@ export namespace Prisma {
     preferences?: UserPreferenceUpdateOneWithoutUserNestedInput
     approvals?: ChangeApprovalUpdateManyWithoutApproverNestedInput
     ownedEntities?: EntityUpdateManyWithoutOwnerUserNestedInput
-    valuesEntered?: EntityValuePeriodUpdateManyWithoutEnteredByUserNestedInput
-    valuesSubmitted?: EntityValuePeriodUpdateManyWithoutSubmittedByUserNestedInput
-    valuesApproved?: EntityValuePeriodUpdateManyWithoutApprovedByUserNestedInput
+    valuesEntered?: EntityValueUpdateManyWithoutEnteredByUserNestedInput
+    valuesSubmitted?: EntityValueUpdateManyWithoutSubmittedByUserNestedInput
+    valuesApproved?: EntityValueUpdateManyWithoutApprovedByUserNestedInput
     entityAssignments?: UserEntityAssignmentUpdateManyWithoutUserNestedInput
   }
 
@@ -27700,9 +27621,9 @@ export namespace Prisma {
     preferences?: UserPreferenceUncheckedUpdateOneWithoutUserNestedInput
     approvals?: ChangeApprovalUncheckedUpdateManyWithoutApproverNestedInput
     ownedEntities?: EntityUncheckedUpdateManyWithoutOwnerUserNestedInput
-    valuesEntered?: EntityValuePeriodUncheckedUpdateManyWithoutEnteredByUserNestedInput
-    valuesSubmitted?: EntityValuePeriodUncheckedUpdateManyWithoutSubmittedByUserNestedInput
-    valuesApproved?: EntityValuePeriodUncheckedUpdateManyWithoutApprovedByUserNestedInput
+    valuesEntered?: EntityValueUncheckedUpdateManyWithoutEnteredByUserNestedInput
+    valuesSubmitted?: EntityValueUncheckedUpdateManyWithoutSubmittedByUserNestedInput
+    valuesApproved?: EntityValueUncheckedUpdateManyWithoutApprovedByUserNestedInput
     entityAssignments?: UserEntityAssignmentUncheckedUpdateManyWithoutUserNestedInput
   }
 
@@ -27775,9 +27696,9 @@ export namespace Prisma {
     preferences?: UserPreferenceCreateNestedOneWithoutUserInput
     changeRequests?: ChangeRequestCreateNestedManyWithoutRequesterInput
     ownedEntities?: EntityCreateNestedManyWithoutOwnerUserInput
-    valuesEntered?: EntityValuePeriodCreateNestedManyWithoutEnteredByUserInput
-    valuesSubmitted?: EntityValuePeriodCreateNestedManyWithoutSubmittedByUserInput
-    valuesApproved?: EntityValuePeriodCreateNestedManyWithoutApprovedByUserInput
+    valuesEntered?: EntityValueCreateNestedManyWithoutEnteredByUserInput
+    valuesSubmitted?: EntityValueCreateNestedManyWithoutSubmittedByUserInput
+    valuesApproved?: EntityValueCreateNestedManyWithoutApprovedByUserInput
     entityAssignments?: UserEntityAssignmentCreateNestedManyWithoutUserInput
   }
 
@@ -27801,9 +27722,9 @@ export namespace Prisma {
     preferences?: UserPreferenceUncheckedCreateNestedOneWithoutUserInput
     changeRequests?: ChangeRequestUncheckedCreateNestedManyWithoutRequesterInput
     ownedEntities?: EntityUncheckedCreateNestedManyWithoutOwnerUserInput
-    valuesEntered?: EntityValuePeriodUncheckedCreateNestedManyWithoutEnteredByUserInput
-    valuesSubmitted?: EntityValuePeriodUncheckedCreateNestedManyWithoutSubmittedByUserInput
-    valuesApproved?: EntityValuePeriodUncheckedCreateNestedManyWithoutApprovedByUserInput
+    valuesEntered?: EntityValueUncheckedCreateNestedManyWithoutEnteredByUserInput
+    valuesSubmitted?: EntityValueUncheckedCreateNestedManyWithoutSubmittedByUserInput
+    valuesApproved?: EntityValueUncheckedCreateNestedManyWithoutApprovedByUserInput
     entityAssignments?: UserEntityAssignmentUncheckedCreateNestedManyWithoutUserInput
   }
 
@@ -27882,9 +27803,9 @@ export namespace Prisma {
     preferences?: UserPreferenceUpdateOneWithoutUserNestedInput
     changeRequests?: ChangeRequestUpdateManyWithoutRequesterNestedInput
     ownedEntities?: EntityUpdateManyWithoutOwnerUserNestedInput
-    valuesEntered?: EntityValuePeriodUpdateManyWithoutEnteredByUserNestedInput
-    valuesSubmitted?: EntityValuePeriodUpdateManyWithoutSubmittedByUserNestedInput
-    valuesApproved?: EntityValuePeriodUpdateManyWithoutApprovedByUserNestedInput
+    valuesEntered?: EntityValueUpdateManyWithoutEnteredByUserNestedInput
+    valuesSubmitted?: EntityValueUpdateManyWithoutSubmittedByUserNestedInput
+    valuesApproved?: EntityValueUpdateManyWithoutApprovedByUserNestedInput
     entityAssignments?: UserEntityAssignmentUpdateManyWithoutUserNestedInput
   }
 
@@ -27908,9 +27829,9 @@ export namespace Prisma {
     preferences?: UserPreferenceUncheckedUpdateOneWithoutUserNestedInput
     changeRequests?: ChangeRequestUncheckedUpdateManyWithoutRequesterNestedInput
     ownedEntities?: EntityUncheckedUpdateManyWithoutOwnerUserNestedInput
-    valuesEntered?: EntityValuePeriodUncheckedUpdateManyWithoutEnteredByUserNestedInput
-    valuesSubmitted?: EntityValuePeriodUncheckedUpdateManyWithoutSubmittedByUserNestedInput
-    valuesApproved?: EntityValuePeriodUncheckedUpdateManyWithoutApprovedByUserNestedInput
+    valuesEntered?: EntityValueUncheckedUpdateManyWithoutEnteredByUserNestedInput
+    valuesSubmitted?: EntityValueUncheckedUpdateManyWithoutSubmittedByUserNestedInput
+    valuesApproved?: EntityValueUncheckedUpdateManyWithoutApprovedByUserNestedInput
     entityAssignments?: UserEntityAssignmentUncheckedUpdateManyWithoutUserNestedInput
   }
 
@@ -28010,9 +27931,9 @@ export namespace Prisma {
     preferences?: UserPreferenceCreateNestedOneWithoutUserInput
     approvals?: ChangeApprovalCreateNestedManyWithoutApproverInput
     changeRequests?: ChangeRequestCreateNestedManyWithoutRequesterInput
-    valuesEntered?: EntityValuePeriodCreateNestedManyWithoutEnteredByUserInput
-    valuesSubmitted?: EntityValuePeriodCreateNestedManyWithoutSubmittedByUserInput
-    valuesApproved?: EntityValuePeriodCreateNestedManyWithoutApprovedByUserInput
+    valuesEntered?: EntityValueCreateNestedManyWithoutEnteredByUserInput
+    valuesSubmitted?: EntityValueCreateNestedManyWithoutSubmittedByUserInput
+    valuesApproved?: EntityValueCreateNestedManyWithoutApprovedByUserInput
     entityAssignments?: UserEntityAssignmentCreateNestedManyWithoutUserInput
   }
 
@@ -28036,9 +27957,9 @@ export namespace Prisma {
     preferences?: UserPreferenceUncheckedCreateNestedOneWithoutUserInput
     approvals?: ChangeApprovalUncheckedCreateNestedManyWithoutApproverInput
     changeRequests?: ChangeRequestUncheckedCreateNestedManyWithoutRequesterInput
-    valuesEntered?: EntityValuePeriodUncheckedCreateNestedManyWithoutEnteredByUserInput
-    valuesSubmitted?: EntityValuePeriodUncheckedCreateNestedManyWithoutSubmittedByUserInput
-    valuesApproved?: EntityValuePeriodUncheckedCreateNestedManyWithoutApprovedByUserInput
+    valuesEntered?: EntityValueUncheckedCreateNestedManyWithoutEnteredByUserInput
+    valuesSubmitted?: EntityValueUncheckedCreateNestedManyWithoutSubmittedByUserInput
+    valuesApproved?: EntityValueUncheckedCreateNestedManyWithoutApprovedByUserInput
     entityAssignments?: UserEntityAssignmentUncheckedCreateNestedManyWithoutUserInput
   }
 
@@ -28081,10 +28002,8 @@ export namespace Prisma {
     skipDuplicates?: boolean
   }
 
-  export type EntityValuePeriodCreateWithoutEntityInput = {
+  export type EntityValueCreateWithoutEntityInput = {
     id?: string
-    periodStart: Date | string
-    periodEnd: Date | string
     actualValue?: number | null
     calculatedValue?: number | null
     finalValue?: number | null
@@ -28103,10 +28022,8 @@ export namespace Prisma {
     variableValues?: EntityVariableValueCreateNestedManyWithoutEntityValueInput
   }
 
-  export type EntityValuePeriodUncheckedCreateWithoutEntityInput = {
+  export type EntityValueUncheckedCreateWithoutEntityInput = {
     id?: string
-    periodStart: Date | string
-    periodEnd: Date | string
     actualValue?: number | null
     calculatedValue?: number | null
     finalValue?: number | null
@@ -28125,13 +28042,13 @@ export namespace Prisma {
     variableValues?: EntityVariableValueUncheckedCreateNestedManyWithoutEntityValueInput
   }
 
-  export type EntityValuePeriodCreateOrConnectWithoutEntityInput = {
-    where: EntityValuePeriodWhereUniqueInput
-    create: XOR<EntityValuePeriodCreateWithoutEntityInput, EntityValuePeriodUncheckedCreateWithoutEntityInput>
+  export type EntityValueCreateOrConnectWithoutEntityInput = {
+    where: EntityValueWhereUniqueInput
+    create: XOR<EntityValueCreateWithoutEntityInput, EntityValueUncheckedCreateWithoutEntityInput>
   }
 
-  export type EntityValuePeriodCreateManyEntityInputEnvelope = {
-    data: EntityValuePeriodCreateManyEntityInput | EntityValuePeriodCreateManyEntityInput[]
+  export type EntityValueCreateManyEntityInputEnvelope = {
+    data: EntityValueCreateManyEntityInput | EntityValueCreateManyEntityInput[]
     skipDuplicates?: boolean
   }
 
@@ -28282,9 +28199,9 @@ export namespace Prisma {
     preferences?: UserPreferenceUpdateOneWithoutUserNestedInput
     approvals?: ChangeApprovalUpdateManyWithoutApproverNestedInput
     changeRequests?: ChangeRequestUpdateManyWithoutRequesterNestedInput
-    valuesEntered?: EntityValuePeriodUpdateManyWithoutEnteredByUserNestedInput
-    valuesSubmitted?: EntityValuePeriodUpdateManyWithoutSubmittedByUserNestedInput
-    valuesApproved?: EntityValuePeriodUpdateManyWithoutApprovedByUserNestedInput
+    valuesEntered?: EntityValueUpdateManyWithoutEnteredByUserNestedInput
+    valuesSubmitted?: EntityValueUpdateManyWithoutSubmittedByUserNestedInput
+    valuesApproved?: EntityValueUpdateManyWithoutApprovedByUserNestedInput
     entityAssignments?: UserEntityAssignmentUpdateManyWithoutUserNestedInput
   }
 
@@ -28308,9 +28225,9 @@ export namespace Prisma {
     preferences?: UserPreferenceUncheckedUpdateOneWithoutUserNestedInput
     approvals?: ChangeApprovalUncheckedUpdateManyWithoutApproverNestedInput
     changeRequests?: ChangeRequestUncheckedUpdateManyWithoutRequesterNestedInput
-    valuesEntered?: EntityValuePeriodUncheckedUpdateManyWithoutEnteredByUserNestedInput
-    valuesSubmitted?: EntityValuePeriodUncheckedUpdateManyWithoutSubmittedByUserNestedInput
-    valuesApproved?: EntityValuePeriodUncheckedUpdateManyWithoutApprovedByUserNestedInput
+    valuesEntered?: EntityValueUncheckedUpdateManyWithoutEnteredByUserNestedInput
+    valuesSubmitted?: EntityValueUncheckedUpdateManyWithoutSubmittedByUserNestedInput
+    valuesApproved?: EntityValueUncheckedUpdateManyWithoutApprovedByUserNestedInput
     entityAssignments?: UserEntityAssignmentUncheckedUpdateManyWithoutUserNestedInput
   }
 
@@ -28345,20 +28262,20 @@ export namespace Prisma {
     staticValue?: FloatNullableFilter<"EntityVariable"> | number | null
   }
 
-  export type EntityValuePeriodUpsertWithWhereUniqueWithoutEntityInput = {
-    where: EntityValuePeriodWhereUniqueInput
-    update: XOR<EntityValuePeriodUpdateWithoutEntityInput, EntityValuePeriodUncheckedUpdateWithoutEntityInput>
-    create: XOR<EntityValuePeriodCreateWithoutEntityInput, EntityValuePeriodUncheckedCreateWithoutEntityInput>
+  export type EntityValueUpsertWithWhereUniqueWithoutEntityInput = {
+    where: EntityValueWhereUniqueInput
+    update: XOR<EntityValueUpdateWithoutEntityInput, EntityValueUncheckedUpdateWithoutEntityInput>
+    create: XOR<EntityValueCreateWithoutEntityInput, EntityValueUncheckedCreateWithoutEntityInput>
   }
 
-  export type EntityValuePeriodUpdateWithWhereUniqueWithoutEntityInput = {
-    where: EntityValuePeriodWhereUniqueInput
-    data: XOR<EntityValuePeriodUpdateWithoutEntityInput, EntityValuePeriodUncheckedUpdateWithoutEntityInput>
+  export type EntityValueUpdateWithWhereUniqueWithoutEntityInput = {
+    where: EntityValueWhereUniqueInput
+    data: XOR<EntityValueUpdateWithoutEntityInput, EntityValueUncheckedUpdateWithoutEntityInput>
   }
 
-  export type EntityValuePeriodUpdateManyWithWhereWithoutEntityInput = {
-    where: EntityValuePeriodScalarWhereInput
-    data: XOR<EntityValuePeriodUpdateManyMutationInput, EntityValuePeriodUncheckedUpdateManyWithoutEntityInput>
+  export type EntityValueUpdateManyWithWhereWithoutEntityInput = {
+    where: EntityValueScalarWhereInput
+    data: XOR<EntityValueUpdateManyMutationInput, EntityValueUncheckedUpdateManyWithoutEntityInput>
   }
 
   export type UserEntityAssignmentUpsertWithWhereUniqueWithoutEntityInput = {
@@ -28401,7 +28318,7 @@ export namespace Prisma {
     org: OrganizationCreateNestedOneWithoutEntitiesInput
     orgEntityType: OrgEntityTypeCreateNestedOneWithoutEntitiesInput
     ownerUser?: UserCreateNestedOneWithoutOwnedEntitiesInput
-    values?: EntityValuePeriodCreateNestedManyWithoutEntityInput
+    values?: EntityValueCreateNestedManyWithoutEntityInput
     assignments?: UserEntityAssignmentCreateNestedManyWithoutEntityInput
   }
 
@@ -28429,7 +28346,7 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     deletedAt?: Date | string | null
-    values?: EntityValuePeriodUncheckedCreateNestedManyWithoutEntityInput
+    values?: EntityValueUncheckedCreateNestedManyWithoutEntityInput
     assignments?: UserEntityAssignmentUncheckedCreateNestedManyWithoutEntityInput
   }
 
@@ -28441,7 +28358,7 @@ export namespace Prisma {
   export type EntityVariableValueCreateWithoutEntityVariableInput = {
     id?: string
     value: number
-    entityValue: EntityValuePeriodCreateNestedOneWithoutVariableValuesInput
+    entityValue: EntityValueCreateNestedOneWithoutVariableValuesInput
   }
 
   export type EntityVariableValueUncheckedCreateWithoutEntityVariableInput = {
@@ -28495,7 +28412,7 @@ export namespace Prisma {
     org?: OrganizationUpdateOneRequiredWithoutEntitiesNestedInput
     orgEntityType?: OrgEntityTypeUpdateOneRequiredWithoutEntitiesNestedInput
     ownerUser?: UserUpdateOneWithoutOwnedEntitiesNestedInput
-    values?: EntityValuePeriodUpdateManyWithoutEntityNestedInput
+    values?: EntityValueUpdateManyWithoutEntityNestedInput
     assignments?: UserEntityAssignmentUpdateManyWithoutEntityNestedInput
   }
 
@@ -28523,7 +28440,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     deletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    values?: EntityValuePeriodUncheckedUpdateManyWithoutEntityNestedInput
+    values?: EntityValueUncheckedUpdateManyWithoutEntityNestedInput
     assignments?: UserEntityAssignmentUncheckedUpdateManyWithoutEntityNestedInput
   }
 
@@ -28635,8 +28552,8 @@ export namespace Prisma {
     approvals?: ChangeApprovalCreateNestedManyWithoutApproverInput
     changeRequests?: ChangeRequestCreateNestedManyWithoutRequesterInput
     ownedEntities?: EntityCreateNestedManyWithoutOwnerUserInput
-    valuesSubmitted?: EntityValuePeriodCreateNestedManyWithoutSubmittedByUserInput
-    valuesApproved?: EntityValuePeriodCreateNestedManyWithoutApprovedByUserInput
+    valuesSubmitted?: EntityValueCreateNestedManyWithoutSubmittedByUserInput
+    valuesApproved?: EntityValueCreateNestedManyWithoutApprovedByUserInput
     entityAssignments?: UserEntityAssignmentCreateNestedManyWithoutUserInput
   }
 
@@ -28661,8 +28578,8 @@ export namespace Prisma {
     approvals?: ChangeApprovalUncheckedCreateNestedManyWithoutApproverInput
     changeRequests?: ChangeRequestUncheckedCreateNestedManyWithoutRequesterInput
     ownedEntities?: EntityUncheckedCreateNestedManyWithoutOwnerUserInput
-    valuesSubmitted?: EntityValuePeriodUncheckedCreateNestedManyWithoutSubmittedByUserInput
-    valuesApproved?: EntityValuePeriodUncheckedCreateNestedManyWithoutApprovedByUserInput
+    valuesSubmitted?: EntityValueUncheckedCreateNestedManyWithoutSubmittedByUserInput
+    valuesApproved?: EntityValueUncheckedCreateNestedManyWithoutApprovedByUserInput
     entityAssignments?: UserEntityAssignmentUncheckedCreateNestedManyWithoutUserInput
   }
 
@@ -28692,8 +28609,8 @@ export namespace Prisma {
     approvals?: ChangeApprovalCreateNestedManyWithoutApproverInput
     changeRequests?: ChangeRequestCreateNestedManyWithoutRequesterInput
     ownedEntities?: EntityCreateNestedManyWithoutOwnerUserInput
-    valuesEntered?: EntityValuePeriodCreateNestedManyWithoutEnteredByUserInput
-    valuesApproved?: EntityValuePeriodCreateNestedManyWithoutApprovedByUserInput
+    valuesEntered?: EntityValueCreateNestedManyWithoutEnteredByUserInput
+    valuesApproved?: EntityValueCreateNestedManyWithoutApprovedByUserInput
     entityAssignments?: UserEntityAssignmentCreateNestedManyWithoutUserInput
   }
 
@@ -28718,8 +28635,8 @@ export namespace Prisma {
     approvals?: ChangeApprovalUncheckedCreateNestedManyWithoutApproverInput
     changeRequests?: ChangeRequestUncheckedCreateNestedManyWithoutRequesterInput
     ownedEntities?: EntityUncheckedCreateNestedManyWithoutOwnerUserInput
-    valuesEntered?: EntityValuePeriodUncheckedCreateNestedManyWithoutEnteredByUserInput
-    valuesApproved?: EntityValuePeriodUncheckedCreateNestedManyWithoutApprovedByUserInput
+    valuesEntered?: EntityValueUncheckedCreateNestedManyWithoutEnteredByUserInput
+    valuesApproved?: EntityValueUncheckedCreateNestedManyWithoutApprovedByUserInput
     entityAssignments?: UserEntityAssignmentUncheckedCreateNestedManyWithoutUserInput
   }
 
@@ -28749,8 +28666,8 @@ export namespace Prisma {
     approvals?: ChangeApprovalCreateNestedManyWithoutApproverInput
     changeRequests?: ChangeRequestCreateNestedManyWithoutRequesterInput
     ownedEntities?: EntityCreateNestedManyWithoutOwnerUserInput
-    valuesEntered?: EntityValuePeriodCreateNestedManyWithoutEnteredByUserInput
-    valuesSubmitted?: EntityValuePeriodCreateNestedManyWithoutSubmittedByUserInput
+    valuesEntered?: EntityValueCreateNestedManyWithoutEnteredByUserInput
+    valuesSubmitted?: EntityValueCreateNestedManyWithoutSubmittedByUserInput
     entityAssignments?: UserEntityAssignmentCreateNestedManyWithoutUserInput
   }
 
@@ -28775,8 +28692,8 @@ export namespace Prisma {
     approvals?: ChangeApprovalUncheckedCreateNestedManyWithoutApproverInput
     changeRequests?: ChangeRequestUncheckedCreateNestedManyWithoutRequesterInput
     ownedEntities?: EntityUncheckedCreateNestedManyWithoutOwnerUserInput
-    valuesEntered?: EntityValuePeriodUncheckedCreateNestedManyWithoutEnteredByUserInput
-    valuesSubmitted?: EntityValuePeriodUncheckedCreateNestedManyWithoutSubmittedByUserInput
+    valuesEntered?: EntityValueUncheckedCreateNestedManyWithoutEnteredByUserInput
+    valuesSubmitted?: EntityValueUncheckedCreateNestedManyWithoutSubmittedByUserInput
     entityAssignments?: UserEntityAssignmentUncheckedCreateNestedManyWithoutUserInput
   }
 
@@ -28906,8 +28823,8 @@ export namespace Prisma {
     approvals?: ChangeApprovalUpdateManyWithoutApproverNestedInput
     changeRequests?: ChangeRequestUpdateManyWithoutRequesterNestedInput
     ownedEntities?: EntityUpdateManyWithoutOwnerUserNestedInput
-    valuesSubmitted?: EntityValuePeriodUpdateManyWithoutSubmittedByUserNestedInput
-    valuesApproved?: EntityValuePeriodUpdateManyWithoutApprovedByUserNestedInput
+    valuesSubmitted?: EntityValueUpdateManyWithoutSubmittedByUserNestedInput
+    valuesApproved?: EntityValueUpdateManyWithoutApprovedByUserNestedInput
     entityAssignments?: UserEntityAssignmentUpdateManyWithoutUserNestedInput
   }
 
@@ -28932,8 +28849,8 @@ export namespace Prisma {
     approvals?: ChangeApprovalUncheckedUpdateManyWithoutApproverNestedInput
     changeRequests?: ChangeRequestUncheckedUpdateManyWithoutRequesterNestedInput
     ownedEntities?: EntityUncheckedUpdateManyWithoutOwnerUserNestedInput
-    valuesSubmitted?: EntityValuePeriodUncheckedUpdateManyWithoutSubmittedByUserNestedInput
-    valuesApproved?: EntityValuePeriodUncheckedUpdateManyWithoutApprovedByUserNestedInput
+    valuesSubmitted?: EntityValueUncheckedUpdateManyWithoutSubmittedByUserNestedInput
+    valuesApproved?: EntityValueUncheckedUpdateManyWithoutApprovedByUserNestedInput
     entityAssignments?: UserEntityAssignmentUncheckedUpdateManyWithoutUserNestedInput
   }
 
@@ -28969,8 +28886,8 @@ export namespace Prisma {
     approvals?: ChangeApprovalUpdateManyWithoutApproverNestedInput
     changeRequests?: ChangeRequestUpdateManyWithoutRequesterNestedInput
     ownedEntities?: EntityUpdateManyWithoutOwnerUserNestedInput
-    valuesEntered?: EntityValuePeriodUpdateManyWithoutEnteredByUserNestedInput
-    valuesApproved?: EntityValuePeriodUpdateManyWithoutApprovedByUserNestedInput
+    valuesEntered?: EntityValueUpdateManyWithoutEnteredByUserNestedInput
+    valuesApproved?: EntityValueUpdateManyWithoutApprovedByUserNestedInput
     entityAssignments?: UserEntityAssignmentUpdateManyWithoutUserNestedInput
   }
 
@@ -28995,8 +28912,8 @@ export namespace Prisma {
     approvals?: ChangeApprovalUncheckedUpdateManyWithoutApproverNestedInput
     changeRequests?: ChangeRequestUncheckedUpdateManyWithoutRequesterNestedInput
     ownedEntities?: EntityUncheckedUpdateManyWithoutOwnerUserNestedInput
-    valuesEntered?: EntityValuePeriodUncheckedUpdateManyWithoutEnteredByUserNestedInput
-    valuesApproved?: EntityValuePeriodUncheckedUpdateManyWithoutApprovedByUserNestedInput
+    valuesEntered?: EntityValueUncheckedUpdateManyWithoutEnteredByUserNestedInput
+    valuesApproved?: EntityValueUncheckedUpdateManyWithoutApprovedByUserNestedInput
     entityAssignments?: UserEntityAssignmentUncheckedUpdateManyWithoutUserNestedInput
   }
 
@@ -29032,8 +28949,8 @@ export namespace Prisma {
     approvals?: ChangeApprovalUpdateManyWithoutApproverNestedInput
     changeRequests?: ChangeRequestUpdateManyWithoutRequesterNestedInput
     ownedEntities?: EntityUpdateManyWithoutOwnerUserNestedInput
-    valuesEntered?: EntityValuePeriodUpdateManyWithoutEnteredByUserNestedInput
-    valuesSubmitted?: EntityValuePeriodUpdateManyWithoutSubmittedByUserNestedInput
+    valuesEntered?: EntityValueUpdateManyWithoutEnteredByUserNestedInput
+    valuesSubmitted?: EntityValueUpdateManyWithoutSubmittedByUserNestedInput
     entityAssignments?: UserEntityAssignmentUpdateManyWithoutUserNestedInput
   }
 
@@ -29058,8 +28975,8 @@ export namespace Prisma {
     approvals?: ChangeApprovalUncheckedUpdateManyWithoutApproverNestedInput
     changeRequests?: ChangeRequestUncheckedUpdateManyWithoutRequesterNestedInput
     ownedEntities?: EntityUncheckedUpdateManyWithoutOwnerUserNestedInput
-    valuesEntered?: EntityValuePeriodUncheckedUpdateManyWithoutEnteredByUserNestedInput
-    valuesSubmitted?: EntityValuePeriodUncheckedUpdateManyWithoutSubmittedByUserNestedInput
+    valuesEntered?: EntityValueUncheckedUpdateManyWithoutEnteredByUserNestedInput
+    valuesSubmitted?: EntityValueUncheckedUpdateManyWithoutSubmittedByUserNestedInput
     entityAssignments?: UserEntityAssignmentUncheckedUpdateManyWithoutUserNestedInput
   }
 
@@ -29079,10 +28996,8 @@ export namespace Prisma {
     data: XOR<EntityVariableValueUpdateManyMutationInput, EntityVariableValueUncheckedUpdateManyWithoutEntityValueInput>
   }
 
-  export type EntityValuePeriodCreateWithoutVariableValuesInput = {
+  export type EntityValueCreateWithoutVariableValuesInput = {
     id?: string
-    periodStart: Date | string
-    periodEnd: Date | string
     actualValue?: number | null
     calculatedValue?: number | null
     finalValue?: number | null
@@ -29101,11 +29016,9 @@ export namespace Prisma {
     approvedByUser?: UserCreateNestedOneWithoutValuesApprovedInput
   }
 
-  export type EntityValuePeriodUncheckedCreateWithoutVariableValuesInput = {
+  export type EntityValueUncheckedCreateWithoutVariableValuesInput = {
     id?: string
     entityId: string
-    periodStart: Date | string
-    periodEnd: Date | string
     actualValue?: number | null
     calculatedValue?: number | null
     finalValue?: number | null
@@ -29123,9 +29036,9 @@ export namespace Prisma {
     updatedAt?: Date | string
   }
 
-  export type EntityValuePeriodCreateOrConnectWithoutVariableValuesInput = {
-    where: EntityValuePeriodWhereUniqueInput
-    create: XOR<EntityValuePeriodCreateWithoutVariableValuesInput, EntityValuePeriodUncheckedCreateWithoutVariableValuesInput>
+  export type EntityValueCreateOrConnectWithoutVariableValuesInput = {
+    where: EntityValueWhereUniqueInput
+    create: XOR<EntityValueCreateWithoutVariableValuesInput, EntityValueUncheckedCreateWithoutVariableValuesInput>
   }
 
   export type EntityVariableCreateWithoutValuesInput = {
@@ -29157,21 +29070,19 @@ export namespace Prisma {
     create: XOR<EntityVariableCreateWithoutValuesInput, EntityVariableUncheckedCreateWithoutValuesInput>
   }
 
-  export type EntityValuePeriodUpsertWithoutVariableValuesInput = {
-    update: XOR<EntityValuePeriodUpdateWithoutVariableValuesInput, EntityValuePeriodUncheckedUpdateWithoutVariableValuesInput>
-    create: XOR<EntityValuePeriodCreateWithoutVariableValuesInput, EntityValuePeriodUncheckedCreateWithoutVariableValuesInput>
-    where?: EntityValuePeriodWhereInput
+  export type EntityValueUpsertWithoutVariableValuesInput = {
+    update: XOR<EntityValueUpdateWithoutVariableValuesInput, EntityValueUncheckedUpdateWithoutVariableValuesInput>
+    create: XOR<EntityValueCreateWithoutVariableValuesInput, EntityValueUncheckedCreateWithoutVariableValuesInput>
+    where?: EntityValueWhereInput
   }
 
-  export type EntityValuePeriodUpdateToOneWithWhereWithoutVariableValuesInput = {
-    where?: EntityValuePeriodWhereInput
-    data: XOR<EntityValuePeriodUpdateWithoutVariableValuesInput, EntityValuePeriodUncheckedUpdateWithoutVariableValuesInput>
+  export type EntityValueUpdateToOneWithWhereWithoutVariableValuesInput = {
+    where?: EntityValueWhereInput
+    data: XOR<EntityValueUpdateWithoutVariableValuesInput, EntityValueUncheckedUpdateWithoutVariableValuesInput>
   }
 
-  export type EntityValuePeriodUpdateWithoutVariableValuesInput = {
+  export type EntityValueUpdateWithoutVariableValuesInput = {
     id?: StringFieldUpdateOperationsInput | string
-    periodStart?: DateTimeFieldUpdateOperationsInput | Date | string
-    periodEnd?: DateTimeFieldUpdateOperationsInput | Date | string
     actualValue?: NullableFloatFieldUpdateOperationsInput | number | null
     calculatedValue?: NullableFloatFieldUpdateOperationsInput | number | null
     finalValue?: NullableFloatFieldUpdateOperationsInput | number | null
@@ -29190,11 +29101,9 @@ export namespace Prisma {
     approvedByUser?: UserUpdateOneWithoutValuesApprovedNestedInput
   }
 
-  export type EntityValuePeriodUncheckedUpdateWithoutVariableValuesInput = {
+  export type EntityValueUncheckedUpdateWithoutVariableValuesInput = {
     id?: StringFieldUpdateOperationsInput | string
     entityId?: StringFieldUpdateOperationsInput | string
-    periodStart?: DateTimeFieldUpdateOperationsInput | Date | string
-    periodEnd?: DateTimeFieldUpdateOperationsInput | Date | string
     actualValue?: NullableFloatFieldUpdateOperationsInput | number | null
     calculatedValue?: NullableFloatFieldUpdateOperationsInput | number | null
     finalValue?: NullableFloatFieldUpdateOperationsInput | number | null
@@ -29268,9 +29177,9 @@ export namespace Prisma {
     approvals?: ChangeApprovalCreateNestedManyWithoutApproverInput
     changeRequests?: ChangeRequestCreateNestedManyWithoutRequesterInput
     ownedEntities?: EntityCreateNestedManyWithoutOwnerUserInput
-    valuesEntered?: EntityValuePeriodCreateNestedManyWithoutEnteredByUserInput
-    valuesSubmitted?: EntityValuePeriodCreateNestedManyWithoutSubmittedByUserInput
-    valuesApproved?: EntityValuePeriodCreateNestedManyWithoutApprovedByUserInput
+    valuesEntered?: EntityValueCreateNestedManyWithoutEnteredByUserInput
+    valuesSubmitted?: EntityValueCreateNestedManyWithoutSubmittedByUserInput
+    valuesApproved?: EntityValueCreateNestedManyWithoutApprovedByUserInput
   }
 
   export type UserUncheckedCreateWithoutEntityAssignmentsInput = {
@@ -29294,9 +29203,9 @@ export namespace Prisma {
     approvals?: ChangeApprovalUncheckedCreateNestedManyWithoutApproverInput
     changeRequests?: ChangeRequestUncheckedCreateNestedManyWithoutRequesterInput
     ownedEntities?: EntityUncheckedCreateNestedManyWithoutOwnerUserInput
-    valuesEntered?: EntityValuePeriodUncheckedCreateNestedManyWithoutEnteredByUserInput
-    valuesSubmitted?: EntityValuePeriodUncheckedCreateNestedManyWithoutSubmittedByUserInput
-    valuesApproved?: EntityValuePeriodUncheckedCreateNestedManyWithoutApprovedByUserInput
+    valuesEntered?: EntityValueUncheckedCreateNestedManyWithoutEnteredByUserInput
+    valuesSubmitted?: EntityValueUncheckedCreateNestedManyWithoutSubmittedByUserInput
+    valuesApproved?: EntityValueUncheckedCreateNestedManyWithoutApprovedByUserInput
   }
 
   export type UserCreateOrConnectWithoutEntityAssignmentsInput = {
@@ -29329,7 +29238,7 @@ export namespace Prisma {
     orgEntityType: OrgEntityTypeCreateNestedOneWithoutEntitiesInput
     ownerUser?: UserCreateNestedOneWithoutOwnedEntitiesInput
     variables?: EntityVariableCreateNestedManyWithoutEntityInput
-    values?: EntityValuePeriodCreateNestedManyWithoutEntityInput
+    values?: EntityValueCreateNestedManyWithoutEntityInput
   }
 
   export type EntityUncheckedCreateWithoutAssignmentsInput = {
@@ -29357,7 +29266,7 @@ export namespace Prisma {
     updatedAt?: Date | string
     deletedAt?: Date | string | null
     variables?: EntityVariableUncheckedCreateNestedManyWithoutEntityInput
-    values?: EntityValuePeriodUncheckedCreateNestedManyWithoutEntityInput
+    values?: EntityValueUncheckedCreateNestedManyWithoutEntityInput
   }
 
   export type EntityCreateOrConnectWithoutAssignmentsInput = {
@@ -29397,9 +29306,9 @@ export namespace Prisma {
     approvals?: ChangeApprovalUpdateManyWithoutApproverNestedInput
     changeRequests?: ChangeRequestUpdateManyWithoutRequesterNestedInput
     ownedEntities?: EntityUpdateManyWithoutOwnerUserNestedInput
-    valuesEntered?: EntityValuePeriodUpdateManyWithoutEnteredByUserNestedInput
-    valuesSubmitted?: EntityValuePeriodUpdateManyWithoutSubmittedByUserNestedInput
-    valuesApproved?: EntityValuePeriodUpdateManyWithoutApprovedByUserNestedInput
+    valuesEntered?: EntityValueUpdateManyWithoutEnteredByUserNestedInput
+    valuesSubmitted?: EntityValueUpdateManyWithoutSubmittedByUserNestedInput
+    valuesApproved?: EntityValueUpdateManyWithoutApprovedByUserNestedInput
   }
 
   export type UserUncheckedUpdateWithoutEntityAssignmentsInput = {
@@ -29423,9 +29332,9 @@ export namespace Prisma {
     approvals?: ChangeApprovalUncheckedUpdateManyWithoutApproverNestedInput
     changeRequests?: ChangeRequestUncheckedUpdateManyWithoutRequesterNestedInput
     ownedEntities?: EntityUncheckedUpdateManyWithoutOwnerUserNestedInput
-    valuesEntered?: EntityValuePeriodUncheckedUpdateManyWithoutEnteredByUserNestedInput
-    valuesSubmitted?: EntityValuePeriodUncheckedUpdateManyWithoutSubmittedByUserNestedInput
-    valuesApproved?: EntityValuePeriodUncheckedUpdateManyWithoutApprovedByUserNestedInput
+    valuesEntered?: EntityValueUncheckedUpdateManyWithoutEnteredByUserNestedInput
+    valuesSubmitted?: EntityValueUncheckedUpdateManyWithoutSubmittedByUserNestedInput
+    valuesApproved?: EntityValueUncheckedUpdateManyWithoutApprovedByUserNestedInput
   }
 
   export type EntityUpsertWithoutAssignmentsInput = {
@@ -29464,7 +29373,7 @@ export namespace Prisma {
     orgEntityType?: OrgEntityTypeUpdateOneRequiredWithoutEntitiesNestedInput
     ownerUser?: UserUpdateOneWithoutOwnedEntitiesNestedInput
     variables?: EntityVariableUpdateManyWithoutEntityNestedInput
-    values?: EntityValuePeriodUpdateManyWithoutEntityNestedInput
+    values?: EntityValueUpdateManyWithoutEntityNestedInput
   }
 
   export type EntityUncheckedUpdateWithoutAssignmentsInput = {
@@ -29492,7 +29401,7 @@ export namespace Prisma {
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     deletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     variables?: EntityVariableUncheckedUpdateManyWithoutEntityNestedInput
-    values?: EntityValuePeriodUncheckedUpdateManyWithoutEntityNestedInput
+    values?: EntityValueUncheckedUpdateManyWithoutEntityNestedInput
   }
 
   export type UserCreateManyOrgInput = {
@@ -29578,9 +29487,9 @@ export namespace Prisma {
     approvals?: ChangeApprovalUpdateManyWithoutApproverNestedInput
     changeRequests?: ChangeRequestUpdateManyWithoutRequesterNestedInput
     ownedEntities?: EntityUpdateManyWithoutOwnerUserNestedInput
-    valuesEntered?: EntityValuePeriodUpdateManyWithoutEnteredByUserNestedInput
-    valuesSubmitted?: EntityValuePeriodUpdateManyWithoutSubmittedByUserNestedInput
-    valuesApproved?: EntityValuePeriodUpdateManyWithoutApprovedByUserNestedInput
+    valuesEntered?: EntityValueUpdateManyWithoutEnteredByUserNestedInput
+    valuesSubmitted?: EntityValueUpdateManyWithoutSubmittedByUserNestedInput
+    valuesApproved?: EntityValueUpdateManyWithoutApprovedByUserNestedInput
     entityAssignments?: UserEntityAssignmentUpdateManyWithoutUserNestedInput
   }
 
@@ -29604,9 +29513,9 @@ export namespace Prisma {
     approvals?: ChangeApprovalUncheckedUpdateManyWithoutApproverNestedInput
     changeRequests?: ChangeRequestUncheckedUpdateManyWithoutRequesterNestedInput
     ownedEntities?: EntityUncheckedUpdateManyWithoutOwnerUserNestedInput
-    valuesEntered?: EntityValuePeriodUncheckedUpdateManyWithoutEnteredByUserNestedInput
-    valuesSubmitted?: EntityValuePeriodUncheckedUpdateManyWithoutSubmittedByUserNestedInput
-    valuesApproved?: EntityValuePeriodUncheckedUpdateManyWithoutApprovedByUserNestedInput
+    valuesEntered?: EntityValueUncheckedUpdateManyWithoutEnteredByUserNestedInput
+    valuesSubmitted?: EntityValueUncheckedUpdateManyWithoutSubmittedByUserNestedInput
+    valuesApproved?: EntityValueUncheckedUpdateManyWithoutApprovedByUserNestedInput
     entityAssignments?: UserEntityAssignmentUncheckedUpdateManyWithoutUserNestedInput
   }
 
@@ -29649,7 +29558,7 @@ export namespace Prisma {
     orgEntityType?: OrgEntityTypeUpdateOneRequiredWithoutEntitiesNestedInput
     ownerUser?: UserUpdateOneWithoutOwnedEntitiesNestedInput
     variables?: EntityVariableUpdateManyWithoutEntityNestedInput
-    values?: EntityValuePeriodUpdateManyWithoutEntityNestedInput
+    values?: EntityValueUpdateManyWithoutEntityNestedInput
     assignments?: UserEntityAssignmentUpdateManyWithoutEntityNestedInput
   }
 
@@ -29677,7 +29586,7 @@ export namespace Prisma {
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     deletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     variables?: EntityVariableUncheckedUpdateManyWithoutEntityNestedInput
-    values?: EntityValuePeriodUncheckedUpdateManyWithoutEntityNestedInput
+    values?: EntityValueUncheckedUpdateManyWithoutEntityNestedInput
     assignments?: UserEntityAssignmentUncheckedUpdateManyWithoutEntityNestedInput
   }
 
@@ -29828,7 +29737,7 @@ export namespace Prisma {
     org?: OrganizationUpdateOneRequiredWithoutEntitiesNestedInput
     ownerUser?: UserUpdateOneWithoutOwnedEntitiesNestedInput
     variables?: EntityVariableUpdateManyWithoutEntityNestedInput
-    values?: EntityValuePeriodUpdateManyWithoutEntityNestedInput
+    values?: EntityValueUpdateManyWithoutEntityNestedInput
     assignments?: UserEntityAssignmentUpdateManyWithoutEntityNestedInput
   }
 
@@ -29856,7 +29765,7 @@ export namespace Prisma {
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     deletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     variables?: EntityVariableUncheckedUpdateManyWithoutEntityNestedInput
-    values?: EntityValuePeriodUncheckedUpdateManyWithoutEntityNestedInput
+    values?: EntityValueUncheckedUpdateManyWithoutEntityNestedInput
     assignments?: UserEntityAssignmentUncheckedUpdateManyWithoutEntityNestedInput
   }
 
@@ -29971,11 +29880,9 @@ export namespace Prisma {
     deletedAt?: Date | string | null
   }
 
-  export type EntityValuePeriodCreateManyEnteredByUserInput = {
+  export type EntityValueCreateManyEnteredByUserInput = {
     id?: string
     entityId: string
-    periodStart: Date | string
-    periodEnd: Date | string
     actualValue?: number | null
     calculatedValue?: number | null
     finalValue?: number | null
@@ -29992,11 +29899,9 @@ export namespace Prisma {
     updatedAt?: Date | string
   }
 
-  export type EntityValuePeriodCreateManySubmittedByUserInput = {
+  export type EntityValueCreateManySubmittedByUserInput = {
     id?: string
     entityId: string
-    periodStart: Date | string
-    periodEnd: Date | string
     actualValue?: number | null
     calculatedValue?: number | null
     finalValue?: number | null
@@ -30013,11 +29918,9 @@ export namespace Prisma {
     updatedAt?: Date | string
   }
 
-  export type EntityValuePeriodCreateManyApprovedByUserInput = {
+  export type EntityValueCreateManyApprovedByUserInput = {
     id?: string
     entityId: string
-    periodStart: Date | string
-    periodEnd: Date | string
     actualValue?: number | null
     calculatedValue?: number | null
     finalValue?: number | null
@@ -30063,9 +29966,9 @@ export namespace Prisma {
     approvals?: ChangeApprovalUpdateManyWithoutApproverNestedInput
     changeRequests?: ChangeRequestUpdateManyWithoutRequesterNestedInput
     ownedEntities?: EntityUpdateManyWithoutOwnerUserNestedInput
-    valuesEntered?: EntityValuePeriodUpdateManyWithoutEnteredByUserNestedInput
-    valuesSubmitted?: EntityValuePeriodUpdateManyWithoutSubmittedByUserNestedInput
-    valuesApproved?: EntityValuePeriodUpdateManyWithoutApprovedByUserNestedInput
+    valuesEntered?: EntityValueUpdateManyWithoutEnteredByUserNestedInput
+    valuesSubmitted?: EntityValueUpdateManyWithoutSubmittedByUserNestedInput
+    valuesApproved?: EntityValueUpdateManyWithoutApprovedByUserNestedInput
     entityAssignments?: UserEntityAssignmentUpdateManyWithoutUserNestedInput
   }
 
@@ -30089,9 +29992,9 @@ export namespace Prisma {
     approvals?: ChangeApprovalUncheckedUpdateManyWithoutApproverNestedInput
     changeRequests?: ChangeRequestUncheckedUpdateManyWithoutRequesterNestedInput
     ownedEntities?: EntityUncheckedUpdateManyWithoutOwnerUserNestedInput
-    valuesEntered?: EntityValuePeriodUncheckedUpdateManyWithoutEnteredByUserNestedInput
-    valuesSubmitted?: EntityValuePeriodUncheckedUpdateManyWithoutSubmittedByUserNestedInput
-    valuesApproved?: EntityValuePeriodUncheckedUpdateManyWithoutApprovedByUserNestedInput
+    valuesEntered?: EntityValueUncheckedUpdateManyWithoutEnteredByUserNestedInput
+    valuesSubmitted?: EntityValueUncheckedUpdateManyWithoutSubmittedByUserNestedInput
+    valuesApproved?: EntityValueUncheckedUpdateManyWithoutApprovedByUserNestedInput
     entityAssignments?: UserEntityAssignmentUncheckedUpdateManyWithoutUserNestedInput
   }
 
@@ -30274,7 +30177,7 @@ export namespace Prisma {
     org?: OrganizationUpdateOneRequiredWithoutEntitiesNestedInput
     orgEntityType?: OrgEntityTypeUpdateOneRequiredWithoutEntitiesNestedInput
     variables?: EntityVariableUpdateManyWithoutEntityNestedInput
-    values?: EntityValuePeriodUpdateManyWithoutEntityNestedInput
+    values?: EntityValueUpdateManyWithoutEntityNestedInput
     assignments?: UserEntityAssignmentUpdateManyWithoutEntityNestedInput
   }
 
@@ -30302,7 +30205,7 @@ export namespace Prisma {
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     deletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     variables?: EntityVariableUncheckedUpdateManyWithoutEntityNestedInput
-    values?: EntityValuePeriodUncheckedUpdateManyWithoutEntityNestedInput
+    values?: EntityValueUncheckedUpdateManyWithoutEntityNestedInput
     assignments?: UserEntityAssignmentUncheckedUpdateManyWithoutEntityNestedInput
   }
 
@@ -30331,10 +30234,8 @@ export namespace Prisma {
     deletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   }
 
-  export type EntityValuePeriodUpdateWithoutEnteredByUserInput = {
+  export type EntityValueUpdateWithoutEnteredByUserInput = {
     id?: StringFieldUpdateOperationsInput | string
-    periodStart?: DateTimeFieldUpdateOperationsInput | Date | string
-    periodEnd?: DateTimeFieldUpdateOperationsInput | Date | string
     actualValue?: NullableFloatFieldUpdateOperationsInput | number | null
     calculatedValue?: NullableFloatFieldUpdateOperationsInput | number | null
     finalValue?: NullableFloatFieldUpdateOperationsInput | number | null
@@ -30353,11 +30254,9 @@ export namespace Prisma {
     variableValues?: EntityVariableValueUpdateManyWithoutEntityValueNestedInput
   }
 
-  export type EntityValuePeriodUncheckedUpdateWithoutEnteredByUserInput = {
+  export type EntityValueUncheckedUpdateWithoutEnteredByUserInput = {
     id?: StringFieldUpdateOperationsInput | string
     entityId?: StringFieldUpdateOperationsInput | string
-    periodStart?: DateTimeFieldUpdateOperationsInput | Date | string
-    periodEnd?: DateTimeFieldUpdateOperationsInput | Date | string
     actualValue?: NullableFloatFieldUpdateOperationsInput | number | null
     calculatedValue?: NullableFloatFieldUpdateOperationsInput | number | null
     finalValue?: NullableFloatFieldUpdateOperationsInput | number | null
@@ -30375,11 +30274,9 @@ export namespace Prisma {
     variableValues?: EntityVariableValueUncheckedUpdateManyWithoutEntityValueNestedInput
   }
 
-  export type EntityValuePeriodUncheckedUpdateManyWithoutEnteredByUserInput = {
+  export type EntityValueUncheckedUpdateManyWithoutEnteredByUserInput = {
     id?: StringFieldUpdateOperationsInput | string
     entityId?: StringFieldUpdateOperationsInput | string
-    periodStart?: DateTimeFieldUpdateOperationsInput | Date | string
-    periodEnd?: DateTimeFieldUpdateOperationsInput | Date | string
     actualValue?: NullableFloatFieldUpdateOperationsInput | number | null
     calculatedValue?: NullableFloatFieldUpdateOperationsInput | number | null
     finalValue?: NullableFloatFieldUpdateOperationsInput | number | null
@@ -30396,10 +30293,8 @@ export namespace Prisma {
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
-  export type EntityValuePeriodUpdateWithoutSubmittedByUserInput = {
+  export type EntityValueUpdateWithoutSubmittedByUserInput = {
     id?: StringFieldUpdateOperationsInput | string
-    periodStart?: DateTimeFieldUpdateOperationsInput | Date | string
-    periodEnd?: DateTimeFieldUpdateOperationsInput | Date | string
     actualValue?: NullableFloatFieldUpdateOperationsInput | number | null
     calculatedValue?: NullableFloatFieldUpdateOperationsInput | number | null
     finalValue?: NullableFloatFieldUpdateOperationsInput | number | null
@@ -30418,11 +30313,9 @@ export namespace Prisma {
     variableValues?: EntityVariableValueUpdateManyWithoutEntityValueNestedInput
   }
 
-  export type EntityValuePeriodUncheckedUpdateWithoutSubmittedByUserInput = {
+  export type EntityValueUncheckedUpdateWithoutSubmittedByUserInput = {
     id?: StringFieldUpdateOperationsInput | string
     entityId?: StringFieldUpdateOperationsInput | string
-    periodStart?: DateTimeFieldUpdateOperationsInput | Date | string
-    periodEnd?: DateTimeFieldUpdateOperationsInput | Date | string
     actualValue?: NullableFloatFieldUpdateOperationsInput | number | null
     calculatedValue?: NullableFloatFieldUpdateOperationsInput | number | null
     finalValue?: NullableFloatFieldUpdateOperationsInput | number | null
@@ -30440,11 +30333,9 @@ export namespace Prisma {
     variableValues?: EntityVariableValueUncheckedUpdateManyWithoutEntityValueNestedInput
   }
 
-  export type EntityValuePeriodUncheckedUpdateManyWithoutSubmittedByUserInput = {
+  export type EntityValueUncheckedUpdateManyWithoutSubmittedByUserInput = {
     id?: StringFieldUpdateOperationsInput | string
     entityId?: StringFieldUpdateOperationsInput | string
-    periodStart?: DateTimeFieldUpdateOperationsInput | Date | string
-    periodEnd?: DateTimeFieldUpdateOperationsInput | Date | string
     actualValue?: NullableFloatFieldUpdateOperationsInput | number | null
     calculatedValue?: NullableFloatFieldUpdateOperationsInput | number | null
     finalValue?: NullableFloatFieldUpdateOperationsInput | number | null
@@ -30461,10 +30352,8 @@ export namespace Prisma {
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
-  export type EntityValuePeriodUpdateWithoutApprovedByUserInput = {
+  export type EntityValueUpdateWithoutApprovedByUserInput = {
     id?: StringFieldUpdateOperationsInput | string
-    periodStart?: DateTimeFieldUpdateOperationsInput | Date | string
-    periodEnd?: DateTimeFieldUpdateOperationsInput | Date | string
     actualValue?: NullableFloatFieldUpdateOperationsInput | number | null
     calculatedValue?: NullableFloatFieldUpdateOperationsInput | number | null
     finalValue?: NullableFloatFieldUpdateOperationsInput | number | null
@@ -30483,11 +30372,9 @@ export namespace Prisma {
     variableValues?: EntityVariableValueUpdateManyWithoutEntityValueNestedInput
   }
 
-  export type EntityValuePeriodUncheckedUpdateWithoutApprovedByUserInput = {
+  export type EntityValueUncheckedUpdateWithoutApprovedByUserInput = {
     id?: StringFieldUpdateOperationsInput | string
     entityId?: StringFieldUpdateOperationsInput | string
-    periodStart?: DateTimeFieldUpdateOperationsInput | Date | string
-    periodEnd?: DateTimeFieldUpdateOperationsInput | Date | string
     actualValue?: NullableFloatFieldUpdateOperationsInput | number | null
     calculatedValue?: NullableFloatFieldUpdateOperationsInput | number | null
     finalValue?: NullableFloatFieldUpdateOperationsInput | number | null
@@ -30505,11 +30392,9 @@ export namespace Prisma {
     variableValues?: EntityVariableValueUncheckedUpdateManyWithoutEntityValueNestedInput
   }
 
-  export type EntityValuePeriodUncheckedUpdateManyWithoutApprovedByUserInput = {
+  export type EntityValueUncheckedUpdateManyWithoutApprovedByUserInput = {
     id?: StringFieldUpdateOperationsInput | string
     entityId?: StringFieldUpdateOperationsInput | string
-    periodStart?: DateTimeFieldUpdateOperationsInput | Date | string
-    periodEnd?: DateTimeFieldUpdateOperationsInput | Date | string
     actualValue?: NullableFloatFieldUpdateOperationsInput | number | null
     calculatedValue?: NullableFloatFieldUpdateOperationsInput | number | null
     finalValue?: NullableFloatFieldUpdateOperationsInput | number | null
@@ -30600,10 +30485,8 @@ export namespace Prisma {
     staticValue?: number | null
   }
 
-  export type EntityValuePeriodCreateManyEntityInput = {
+  export type EntityValueCreateManyEntityInput = {
     id?: string
-    periodStart: Date | string
-    periodEnd: Date | string
     actualValue?: number | null
     calculatedValue?: number | null
     finalValue?: number | null
@@ -30665,10 +30548,8 @@ export namespace Prisma {
     staticValue?: NullableFloatFieldUpdateOperationsInput | number | null
   }
 
-  export type EntityValuePeriodUpdateWithoutEntityInput = {
+  export type EntityValueUpdateWithoutEntityInput = {
     id?: StringFieldUpdateOperationsInput | string
-    periodStart?: DateTimeFieldUpdateOperationsInput | Date | string
-    periodEnd?: DateTimeFieldUpdateOperationsInput | Date | string
     actualValue?: NullableFloatFieldUpdateOperationsInput | number | null
     calculatedValue?: NullableFloatFieldUpdateOperationsInput | number | null
     finalValue?: NullableFloatFieldUpdateOperationsInput | number | null
@@ -30687,10 +30568,8 @@ export namespace Prisma {
     variableValues?: EntityVariableValueUpdateManyWithoutEntityValueNestedInput
   }
 
-  export type EntityValuePeriodUncheckedUpdateWithoutEntityInput = {
+  export type EntityValueUncheckedUpdateWithoutEntityInput = {
     id?: StringFieldUpdateOperationsInput | string
-    periodStart?: DateTimeFieldUpdateOperationsInput | Date | string
-    periodEnd?: DateTimeFieldUpdateOperationsInput | Date | string
     actualValue?: NullableFloatFieldUpdateOperationsInput | number | null
     calculatedValue?: NullableFloatFieldUpdateOperationsInput | number | null
     finalValue?: NullableFloatFieldUpdateOperationsInput | number | null
@@ -30709,10 +30588,8 @@ export namespace Prisma {
     variableValues?: EntityVariableValueUncheckedUpdateManyWithoutEntityValueNestedInput
   }
 
-  export type EntityValuePeriodUncheckedUpdateManyWithoutEntityInput = {
+  export type EntityValueUncheckedUpdateManyWithoutEntityInput = {
     id?: StringFieldUpdateOperationsInput | string
-    periodStart?: DateTimeFieldUpdateOperationsInput | Date | string
-    periodEnd?: DateTimeFieldUpdateOperationsInput | Date | string
     actualValue?: NullableFloatFieldUpdateOperationsInput | number | null
     calculatedValue?: NullableFloatFieldUpdateOperationsInput | number | null
     finalValue?: NullableFloatFieldUpdateOperationsInput | number | null
@@ -30766,7 +30643,7 @@ export namespace Prisma {
   export type EntityVariableValueUpdateWithoutEntityVariableInput = {
     id?: StringFieldUpdateOperationsInput | string
     value?: FloatFieldUpdateOperationsInput | number
-    entityValue?: EntityValuePeriodUpdateOneRequiredWithoutVariableValuesNestedInput
+    entityValue?: EntityValueUpdateOneRequiredWithoutVariableValuesNestedInput
   }
 
   export type EntityVariableValueUncheckedUpdateWithoutEntityVariableInput = {

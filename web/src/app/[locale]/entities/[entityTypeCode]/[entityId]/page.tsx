@@ -12,6 +12,7 @@ import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, D
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { EChart } from "@/components/charts/echart";
 import { KpiGauge } from "@/components/charts/kpi-gauge";
 import { EntityAssignments } from "@/components/entity-assignments";
@@ -533,8 +534,6 @@ export default function EntityDetailPage() {
         </Card>
       ) : null}
 
-      {canAdmin ? <EntityAssignments entityId={entity.id} entityTitle={pageTitle} /> : null}
-
       {entity.formula || entity.targetValue ? (
         <div className="grid gap-6 lg:grid-cols-3">
           <Card className="bg-card/70 backdrop-blur shadow-sm lg:col-span-1">
@@ -768,6 +767,79 @@ export default function EntityDetailPage() {
         </Card>
       ) : null}
 
+      {/* Previous Values Table */}
+      {isKpiEntity ? (
+        <Card className="bg-card/70 backdrop-blur shadow-sm">
+          <CardHeader>
+            <CardTitle className="text-base">{tr("Previous Values", "القيم السابقة")}</CardTitle>
+            <CardDescription>{tr("Historical values for this entity.", "القيم التاريخية لهذا الكيان.")}</CardDescription>
+          </CardHeader>
+          <CardContent>
+            <div className="rounded-lg border">
+              <Table>
+                <TableHeader>
+                  <TableRow>
+                    <TableHead>{tr("Date", "التاريخ")}</TableHead>
+                    <TableHead>{tr("Status", "الحالة")}</TableHead>
+                    <TableHead className="text-right">{tr("Value", "القيمة")}</TableHead>
+                    <TableHead>{tr("Note", "ملاحظة")}</TableHead>
+                  </TableRow>
+                </TableHeader>
+                <TableBody>
+                  {entity.values && entity.values.length > 0 ? (
+                    entity.values.map((value) => {
+                      const displayValue = periodValue(value);
+                      return (
+                        <TableRow key={value.id}>
+                          <TableCell className="text-sm">
+                            {df(
+                              value.createdAt.toLocaleDateString("en-US", { 
+                                year: "numeric", 
+                                month: "short", 
+                                day: "numeric" 
+                              }),
+                              value.createdAt.toLocaleDateString("ar-SA", { 
+                                year: "numeric", 
+                                month: "short", 
+                                day: "numeric" 
+                              })
+                            )}
+                          </TableCell>
+                          <TableCell>
+                            <span className={`inline-flex items-center rounded-full px-2 py-0.5 text-xs font-medium ${
+                              value.status === "APPROVED" 
+                                ? "bg-green-500/10 text-green-600 dark:text-green-500"
+                                : value.status === "SUBMITTED"
+                                ? "bg-amber-500/10 text-amber-600 dark:text-amber-500"
+                                : "bg-gray-500/10 text-gray-600 dark:text-gray-400"
+                            }`}>
+                              {kpiValueStatusLabel(String(value.status))}
+                            </span>
+                          </TableCell>
+                          <TableCell className="text-right font-mono text-sm">
+                            {displayValue !== null ? formatNumber(displayValue) : "—"}
+                            {unitLabel && displayValue !== null ? ` ${unitLabel}` : ""}
+                          </TableCell>
+                          <TableCell className="text-sm text-muted-foreground max-w-xs truncate">
+                            {value.note || "—"}
+                          </TableCell>
+                        </TableRow>
+                      );
+                    })
+                  ) : (
+                    <TableRow>
+                      <TableCell colSpan={4} className="text-center text-sm text-muted-foreground py-8">
+                        {tr("No previous values yet.", "لا توجد قيم سابقة بعد.")}
+                      </TableCell>
+                    </TableRow>
+                  )}
+                </TableBody>
+              </Table>
+            </div>
+          </CardContent>
+        </Card>
+      ) : null}
+
       {/* Dependency Tree Diagram */}
       {loadingTree || dependencyTree || dependencyTreeError ? (
         <Card className="bg-card/70 backdrop-blur shadow-sm">
@@ -851,6 +923,9 @@ export default function EntityDetailPage() {
           </CardContent>
         </Card>
       )}
+
+      {/* Assignments Section */}
+      {canAdmin ? <EntityAssignments entityId={entity.id} entityTitle={pageTitle} /> : null}
 
       <Dialog
         open={deleteOpen}

@@ -49,29 +49,6 @@ async function requireOrgAdmin() {
   return session;
 }
 
-function resolvePeriodRange(input: { now: Date; periodType: KpiPeriodType }) {
-  const now = input.now;
-  const year = now.getUTCFullYear();
-  const month = now.getUTCMonth();
-
-  if (input.periodType === KpiPeriodType.MONTHLY) {
-    const start = new Date(Date.UTC(year, month, 1));
-    const end = new Date(Date.UTC(year, month + 1, 0, 23, 59, 59, 999));
-    return { start, end };
-  }
-
-  if (input.periodType === KpiPeriodType.QUARTERLY) {
-    const quarter = Math.floor(month / 3);
-    const startMonth = quarter * 3;
-    const start = new Date(Date.UTC(year, startMonth, 1));
-    const end = new Date(Date.UTC(year, startMonth + 3, 0, 23, 59, 59, 999));
-    return { start, end };
-  }
-
-  const start = new Date(Date.UTC(year, 0, 1));
-  const end = new Date(Date.UTC(year, 12, 0, 23, 59, 59, 999));
-  return { start, end };
-}
 
 function evaluateFormula(input: { formula: string; valuesByCode: Record<string, number> }) {
   const trimmed = input.formula.trim();
@@ -415,10 +392,10 @@ export async function getOrgEntitiesByTypeCode(input: z.infer<typeof getOrgEntit
         updatedAt: true,
         createdAt: true,
         values: {
-          orderBy: [{ periodEnd: "desc" }],
+          orderBy: [{ createdAt: "desc" }],
           take: 1,
           select: {
-            periodEnd: true,
+            createdAt: true,
             status: true,
             actualValue: true,
             calculatedValue: true,
@@ -466,9 +443,8 @@ export async function getOrgOwnerOptions() {
   }));
 }
 
-export async function getOrgFormulaReferenceOptions(input?: { periodStart?: Date; periodEnd?: Date }) {
+export async function getOrgFormulaReferenceOptions() {
   const session = await requireOrgAdmin();
-  const now = new Date();
 
   const rows = await prisma.entity.findMany({
     where: { orgId: session.user.orgId, deletedAt: null, key: { not: null } },
@@ -482,11 +458,9 @@ export async function getOrgFormulaReferenceOptions(input?: { periodStart?: Date
       periodType: true,
       orgEntityType: { select: { code: true } },
       values: {
-        orderBy: [{ periodEnd: "desc" }],
-        take: 12,
+        orderBy: [{ createdAt: "desc" }],
+        take: 1,
         select: {
-          periodStart: true,
-          periodEnd: true,
           actualValue: true,
           calculatedValue: true,
           finalValue: true,
@@ -498,36 +472,7 @@ export async function getOrgFormulaReferenceOptions(input?: { periodStart?: Date
 
   return rows
     .map((r) => {
-      let v = r.values?.[0];
-
-      if (r.periodType) {
-        if (input?.periodStart && input?.periodEnd) {
-          const matchingPeriod = r.values?.find(
-            (val) =>
-              val.periodStart.getTime() === input.periodStart!.getTime() &&
-              val.periodEnd.getTime() === input.periodEnd!.getTime()
-          );
-          if (matchingPeriod) {
-            v = matchingPeriod;
-          } else {
-            const range = resolvePeriodRange({ now, periodType: r.periodType });
-            const currentPeriod = r.values?.find(
-              (val) =>
-                val.periodStart.getTime() === range.start.getTime() &&
-                val.periodEnd.getTime() === range.end.getTime()
-            );
-            v = currentPeriod ?? v;
-          }
-        } else {
-          const range = resolvePeriodRange({ now, periodType: r.periodType });
-          const currentPeriod = r.values?.find(
-            (val) =>
-              val.periodStart.getTime() === range.start.getTime() &&
-              val.periodEnd.getTime() === range.end.getTime()
-          );
-          v = currentPeriod ?? v;
-        }
-      }
+      const v = r.values?.[0];
 
       const isKpi = String(r.orgEntityType?.code ?? "").toUpperCase() === "KPI";
       const kpiAchievementRaw = isKpi && typeof v?.achievementValue === "number" ? Number(v.achievementValue) : null;
@@ -612,12 +557,11 @@ export async function getOrgEntityDetail(input: { entityId: string }) {
         },
       },
       values: {
-        orderBy: [{ periodEnd: "desc" }],
+        orderBy: [{ createdAt: "desc" }],
         take: 12,
         select: {
           id: true,
-          periodStart: true,
-          periodEnd: true,
+          createdAt: true,
           actualValue: true,
           calculatedValue: true,
           finalValue: true,
@@ -681,37 +625,6 @@ export async function getOrgEntityDetail(input: { entityId: string }) {
       userRole: String(a.user.role),
     }));
   }
-  const now = new Date();
-  const currentRange = entity.periodType ? resolvePeriodRange({ now, periodType: entity.periodType }) : null;
-
-  const currentPeriod = currentRange
-    ? await prisma.entityValuePeriod.findFirst({
-        where: {
-          entityId: entity.id,
-          periodStart: currentRange.start,
-          periodEnd: currentRange.end,
-        },
-        select: {
-          id: true,
-          periodStart: true,
-          periodEnd: true,
-          actualValue: true,
-          calculatedValue: true,
-          finalValue: true,
-          status: true,
-          note: true,
-          submittedAt: true,
-          approvedAt: true,
-          variableValues: {
-            select: {
-              entityVariableId: true,
-              value: true,
-            },
-          },
-        },
-      })
-    : null;
-
   const latest = (entity.values ?? [])[0] ?? null;
 
   // For non-periodType entities with formulas, calculate value on-the-fly
@@ -744,7 +657,7 @@ export async function getOrgEntityDetail(input: { entityId: string }) {
             orgEntityType: { select: { code: true } },
             variables: { select: { id: true, code: true, isStatic: true, staticValue: true } },
             values: {
-              orderBy: [{ periodEnd: "desc" }],
+              orderBy: [{ createdAt: "desc" }],
               take: 1,
               select: {
                 actualValue: true,
@@ -804,8 +717,7 @@ export async function getOrgEntityDetail(input: { entityId: string }) {
       if (res.ok) {
         calculatedPeriod = {
           id: "calculated",
-          periodStart: now,
-          periodEnd: now,
+          createdAt: new Date(),
           actualValue: null,
           calculatedValue: res.value,
           finalValue: res.value,
@@ -848,8 +760,6 @@ export async function getOrgEntityDetail(input: { entityId: string }) {
       })),
     },
     latest: latest ?? calculatedPeriod,
-    currentRange,
-    currentPeriod: currentPeriod ?? calculatedPeriod,
     canAdmin,
     userAccess,
     assignments,
@@ -1049,6 +959,23 @@ const updateOrgEntitySchema = z.object({
   ),
 
   formula: z.string().trim().nullable().optional(),
+
+  variables: z
+    .array(
+      z.object({
+        code: z.string().trim().min(1),
+        displayName: z.string().trim().min(1),
+        nameAr: z.string().trim().optional(),
+        dataType: z.nativeEnum(KpiVariableDataType).optional(),
+        isRequired: z.boolean().optional(),
+        isStatic: z.boolean().optional(),
+        staticValue: z.preprocess(
+          (v) => (v === "" || v === undefined || v === null ? undefined : Number(v)),
+          z.number().finite().optional(),
+        ),
+      }),
+    )
+    .optional(),
 });
 
 export async function updateOrgEntity(input: z.infer<typeof updateOrgEntitySchema>) {
@@ -1075,30 +1002,53 @@ export async function updateOrgEntity(input: z.infer<typeof updateOrgEntitySchem
   }
 
   try {
-    await prisma.entity.update({
-      where: { id: existing.id },
-      data: {
-        ...(typeof parsed.data.title === "string" ? { title: parsed.data.title.trim() } : {}),
-        ...(typeof parsed.data.titleAr === "string" ? { titleAr: parsed.data.titleAr.trim() || null } : {}),
-        ...(typeof parsed.data.key === "string" ? { key: parsed.data.key.trim() || null } : {}),
-        ...(typeof parsed.data.description === "string" ? { description: parsed.data.description.trim() || null } : {}),
-        ...(typeof parsed.data.descriptionAr === "string" ? { descriptionAr: parsed.data.descriptionAr.trim() || null } : {}),
+    await prisma.$transaction(async (tx) => {
+      await tx.entity.update({
+        where: { id: existing.id },
+        data: {
+          ...(typeof parsed.data.title === "string" ? { title: parsed.data.title.trim() } : {}),
+          ...(typeof parsed.data.titleAr === "string" ? { titleAr: parsed.data.titleAr.trim() || null } : {}),
+          ...(typeof parsed.data.key === "string" ? { key: parsed.data.key.trim() || null } : {}),
+          ...(typeof parsed.data.description === "string" ? { description: parsed.data.description.trim() || null } : {}),
+          ...(typeof parsed.data.descriptionAr === "string" ? { descriptionAr: parsed.data.descriptionAr.trim() || null } : {}),
 
-        ...(typeof parsed.data.ownerUserId !== "undefined" ? { ownerUserId: parsed.data.ownerUserId } : {}),
+          ...(typeof parsed.data.ownerUserId !== "undefined" ? { ownerUserId: parsed.data.ownerUserId } : {}),
 
-        ...(typeof parsed.data.status !== "undefined" ? { status: parsed.data.status } : {}),
-        ...(typeof parsed.data.sourceType !== "undefined" ? { sourceType: parsed.data.sourceType } : {}),
-        ...(typeof parsed.data.periodType !== "undefined" ? { periodType: parsed.data.periodType } : {}),
-        ...(typeof parsed.data.unit !== "undefined" ? { unit: parsed.data.unit.trim() || null } : {}),
-        ...(typeof parsed.data.unitAr !== "undefined" ? { unitAr: parsed.data.unitAr.trim() || null } : {}),
-        ...(typeof parsed.data.direction !== "undefined" ? { direction: parsed.data.direction } : {}),
-        ...(typeof parsed.data.aggregation !== "undefined" ? { aggregation: parsed.data.aggregation } : {}),
-        ...(typeof parsed.data.baselineValue !== "undefined" ? { baselineValue: parsed.data.baselineValue } : {}),
-        ...(typeof parsed.data.targetValue !== "undefined" ? { targetValue: parsed.data.targetValue } : {}),
-        ...(typeof parsed.data.weight !== "undefined" ? { weight: parsed.data.weight } : {}),
-        ...(typeof parsed.data.formula !== "undefined" ? { formula: parsed.data.formula && parsed.data.formula.trim() ? parsed.data.formula.trim() : null } : {}),
-      },
-      select: { id: true },
+          ...(typeof parsed.data.status !== "undefined" ? { status: parsed.data.status } : {}),
+          ...(typeof parsed.data.sourceType !== "undefined" ? { sourceType: parsed.data.sourceType } : {}),
+          ...(typeof parsed.data.periodType !== "undefined" ? { periodType: parsed.data.periodType } : {}),
+          ...(typeof parsed.data.unit !== "undefined" ? { unit: parsed.data.unit.trim() || null } : {}),
+          ...(typeof parsed.data.unitAr !== "undefined" ? { unitAr: parsed.data.unitAr.trim() || null } : {}),
+          ...(typeof parsed.data.direction !== "undefined" ? { direction: parsed.data.direction } : {}),
+          ...(typeof parsed.data.aggregation !== "undefined" ? { aggregation: parsed.data.aggregation } : {}),
+          ...(typeof parsed.data.baselineValue !== "undefined" ? { baselineValue: parsed.data.baselineValue } : {}),
+          ...(typeof parsed.data.targetValue !== "undefined" ? { targetValue: parsed.data.targetValue } : {}),
+          ...(typeof parsed.data.weight !== "undefined" ? { weight: parsed.data.weight } : {}),
+          ...(typeof parsed.data.formula !== "undefined" ? { formula: parsed.data.formula && parsed.data.formula.trim() ? parsed.data.formula.trim() : null } : {}),
+        },
+        select: { id: true },
+      });
+
+      if (typeof parsed.data.variables !== "undefined") {
+        await tx.entityVariable.deleteMany({
+          where: { entityId: existing.id },
+        });
+
+        if (parsed.data.variables && parsed.data.variables.length > 0) {
+          await tx.entityVariable.createMany({
+            data: parsed.data.variables.map((v) => ({
+              entityId: existing.id,
+              code: v.code.trim(),
+              displayName: v.displayName.trim(),
+              nameAr: v.nameAr?.trim() ? v.nameAr.trim() : null,
+              dataType: v.dataType ?? KpiVariableDataType.NUMBER,
+              isRequired: Boolean(v.isRequired),
+              isStatic: Boolean(v.isStatic),
+              staticValue: typeof v.staticValue === "number" ? v.staticValue : null,
+            })),
+          });
+        }
+      }
     });
 
     return { success: true as const };
@@ -1185,25 +1135,6 @@ export async function saveOrgEntityKpiValuesDraft(input: z.infer<typeof saveOrgE
   if (!entity) return { success: false as const, error: "notFound" };
   if (!entity.periodType) return { success: false as const, error: "notKpi" };
 
-  const now = new Date();
-  const range = resolvePeriodRange({ now, periodType: entity.periodType });
-
-  // Check if period is locked due to approval status
-  if (!isAdmin) {
-    const existingPeriod = await prisma.entityValuePeriod.findFirst({
-      where: {
-        entityId: parsed.data.entityId,
-        periodStart: range.start,
-        periodEnd: range.end,
-      },
-      select: { status: true },
-    });
-
-    if (existingPeriod && existingPeriod.status === "SUBMITTED") {
-      return { success: false as const, error: "periodLockedForApproval" };
-    }
-  }
-
   const issues: ActionValidationIssue[] = [];
   const valuesByCode: Record<string, number> = {};
 
@@ -1267,11 +1198,7 @@ export async function saveOrgEntityKpiValuesDraft(input: z.infer<typeof saveOrgE
               },
             },
             values: {
-              where: {
-                periodStart: range.start,
-                periodEnd: range.end,
-              },
-              orderBy: [{ periodEnd: "desc" }],
+              orderBy: [{ createdAt: "desc" }],
               take: 1,
               select: {
                 actualValue: true,
@@ -1390,26 +1317,9 @@ export async function saveOrgEntityKpiValuesDraft(input: z.infer<typeof saveOrgE
   const note = parsed.data.note?.trim() ? parsed.data.note.trim() : null;
 
   try {
-    const entityValue = await prisma.entityValuePeriod.upsert({
-      where: {
-        entity_period_unique: {
-          entityId: entity.id,
-          periodStart: range.start,
-          periodEnd: range.end,
-        },
-      },
-      create: {
+    const entityValue = await prisma.entityValue.create({
+      data: {
         entityId: entity.id,
-        periodStart: range.start,
-        periodEnd: range.end,
-        status: KpiValueStatus.DRAFT,
-        note,
-        enteredBy: session.user.id,
-        actualValue: hasVariables ? null : parsed.data.manualValue ?? null,
-        calculatedValue,
-        finalValue: calculatedValue,
-      },
-      update: {
         status: KpiValueStatus.DRAFT,
         note,
         enteredBy: session.user.id,
@@ -1425,19 +1335,10 @@ export async function saveOrgEntityKpiValuesDraft(input: z.infer<typeof saveOrgE
       const value = parsed.data.values[String(v.id)];
       if (value === undefined) continue;
 
-      await prisma.entityVariableValue.upsert({
-        where: {
-          entity_variable_value_unique: {
-            entityValueId: entityValue.id,
-            entityVariableId: v.id,
-          },
-        },
-        create: {
+      await prisma.entityVariableValue.create({
+        data: {
           entityValueId: entityValue.id,
           entityVariableId: v.id,
-          value,
-        },
-        update: {
           value,
         },
         select: { id: true },
@@ -1449,8 +1350,6 @@ export async function saveOrgEntityKpiValuesDraft(input: z.infer<typeof saveOrgE
         await cascadeRecalculateDependents({
           orgId: session.user.orgId,
           updatedKey: entity.key,
-          periodStart: range.start,
-          periodEnd: range.end,
           maxDepth: 5,
         });
       } catch (cascadeError) {
@@ -1493,12 +1392,10 @@ export async function recalculateEntityValue(input: z.infer<typeof recalculateEn
         },
       },
       values: {
-        orderBy: [{ periodEnd: "desc" }],
+        orderBy: [{ createdAt: "desc" }],
         take: 1,
         select: {
           id: true,
-          periodStart: true,
-          periodEnd: true,
           variableValues: {
             select: {
               entityVariableId: true,
@@ -1543,8 +1440,6 @@ export async function recalculateEntityValue(input: z.infer<typeof recalculateEn
 async function cascadeRecalculateDependents(input: {
   orgId: string;
   updatedKey: string;
-  periodStart: Date;
-  periodEnd: Date;
   maxDepth: number;
   _visited?: Set<string>;
   _depth?: number;
@@ -1580,18 +1475,11 @@ async function cascadeRecalculateDependents(input: {
     if (!dependent.key || !dependent.periodType) continue;
 
     try {
-      const depRange = resolvePeriodRange({ now: input.periodStart, periodType: dependent.periodType });
-      
-      if (depRange.start.getTime() !== input.periodStart.getTime() || depRange.end.getTime() !== input.periodEnd.getTime()) {
-        continue;
-      }
-
-      const existingValue = await prisma.entityValuePeriod.findFirst({
+      const existingValue = await prisma.entityValue.findFirst({
         where: {
           entityId: dependent.id,
-          periodStart: depRange.start,
-          periodEnd: depRange.end,
         },
+        orderBy: { createdAt: "desc" },
         select: {
           variableValues: {
             select: {
@@ -1616,8 +1504,6 @@ async function cascadeRecalculateDependents(input: {
         await cascadeRecalculateDependents({
           orgId: input.orgId,
           updatedKey: dependent.key,
-          periodStart: input.periodStart,
-          periodEnd: input.periodEnd,
           maxDepth: input.maxDepth,
           _visited: visited,
           _depth: depth + 1,

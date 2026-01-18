@@ -158,13 +158,12 @@ export async function getMyDashboardData() {
           },
           ownerUser: { select: { id: true, name: true, role: true } },
           values: {
-            orderBy: [{ periodEnd: "desc" }],
+            orderBy: [{ createdAt: "desc" }],
             take: 1,
             select: {
               calculatedValue: true,
               status: true,
-              periodEnd: true,
-              periodStart: true,
+              createdAt: true,
             },
           },
         },
@@ -573,8 +572,7 @@ export async function getMyDashboardData() {
           ? {
               calculatedValue: latest.calculatedValue,
               status: String(latest.status),
-              periodEnd: latest.periodEnd.toISOString(),
-              periodStart: latest.periodStart.toISOString(),
+              createdAt: latest.createdAt.toISOString(),
             }
           : null,
       };

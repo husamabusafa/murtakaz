@@ -274,11 +274,9 @@ exports.Prisma.EntityVariableScalarFieldEnum = {
   staticValue: 'staticValue'
 };
 
-exports.Prisma.EntityValuePeriodScalarFieldEnum = {
+exports.Prisma.EntityValueScalarFieldEnum = {
   id: 'id',
   entityId: 'entityId',
-  periodStart: 'periodStart',
-  periodEnd: 'periodEnd',
   actualValue: 'actualValue',
   calculatedValue: 'calculatedValue',
   finalValue: 'finalValue',
@@ -423,7 +421,7 @@ exports.Prisma.ModelName = {
   ChangeApproval: 'ChangeApproval',
   Entity: 'Entity',
   EntityVariable: 'EntityVariable',
-  EntityValuePeriod: 'EntityValuePeriod',
+  EntityValue: 'EntityValue',
   EntityVariableValue: 'EntityVariableValue',
   UserEntityAssignment: 'UserEntityAssignment'
 };
