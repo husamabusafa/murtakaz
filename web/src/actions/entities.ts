@@ -1436,7 +1436,8 @@ export async function getEntityDependencyTree(input: { entityId: string; maxDept
   if (!orgId) return null;
 
   const maxDepth = input.maxDepth ?? 5;
-  const visited = new Set<string>();
+  const cache = new Map<string, EntityNode>();
+  const inPath = new Set<string>();
 
   interface EntityNode {
     id: string;
@@ -1449,11 +1450,21 @@ export async function getEntityDependencyTree(input: { entityId: string; maxDept
   }
 
   async function fetchNode(entityId: string, depth: number): Promise<EntityNode | null> {
-    if (depth > maxDepth || visited.has(entityId)) {
+    if (depth > maxDepth) {
       return null;
     }
 
-    visited.add(entityId);
+    // Cycle guard: allow rendering the edge but stop expanding
+    if (inPath.has(entityId)) {
+      const cached = cache.get(entityId);
+      if (cached) return { ...cached, dependencies: [] };
+      return null;
+    }
+
+    const cached = cache.get(entityId);
+    if (cached) {
+      return cached;
+    }
 
     const entity = await prisma.entity.findFirst({
       where: {
@@ -1484,25 +1495,32 @@ export async function getEntityDependencyTree(input: { entityId: string; maxDept
       dependencies: [],
     };
 
+    cache.set(entityId, node);
+
     if (entity.formula) {
-      const keys = extractGetKeys(entity.formula);
+      const keys = extractGetKeys(entity.formula).map((k) => normalizeEntityKey(String(k ?? ""))).filter(Boolean);
       if (keys.length > 0) {
         const depEntities = await prisma.entity.findMany({
           where: {
             orgId,
             deletedAt: null,
-            key: { in: keys },
+            key: { in: keys, mode: "insensitive" as const },
           },
           select: {
             id: true,
           },
         });
 
-        for (const dep of depEntities) {
-          const depNode = await fetchNode(dep.id, depth + 1);
-          if (depNode) {
-            node.dependencies.push(depNode);
+        inPath.add(entityId);
+        try {
+          for (const dep of depEntities) {
+            const depNode = await fetchNode(dep.id, depth + 1);
+            if (depNode) {
+              node.dependencies.push(depNode);
+            }
           }
+        } finally {
+          inPath.delete(entityId);
         }
       }
     }

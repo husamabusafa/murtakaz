@@ -511,6 +511,7 @@ export default function EntityDetailPage() {
   
   // Check if KPI has any fillable inputs
   const hasFillableInputs = fillableVariables.length > 0 || needsManualValue;
+  const showInputsSection = staticVariables.length > 0 || fillableVariables.length > 0 || needsManualValue;
 
   return (
     <div className="space-y-8">
@@ -610,7 +611,7 @@ export default function EntityDetailPage() {
         </div>
       ) : null}
 
-      {isKpiEntity ? (
+      {showInputsSection ? (
         <Card className="bg-card/70 backdrop-blur shadow-sm">
           <CardHeader>
             <CardTitle className="text-base">{t("inputs")}</CardTitle>
@@ -704,7 +705,7 @@ export default function EntityDetailPage() {
               </div>
             ) : (
               <div className="rounded-xl border border-border bg-muted/20 px-4 py-3 text-sm text-muted-foreground">
-                {tr("No editable inputs for this KPI.", "لا توجد مدخلات قابلة للتعديل لهذا المؤشر.")}
+                {tr("No editable inputs for this entity.", "لا توجد مدخلات قابلة للتعديل لهذا الكيان.")}
               </div>
             )}
 
@@ -850,7 +851,7 @@ export default function EntityDetailPage() {
       ) : null}
 
       {/* Dependency Tree Diagram */}
-      {loadingTree || dependencyTree || dependencyTreeError ? (
+      {entity ? (
         <Card className="bg-card/70 backdrop-blur shadow-sm">
           <CardHeader>
             <CardTitle className="text-base">{tr("Formula Dependency Tree", "شجرة الاعتماديات")}</CardTitle>

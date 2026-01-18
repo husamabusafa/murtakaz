@@ -174,7 +174,9 @@ export function EntityDependencyDiagram({ tree, locale, loading }: EntityDepende
 
 function generateMermaidSyntax(tree: EntityNode, locale: string): string {
   const lines: string[] = ["graph TD"];
-  const visited = new Set<string>();
+  const defined = new Set<string>();
+  const expanded = new Set<string>();
+  const edges = new Set<string>();
 
   function sanitizeId(id: string): string {
     return id.replace(/[^a-zA-Z0-9]/g, "_");
@@ -191,37 +193,42 @@ function generateMermaidSyntax(tree: EntityNode, locale: string): string {
     return `${safeTitle}<br/>${safeKey}<br/>${safeType}`;
   }
 
-  function addNode(node: EntityNode, depth: number = 0) {
+  function ensureNode(node: EntityNode, depth: number) {
     const nodeId = sanitizeId(node.id);
-    
-    if (visited.has(nodeId)) {
-      return;
-    }
-    
-    visited.add(nodeId);
-    
-    const label = getNodeLabel(node);
-    
-    if (depth === 0) {
-      lines.push(`  ${nodeId}["${label}"]:::root`);
-    } else {
-      lines.push(`  ${nodeId}["${label}"]:::dependency`);
-    }
 
-    if (node.dependencies && node.dependencies.length > 0) {
-      for (const dep of node.dependencies) {
-        const depId = sanitizeId(dep.id);
-        
-        if (!visited.has(depId)) {
-          addNode(dep, depth + 1);
-        }
-        
-        lines.push(`  ${nodeId} --> ${depId}`);
-      }
+    if (defined.has(nodeId)) return;
+    defined.add(nodeId);
+
+    const label = getNodeLabel(node);
+
+    lines.push(`  ${nodeId}["${label}"]:::${depth === 0 ? "root" : "dependency"}`);
+  }
+
+  function addEdge(from: EntityNode, to: EntityNode) {
+    const fromId = sanitizeId(from.id);
+    const toId = sanitizeId(to.id);
+    edges.add(`${fromId} --> ${toId}`);
+  }
+
+  function expand(node: EntityNode, depth: number) {
+    const nodeId = sanitizeId(node.id);
+    ensureNode(node, depth);
+
+    if (expanded.has(nodeId)) return;
+    expanded.add(nodeId);
+
+    for (const dep of node.dependencies ?? []) {
+      ensureNode(dep, depth + 1);
+      addEdge(node, dep);
+      expand(dep, depth + 1);
     }
   }
 
-  addNode(tree);
+  expand(tree, 0);
+
+  for (const e of edges) {
+    lines.push(`  ${e}`);
+  }
 
   lines.push("");
   lines.push("  classDef root fill:#60a5fa,stroke:#3b82f6,stroke-width:3px,color:#fff");
