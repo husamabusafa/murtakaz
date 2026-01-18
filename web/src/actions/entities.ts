@@ -234,7 +234,7 @@ async function getLatestEntityNumericValuesByKeys(input: { orgId: string; keys: 
     where: {
       orgId: input.orgId,
       deletedAt: null,
-      key: { in: keys },
+      key: { in: keys, mode: "insensitive" as const },
     },
     select: {
       key: true,
@@ -348,7 +348,7 @@ export async function getOrgEntitiesByKeys(input: { keys: string[] }) {
     where: {
       orgId,
       deletedAt: null,
-      key: { in: normalizedKeys },
+      key: { in: normalizedKeys, mode: "insensitive" as const },
     },
     include: {
       orgEntityType: {
