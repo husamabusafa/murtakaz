@@ -197,7 +197,7 @@ export default function EntityDetailPage() {
   }, [params.entityId, sessionLoading, userRole]);
 
   const entity = data?.entity ?? null;
-  const isKpiEntity = Boolean(entity?.periodType);
+  const isKpiEntity = String(entity?.orgEntityType?.code ?? "").toUpperCase() === "KPI";
 
   const staticVariables = useMemo(() => {
     return (entity?.variables ?? []).filter((v) => v.isStatic);
@@ -208,10 +208,27 @@ export default function EntityDetailPage() {
   }, [entity?.variables]);
 
   const needsManualValue = useMemo(() => {
-    if (!entity?.periodType) return false;
-    const hasFormula = Boolean(entity.formula && entity.formula.trim().length > 0);
+    const hasFormula = Boolean(entity?.formula && entity.formula.trim().length > 0);
     return fillableVariables.length === 0 && staticVariables.length === 0 && !hasFormula;
-  }, [entity?.formula, entity?.periodType, fillableVariables.length, staticVariables.length]);
+  }, [entity?.formula, fillableVariables.length, staticVariables.length]);
+
+  const enDateFormatter = useMemo(() => {
+    return new Intl.DateTimeFormat("en-US", {
+      year: "numeric",
+      month: "short",
+      day: "numeric",
+      timeZone: "UTC",
+    });
+  }, []);
+
+  const arDateFormatter = useMemo(() => {
+    return new Intl.DateTimeFormat("ar-SA", {
+      year: "numeric",
+      month: "short",
+      day: "numeric",
+      timeZone: "UTC",
+    });
+  }, []);
 
   const currentValue = useMemo(() => {
     const current = data?.currentPeriod ?? null;
@@ -768,7 +785,7 @@ export default function EntityDetailPage() {
       ) : null}
 
       {/* Previous Values Table */}
-      {isKpiEntity ? (
+      {entity ? (
         <Card className="bg-card/70 backdrop-blur shadow-sm">
           <CardHeader>
             <CardTitle className="text-base">{tr("Previous Values", "القيم السابقة")}</CardTitle>
@@ -793,16 +810,8 @@ export default function EntityDetailPage() {
                         <TableRow key={value.id}>
                           <TableCell className="text-sm">
                             {df(
-                              value.createdAt.toLocaleDateString("en-US", { 
-                                year: "numeric", 
-                                month: "short", 
-                                day: "numeric" 
-                              }),
-                              value.createdAt.toLocaleDateString("ar-SA", { 
-                                year: "numeric", 
-                                month: "short", 
-                                day: "numeric" 
-                              })
+                              enDateFormatter.format(value.createdAt),
+                              arDateFormatter.format(value.createdAt)
                             )}
                           </TableCell>
                           <TableCell>

@@ -193,9 +193,10 @@ export function AppShell({ children }: { children: React.ReactNode }) {
   const canonicalPath = useMemo(() => stripLocale(pathname ?? "/"), [pathname]);
   const isAuthRoute = canonicalPath.startsWith("/auth/");
   const isMarketingRoute = marketingRouteSet.has(canonicalPath);
-  const showAppNav = !isAuthRoute && !isMarketingRoute && !loading && Boolean(user);
-
+ 
   const [mounted, setMounted] = useState(false);
+  const authReady = mounted && !loading;
+  const showAppNav = !isAuthRoute && !isMarketingRoute && authReady && Boolean(user);
   const [sidebarPinned, setSidebarPinned] = useState(false);
   const [sidebarHovered, setSidebarHovered] = useState(false);
   const [mobileNavOpen, setMobileNavOpen] = useState(false);
@@ -205,13 +206,14 @@ export function AppShell({ children }: { children: React.ReactNode }) {
   }, []);
 
   useEffect(() => {
+    if (!mounted) return;
     if (loading) return;
     if (user) return;
     if (isAuthRoute || isMarketingRoute) return;
 
     const nextParam = encodeURIComponent(pathname ?? withLocale(locale, getAppHomeHref(userRole)));
     router.replace(withLocale(locale, `/auth/login?next=${nextParam}`));
-  }, [isAuthRoute, isMarketingRoute, loading, locale, pathname, router, user, userRole]);
+  }, [isAuthRoute, isMarketingRoute, loading, locale, mounted, pathname, router, user, userRole]);
 
   useEffect(() => {
     if (!showAppNav) return;
@@ -570,7 +572,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
                   </Button>
                 ) : null}
                 {showAppNav ? null : <LanguageToggle />}
-                {isAuthRoute ? null : showAppNav ? null : loading ? null : user ? (
+                {isAuthRoute ? null : showAppNav ? null : !authReady ? null : user ? (
                   <>
                     <Button asChild variant="secondary">
                       <Link href={`/${locale}/overview`}>{t("workspace")}</Link>

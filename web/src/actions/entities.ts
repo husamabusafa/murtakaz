@@ -258,28 +258,15 @@ async function getLatestEntityNumericValuesByKeys(input: { orgId: string; keys: 
   for (const r of rows) {
     const key = normalizeEntityKey(String(r.key ?? ""));
     if (!key) continue;
-    if (!r.periodType) {
-      out[key] = 0;
-      continue;
-    }
 
-    const v = r.values?.[0] ?? null;
-    const isKpi = String(r.orgEntityType?.code ?? "").toUpperCase() === "KPI";
-    const kpiAchievementRaw = isKpi && typeof v?.achievementValue === "number" ? Number(v.achievementValue) : null;
-    const kpiAchievement = typeof kpiAchievementRaw === "number" && Number.isFinite(kpiAchievementRaw)
-      ? Math.max(0, Math.min(100, kpiAchievementRaw))
-      : null;
-    const value =
-      typeof kpiAchievement === "number"
-        ? kpiAchievement
-        : typeof v?.finalValue === "number"
-          ? Number(v.finalValue)
-          : typeof v?.calculatedValue === "number"
-            ? Number(v.calculatedValue)
-            : typeof v?.actualValue === "number"
-              ? Number(v.actualValue)
-              : 0;
-    out[key] = Number.isFinite(value) ? value : 0;
+    const latest = r.values?.[0] ?? null;
+    const val =
+      latest?.finalValue ??
+      latest?.calculatedValue ??
+      latest?.actualValue ??
+      latest?.achievementValue ??
+      0;
+    out[key] = typeof val === "number" && Number.isFinite(val) ? val : 0;
   }
 
   return out;
@@ -738,9 +725,9 @@ export async function getOrgEntityDetail(input: { entityId: string }) {
   }
   const latest = (entity.values ?? [])[0] ?? null;
 
-  // For non-periodType entities with formulas, calculate value on-the-fly
+  // For formula entities without stored history, calculate value on-the-fly
   let calculatedPeriod = null;
-  if (!entity.periodType && entity.formula && entity.formula.trim()) {
+  if (!latest && entity.formula && entity.formula.trim()) {
     const res = await evaluateEntityFormulaForOrg({
       orgId: session.user.orgId,
       formula: entity.formula,
@@ -951,7 +938,7 @@ export async function createOrgEntity(input: z.infer<typeof createOrgEntitySchem
     });
 
     const hasGetCalls = formula && /\bget\s*\(/.test(formula);
-    if (hasGetCalls && periodType) {
+    if (hasGetCalls) {
       console.log(`[createOrgEntity] Auto-calculating initial value for entity: ${created.id}`);
       try {
         const calcResult = await saveOrgEntityKpiValuesDraft({
@@ -1186,7 +1173,6 @@ export async function saveOrgEntityKpiValuesDraft(input: z.infer<typeof saveOrgE
   });
 
   if (!entity) return { success: false as const, error: "notFound" };
-  if (!entity.periodType) return { success: false as const, error: "notKpi" };
 
   const issues: ActionValidationIssue[] = [];
   const valuesByCode: Record<string, number> = {};
@@ -1333,14 +1319,12 @@ export async function recalculateEntityValue(input: z.infer<typeof recalculateEn
   });
 
   if (!entity) return { success: false as const, error: "notFound" };
-  if (!entity.periodType) return { success: false as const, error: "notKpi" };
   if (!entity.formula?.trim()) return { success: false as const, error: "noFormula" };
 
-  const latestValue = entity.values?.[0];
-  if (!latestValue) return { success: false as const, error: "noExistingValue" };
+  const latestValue = entity.values?.[0] ?? null;
 
   const variableValues: Record<string, number> = {};
-  for (const vv of latestValue.variableValues ?? []) {
+  for (const vv of latestValue?.variableValues ?? []) {
     variableValues[vv.entityVariableId] = vv.value;
   }
 
@@ -1397,7 +1381,7 @@ async function cascadeRecalculateDependents(input: {
   console.log(`Recalculating ${dependents.length} dependent entities for key: ${updatedKey}`);
 
   for (const dependent of dependents) {
-    if (!dependent.key || !dependent.periodType) continue;
+    if (!dependent.key) continue;
 
     try {
       const existingValue = await prisma.entityValue.findFirst({
@@ -1420,11 +1404,16 @@ async function cascadeRecalculateDependents(input: {
         variableValues[vv.entityVariableId] = vv.value;
       }
 
-      await saveOrgEntityKpiValuesDraft({
+      const saveResult = await saveOrgEntityKpiValuesDraft({
         entityId: dependent.id,
         values: variableValues,
         skipCascade: true,
       });
+
+      if (!saveResult.success) {
+        console.warn(`Failed to save dependent entity ${dependent.id} during cascade:`, saveResult);
+        continue;
+      }
 
       if (dependent.key) {
         await cascadeRecalculateDependents({

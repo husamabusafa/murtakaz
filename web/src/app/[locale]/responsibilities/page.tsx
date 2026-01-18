@@ -343,7 +343,7 @@ export default function ResponsibilitiesPage() {
                                     {df(entity.title, entity.titleAr)}
                                   </Link>
                                 </CardTitle>
-                                {entity.periodType ? (
+                                {String(entity.orgEntityType.code ?? "").toUpperCase() === "KPI" ? (
                                   <Badge variant="outline" className="text-xs">
                                     KPI
                                   </Badge>
@@ -643,7 +643,7 @@ export default function ResponsibilitiesPage() {
                             {entity.key ? ` • ${entity.key}` : ""}
                           </div>
                         </div>
-                        {entity.periodType ? (
+                        {String(entity.orgEntityType.code ?? "").toUpperCase() === "KPI" ? (
                           <Badge variant="outline" className="text-xs">
                             KPI
                           </Badge>
