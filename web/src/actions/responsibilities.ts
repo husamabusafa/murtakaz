@@ -99,7 +99,6 @@ export async function getMyDirectReports() {
       name: true,
       role: true,
       email: true,
-      department: { select: { id: true, name: true } },
     },
   });
 }

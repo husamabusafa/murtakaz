@@ -63,7 +63,6 @@ export default function ProfilePage() {
 
   const pUser = profile?.user ?? null;
   const pOrg = profile?.user?.org ?? null;
-  const pDept = profile?.user?.department ?? null;
   const pManager = profile?.user?.manager ?? null;
 
   const initials = (pUser?.name ?? user.name)
@@ -126,7 +125,7 @@ export default function ProfilePage() {
             </div>
             <div className="rounded-xl border border-border bg-muted/30 px-4 py-3">
               <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">{t("department")}</p>
-              <p className="mt-1 text-foreground">{pDept?.name ?? "—"}</p>
+              <p className="mt-1 text-foreground">—</p>
             </div>
           </CardContent>
         </Card>

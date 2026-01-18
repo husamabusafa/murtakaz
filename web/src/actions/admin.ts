@@ -4,7 +4,8 @@ import { prisma } from "@/lib/prisma";
 import { auth } from "@/lib/auth";
 import { headers } from "next/headers";
 import { z } from "zod";
-import { Role } from "@/generated/prisma-client";
+import { KpiApprovalLevel, Role } from "@/generated/prisma-client";
+import type { Prisma } from "@/generated/prisma-client";
 import { ActionValidationIssue } from "@/types/actions";
 
 type OrgEntityTypeRow = {
@@ -27,8 +28,8 @@ type OrganizationRow = {
   visionAr: string | null;
   about: string | null;
   aboutAr: string | null;
-  contacts: unknown;
-  kpiApprovalLevel: unknown;
+  contacts: Prisma.JsonValue | null;
+  kpiApprovalLevel: KpiApprovalLevel;
   createdAt: Date;
   updatedAt: Date;
   deletedAt: Date | null;

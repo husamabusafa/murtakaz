@@ -136,7 +136,7 @@ export default function ApprovalsPage() {
                         </p>
                       </TableCell>
                       <TableCell className="text-muted-foreground" dir="ltr">
-                        {formatDate(row.periodEnd)}
+                        {formatDate(row.createdAt)}
                       </TableCell>
                       <TableCell className="text-muted-foreground" dir="ltr">
                         {formatNumber(row.finalValue ?? row.calculatedValue ?? row.actualValue ?? 0)}

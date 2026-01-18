@@ -29,7 +29,6 @@ export async function getMyProfile() {
       image: true,
       createdAt: true,
       org: { select: { id: true, name: true, domain: true } },
-      department: { select: { id: true, name: true } },
       manager: { select: { id: true, name: true, email: true, title: true, role: true } },
     },
   });

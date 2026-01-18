@@ -15,7 +15,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { useAuth } from "@/providers/auth-provider";
 import { useLocale } from "@/providers/locale-provider";
 import { useTheme } from "@/providers/theme-provider";
-import { getOrgEntityDetail, updateOrgEntity, getOrgOwnerOptions, getOrgFormulaReferenceOptions } from "@/actions/entities";
+import { getOrgEntityDetail, updateOrgEntity, getOrgOwnerOptions, testOrgEntityFormula } from "@/actions/entities";
 
 type EntityDetail = Awaited<ReturnType<typeof getOrgEntityDetail>>;
 type OwnerOption = Awaited<ReturnType<typeof getOrgOwnerOptions>>[number];
@@ -50,65 +50,6 @@ function toNumberOrZero(raw: string) {
   if (!trimmed) return 0;
   const n = Number(trimmed);
   return Number.isFinite(n) ? n : 0;
-}
-
-function normalizeVarName(v: string) {
-  return String(v ?? "")
-    .replace(/[^a-zA-Z0-9]+/g, "")
-    .toLowerCase();
-}
-
-function extractJsIdentifiers(body: string) {
-  const re = /\b([a-zA-Z_][a-zA-Z0-9_]*)\b/g;
-  const matches = Array.from(String(body ?? "").matchAll(re)).map((m) => String(m[1] ?? ""));
-  const keywords = new Set([
-    "return",
-    "if",
-    "else",
-    "for",
-    "while",
-    "do",
-    "switch",
-    "case",
-    "break",
-    "continue",
-    "function",
-    "var",
-    "let",
-    "const",
-    "true",
-    "false",
-    "null",
-    "undefined",
-    "this",
-    "new",
-    "typeof",
-    "instanceof",
-    "Math",
-    "Number",
-    "String",
-    "Boolean",
-    "Array",
-    "Object",
-    "Date",
-    "console",
-    "log",
-    "vars",
-    "get",
-    "abs",
-    "sum",
-    "avg",
-    "min",
-    "max",
-  ]);
-
-  const out: string[] = [];
-  for (const id of matches) {
-    if (!id) continue;
-    if (keywords.has(id)) continue;
-    out.push(id);
-  }
-  return Array.from(new Set(out));
 }
 
 export default function EditEntityPage() {
@@ -245,74 +186,19 @@ export default function EditEntityPage() {
         const raw = v.isStatic ? v.staticValue : v.testValue;
         vars[code] = toNumberOrZero(raw);
       }
-
-      const refOptions = await getOrgFormulaReferenceOptions();
-      const refValuesByKey: Record<string, number> = {};
-      for (const ref of refOptions) {
-        if (ref.key && typeof ref.value === "number") {
-          refValuesByKey[ref.key] = ref.value;
-        }
-      }
-
-      const get = (key: string) => {
-        const k = String(key ?? "").trim();
-        return refValuesByKey[k] ?? 0;
-      };
-
-      // Helper functions for formulas
-      const abs = Math.abs;
-      const sum = (...args: number[]) => args.reduce((a, b) => a + b, 0);
-      const avg = (...args: number[]) => args.length > 0 ? sum(...args) / args.length : 0;
-      const min = Math.min;
-      const max = Math.max;
-
       const raw = formula.trim();
       if (!raw) {
         setTestOutput(tr("No code to run.", "لا يوجد كود للتشغيل."));
         return;
       }
 
-      const body = /\breturn\b/.test(raw) ? raw : `return (${raw});`;
-
-      const byNormalized = new Map<string, number>();
-      const varsObj: Record<string, number> = {};
-      for (const [k, v] of Object.entries(vars)) {
-        const num = typeof v === "number" && Number.isFinite(v) ? v : 0;
-        const n = normalizeVarName(k);
-        byNormalized.set(n, num);
-        varsObj[String(k)] = num;
-        varsObj[n] = num;
-        varsObj[String(k).toLowerCase()] = num;
+      const res = await testOrgEntityFormula({ formula: raw, vars });
+      if (!res.success) {
+        setTestOutput(tr("Error", "خطأ") + ": " + String(res.error));
+        return;
       }
 
-      const varsProxy = new Proxy(varsObj, {
-        get(target, prop) {
-          if (typeof prop !== "string") return (target as unknown as Record<string, unknown>)[prop as unknown as string];
-          if (prop in target) return target[prop];
-          const n = normalizeVarName(prop);
-          if (n in target) return target[n];
-          if (byNormalized.has(n)) return byNormalized.get(n) ?? 0;
-          return 0;
-        },
-      });
-
-      const identifiers = extractJsIdentifiers(body);
-      const params: string[] = ["vars"];
-      const args: unknown[] = [varsProxy];
-      for (const id of identifiers) {
-        const direct = vars[id];
-        const norm = normalizeVarName(id);
-        const mapped = byNormalized.has(norm) ? byNormalized.get(norm) : undefined;
-        const value = typeof direct === "number" && Number.isFinite(direct) ? direct : typeof mapped === "number" && Number.isFinite(mapped) ? mapped : 0;
-        params.push(id);
-        args.push(value);
-      }
-
-      params.push("get", "abs", "sum", "avg", "min", "max");
-      args.push(get, abs, sum, avg, min, max);
-
-      const value = Function(...params, `"use strict";\n${body}`)(...args);
-      setTestOutput(tr("Result", "النتيجة") + ": " + String(value));
+      setTestOutput(tr("Result", "النتيجة") + ": " + String(res.value));
     } catch (err: unknown) {
       const msg = err instanceof Error ? err.message : String(err);
       setTestOutput(tr("Error", "خطأ") + ": " + msg);

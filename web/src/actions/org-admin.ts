@@ -144,13 +144,28 @@ export async function getOrgAdminOrganizationSettings() {
     },
   });
 
-  // Get node type options and enabled node types
-  const nodeTypeOptions: Array<{ id: string; name: string; nameAr: string | null }> = [];
-  const enabledNodeTypes: Array<{ id: string; nodeType: string }> = [];
-  const enabledNodeTypeCounts: Array<{ nodeType: string; count: number }> = [];
+  const usersCount = await prisma.user.count({
+    where: {
+      orgId: session.user.orgId,
+      deletedAt: null,
+    },
+  });
+
+  const nodeTypeOptions: Array<{ id: string; code: string; displayName: string; nameAr: string | null; levelOrder: number }> = [];
+  const enabledNodeTypes: Array<{ id: string; displayName: string }> = [];
+  const enabledNodeTypeCounts: Array<{ nodeTypeId: string; displayName: string; count: number }> = [];
 
   return {
-    org,
+    org: org
+      ? {
+          ...org,
+          _count: {
+            users: usersCount,
+            departments: 0,
+            kpis: 0,
+          },
+        }
+      : null,
     nodeTypeOptions,
     enabledNodeTypes,
     enabledNodeTypeCounts,
@@ -234,6 +249,65 @@ export async function updateOrgAdminEnabledNodeTypes(data: z.infer<typeof update
 
   // For now, just return success as node types are handled elsewhere
   return { success: true as const };
+}
+
+type OrgAdminDepartmentRow = {
+  id: string;
+  name: string;
+  nameAr: string | null;
+  createdAt: string;
+  _count: { users: number; managers: number };
+  managers: Array<{ user: { id: string; name: string; role: string } | null }>;
+};
+
+export async function getOrgAdminDepartments(): Promise<OrgAdminDepartmentRow[]> {
+  await requireOrgAdmin();
+  return [];
+}
+
+const createOrgAdminDepartmentSchema = z.object({
+  name: z.string().trim().min(1),
+  nameAr: z.string().trim().optional(),
+  managerIds: z.array(z.string().uuid()).optional(),
+});
+
+export async function createOrgAdminDepartment(data: z.infer<typeof createOrgAdminDepartmentSchema>) {
+  await requireOrgAdmin();
+  const parsed = createOrgAdminDepartmentSchema.safeParse(data);
+  if (!parsed.success) {
+    return { success: false as const, error: "validationFailed", issues: zodIssues(parsed.error) };
+  }
+
+  return { success: false as const, error: "notImplemented" };
+}
+
+const updateOrgAdminDepartmentSchema = z.object({
+  departmentId: z.string().uuid(),
+  name: z.string().trim().min(1),
+});
+
+export async function updateOrgAdminDepartment(data: z.infer<typeof updateOrgAdminDepartmentSchema>) {
+  await requireOrgAdmin();
+  const parsed = updateOrgAdminDepartmentSchema.safeParse(data);
+  if (!parsed.success) {
+    return { success: false as const, error: "validationFailed", issues: zodIssues(parsed.error) };
+  }
+
+  return { success: false as const, error: "notImplemented" };
+}
+
+const deleteOrgAdminDepartmentSchema = z.object({
+  departmentId: z.string().uuid(),
+});
+
+export async function deleteOrgAdminDepartment(data: z.infer<typeof deleteOrgAdminDepartmentSchema>) {
+  await requireOrgAdmin();
+  const parsed = deleteOrgAdminDepartmentSchema.safeParse(data);
+  if (!parsed.success) {
+    return { success: false as const, error: "validationFailed", issues: zodIssues(parsed.error) };
+  }
+
+  return { success: false as const, error: "notImplemented" };
 }
 
 function validateManagerAssignment(input: { userRole: Role; managerRole: Role | null }) {

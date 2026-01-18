@@ -4,6 +4,6 @@ export type ActionValidationIssue = {
   params?: Record<string, string | number>;
 };
 
-export type ActionResponse<T = any> = 
-  | { success: true; data?: T; [key: string]: any }
-  | { success: false; error: string; issues?: ActionValidationIssue[]; [key: string]: any };
+export type ActionResponse<T = unknown> =
+  | ({ success: true; data?: T } & Record<string, unknown>)
+  | ({ success: false; error: string; issues?: ActionValidationIssue[] } & Record<string, unknown>);

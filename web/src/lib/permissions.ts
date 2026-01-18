@@ -114,7 +114,7 @@ export async function canEditEntityPeriod(
   }
 
   // Check if period is in SUBMITTED status (locked for editing)
-  const period = await prisma.entityValuePeriod.findFirst({
+  const period = await prisma.entityValue.findFirst({
     where: {
       id: periodId,
       entityId,

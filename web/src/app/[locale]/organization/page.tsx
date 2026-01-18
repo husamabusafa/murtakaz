@@ -377,11 +377,11 @@ export default function OrganizationPage() {
             <CardContent className="space-y-3 text-sm">
               <div className="rounded-xl border border-border bg-muted/30 px-4 py-3">
                 <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">{t("users")}</p>
-                <p className="mt-1 text-lg font-semibold">{org._count?.users ?? 0}</p>
+                <p className="mt-1 text-lg font-semibold">{org?._count?.users ?? 0}</p>
               </div>
               <div className="rounded-xl border border-border bg-muted/30 px-4 py-3">
                 <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">{t("departments")}</p>
-                <p className="mt-1 text-lg font-semibold">{org._count?.departments ?? 0}</p>
+                <p className="mt-1 text-lg font-semibold">{org?._count?.departments ?? 0}</p>
               </div>
 
               <div className="rounded-xl border border-border bg-muted/30 px-4 py-3">
@@ -401,7 +401,7 @@ export default function OrganizationPage() {
               </div>
               <div className="rounded-xl border border-border bg-muted/30 px-4 py-3">
                 <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">{t("kpis")}</p>
-                <p className="mt-1 text-lg font-semibold">{org._count?.kpis ?? 0}</p>
+                <p className="mt-1 text-lg font-semibold">{org?._count?.kpis ?? 0}</p>
               </div>
               <div className="rounded-xl border border-border bg-muted/30 px-4 py-3">
                 <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">{t("created")}</p>

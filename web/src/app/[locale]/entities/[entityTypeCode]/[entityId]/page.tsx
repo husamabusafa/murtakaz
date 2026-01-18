@@ -225,7 +225,7 @@ export default function EntityDetailPage() {
 
   const trendOption = useMemo<EChartsOption>(() => {
     const points = (entity?.values ?? []).slice().reverse();
-    const labels = points.map((p) => p.periodEnd.toISOString().slice(0, 10));
+    const labels = points.map((p) => p.createdAt.toISOString().slice(0, 10));
     const values = points.map((p) => periodValue(p) ?? 0);
 
     return {

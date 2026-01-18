@@ -226,6 +226,116 @@ function extractGetKeys(code: string) {
   return Array.from(new Set(keys));
 }
 
+async function getLatestEntityNumericValuesByKeys(input: { orgId: string; keys: string[] }) {
+  const keys = (input.keys ?? []).map((k) => normalizeEntityKey(String(k ?? ""))).filter(Boolean);
+  if (keys.length === 0) return {} as Record<string, number>;
+
+  const rows = await prisma.entity.findMany({
+    where: {
+      orgId: input.orgId,
+      deletedAt: null,
+      key: { in: keys },
+    },
+    select: {
+      key: true,
+      periodType: true,
+      orgEntityType: { select: { code: true } },
+      values: {
+        orderBy: [{ createdAt: "desc" }],
+        take: 1,
+        select: {
+          actualValue: true,
+          calculatedValue: true,
+          finalValue: true,
+          achievementValue: true,
+        },
+      },
+    },
+  });
+
+  const out: Record<string, number> = {};
+
+  for (const r of rows) {
+    const key = normalizeEntityKey(String(r.key ?? ""));
+    if (!key) continue;
+    if (!r.periodType) {
+      out[key] = 0;
+      continue;
+    }
+
+    const v = r.values?.[0] ?? null;
+    const isKpi = String(r.orgEntityType?.code ?? "").toUpperCase() === "KPI";
+    const kpiAchievementRaw = isKpi && typeof v?.achievementValue === "number" ? Number(v.achievementValue) : null;
+    const kpiAchievement = typeof kpiAchievementRaw === "number" && Number.isFinite(kpiAchievementRaw)
+      ? Math.max(0, Math.min(100, kpiAchievementRaw))
+      : null;
+    const value =
+      typeof kpiAchievement === "number"
+        ? kpiAchievement
+        : typeof v?.finalValue === "number"
+          ? Number(v.finalValue)
+          : typeof v?.calculatedValue === "number"
+            ? Number(v.calculatedValue)
+            : typeof v?.actualValue === "number"
+              ? Number(v.actualValue)
+              : 0;
+    out[key] = Number.isFinite(value) ? value : 0;
+  }
+
+  return out;
+}
+
+async function evaluateEntityFormulaForOrg(input: {
+  orgId: string;
+  formula: string;
+  vars: Record<string, number>;
+}): Promise<{ ok: true; value: number } | { ok: false; error: string }> {
+  const formula = String(input.formula ?? "").trim();
+  if (!formula) return { ok: false as const, error: "emptyFormula" };
+
+  const likelyJs = /\breturn\b|\bconst\b|\blet\b|\bvars\.|\bget\s*\(/.test(formula);
+  if (likelyJs) {
+    const keys = extractGetKeys(formula);
+    const refsByKey = await getLatestEntityNumericValuesByKeys({
+      orgId: input.orgId,
+      keys,
+    });
+
+    const res = evaluateJsFormula({
+      code: formula,
+      vars: input.vars,
+      get: (key: string) => refsByKey[normalizeEntityKey(String(key ?? ""))] ?? 0,
+    });
+
+    if (!res.ok) return { ok: false as const, error: res.error };
+    return { ok: true as const, value: res.value };
+  }
+
+  const res = evaluateFormula({ formula, valuesByCode: input.vars });
+  if (!res.ok) return { ok: false as const, error: res.error };
+  return { ok: true as const, value: res.value };
+}
+
+const testOrgEntityFormulaSchema = z.object({
+  formula: z.string().trim().min(1),
+  vars: z.record(z.string(), z.preprocess((v) => Number(v), z.number().finite())).optional(),
+});
+
+export async function testOrgEntityFormula(input: z.infer<typeof testOrgEntityFormulaSchema>) {
+  const session = await requireOrgAdmin();
+  const parsed = testOrgEntityFormulaSchema.safeParse(input);
+  if (!parsed.success) return { success: false as const, error: "validationFailed", issues: zodIssues(parsed.error) };
+
+  const res = await evaluateEntityFormulaForOrg({
+    orgId: session.user.orgId,
+    formula: parsed.data.formula,
+    vars: parsed.data.vars ?? {},
+  });
+
+  if (!res.ok) return { success: false as const, error: res.error };
+  return { success: true as const, value: res.value };
+}
+
 export async function getOrgEntitiesByKeys(input: { keys: string[] }) {
   const session = await requireOrgMember();
   const orgId = session.user.orgId;
@@ -249,7 +359,7 @@ export async function getOrgEntitiesByKeys(input: { keys: string[] }) {
         },
       },
       values: {
-        orderBy: { periodStart: "desc" },
+        orderBy: { createdAt: "desc" },
         take: 1,
         select: {
           actualValue: true,
@@ -527,6 +637,7 @@ export async function getOrgEntityDetail(input: { entityId: string }) {
       titleAr: true,
       description: true,
       descriptionAr: true,
+      ownerUserId: true,
       status: true,
       sourceType: true,
       periodType: true,
@@ -630,104 +741,25 @@ export async function getOrgEntityDetail(input: { entityId: string }) {
   // For non-periodType entities with formulas, calculate value on-the-fly
   let calculatedPeriod = null;
   if (!entity.periodType && entity.formula && entity.formula.trim()) {
-    const formulaRaw = entity.formula.trim();
-    const isJs = /\breturn\b|\bconst\b|\blet\b|\bvars\.|\bget\s*\(/.test(formulaRaw);
-    
-    if (isJs) {
-      // Extract dependencies and compute them
-      const deps = extractGetKeys(formulaRaw);
-      const depValues: Record<string, number> = {};
-      
-      const cacheByKey = new Map<string, number>();
-      const visiting = new Set<string>();
-      
-      async function computeKeyValue(key: string): Promise<number> {
-        const normalized = String(key ?? "").trim().toUpperCase();
-        if (!normalized) return 0;
-        if (cacheByKey.has(normalized)) return cacheByKey.get(normalized) ?? 0;
-        if (visiting.has(normalized)) return 0;
-        
-        visiting.add(normalized);
-        
-        const ref = await prisma.entity.findFirst({
-          where: { orgId: session.user.orgId, key: { equals: normalized, mode: "insensitive" }, deletedAt: null },
-          select: {
-            formula: true,
-            periodType: true,
-            orgEntityType: { select: { code: true } },
-            variables: { select: { id: true, code: true, isStatic: true, staticValue: true } },
-            values: {
-              orderBy: [{ createdAt: "desc" }],
-              take: 1,
-              select: {
-                actualValue: true,
-                calculatedValue: true,
-                finalValue: true,
-                achievementValue: true,
-                variableValues: { select: { entityVariableId: true, value: true } },
-              },
-            },
-          },
-        });
-        
-        if (!ref) {
-          cacheByKey.set(normalized, 0);
-          visiting.delete(normalized);
-          return 0;
-        }
-        
-        if (!ref.periodType) {
-          cacheByKey.set(normalized, 0);
-          visiting.delete(normalized);
-          return 0;
-        }
-        
-        const refLatest = ref.values?.[0] ?? null;
-        const isKpi = String(ref.orgEntityType?.code ?? "").toUpperCase() === "KPI";
-        const kpiAchievementRaw = isKpi && typeof refLatest?.achievementValue === "number" ? Number(refLatest.achievementValue) : null;
-        const kpiAchievement = typeof kpiAchievementRaw === "number" && Number.isFinite(kpiAchievementRaw)
-          ? Math.max(0, Math.min(100, kpiAchievementRaw))
-          : null;
-        const stored =
-          typeof kpiAchievement === "number"
-            ? kpiAchievement
-            : typeof refLatest?.finalValue === "number"
-              ? Number(refLatest.finalValue)
-              : typeof refLatest?.calculatedValue === "number"
-                ? Number(refLatest.calculatedValue)
-                : typeof refLatest?.actualValue === "number"
-                  ? Number(refLatest.actualValue)
-                  : 0;
-        
-        cacheByKey.set(normalized, stored);
-        visiting.delete(normalized);
-        return stored;
-      }
-      
-      for (const d of deps) {
-        depValues[d] = await computeKeyValue(d);
-      }
-      
-      const res = evaluateJsFormula({
-        code: formulaRaw,
-        vars: {},
-        get: (k: string) => depValues[normalizeEntityKey(String(k ?? ""))] ?? 0,
-      });
-      
-      if (res.ok) {
-        calculatedPeriod = {
-          id: "calculated",
-          createdAt: new Date(),
-          actualValue: null,
-          calculatedValue: res.value,
-          finalValue: res.value,
-          status: "DRAFT" as const,
-          note: null,
-          submittedAt: null,
-          approvedAt: null,
-          variableValues: [],
-        };
-      }
+    const res = await evaluateEntityFormulaForOrg({
+      orgId: session.user.orgId,
+      formula: entity.formula,
+      vars: {},
+    });
+
+    if (res.ok) {
+      calculatedPeriod = {
+        id: "calculated",
+        createdAt: new Date(),
+        actualValue: null,
+        calculatedValue: res.value,
+        finalValue: res.value,
+        status: "DRAFT" as const,
+        note: null,
+        submittedAt: null,
+        approvedAt: null,
+        variableValues: [],
+      };
     }
   }
 
@@ -739,9 +771,16 @@ export async function getOrgEntityDetail(input: { entityId: string }) {
       titleAr: entity.titleAr,
       description: entity.description,
       descriptionAr: entity.descriptionAr,
+      ownerUserId: entity.ownerUserId,
+      status: entity.status,
+      sourceType: entity.sourceType,
       formula: entity.formula,
       periodType: entity.periodType,
+      direction: entity.direction,
+      aggregation: entity.aggregation,
+      baselineValue: entity.baselineValue,
       targetValue: entity.targetValue,
+      weight: entity.weight,
       unit: entity.unit,
       unitAr: entity.unitAr,
       orgEntityType: {
@@ -754,11 +793,24 @@ export async function getOrgEntityDetail(input: { entityId: string }) {
         code: String(v.code),
         displayName: String(v.displayName),
         nameAr: v.nameAr,
+        isRequired: Boolean(v.isRequired),
         isStatic: Boolean(v.isStatic),
         staticValue: typeof v.staticValue === "number" ? v.staticValue : null,
         dataType: String(v.dataType),
       })),
+      values: entity.values.map((val) => ({
+        id: val.id,
+        createdAt: val.createdAt,
+        actualValue: val.actualValue,
+        calculatedValue: val.calculatedValue,
+        finalValue: val.finalValue,
+        status: val.status,
+        note: val.note,
+        submittedAt: val.submittedAt,
+        approvedAt: val.approvedAt,
+      })),
     },
+    currentPeriod: latest ?? calculatedPeriod,
     latest: latest ?? calculatedPeriod,
     canAdmin,
     userAccess,
@@ -1093,6 +1145,7 @@ const saveOrgEntityKpiValuesDraftSchema = z.object({
     z.number().finite().optional(),
   ),
   values: z.record(uuidSchema, z.preprocess((v) => Number(v), z.number().finite())),
+  skipCascade: z.boolean().optional(),
 });
 
 export async function saveOrgEntityKpiValuesDraft(input: z.infer<typeof saveOrgEntityKpiValuesDraftSchema>) {
@@ -1165,142 +1218,14 @@ export async function saveOrgEntityKpiValuesDraft(input: z.infer<typeof saveOrgE
 
   if (entity.formula && entity.formula.trim().length > 0) {
     const trimmed = entity.formula.trim();
-    const likelyJs = /\breturn\b|\bconst\b|\blet\b|\bvars\.|\bget\s*\(/.test(trimmed);
-    if (likelyJs) {
-      const cacheByKey = new Map<string, number>();
-      const visiting = new Set<string>();
+    const res = await evaluateEntityFormulaForOrg({
+      orgId: session.user.orgId,
+      formula: trimmed,
+      vars: valuesByCode,
+    });
 
-      async function computeKeyValue(key: string): Promise<number> {
-        const normalized = normalizeEntityKey(String(key ?? ""));
-        if (!normalized) return 0;
-        if (cacheByKey.has(normalized)) return cacheByKey.get(normalized) ?? 0;
-        if (visiting.has(normalized)) return 0;
-
-        visiting.add(normalized);
-
-        const ref = await prisma.entity.findFirst({
-          where: {
-            orgId: session.user.orgId,
-            deletedAt: null,
-            key: { equals: normalized, mode: "insensitive" as const },
-          },
-          select: {
-            id: true,
-            periodType: true,
-            orgEntityType: { select: { code: true } },
-            formula: true,
-            variables: {
-              select: {
-                id: true,
-                code: true,
-                isStatic: true,
-                staticValue: true,
-              },
-            },
-            values: {
-              orderBy: [{ createdAt: "desc" }],
-              take: 1,
-              select: {
-                actualValue: true,
-                calculatedValue: true,
-                finalValue: true,
-                achievementValue: true,
-                variableValues: { select: { entityVariableId: true, value: true } },
-              },
-            },
-          },
-        });
-
-        if (!ref || !ref.periodType) {
-          cacheByKey.set(normalized, 0);
-          visiting.delete(normalized);
-          return 0;
-        }
-
-        const latest = ref.values?.[0] ?? null;
-        const isKpi = String(ref.orgEntityType?.code ?? "").toUpperCase() === "KPI";
-        const kpiAchievementRaw = isKpi && typeof latest?.achievementValue === "number" ? Number(latest.achievementValue) : null;
-        const kpiAchievement = typeof kpiAchievementRaw === "number" && Number.isFinite(kpiAchievementRaw)
-          ? Math.max(0, Math.min(100, kpiAchievementRaw))
-          : null;
-        const stored =
-          typeof kpiAchievement === "number"
-            ? kpiAchievement
-            : typeof latest?.finalValue === "number"
-              ? Number(latest.finalValue)
-              : typeof latest?.calculatedValue === "number"
-                ? Number(latest.calculatedValue)
-                : typeof latest?.actualValue === "number"
-                  ? Number(latest.actualValue)
-                  : 0;
-
-        const valuesByCode: Record<string, number> = {};
-        const valuesByVarId: Record<string, number> = {};
-        for (const vv of latest?.variableValues ?? []) valuesByVarId[String(vv.entityVariableId)] = Number(vv.value);
-
-        for (const v of ref.variables) {
-          const code = String(v.code);
-          if (v.isStatic) {
-            valuesByCode[code] = Number(v.staticValue ?? 0);
-            continue;
-          }
-          const val = valuesByVarId[String(v.id)];
-          valuesByCode[code] = Number.isFinite(val) ? Number(val) : 0;
-        }
-
-        const formulaRaw = ref.formula?.trim() ? String(ref.formula).trim() : "";
-        if (!formulaRaw) {
-          cacheByKey.set(normalized, stored);
-          visiting.delete(normalized);
-          return stored;
-        }
-
-        const isJs = /\breturn\b|\bconst\b|\blet\b|\bvars\.|\bget\s*\(/.test(formulaRaw);
-        if (isJs) {
-          const deps = extractGetKeys(formulaRaw);
-          const depValues: Record<string, number> = {};
-          for (const d of deps) {
-            depValues[d] = await computeKeyValue(d);
-          }
-
-          const res = evaluateJsFormula({
-            code: formulaRaw,
-            vars: valuesByCode,
-            get: (k: string) => depValues[normalizeEntityKey(String(k ?? ""))] ?? 0,
-          });
-
-          const computed = res.ok ? res.value : 0;
-          cacheByKey.set(normalized, computed);
-          visiting.delete(normalized);
-          return computed;
-        }
-
-        const res = evaluateFormula({ formula: formulaRaw, valuesByCode });
-        const computed = res.ok ? res.value : 0;
-        cacheByKey.set(normalized, computed);
-        visiting.delete(normalized);
-        return computed;
-      }
-
-      const keys = extractGetKeys(trimmed);
-      const refsByKey: Record<string, number> = {};
-      for (const k of keys) refsByKey[k] = await computeKeyValue(k);
-
-      const res = evaluateJsFormula({
-        code: trimmed,
-        vars: valuesByCode,
-        get: (key: string) => refsByKey[normalizeEntityKey(String(key ?? ""))] ?? 0,
-      });
-
-      if (!res.ok) return { success: false as const, error: res.error };
-      calculatedValue = res.value;
-    } else {
-      const result = evaluateFormula({ formula: trimmed, valuesByCode });
-      if (!result.ok) {
-        return { success: false as const, error: result.error };
-      }
-      calculatedValue = result.value;
-    }
+    if (!res.ok) return { success: false as const, error: res.error };
+    calculatedValue = res.value;
   } else if (hasVariables) {
     calculatedValue = valuesByCode ? Object.values(valuesByCode).reduce((sum, v) => sum + (Number.isFinite(v) ? v : 0), 0) : 0;
   } else {
@@ -1345,7 +1270,7 @@ export async function saveOrgEntityKpiValuesDraft(input: z.infer<typeof saveOrgE
       });
     }
 
-    if (entity.key) {
+    if (!parsed.data.skipCascade && entity.key) {
       try {
         await cascadeRecalculateDependents({
           orgId: session.user.orgId,
@@ -1498,6 +1423,7 @@ async function cascadeRecalculateDependents(input: {
       await saveOrgEntityKpiValuesDraft({
         entityId: dependent.id,
         values: variableValues,
+        skipCascade: true,
       });
 
       if (dependent.key) {

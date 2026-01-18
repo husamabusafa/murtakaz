@@ -17,6 +17,10 @@ const prismaKpiDefinition = (prisma as unknown as { kpiDefinition: unknown }).kp
   findMany: <T>(args: unknown) => Promise<T[]>;
 };
 
+const prismaOrganizationNodeType = (prisma as unknown as { organizationNodeType: unknown }).organizationNodeType as {
+  findMany: <T>(args: unknown) => Promise<T[]>;
+};
+
 function computeSubtreeKpiCounts(input: {
   nodes: Array<{ id: string; parentId: string | null }>;
   directKpiCountByNodeId: Map<string, number>;
@@ -108,7 +112,7 @@ async function requireOrgMember() {
 }
 
 async function getEnabledNodeTypesByOrder(orgId: string) {
-  const rows = await prisma.organizationNodeType.findMany({
+  const rows = await prismaOrganizationNodeType.findMany<{ nodeType: { id: string; code: string; displayName: string; levelOrder: number } }>({
     where: { orgId },
     orderBy: { nodeType: { levelOrder: "asc" } },
     select: {

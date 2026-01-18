@@ -67,8 +67,7 @@ export async function submitEntityForApproval(input: { entityId: string; periodI
       return { success: false as const, error: "entityNotFound" };
     }
 
-    // Get the period
-    const period = await prisma.entityValuePeriod.findFirst({
+    const period = await prisma.entityValue.findFirst({
       where: {
         id: parsed.data.periodId,
         entityId: parsed.data.entityId,
@@ -94,8 +93,7 @@ export async function submitEntityForApproval(input: { entityId: string; periodI
     const canAutoApprove = userRoleRank >= requiredRoleRank;
 
     if (canAutoApprove) {
-      // Auto-approve immediately
-      await prisma.entityValuePeriod.update({
+      await prisma.entityValue.update({
         where: { id: parsed.data.periodId },
         data: {
           status: KpiValueStatus.APPROVED,
@@ -109,8 +107,7 @@ export async function submitEntityForApproval(input: { entityId: string; periodI
 
       return { success: true as const, autoApproved: true };
     } else {
-      // Submit for manual approval
-      await prisma.entityValuePeriod.update({
+      await prisma.entityValue.update({
         where: { id: parsed.data.periodId },
         data: {
           status: KpiValueStatus.SUBMITTED,
@@ -169,7 +166,7 @@ export async function approveEntityValue(input: { entityId: string; periodId: st
     }
 
     // Get the period
-    const period = await prisma.entityValuePeriod.findFirst({
+    const period = await prisma.entityValue.findFirst({
       where: {
         id: parsed.data.periodId,
         entityId: parsed.data.entityId,
@@ -185,8 +182,7 @@ export async function approveEntityValue(input: { entityId: string; periodId: st
       return { success: false as const, error: "periodNotSubmitted" };
     }
 
-    // Approve the period
-    await prisma.entityValuePeriod.update({
+    await prisma.entityValue.update({
       where: { id: parsed.data.periodId },
       data: {
         status: KpiValueStatus.APPROVED,
@@ -243,8 +239,7 @@ export async function rejectEntityValue(input: { entityId: string; periodId: str
       return { success: false as const, error: "entityNotFound" };
     }
 
-    // Get the period
-    const period = await prisma.entityValuePeriod.findFirst({
+    const period = await prisma.entityValue.findFirst({
       where: {
         id: parsed.data.periodId,
         entityId: parsed.data.entityId,
@@ -265,7 +260,7 @@ export async function rejectEntityValue(input: { entityId: string; periodId: str
       ? `${period.note ? period.note + "\n\n" : ""}[REJECTED] ${parsed.data.reason}`
       : period.note;
 
-    await prisma.entityValuePeriod.update({
+    await prisma.entityValue.update({
       where: { id: parsed.data.periodId },
       data: {
         status: KpiValueStatus.DRAFT,
@@ -314,8 +309,7 @@ export async function getEntityApprovals(input?: { status?: "SUBMITTED" | "APPRO
   
   const statusFilter = parsed.success ? parsed.data?.status : undefined;
   
-  // Query entity value periods
-  const periods = await prisma.entityValuePeriod.findMany({
+  const periods = await prisma.entityValue.findMany({
     where: {
       entity: {
         orgId: session.user.orgId,
@@ -337,8 +331,7 @@ export async function getEntityApprovals(input?: { status?: "SUBMITTED" | "APPRO
     select: {
       id: true,
       entityId: true,
-      periodStart: true,
-      periodEnd: true,
+      createdAt: true,
       finalValue: true,
       calculatedValue: true,
       actualValue: true,

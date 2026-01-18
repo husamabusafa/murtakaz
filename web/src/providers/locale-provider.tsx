@@ -85,7 +85,7 @@ export function LocaleProvider({ children, locale }: { children: React.ReactNode
       tr: (en, ar) => (activeLocale === "ar" ? ar : en),
       te: (error, issues) => {
         if (!error) return null;
-        let msg = dictionary[activeLocale][error as TranslationKey] || error;
+        const msg = dictionary[activeLocale][error as TranslationKey] || error;
 
         if (issues && issues.length > 0) {
           const formatted = issues
