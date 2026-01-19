@@ -4,7 +4,7 @@ import Link from "next/link";
 import { useParams, useRouter } from "next/navigation";
 import dynamic from "next/dynamic";
 import { useEffect, useMemo, useState } from "react";
-import { Plus, Trash2 } from "lucide-react";
+import { Plus, Trash2, Code2 } from "lucide-react";
 import { PageHeader } from "@/components/page-header";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -16,6 +16,7 @@ import { useAuth } from "@/providers/auth-provider";
 import { useLocale } from "@/providers/locale-provider";
 import { useTheme } from "@/providers/theme-provider";
 import { getOrgEntityDetail, updateOrgEntity, getOrgOwnerOptions, testOrgEntityFormula } from "@/actions/entities";
+import { EntitySelectorModal } from "@/components/entity-selector-modal";
 
 type EntityDetail = Awaited<ReturnType<typeof getOrgEntityDetail>>;
 type OwnerOption = Awaited<ReturnType<typeof getOrgOwnerOptions>>[number];
@@ -102,6 +103,7 @@ export default function EditEntityPage() {
 
   const [testing, setTesting] = useState(false);
   const [testOutput, setTestOutput] = useState<string | null>(null);
+  const [entitySelectorOpen, setEntitySelectorOpen] = useState(false);
 
   useEffect(() => {
     if (loading) return;
@@ -629,11 +631,23 @@ export default function EditEntityPage() {
                     }}
                   />
                 </div>
-                <div className="text-xs text-muted-foreground whitespace-pre-line">
-                  {tr(
-                    "Use vars.CODE for variables and get(\"KEY\") for other items. You can write a full JS body with return, or just an expression.",
-                    "استخدم vars.CODE للمتغيرات و get(\"KEY\") لعناصر أخرى. يمكنك كتابة كود كامل مع return أو كتابة تعبير فقط.",
-                  )}
+                <div className="flex items-start justify-between gap-2">
+                  <div className="text-xs text-muted-foreground whitespace-pre-line flex-1">
+                    {tr(
+                      "Use vars.CODE for variables and get(\"KEY\") for other items. You can write a full JS body with return, or just an expression.",
+                      "استخدم vars.CODE للمتغيرات و get(\"KEY\") لعناصر أخرى. يمكنك كتابة كود كامل مع return أو كتابة تعبير فقط.",
+                    )}
+                  </div>
+                  <Button
+                    type="button"
+                    variant="outline"
+                    size="sm"
+                    onClick={() => setEntitySelectorOpen(true)}
+                    className="shrink-0"
+                  >
+                    <Code2 className="h-4 w-4 mr-2" />
+                    {tr("Insert get()", "إدراج get()")}
+                  </Button>
                 </div>
               </div>
 
@@ -669,6 +683,14 @@ export default function EditEntityPage() {
         </CardContent>
       </Card>
 
+      <EntitySelectorModal
+        open={entitySelectorOpen}
+        onOpenChange={setEntitySelectorOpen}
+        onSelect={(entityKey) => {
+          const insertText = `get("${entityKey}")`;
+          setFormula((prev) => prev + insertText);
+        }}
+      />
     </div>
   );
 }

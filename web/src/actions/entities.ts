@@ -1530,3 +1530,57 @@ export async function getEntityDependencyTree(input: { entityId: string; maxDept
 
   return await fetchNode(input.entityId, 0);
 }
+
+export async function getAllOrgEntities() {
+  const session = await requireOrgMember();
+
+  const userRole = (session.user as { role?: string }).role;
+  const isAdmin = userRole === "ADMIN";
+
+  let readableEntityIds: string[] | undefined;
+  if (!isAdmin) {
+    readableEntityIds = await getUserReadableEntityIds(session.user.id, session.user.orgId);
+    if (readableEntityIds.length === 0) {
+      return [];
+    }
+  }
+
+  const entities = await prisma.entity.findMany({
+    where: {
+      orgId: session.user.orgId,
+      deletedAt: null,
+      ...(!isAdmin && readableEntityIds ? { id: { in: readableEntityIds } } : {}),
+    },
+    orderBy: [{ title: "asc" }],
+    select: {
+      id: true,
+      key: true,
+      title: true,
+      titleAr: true,
+      status: true,
+      unit: true,
+      unitAr: true,
+      targetValue: true,
+      orgEntityType: {
+        select: {
+          code: true,
+          name: true,
+          nameAr: true,
+        },
+      },
+      values: {
+        orderBy: [{ createdAt: "desc" }],
+        take: 1,
+        select: {
+          createdAt: true,
+          actualValue: true,
+          calculatedValue: true,
+          finalValue: true,
+          status: true,
+        },
+      },
+    },
+  });
+
+  return entities;
+}
