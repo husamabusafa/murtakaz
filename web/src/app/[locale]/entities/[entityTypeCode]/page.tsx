@@ -33,6 +33,7 @@ export default function EntitiesByTypePage() {
   const router = useRouter();
   const { user, loading } = useAuth();
   const { locale, t, df, formatNumber, te } = useLocale();
+  const [mounted, setMounted] = useState(false);
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const userRole =
@@ -52,6 +53,10 @@ export default function EntitiesByTypePage() {
   const [deleteError, setDeleteError] = useState<string | null>(null);
 
   const [selected, setSelected] = useState<EntityRow | null>(null);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
   const loadData = useCallback(async () => {
     setLoadingData(true);
@@ -109,7 +114,7 @@ export default function EntitiesByTypePage() {
     }
   }
 
-  if (loading) {
+  if (!mounted || loading) {
     return (
       <div className="rounded-2xl border border-border bg-card p-8">
         <p className="text-sm text-muted-foreground">{t("loading")}</p>
