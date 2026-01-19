@@ -20,6 +20,66 @@ function normalizeEntityKey(key: string) {
   return String(key ?? "").trim().toUpperCase();
 }
 
+async function collectTransitiveFormulaDependencies(
+  orgId: string,
+  seedKeys: Iterable<string>
+): Promise<{ entityIds: Set<string>; keys: Set<string> }> {
+  const entityIds = new Set<string>();
+  const keys = new Set<string>();
+  const queued = new Set<string>();
+  const toProcess: string[] = [];
+
+  for (const k of seedKeys) {
+    const normalized = normalizeEntityKey(k);
+    if (!normalized) continue;
+    if (queued.has(normalized)) continue;
+    queued.add(normalized);
+    toProcess.push(normalized);
+  }
+
+  const MAX_KEYS = 5000;
+  const BATCH_SIZE = 200;
+
+  while (toProcess.length > 0 && keys.size < MAX_KEYS) {
+    const batch: string[] = [];
+    while (batch.length < BATCH_SIZE && toProcess.length > 0) {
+      const next = toProcess.shift();
+      if (!next) continue;
+      if (keys.has(next)) continue;
+      keys.add(next);
+      batch.push(next);
+    }
+
+    if (batch.length === 0) continue;
+
+    const entities = await prisma.entity.findMany({
+      where: {
+        orgId,
+        deletedAt: null,
+        key: { in: batch, mode: "insensitive" as const },
+      },
+      select: { id: true, key: true, formula: true },
+    });
+
+    for (const entity of entities) {
+      entityIds.add(entity.id);
+      if (entity.formula) {
+        const referenced = extractFormulaKeys(entity.formula);
+        for (const ref of referenced) {
+          const normalized = normalizeEntityKey(ref);
+          if (!normalized) continue;
+          if (keys.has(normalized)) continue;
+          if (queued.has(normalized)) continue;
+          queued.add(normalized);
+          toProcess.push(normalized);
+        }
+      }
+    }
+  }
+
+  return { entityIds, keys };
+}
+
 /**
  * Extract entity keys referenced in a formula using get("KEY") syntax
  */
@@ -161,6 +221,7 @@ export async function getEntityAccess(
   const userAssignments = await prisma.userEntityAssignment.findMany({
     where: {
       userId,
+      entity: { orgId, deletedAt: null },
     },
     include: {
       entity: {
@@ -172,20 +233,25 @@ export async function getEntityAccess(
     },
   });
 
-  // Get the target entity's key
-  const targetEntity = await prisma.entity.findUnique({
-    where: { id: entityId },
+  const targetEntity = await prisma.entity.findFirst({
+    where: { id: entityId, orgId, deletedAt: null },
     select: { key: true },
   });
 
   if (targetEntity?.key) {
-    const targetKey = normalizeEntityKey(targetEntity.key);
+    const seedKeys = new Set<string>();
     for (const assignment of userAssignments) {
       if (assignment.entity.formula) {
         const referencedKeys = extractFormulaKeys(assignment.entity.formula);
-        if (referencedKeys.includes(targetKey)) {
-          return { canRead: true, canEditValues: false, canEditDefinition: false, reason: "dependency" };
-        }
+        referencedKeys.forEach((k) => seedKeys.add(k));
+      }
+    }
+
+    if (seedKeys.size > 0) {
+      const { keys } = await collectTransitiveFormulaDependencies(orgId, seedKeys);
+      const targetKey = normalizeEntityKey(targetEntity.key);
+      if (keys.has(targetKey)) {
+        return { canRead: true, canEditValues: false, canEditDefinition: false, reason: "dependency" };
       }
     }
   }
@@ -209,10 +275,10 @@ export async function getEntityAccess(
     // Check hierarchical dependency access (subordinates' entities depend on this one)
     // Managers can READ entities that their subordinates' entities depend on
     if (targetEntity?.key) {
-      const targetKey = normalizeEntityKey(targetEntity.key);
       const subordinateAssignments = await prisma.userEntityAssignment.findMany({
         where: {
           userId: { in: subordinateIds },
+          entity: { orgId, deletedAt: null },
         },
         include: {
           entity: {
@@ -224,12 +290,19 @@ export async function getEntityAccess(
         },
       });
 
+      const seedKeys = new Set<string>();
       for (const assignment of subordinateAssignments) {
         if (assignment.entity.formula) {
           const referencedKeys = extractFormulaKeys(assignment.entity.formula);
-          if (referencedKeys.includes(targetKey)) {
-            return { canRead: true, canEditValues: false, canEditDefinition: false, reason: "dependency" };
-          }
+          referencedKeys.forEach((k) => seedKeys.add(k));
+        }
+      }
+
+      if (seedKeys.size > 0) {
+        const { keys } = await collectTransitiveFormulaDependencies(orgId, seedKeys);
+        const targetKey = normalizeEntityKey(targetEntity.key);
+        if (keys.has(targetKey)) {
+          return { canRead: true, canEditValues: false, canEditDefinition: false, reason: "dependency" };
         }
       }
     }
@@ -246,7 +319,7 @@ export async function getUserReadableEntityIds(userId: string, orgId: string): P
 
   // 1. Get directly assigned entities
   const directAssignments = await prisma.userEntityAssignment.findMany({
-    where: { userId },
+    where: { userId, entity: { orgId, deletedAt: null } },
     select: { entityId: true, entity: { select: { formula: true } } },
   });
 
@@ -263,16 +336,8 @@ export async function getUserReadableEntityIds(userId: string, orgId: string): P
   }
 
   if (referencedKeys.size > 0) {
-    const keys = Array.from(referencedKeys);
-    const dependencyEntities = await prisma.entity.findMany({
-      where: {
-        orgId,
-        deletedAt: null,
-        OR: keys.map((k) => ({ key: { equals: k, mode: "insensitive" as const } })),
-      },
-      select: { id: true },
-    });
-    dependencyEntities.forEach((e) => entityIds.add(e.id));
+    const { entityIds: dependencyEntityIds } = await collectTransitiveFormulaDependencies(orgId, referencedKeys);
+    dependencyEntityIds.forEach((id) => entityIds.add(id));
   }
 
   // 3. Get hierarchical access (entities assigned to subordinates)
@@ -281,6 +346,7 @@ export async function getUserReadableEntityIds(userId: string, orgId: string): P
     const subordinateAssignments = await prisma.userEntityAssignment.findMany({
       where: {
         userId: { in: subordinateIds },
+        entity: { orgId, deletedAt: null },
       },
       select: { entityId: true, entity: { select: { formula: true } } },
     });
@@ -296,16 +362,11 @@ export async function getUserReadableEntityIds(userId: string, orgId: string): P
     }
 
     if (hierarchicalReferencedKeys.size > 0) {
-      const keys = Array.from(hierarchicalReferencedKeys);
-      const hierarchicalDependencies = await prisma.entity.findMany({
-        where: {
-          orgId,
-          deletedAt: null,
-          OR: keys.map((k) => ({ key: { equals: k, mode: "insensitive" as const } })),
-        },
-        select: { id: true },
-      });
-      hierarchicalDependencies.forEach((e) => entityIds.add(e.id));
+      const { entityIds: hierarchicalDependencyEntityIds } = await collectTransitiveFormulaDependencies(
+        orgId,
+        hierarchicalReferencedKeys
+      );
+      hierarchicalDependencyEntityIds.forEach((id) => entityIds.add(id));
     }
   }
 
@@ -338,6 +399,7 @@ export async function batchGetEntityAccess(
     where: {
       userId,
       entityId: { in: entityIds },
+      entity: { orgId, deletedAt: null },
     },
     select: { entityId: true },
   });
@@ -346,7 +408,7 @@ export async function batchGetEntityAccess(
 
   // Get user's assigned entities with formulas
   const userAssignments = await prisma.userEntityAssignment.findMany({
-    where: { userId },
+    where: { userId, entity: { orgId, deletedAt: null } },
     include: {
       entity: {
         select: { id: true, formula: true },
@@ -356,7 +418,7 @@ export async function batchGetEntityAccess(
 
   // Get keys of target entities
   const targetEntities = await prisma.entity.findMany({
-    where: { id: { in: entityIds } },
+    where: { id: { in: entityIds }, orgId, deletedAt: null },
     select: { id: true, key: true },
   });
 
@@ -371,6 +433,11 @@ export async function batchGetEntityAccess(
     }
   }
 
+  const transitiveReferencedKeys =
+    referencedKeys.size > 0
+      ? (await collectTransitiveFormulaDependencies(orgId, referencedKeys)).keys
+      : new Set<string>();
+
   // Get subordinate IDs
   const subordinateIds = await getSubordinateIds(userId, orgId);
   let subordinateAssignedIds = new Set<string>();
@@ -380,6 +447,7 @@ export async function batchGetEntityAccess(
       where: {
         userId: { in: subordinateIds },
         entityId: { in: entityIds },
+        entity: { orgId, deletedAt: null },
       },
       select: { entityId: true },
     });
@@ -392,7 +460,7 @@ export async function batchGetEntityAccess(
       accessMap.set(entityId, { canRead: true, canEditValues: true, canEditDefinition: false, reason: "assigned" });
     } else {
       const entityKey = entityKeyMap.get(entityId);
-      if (entityKey && referencedKeys.has(normalizeEntityKey(entityKey))) {
+      if (entityKey && transitiveReferencedKeys.has(normalizeEntityKey(entityKey))) {
         accessMap.set(entityId, { canRead: true, canEditValues: false, canEditDefinition: false, reason: "dependency" });
       } else if (subordinateAssignedIds.has(entityId)) {
         accessMap.set(entityId, { canRead: true, canEditValues: true, canEditDefinition: false, reason: "hierarchical" });
